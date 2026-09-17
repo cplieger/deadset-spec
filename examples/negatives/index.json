@@ -1,0 +1,103 @@
+{
+  "description": "One row per document under examples/negatives/. Each document is a refused instance: it violates exactly one constraint of the schema the row names, and every other constraint of that schema holds, so a validator that reports a violation at a second instance location is reporting a defect in the document rather than in the constraint under test. file is the document's name in this directory; schema is the path of the schema the document is validated against, relative to the root of this repository; constraint is the JSON Schema keyword that refuses the document; instance_path is the JSON Pointer (RFC 6901) of the value the constraint refuses, which is the empty string when the value is the whole document; violates says in one sentence what the document does wrong. Every document in this directory has exactly one row here, and every row names a document that is present.",
+  "negatives": [
+    {
+      "file": "analyzer-conformance-absent.json",
+      "schema": "contract/report.schema.json",
+      "constraint": "required",
+      "instance_path": "/analyzer",
+      "violates": "the analyzer object omits conformance, so the report records no conformance pass"
+    },
+    {
+      "file": "component-id-unprefixed.json",
+      "schema": "contract/report.schema.json",
+      "constraint": "pattern",
+      "instance_path": "/findings/0/component/id",
+      "violates": "the component identifier omits the prefix that keeps two analyzers from colliding"
+    },
+    {
+      "file": "configurations-empty.json",
+      "schema": "contract/report.schema.json",
+      "constraint": "minItems",
+      "instance_path": "/configurations",
+      "violates": "the report names no configuration, so no finding could name one it holds in"
+    },
+    {
+      "file": "edge-evaluation-dead-without-finding.json",
+      "schema": "contract/report.schema.json",
+      "constraint": "required",
+      "instance_path": "/edge_evaluations/0",
+      "violates": "the evaluation reports the dead state and carries no pending finding"
+    },
+    {
+      "file": "edge-evaluation-live-with-finding.json",
+      "schema": "contract/report.schema.json",
+      "constraint": "not",
+      "instance_path": "/edge_evaluations/0",
+      "violates": "the evaluation reports the live state and still carries a pending finding"
+    },
+    {
+      "file": "finding-details-missing-for-code.json",
+      "schema": "contract/report.schema.json",
+      "constraint": "required",
+      "instance_path": "/findings/0/details",
+      "violates": "DS1101 carries an empty details and states no narrower visibility"
+    },
+    {
+      "file": "finding-details-under-wrong-code.json",
+      "schema": "contract/report.schema.json",
+      "constraint": "not",
+      "instance_path": "/findings/0/details",
+      "violates": "DS1001 carries narrower_visibility, which only the visibility-narrowing codes carry"
+    },
+    {
+      "file": "finding-retained-by-populated.json",
+      "schema": "contract/report.schema.json",
+      "constraint": "maxItems",
+      "instance_path": "/findings/0/retained_by",
+      "violates": "a reported finding names an exemption class, which only a retained-symbol listing does"
+    },
+    {
+      "file": "finding-symbol-kind-outside-vocabulary.json",
+      "schema": "contract/finding.schema.json",
+      "constraint": "enum",
+      "instance_path": "/symbol/kind",
+      "violates": "the symbol kind is a word the closed vocabulary does not carry"
+    },
+    {
+      "file": "message-ends-with-full-stop.json",
+      "schema": "contract/report.schema.json",
+      "constraint": "pattern",
+      "instance_path": "/findings/0/message",
+      "violates": "the message ends with a full stop, so a consumer cannot append a clause to it"
+    },
+    {
+      "file": "position-column-zero.json",
+      "schema": "contract/report.schema.json",
+      "constraint": "minimum",
+      "instance_path": "/findings/0/position/column",
+      "violates": "a position column is zero, and a column is counted from one"
+    },
+    {
+      "file": "report-unknown-member.json",
+      "schema": "contract/report.schema.json",
+      "constraint": "additionalProperties",
+      "instance_path": "",
+      "violates": "the envelope carries a member the schema does not declare"
+    },
+    {
+      "file": "stale-suppression-code-not-ds1703.json",
+      "schema": "contract/report.schema.json",
+      "constraint": "const",
+      "instance_path": "/stale_suppressions/0/code",
+      "violates": "a stale-suppression record names another code, and the kind is fixed"
+    },
+    {
+      "file": "target-root-absolute.json",
+      "schema": "contract/report.schema.json",
+      "constraint": "pattern",
+      "instance_path": "/target/root",
+      "violates": "the target root is an absolute path, which two machines would not write alike"
+    }
+  ]
+}

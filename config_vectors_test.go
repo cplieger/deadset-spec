@@ -212,52 +212,63 @@ func vectorPatternDeclares(t *testing.T, schemaPath string, patternProps map[str
 	return false
 }
 
-// vectorCheckAgainstSchema walks one document value against the subschema walkSchema indexed at
-// schemaPath, reporting every key config.schema.json does not declare, every required key the
-// document omits and every string a declared pattern or enumeration refuses. at is the path of
-// value inside the document and where names the document.
+// vectorCheckAgainstSchema reports every problem vectorSchemaProblems finds in one document.
 func vectorCheckAgainstSchema(t *testing.T, index vectorSchemaIndex, where, at, schemaPath string, value any) {
+	t.Helper()
+	for _, problem := range vectorSchemaProblems(t, index, where, at, schemaPath, value) {
+		t.Error(problem)
+	}
+}
+
+// vectorSchemaProblems walks one document value against the subschema walkSchema indexed at
+// schemaPath, listing every key config.schema.json does not declare, every required key the
+// document omits and every string a declared pattern or enumeration refuses. at is the path of
+// value inside the document and where names the document. It returns the problems rather than
+// reporting them, so a planted document drives the same walk the published vectors are checked
+// with; a schema whose pattern does not compile is a setup failure of this suite instead.
+func vectorSchemaProblems(t *testing.T, index vectorSchemaIndex, where, at, schemaPath string, value any) []string {
 	t.Helper()
 	entry, declared := index[schemaPath]
 	if !declared || entry.node == nil {
-		t.Errorf("%s: %s reaches %s, which %s does not declare", where, at, schemaPath, configSchemaPath)
-		return
+		return []string{fmt.Sprintf("%s: %s reaches %s, which %s does not declare", where, at, schemaPath, configSchemaPath)}
 	}
+	var out []string
 	if text, isText := value.(string); isText {
 		if pattern, _ := entry.node["pattern"].(string); pattern != "" {
 			if !vectorCompilePattern(t, schemaPath, pattern).MatchString(text) {
-				t.Errorf("%s: %s = %q, want a value matching schema[%s].pattern = %q", where, at, text, schemaPath, pattern)
+				out = append(out, fmt.Sprintf("%s: %s = %q, want a value matching schema[%s].pattern = %q", where, at, text, schemaPath, pattern))
 			}
 		}
 		if enum := stringSlice(entry.node["enum"]); len(enum) > 0 && !slices.Contains(enum, text) {
-			t.Errorf("%s: %s = %q, want one of schema[%s].enum = %q", where, at, text, schemaPath, enum)
+			out = append(out, fmt.Sprintf("%s: %s = %q, want one of schema[%s].enum = %q", where, at, text, schemaPath, enum))
 		}
 	}
 	switch v := value.(type) {
 	case map[string]any:
 		for _, name := range stringSlice(entry.node["required"]) {
 			if _, present := v[name]; !present {
-				t.Errorf("%s: %s omits %q, want every key schema[%s].required names", where, at, name, schemaPath)
+				out = append(out, fmt.Sprintf("%s: %s omits %q, want every key schema[%s].required names", where, at, name, schemaPath))
 			}
 		}
 		props, _ := entry.node["properties"].(map[string]any)
 		patternProps, _ := entry.node["patternProperties"].(map[string]any)
 		for _, name := range slices.Sorted(maps.Keys(v)) {
 			if _, isProperty := props[name]; isProperty {
-				vectorCheckAgainstSchema(t, index, where, joinPath(at, name), joinPath(schemaPath, name), v[name])
+				out = append(out, vectorSchemaProblems(t, index, where, joinPath(at, name), joinPath(schemaPath, name), v[name])...)
 				continue
 			}
 			if !vectorPatternDeclares(t, schemaPath, patternProps, name) {
-				t.Errorf("%s: %s names %q, which %s does not declare under %s", where, at, name, configSchemaPath, schemaPath)
+				out = append(out, fmt.Sprintf("%s: %s names %q, which %s does not declare under %s", where, at, name, configSchemaPath, schemaPath))
 				continue
 			}
-			vectorCheckAgainstSchema(t, index, where, joinPath(at, name), joinPath(schemaPath, "<pattern>"), v[name])
+			out = append(out, vectorSchemaProblems(t, index, where, joinPath(at, name), joinPath(schemaPath, "<pattern>"), v[name])...)
 		}
 	case []any:
 		for i, item := range v {
-			vectorCheckAgainstSchema(t, index, where, fmt.Sprintf("%s[%d]", at, i), joinPath(schemaPath, "<items>"), item)
+			out = append(out, vectorSchemaProblems(t, index, where, fmt.Sprintf("%s[%d]", at, i), joinPath(schemaPath, "<items>"), item)...)
 		}
 	}
+	return out
 }
 
 // caseCovering returns the one case that names an aspect, failing the test when no case or more
@@ -553,4 +564,87 @@ func vectorValueOrAbsent(doc map[string]json.RawMessage, name string) string {
 		return "absent"
 	}
 	return string(value)
+}
+
+// plantedVectorConfiguration is a resolved configuration in memory, valid under the closed key
+// list, so the walk over an expected resolved configuration is exercised in the accepting
+// direction on a document this file owns and in the refusing direction on a planted copy of it.
+const plantedVectorConfiguration = `{"contract_version": "1.0.0", "target": {"kind": "library"}, ` +
+	`"analysis": {"languages": ["go"], "min_confidence": "probable", "generated_files": "exclude"}, ` +
+	`"severity": {"DS1101": "warn", "DS18": "allow"}, ` +
+	`"reporters": {"formats": ["text"], "sort": "size", "fail_on": "deny"}}`
+
+func TestVectorSchemaProblemsAcceptsAResolvedConfiguration(t *testing.T) {
+	index := newVectorSchemaIndex(t)
+	doc, err := vectorDecodeConfig([]byte(plantedVectorConfiguration))
+	if err != nil {
+		t.Fatalf("Setup: decoding the planted configuration: %v", err)
+	}
+	for _, problem := range vectorSchemaProblems(t, index, "planted", "root", "root", doc) {
+		t.Errorf("vectorSchemaProblems(a valid resolved configuration) reports %q, want no problem", problem)
+	}
+}
+
+// TestVectorSchemaProblemsRefuses plants one violation per arm of the walk, so each arm is known to
+// fire rather than only known to stay silent on documents that are already correct.
+func TestVectorSchemaProblemsRefuses(t *testing.T) {
+	cases := []struct {
+		name    string
+		old     string
+		planted string
+		wantMsg string
+	}{
+		{
+			name:    "a_key_the_schema_does_not_declare",
+			old:     `"target": {"kind": "library"}`,
+			planted: `"target": {"kind": "library"}, "analyzers": ["deadset-go"]`,
+			wantMsg: `root names "analyzers", which contract/config.schema.json does not declare under root`,
+		},
+		{
+			name:    "a_nested_key_the_schema_does_not_declare",
+			old:     `"min_confidence": "probable"`,
+			planted: `"min_confidence": "probable", "sort": "size"`,
+			wantMsg: `analysis names "sort", which contract/config.schema.json does not declare under analysis`,
+		},
+		{
+			name:    "a_required_key_the_document_omits",
+			old:     `"target": {"kind": "library"}`,
+			planted: `"target": {}`,
+			wantMsg: `target omits "kind", want every key schema[target].required names`,
+		},
+		{
+			name:    "a_value_outside_the_enumeration",
+			old:     `"target": {"kind": "library"}`,
+			planted: `"target": {"kind": "framework"}`,
+			wantMsg: `target.kind = "framework", want one of schema[target.kind].enum`,
+		},
+		{
+			name:    "a_severity_key_the_code_pattern_refuses",
+			old:     `"DS1101": "warn"`,
+			planted: `"ds1101": "warn"`,
+			wantMsg: `severity names "ds1101", which contract/config.schema.json does not declare under severity`,
+		},
+		{
+			name:    "an_array_entry_the_enumeration_refuses",
+			old:     `"languages": ["go"]`,
+			planted: `"languages": ["gopher"]`,
+			wantMsg: `analysis.languages[0] = "gopher", want one of schema[analysis.languages.<items>].enum`,
+		},
+	}
+	index := newVectorSchemaIndex(t)
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			if !strings.Contains(plantedVectorConfiguration, tc.old) {
+				t.Fatalf("Setup: the planted configuration does not hold %q", tc.old)
+			}
+			doc, err := vectorDecodeConfig([]byte(strings.Replace(plantedVectorConfiguration, tc.old, tc.planted, 1)))
+			if err != nil {
+				t.Fatalf("Setup: decoding the planted configuration: %v", err)
+			}
+			problems := vectorSchemaProblems(t, index, "planted", "root", "root", doc)
+			if !slices.ContainsFunc(problems, func(problem string) bool { return strings.Contains(problem, tc.wantMsg) }) {
+				t.Errorf("vectorSchemaProblems(planted with %s) = %q, want a problem containing %q", tc.name, problems, tc.wantMsg)
+			}
+		})
+	}
 }

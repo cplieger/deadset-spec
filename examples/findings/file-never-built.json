@@ -1,0 +1,26 @@
+{
+  "code": "DS1501",
+  "kind": "file-never-built",
+  "language": "go",
+  "position": { "path": "internal/legacy/render_windows.go", "line": 1, "column": 1, "end_line": 84 },
+  "symbol": {
+    "ref": "go://example.com/app/internal/legacy#render_windows.go:file",
+    "kind": "file",
+    "name": "render_windows.go",
+    "parent": "go://example.com/app/internal/legacy#",
+    "size_lines": 84
+  },
+  "reachability_class": "certain",
+  "confidence": "certain",
+  "liveness_relation": "reachability",
+  "test_only": false,
+  "generated": false,
+  "component": { "id": "deadset-go/c-0024", "root": true, "symbol_count": 1, "deletable_lines": 84 },
+  "retained_by": [],
+  "configurations": ["linux-amd64", "linux-arm64"],
+  "consumers_loaded": [],
+  "fixability": "deletable",
+  "severity": "deny",
+  "message": "no configuration in the declared complete matrix builds the file",
+  "details": { "excluded_by": "//go:build windows" }
+}

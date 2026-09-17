@@ -1,0 +1,88 @@
+{
+  "schema_version": "1.0.0",
+  "contract_version": "1.0.0",
+  "analyzer": {
+    "name": "deadset",
+    "version": "1.0.0",
+    "languages": [
+      "go"
+    ],
+    "schema_versions_accepted": [
+      "1.0.0"
+    ],
+    "conformance": {
+      "corpus_version": "1.0.0",
+      "result": "pass",
+      "digest": "sha256:890ddff06aecf253706705aa5cefa6281c1d1f63ddb62927d11f6d0ef03b1ade"
+    }
+  },
+  "merged_from": [
+    {
+      "name": "deadset-go",
+      "version": "1.0.0",
+      "digest": "sha256:ca44c6f01c073df92ee422025a7309547f821efd8d944692469f0aa8f2e92810"
+    }
+  ],
+  "target": {
+    "kind": "application",
+    "root": ".",
+    "identity": "example.com/app"
+  },
+  "configurations": [
+    {
+      "id": "linux-amd64",
+      "os": "linux",
+      "arch": "amd64",
+      "tags": []
+    }
+  ],
+  "consumers": {
+    "declared": 0,
+    "loaded": [],
+    "unavailable": []
+  },
+  "findings": [],
+  "edge_evaluations": [],
+  "stale_suppressions": [
+    {
+      "code": "DS1703",
+      "mechanism": "ignore",
+      "entry": {
+        "code": "DS1001",
+        "symbol": "go://example.com/app/internal/store#Purge",
+        "path": "internal/store/store.go",
+        "reason": "Kept until the caller in the next release lands."
+      },
+      "position": {
+        "path": "deadset-ignore.json",
+        "line": 4,
+        "column": 5
+      },
+      "symbol": "go://example.com/app/internal/store#Purge",
+      "message": "ignore entry for DS1001 matches no current finding",
+      "analyzer": "deadset-go"
+    }
+  ],
+  "declared_gaps": [],
+  "excluded_by_cgo": [],
+  "test_file_rules": [
+    {
+      "rule": "go-test-suffix",
+      "matched": 3
+    }
+  ],
+  "totals": {
+    "findings": 0,
+    "by_severity": {
+      "allow": 0,
+      "warn": 0,
+      "deny": 0
+    },
+    "deletable_lines": 0,
+    "suppressions_in_effect": 0,
+    "reasons_recorded": 1,
+    "stale_suppressions": 1,
+    "pending": 0,
+    "omitted": 0
+  }
+}

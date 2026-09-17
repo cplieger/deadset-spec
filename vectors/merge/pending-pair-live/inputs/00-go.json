@@ -1,0 +1,109 @@
+{
+  "schema_version": "1.0.0",
+  "contract_version": "1.0.0",
+  "analyzer": {
+    "name": "deadset-go",
+    "version": "1.0.0",
+    "languages": [
+      "go"
+    ],
+    "schema_versions_accepted": [
+      "1.0.0"
+    ],
+    "conformance": {
+      "corpus_version": "1.0.0",
+      "result": "pass",
+      "digest": "sha256:fb237604539ae340a82c566bac533eff435e19596423b1990a5f7533d07d6593"
+    }
+  },
+  "target": {
+    "kind": "application",
+    "root": ".",
+    "identity": "example.com/app"
+  },
+  "configurations": [
+    {
+      "id": "linux-amd64",
+      "os": "linux",
+      "arch": "amd64",
+      "tags": []
+    }
+  ],
+  "consumers": {
+    "declared": 0,
+    "loaded": [],
+    "unavailable": []
+  },
+  "findings": [],
+  "edge_evaluations": [
+    {
+      "edge": "wire/ServerEvent",
+      "side": "provides",
+      "symbol": "go://example.com/app/internal/wire#ServerEvent",
+      "state": "dead",
+      "finding": {
+        "code": "DS1001",
+        "kind": "unused-exported",
+        "language": "go",
+        "position": {
+          "path": "internal/wire/wire.go",
+          "line": 14,
+          "column": 6,
+          "end_line": 21
+        },
+        "symbol": {
+          "ref": "go://example.com/app/internal/wire#ServerEvent",
+          "kind": "type",
+          "name": "ServerEvent",
+          "parent": "go://example.com/app/internal/wire#",
+          "exported": true,
+          "size_lines": 8,
+          "objectpath": "ServerEvent"
+        },
+        "reachability_class": "certain",
+        "confidence": "certain",
+        "liveness_relation": "reference-counting",
+        "test_only": false,
+        "generated": false,
+        "component": {
+          "id": "deadset-go/c-1",
+          "root": true,
+          "symbol_count": 1,
+          "deletable_lines": 8
+        },
+        "retained_by": [],
+        "configurations": [
+          "linux-amd64"
+        ],
+        "consumers_loaded": [],
+        "fixability": "deletable",
+        "severity": "deny",
+        "message": "exported type has no reference in the target and none from any loaded consumer",
+        "details": {}
+      }
+    }
+  ],
+  "stale_suppressions": [],
+  "declared_gaps": [],
+  "excluded_by_cgo": [],
+  "test_file_rules": [
+    {
+      "rule": "go-test-suffix",
+      "matched": 3
+    }
+  ],
+  "totals": {
+    "findings": 0,
+    "by_severity": {
+      "allow": 0,
+      "warn": 0,
+      "deny": 0
+    },
+    "deletable_lines": 0,
+    "suppressions_in_effect": 0,
+    "reasons_recorded": 0,
+    "stale_suppressions": 0,
+    "pending": 1,
+    "omitted": 0
+  }
+}

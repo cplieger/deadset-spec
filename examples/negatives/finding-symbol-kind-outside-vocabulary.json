@@ -1,0 +1,72 @@
+{
+  "code": "DS1001",
+  "kind": "unused-exported",
+  "language": "go",
+  "position": {
+    "path": "catalog.go",
+    "line": 214,
+    "column": 6,
+    "end_line": 231
+  },
+  "symbol": {
+    "ref": "go://example.com/app#Catalog.ResolveAlias",
+    "kind": "struct",
+    "name": "(*Catalog).ResolveAlias",
+    "parent": "go://example.com/app#Catalog",
+    "exported": true,
+    "size_lines": 18,
+    "objectpath": "Catalog.M0"
+  },
+  "reachability_class": "certain",
+  "confidence": "certain",
+  "liveness_relation": "reference-counting",
+  "test_only": false,
+  "generated": false,
+  "component": {
+    "id": "deadset-go/c-0007",
+    "root": true,
+    "symbol_count": 3,
+    "deletable_lines": 41,
+    "members": [
+      {
+        "ref": "go://example.com/app#Catalog.ResolveAlias",
+        "position": {
+          "path": "catalog.go",
+          "line": 214,
+          "column": 6,
+          "end_line": 231
+        }
+      },
+      {
+        "ref": "go://example.com/app#Catalog.aliasIndex",
+        "position": {
+          "path": "catalog.go",
+          "line": 233,
+          "column": 6,
+          "end_line": 244
+        }
+      },
+      {
+        "ref": "go://example.com/app#foldAlias",
+        "position": {
+          "path": "fold.go",
+          "line": 61,
+          "column": 6,
+          "end_line": 72
+        }
+      }
+    ]
+  },
+  "retained_by": [],
+  "configurations": [
+    "linux-amd64",
+    "linux-arm64"
+  ],
+  "consumers_loaded": [
+    "example.com/consumer"
+  ],
+  "fixability": "deletable",
+  "severity": "deny",
+  "message": "exported method has no reference in the target and none from any loaded consumer",
+  "details": {}
+}

@@ -1,0 +1,38 @@
+{
+  "code": "DS1203",
+  "kind": "uncalled-interface-method",
+  "language": "ts",
+  "position": { "path": "src/wire.ts", "line": 34, "column": 3, "end_line": 34 },
+  "symbol": {
+    "ref": "ts://@example/app/src/wire.ts#Fetcher.fetch",
+    "kind": "interface-method",
+    "name": "Fetcher.fetch",
+    "parent": "ts://@example/app/src/wire.ts#Fetcher",
+    "exported": true,
+    "size_lines": 1
+  },
+  "reachability_class": "certain",
+  "confidence": "certain",
+  "liveness_relation": "reference-counting",
+  "test_only": false,
+  "generated": false,
+  "component": { "id": "deadset-ts/c-0003", "root": true, "symbol_count": 1, "deletable_lines": 1 },
+  "retained_by": [],
+  "configurations": ["default"],
+  "consumers_loaded": [],
+  "fixability": "manual",
+  "severity": "warn",
+  "message": "no call site invokes the method through the interface that declares it",
+  "details": {
+    "implementations": [
+      {
+        "ref": "ts://@example/app/src/http.ts#HTTPFetcher.fetch",
+        "position": { "path": "src/http.ts", "line": 19, "column": 3, "end_line": 26 }
+      },
+      {
+        "ref": "ts://@example/app/src/memory.ts#MemoryFetcher.fetch",
+        "position": { "path": "src/memory.ts", "line": 11, "column": 3, "end_line": 14 }
+      }
+    ]
+  }
+}

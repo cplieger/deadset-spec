@@ -135,7 +135,7 @@
           "pattern": "^(?:\\.|(?:[^/\\\\.\\r\\n][^/\\\\\\r\\n]*|\\.[^/\\\\.\\r\\n][^/\\\\\\r\\n]*|\\.\\.[^/\\\\\\r\\n]+)(?:/(?:[^/\\\\.\\r\\n][^/\\\\\\r\\n]*|\\.[^/\\\\.\\r\\n][^/\\\\\\r\\n]*|\\.\\.[^/\\\\\\r\\n]+))*)$"
         },
         "identity": {
-          "description": "The name the target publishes itself under: its module path where the language has one, its package name otherwise. It is the scope every symbol reference of the target carries.",
+          "description": "The name the target publishes itself under: its module path where the language has one, its package name otherwise. A target holding more than one language has one identity, the one the invoking product resolved, and every analyzer report of that target carries it, so a merged report names the same target as every report it merged. It is the scope every symbol reference of the target carries.",
           "type": "string",
           "minLength": 1
         }
@@ -276,7 +276,7 @@
             "enum": ["provides", "used_by"]
           },
           "symbol": {
-            "description": "The stable symbol reference the edge names on this side, in the grammar grammar/symbol-ref.md states. The pattern here checks the language tag, the scope and the fragment separator only; that page fixes the form of each.",
+            "description": "The stable symbol reference the edge names on this side, in the grammar grammar/symbol-ref.md states, which is the single owner of that form.",
             "type": "string"
           },
           "state": {
