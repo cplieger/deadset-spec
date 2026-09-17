@@ -1,0 +1,29 @@
+{
+  "exit_codes": [
+    {
+      "code": 0,
+      "name": "clean",
+      "meaning": "No finding at or above the failing severity and no stale suppression."
+    },
+    {
+      "code": 1,
+      "name": "findings",
+      "meaning": "At least one finding at or above the failing severity, or at least one stale suppression."
+    },
+    {
+      "code": 2,
+      "name": "usage",
+      "meaning": "Malformed invocation, missing target kind, unimplemented configuration key, unknown symbol in an explanation request, or a requested source edit."
+    },
+    {
+      "code": 3,
+      "name": "failure",
+      "meaning": "Load, type-check, consumer, configuration-matrix, analyzer-resolution or digest failure."
+    },
+    {
+      "code": 4,
+      "name": "pending",
+      "meaning": "The report holds at least one pending finding whose cross-language edge has not been evaluated."
+    }
+  ]
+}

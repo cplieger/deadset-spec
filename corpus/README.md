@@ -1,0 +1,3 @@
+# Conformance corpus
+
+A fixture is a small project in one language, checked in under `corpus/<language>/<kind>/`, that an analyzer loads and analyzes exactly as it would a real repository. An expectation file sits beside each fixture and names, in a language-neutral form, which findings an analyzer must report and which it must not report, per issue kind and per exemption class. A declared gap is a value an analyzer writes into its conformance report for a capability it does not implement; an expectation that is neither answered nor declared fails the analyzer, so a gap is reported rather than omitted. Fixtures arrive one issue kind at a time, added by the analyzer that implements the kind.
