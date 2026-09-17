@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "deadset conformance rendering manifest",
-  "description": "The manifest of one language rendering of a conformance fixture, fixture.json: a section of the Go rendering's txtar archive, a file at the root of the TypeScript rendering's directory, one schema for both. Its only job is the binding the expectation file cannot make: it maps every fixture-local logical name the expectation file uses to the file and the line where this rendering declares that subject, in whatever spelling this language uses. Every name the expectation file uses must appear here, and no other name may, so a manifest never carries a subject the corpus does not test. The manifest does not restate the fixture's name, description or requirement clauses; those live once, in the expectation file.",
+  "description": "The manifest of one language rendering of a conformance fixture, fixture.json: a section of the Go rendering's txtar archive, a file at the root of the TypeScript rendering's directory, one schema for both. Its only job is the binding the expectation file cannot make: it maps every fixture-local logical name the expectation file uses to the file and the line where this rendering declares that subject, in whatever spelling this language uses. Every name the expectation file uses must appear here, and no other name may, so a manifest never carries a subject the corpus does not test. The manifest does not restate the fixture's name or description; those live once, in the expectation file.",
   "type": "object",
   "additionalProperties": false,
   "required": ["symbols"],

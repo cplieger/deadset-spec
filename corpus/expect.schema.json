@@ -16,15 +16,6 @@
       "type": "string",
       "minLength": 1
     },
-    "validates": {
-      "description": "The requirement clauses the fixture pins, each as section.clause, in the requirements document this contract is derived from. Informational: no runner reads it.",
-      "type": "array",
-      "uniqueItems": true,
-      "items": {
-        "type": "string",
-        "pattern": "^[0-9]+\\.[0-9]+$"
-      }
-    },
     "languages": {
       "description": "The languages the fixture has a rendering for, drawn from the languages field of contract/kinds.json. Every expectation applies to every rendering listed, so every logical name must resolve through every rendering's manifest. An analyzer answers the fixture only when its language is listed.",
       "type": "array",

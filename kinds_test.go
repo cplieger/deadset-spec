@@ -30,12 +30,11 @@ type kindsDocument struct {
 }
 
 type codeRange struct {
-	Retired           *bool  `json:"retired"`
-	RetiredByDecision *int   `json:"retired_by_decision"`
-	Start             string `json:"start"`
-	End               string `json:"end"`
-	Family            string `json:"family"`
-	Description       string `json:"description"`
+	Retired     *bool  `json:"retired"`
+	Start       string `json:"start"`
+	End         string `json:"end"`
+	Family      string `json:"family"`
+	Description string `json:"description"`
 }
 
 type kindRow struct {
@@ -53,11 +52,11 @@ type kindRow struct {
 	DerivedFrom     []string            `json:"derived_from"`
 }
 
+// retiredKind mirrors a row of the retired list, which carries the code and
+// the name of the kind that once held it and no other field.
 type retiredKind struct {
-	RetiredByDecision *int   `json:"retired_by_decision"`
-	Code              string `json:"code"`
-	Name              string `json:"name"`
-	Reason            string `json:"reason"`
+	Code string `json:"code"`
+	Name string `json:"name"`
 }
 
 var codePattern = regexp.MustCompile(`^DS[0-9]{4}$`)
@@ -127,9 +126,6 @@ func TestKindsRangesAreEightLiveAndOneRetired(t *testing.T) {
 			}
 			if isSet(r.Retired) && *r.Retired {
 				retired++
-				if r.RetiredByDecision == nil {
-					t.Errorf("Range(%s) retired_by_decision = absent, want the number of the decision that retired it", r.Start)
-				}
 			} else {
 				live++
 			}
@@ -237,8 +233,8 @@ func TestKindsOnlyStaleSuppressionIsFixed(t *testing.T) {
 	}
 }
 
-// narrowedKinds are the rows settled decisions 31 and 32 narrowed; each must
-// state the precondition the analyzer checks before it reports.
+// narrowedKinds are the rows whose rule holds only under a stated condition;
+// each must carry the precondition the analyzer checks before it reports.
 var narrowedKinds = []string{"DS1101", "DS1102", "DS1104", "DS1203", "DS1303", "DS1501", "DS1601", "DS1605"}
 
 func TestKindsNarrowedRowsCarryAPrecondition(t *testing.T) {
@@ -311,15 +307,15 @@ func checkOverlapList(t *testing.T, k kindRow, lang string) {
 	}
 }
 
-// retiredCodes are the nineteen codes settled decisions 27 and 32 removed,
-// each with the decision that retired it. A code may leave this table only by
-// a decision that re-admits it, never by re-use for another kind.
-var retiredCodes = map[string]int{
-	"DS1202": 27, "DS1401": 27, "DS1402": 27,
-	"DS1503": 27, "DS1504": 27, "DS1505": 27, "DS1506": 27, "DS1507": 27,
-	"DS1602": 27, "DS1603": 27, "DS1604": 27, "DS1606": 27,
-	"DS1607": 32, "DS1608": 32,
-	"DS1804": 27, "DS1806": 27, "DS1808": 27, "DS1810": 27, "DS1811": 27,
+// retiredCodes are the nineteen codes the vocabulary has retired. A code may
+// leave this list only by being re-admitted under its own name, never by
+// re-use for another kind.
+var retiredCodes = []string{
+	"DS1202", "DS1401", "DS1402",
+	"DS1503", "DS1504", "DS1505", "DS1506", "DS1507",
+	"DS1602", "DS1603", "DS1604", "DS1606",
+	"DS1607", "DS1608",
+	"DS1804", "DS1806", "DS1808", "DS1810", "DS1811",
 }
 
 func TestKindsRetiredCodesStayRetired(t *testing.T) {
@@ -331,17 +327,14 @@ func TestKindsRetiredCodesStayRetired(t *testing.T) {
 	for _, r := range doc.Retired {
 		listed[r.Code] = r
 	}
-	for _, code := range slices.Sorted(maps.Keys(retiredCodes)) {
+	for _, code := range retiredCodes {
 		t.Run(code, func(t *testing.T) {
 			r, ok := listed[code]
 			if !ok {
 				t.Fatalf("Retired(%s) = absent, want a retired row", code)
 			}
-			if r.Name == "" || r.Reason == "" || r.RetiredByDecision == nil {
-				t.Errorf("Retired(%s) fields = name %q, reason %q, decision %s, want every field present", code, r.Name, r.Reason, optional(r.RetiredByDecision))
-			}
-			if r.RetiredByDecision != nil && *r.RetiredByDecision != retiredCodes[code] {
-				t.Errorf("Retired(%s).retired_by_decision = %d, want %d", code, *r.RetiredByDecision, retiredCodes[code])
+			if r.Name == "" {
+				t.Errorf("Retired(%s).name = %q, want the name of the kind that once held the code", code, r.Name)
 			}
 			if slices.ContainsFunc(doc.Kinds, func(k kindRow) bool { return k.Code == code }) {
 				t.Errorf("Kinds(%s) contains %s, want the retired code absent from every live row", kindsPath, code)
@@ -352,9 +345,34 @@ func TestKindsRetiredCodesStayRetired(t *testing.T) {
 		})
 	}
 	for _, r := range doc.Retired {
-		if _, ok := retiredCodes[r.Code]; !ok {
+		if !slices.Contains(retiredCodes, r.Code) {
 			t.Errorf("Retired(%s) lists %s, want only the nineteen retired codes", kindsPath, r.Code)
 		}
+	}
+}
+
+// TestKindsRetiredRowsCarryCodeAndNameOnly pins the retired-row shape: a
+// retired code is listed by its code and the name of the kind that once held
+// it, and by no other field.
+func TestKindsRetiredRowsCarryCodeAndNameOnly(t *testing.T) {
+	data, err := fs.ReadFile(spec.Contract, kindsPath)
+	if err != nil {
+		t.Fatalf("Setup: fs.ReadFile(Contract, %q): %v", kindsPath, err)
+	}
+	var doc struct {
+		Retired []map[string]json.RawMessage `json:"retired"`
+	}
+	if err := json.Unmarshal(data, &doc); err != nil {
+		t.Fatalf("Setup: json.Unmarshal(%q): %v", kindsPath, err)
+	}
+	want := []string{"code", "name"}
+	for _, row := range doc.Retired {
+		code := strings.Trim(string(row["code"]), `"`)
+		t.Run(code, func(t *testing.T) {
+			if got := slices.Sorted(maps.Keys(row)); !slices.Equal(got, want) {
+				t.Errorf("Retired(%s) keys = %v, want %v", code, got, want)
+			}
+		})
 	}
 }
 

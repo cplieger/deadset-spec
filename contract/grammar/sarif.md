@@ -1,8 +1,8 @@
 # The SARIF 2.1.0 mapping
 
-The SARIF format is the report shaped for upload to a code-scanning service: one [SARIF 2.1.0](https://docs.oasis-open.org/sarif/sarif/v2.1.0/errata01/os/sarif-v2.1.0-errata01-os-complete.html) log, one run per analyzer, one result per finding (Requirements 2.8, 24.4). This page states the mapping object by object for an implementer who has no access to any existing implementation, names the two fingerprint keys and how each is computed, and states which SARIF properties are never emitted and why.
+The SARIF format is the report shaped for upload to a code-scanning service: one [SARIF 2.1.0](https://docs.oasis-open.org/sarif/sarif/v2.1.0/errata01/os/sarif-v2.1.0-errata01-os-complete.html) log, one run per analyzer, one result per finding. This page states the mapping object by object for an implementer who has no access to any existing implementation, names the two fingerprint keys and how each is computed, and states which SARIF properties are never emitted and why.
 
-The mapping is written against [GitHub's supported-properties table](https://docs.github.com/en/code-security/code-scanning/integrating-with-code-scanning/sarif-support-for-code-scanning) rather than against the OASIS schema alone, because a property the schema allows and the ingest ignores is a property that silently does nothing. GitHub's page closes its table with the sentence that the rest of the supported fields are ignored, so every property this page emits is either in that table or is emitted for a stated reason with the note that GitHub does not read it. The last section lists every emitted property beside the row that reads it. Three published SARIF writers were read before this mapping was fixed and are cited where they decided a point: [staticcheck's](https://github.com/dominikh/go-tools/blob/master/lintcmd/sarif.go), whose header comment records what GitHub does and does not display; [knip's](https://github.com/webpro-nl/knip/blob/main/packages/knip/src/reporters/sarif.ts); and [golangci-lint's](https://github.com/golangci/golangci-lint/blob/main/pkg/printers/sarif.go). The fingerprint procedure is lifted from the script GitHub's own upload action runs.
+The mapping is written against [GitHub's supported-properties table](https://docs.github.com/en/code-security/code-scanning/integrating-with-code-scanning/sarif-support-for-code-scanning) as well as the OASIS schema, because a property the schema allows and the ingest ignores is a property that silently does nothing. GitHub's page closes its table with the sentence that the rest of the supported fields are ignored, so every property this page emits is either in that table or is emitted for a stated reason with the note that GitHub does not read it. The last section lists every emitted property beside the row that reads it.
 
 ## The document
 
@@ -18,7 +18,7 @@ The mapping is written against [GitHub's supported-properties table](https://doc
 
 An analyzer writing its own SARIF produces a log with one run. The orchestrator writing the merged report produces one run per input report, in bytewise order of `analyzer.name`, each holding the findings and stale suppressions that report carried, and then one further run when the merged report holds a finding no input report carried. That happens for `DS1705`, which the merge emits (`merge.md`, step 5); the extra run's `tool.driver` is the orchestrator's own name and version, its `automationDetails.id` is `deadset/merge/`, and its `rules` list every live kind in `kinds.json`. The run a merged finding belongs to is the one whose `tool.driver.name` equals the analyzer that carried it, the field `report.schema.json` keeps on each record for the canonical key.
 
-GitHub accepts at most 20 runs per file, 25,000 results per run (it displays the top 5,000) and 10 MB per gzip-compressed file. A configured maximum finding count (Requirement 24.9) is how a producer stays under those limits without silently truncating: the JSON report's `totals.omitted` names what the SARIF lacks.
+GitHub accepts at most 20 runs per file, 25,000 results per run (it displays the top 5,000) and 10 MB per gzip-compressed file. A configured maximum finding count is how a producer stays under those limits without silently truncating: the JSON report's `totals.omitted` names what the SARIF lacks.
 
 ## The run
 
@@ -28,7 +28,7 @@ GitHub accepts at most 20 runs per file, 25,000 results per run (it displays the
 | `tool.driver.version` | `analyzer.version`. |
 | `tool.driver.semanticVersion` | `analyzer.version` again. GitHub prefers `semanticVersion` when both are present and other consumers read `version`. |
 | `tool.driver.rules[]` | One rule per kind, [below](#the-rules). |
-| `automationDetails.id` | `deadset/<language>/`, where `<language>` is the report's `analyzer.languages` entries joined with `+` in bytewise order, so `deadset/go/` and `deadset/ts/` for the first-party analyzers. GitHub reads the text before the last `/` as the category and the empty remainder as no run identifier, and uses the category to tell one language's alerts from another's on the same commit. |
+| `automationDetails.id` | `deadset/<language>/`, where `<language>` is the report's `analyzer.languages` entries joined with `+` in bytewise order, so `deadset/go/` for a Go analyzer and `deadset/ts/` for a TypeScript one. GitHub reads the text before the last `/` as the category and the empty remainder as no run identifier, and uses the category to tell one language's alerts from another's on the same commit. |
 | `columnKind` | The SARIF name of the unit `finding.schema.json` fixes for `position.column`: `utf16CodeUnits` when the schema counts UTF-16 code units, `unicodeCodePoints` when it counts code points. SARIF admits no third value and requires the property on every run that holds a result (section 3.14.27), so the schema's unit is one of these two. GitHub does not read it. It is emitted because an absent `columnKind` defaults to `unicodeCodePoints`, and a producer counting UTF-16 code units would then mislabel every column after a character outside the Basic Multilingual Plane. |
 | `originalUriBaseIds` | `{ "%SRCROOT%": { "description": { "text": "The target root, the directory the analyzer was run on." } } }`. The entry declares the base identifier every location uses and deliberately omits `uri`: SARIF section 3.14.14 permits the omission for exactly this case, producing deterministic output with no machine path in it. GitHub does not read it. |
 | `results[]` | One result per finding, then one per stale suppression, [below](#the-results). |
@@ -42,14 +42,14 @@ Not emitted on the run: `invocations` (GitHub reads its working directory only t
 
 | Property | Value |
 | --- | --- |
-| `id` | The kind's `code`, such as `DS1001`. The same string is the result's `ruleId`, the text line's code, an ignore entry's `code` and a configuration key (Requirement 2.5). |
+| `id` | The kind's `code`, such as `DS1001`. The same string is the result's `ruleId`, the text line's code, an ignore entry's `code` and a configuration key. |
 | `name` | The kind's `name`, such as `unused-exported`, which GitHub uses to filter alerts by rule. |
 | `shortDescription.text` | The first sentence of the kind's `rule`: the text up to and including the first `.` that is followed by a space or ends the string. |
 | `fullDescription.text` | The kind's `rule`, whole. Every rule text in `kinds.json` is under GitHub's 1024-character limit. |
 | `help.text` | The kind's `rule`, then, when the kind carries a `precondition`, one blank line and the precondition. |
 | `defaultConfiguration.level` | The kind's `default_severity` mapped by the [level table](#level-from-severity). This is the contract default; a result carries the run's configured severity in its own `level`. |
-| `properties.precision` | The kind's `max_class` mapped: `certain` to `very-high`, `probable` to `high`, `possible` to `medium`. After the current catalogue every live kind is `certain`, so every rule reads `very-high`; the arm exists for the first kind that declares a lower ceiling. |
-| `properties.problem.severity` | The kind's `default_severity` mapped: `deny` to `error`, `warn` to `warning`, `allow` to `recommendation`, the same three-way mapping knip's writer uses. GitHub combines it with `precision` to decide which alerts it shows by default. |
+| `properties.precision` | The kind's `max_class` mapped: `certain` to `very-high`, `probable` to `high`, `possible` to `medium`. Every live kind in this Contract version is `certain`, so every rule reads `very-high`; the other two arms exist for the first kind that declares a lower ceiling. |
+| `properties.problem.severity` | The kind's `default_severity` mapped: `deny` to `error`, `warn` to `warning`, `allow` to `recommendation`. GitHub combines it with `precision` to decide which alerts it shows by default. |
 
 Not emitted on a rule: `helpUri` and `help.markdown` (GitHub shows `help.text` when the markdown is absent; a URI is not read), `properties.tags` (the family is recoverable from the code range), `properties.security-severity` (no kind is a security finding, and the property would make GitHub treat every alert as one), `defaultConfiguration.enabled`, `messageStrings` and `deprecatedNames`.
 
@@ -83,10 +83,10 @@ Not emitted on a result: `kind` (the default `fail` is right for every result), 
 
 | Property | Value |
 | --- | --- |
-| `artifactLocation.uri` | The finding's `position.path`, a relative reference: the target-relative path with `/` separators, each segment percent-encoded as RFC 3986 requires for a path segment (a space becomes `%20`), and no leading `./`. knip's writer encodes segment by segment the same way. |
+| `artifactLocation.uri` | The finding's `position.path`, a relative reference: the target-relative path with `/` separators, each segment percent-encoded as RFC 3986 requires for a path segment (a space becomes `%20`), and no leading `./`. |
 | `artifactLocation.uriBaseId` | `%SRCROOT%`, the identifier declared in `originalUriBaseIds`. GitHub does not read it; it resolves a relative URI against the root of the repository being analyzed. |
 | `region.startLine` | `position.line`. |
-| `region.startColumn` | `position.column`, in the unit `columnKind` names. Every finding carries a column, so the clamp golangci-lint's writer applies for a missing one has no case here. |
+| `region.startColumn` | `position.column`, in the unit `columnKind` names. Every finding carries a column, so no clamp for a missing one is needed. |
 | `region.endLine` | `position.end_line`, the last line of the declaration. |
 
 `region.endColumn` is not emitted. The finding carries no end column, and SARIF section 3.30.8 defines an absent `endColumn` as one past the last character of `endLine`, which is the right extent for a declaration that is deletable whole. GitHub's table marks `endColumn` required, and its own examples on the same page omit it and omit `endLine`; the ingest displays a result from `startLine` alone.
@@ -97,13 +97,13 @@ One limit follows from the URI rule. GitHub resolves a relative URI against the 
 
 A result carries a related location for every position the finding names beyond its own, in this order and numbered from 1 in this order:
 
-1. Each entry of `details.implementations`, in report order, with `message.text` `implementation` (the `DS12xx` kinds, Requirement 9.6).
-2. Each entry of `details.write_positions`, in report order, with `message.text` `write` (`DS1301` and `DS1807`, Requirement 10.7).
-3. Each member of the finding's component other than the finding's own symbol, in the order the report lists them, with `message.text` `member`, when the finding carries the member list; it does so when the cascade output is set to full (Requirement 6.5), under the field `finding.schema.json` names for it, and a finding without the list contributes no related location here.
+1. Each entry of `details.implementations`, in report order, with `message.text` `implementation` (the `DS12xx` kinds).
+2. Each entry of `details.write_positions`, in report order, with `message.text` `write` (`DS1301` and `DS1807`).
+3. Each member of the finding's component other than the finding's own symbol, in the order the report lists them, with `message.text` `member`, when the finding carries the member list; it does so when the cascade output is set to full, under the field `finding.schema.json` names for it, and a finding without the list contributes no related location here.
 
 Each related location is a `location` object with `id` (the 1-based number), `physicalLocation` in the shape above, and `message.text` as listed. At most 100 related locations are emitted, the first 100 in that order; GitHub rejects a result with more than 1,000 locations and includes 100 of them, and the JSON report stays complete whatever the cap removes.
 
-GitHub shows a related location only when the result message links to it, and staticcheck's writer records the same finding. So when a result has related locations, `message.text` is the finding's `message`, one space, and `"(see "` followed by one link per related location, `[<label> <path>:<line>:<col>](<id>)`, joined by `", "`, then `)`. The label is the location's `message.text`, the path is `position.path` unencoded, and the id is the related location's `id`. Rendered for a write-only member with two writes:
+GitHub shows a related location only when the result message links to it. So when a result has related locations, `message.text` is the finding's `message`, one space, and `"(see "` followed by one link per related location, `[<label> <path>:<line>:<col>](<id>)`, joined by `", "`, then `)`. The label is the location's `message.text`, the path is `position.path` unencoded, and the id is the related location's `id`. Rendered for a write-only member with two writes:
 
 ```text
 private member is written and never read (see [write src/features/tabs/index.ts:1190:9](1), [write src/features/tabs/index.ts:1201:9](2))
@@ -124,10 +124,10 @@ Two keys, each a versioned hierarchical string as SARIF section 3.27.17 asks, co
 
 **`primaryLocationLineHash`** is the key GitHub reads (its page: "Code scanning only uses the primaryLocationLineHash"), and the value is computed by the procedure in [`src/fingerprints.ts`](https://github.com/github/codeql-action/blob/main/src/fingerprints.ts) of GitHub's upload action, so that a file uploaded through the action or through the REST API fingerprints the same way. The action fills the key in when it is absent and leaves it alone when present, logging a warning when its own computation disagrees; a producer that follows the procedure exactly never triggers that warning. The procedure, over the file at `position.path`:
 
-1. Decode the file as UTF-8 into a sequence of UTF-16 code units. An analyzer whose native unit is bytes or code points converts; the reference iterates a JavaScript string. A file that is not valid UTF-8 has no defined value, because the two languages' decoders substitute for an invalid sequence differently; a Go source file with one does not compile, so no Go finding meets the case.
+1. Decode the file as UTF-8 into a sequence of UTF-16 code units. An analyzer whose native unit is bytes or code points converts first. A file that is not valid UTF-8 has no defined value, because the two languages' decoders substitute for an invalid sequence differently; a Go source file with one does not compile, so no Go finding meets the case.
 2. Walk the sequence and keep the significant units: drop every space (U+0020) and tab (U+0009); replace CR (U+000D) by LF (U+000A); drop an LF that immediately follows a CR, so CR LF counts once; keep everything else. Append one sentinel unit with the value 65535 after the last unit of the file.
 3. A line starts at the first significant unit of the file and at every significant unit that follows an LF. Number the lines from 1 in that order. The sentinel starts one line of its own after a file that ends in LF; no finding refers to it.
-4. The hash of a line is the polynomial hash of the 100 significant units beginning at its start, in unsigned 64-bit arithmetic with wraparound: `h = 0; for each of the 100 units u: h = h * 37 + u`. A position past the sentinel contributes 0. The reference computes it as a rolling hash over a 100-unit window; the result is the same number.
+4. The hash of a line is the polynomial hash of the 100 significant units beginning at its start, in unsigned 64-bit arithmetic with wraparound: `h = 0; for each of the 100 units u: h = h * 37 + u`. A position past the sentinel contributes 0. A rolling hash over a 100-unit window yields the same number.
 5. Render `h` as lowercase hexadecimal with no leading zeros, then `:`, then the number of lines so far in this file, this one included, whose rendered hash is identical. The counter starts at 1 and disambiguates identical windows, such as repeated lines in a long run of identical lines.
 6. The value for a result is the string computed for the line `position.line`.
 
@@ -149,9 +149,9 @@ func Ünused() {
 | 4 | `58228fc5cbc49530:1` |
 | 5 | `32dce9ccfdbc9d3e:1` |
 
-A file of 200 lines each holding `y` renders line 1 as `43762f342805c306:1`, line 2 as `43762f342805c306:2` and line 151 as `43762f342805c306:151`; the last 49 lines differ because the sentinel and the zero padding enter their windows. The three implementations checked against each other before these values were recorded, one of them the reference procedure run as published, agree on every value here.
+A file of 200 lines each holding `y` renders line 1 as `43762f342805c306:1`, line 2 as `43762f342805c306:2` and line 151 as `43762f342805c306:151`; the last 49 lines differ because the sentinel and the zero padding enter their windows.
 
-**`deadsetSymbolRef/v1`** is the key a baseline joins on and the one that survives a line move, which `primaryLocationLineHash` does not once the line's own text changes. Its value is the SHA-256 digest, as 64 lowercase hexadecimal digits, of the UTF-8 encoding of the finding's `code`, one LF (U+000A), and the finding's `symbol.ref` from `symbol-ref.md`. Neither a code nor a reference contains an LF, so the separator is unambiguous. For the code `DS1001` and the reference `go://example.com/fixture#Ünused`, the digest is `d073714ada8cfcbee49bd5430446d6be7b837b6fd1fc34e6aa82be03b589c18d`; for `DS1001` and `go://github.com/cplieger/toolbelt/v3#Catalog.ResolveAlias` it is `f34af4eb1705a6cf485b90c0ba8888d495ea6601c15b7b2d54c05984363e157f`. The digest rather than the reference itself is the value so that every fingerprint has one length and one alphabet, and a consumer comparing fingerprints never parses a reference. GitHub does not read this key; it reads `primaryLocationLineHash` and no other.
+**`deadsetSymbolRef/v1`** is the key a baseline joins on and the one that survives a line move, which `primaryLocationLineHash` does not once the line's own text changes. Its value is the SHA-256 digest, as 64 lowercase hexadecimal digits, of the UTF-8 encoding of the finding's `code`, one LF (U+000A), and the finding's `symbol.ref` from `symbol-ref.md`. Neither a code nor a reference contains an LF, so the separator is unambiguous. For the code `DS1001` and the reference `go://example.com/fixture#Ünused`, the digest is `d073714ada8cfcbee49bd5430446d6be7b837b6fd1fc34e6aa82be03b589c18d`; for `DS1001` and `go://example.com/app#Catalog.ResolveAlias` it is `3969945e4504f5d8a52415a6f7b4f233d1ba4820a2fe24617a3611e2535d5e32`. The digest rather than the reference itself is the value so that every fingerprint has one length and one alphabet, and a consumer comparing fingerprints never parses a reference. GitHub does not read this key; it reads `primaryLocationLineHash` and no other.
 
 Both keys are emitted on every result, a stale suppression included, whose `symbol.ref` is the reference the suppression names.
 
@@ -173,19 +173,19 @@ SARIF 2.1.0 has a `suppressions` array (section 3.27.23) built for adjudicated r
 
 First, nothing exists to mark. A matched suppression marks its symbol live before the sweep (`suppression.md`), so the sweep produces no finding for that symbol and no finding for the symbols only it referenced. A suppressed finding does not exist in the report, and a SARIF result cannot be emitted for a finding that does not exist.
 
-Second, the one consumer this format targets would publish it. GitHub's supported-properties table does not list `suppressions`, its page states that unlisted properties are ignored, and [codeql-action#1230](https://github.com/github/codeql-action/issues/1230) records the upload action not supporting the property; staticcheck's writer carries the same observation and gates its suppressed results behind a flag for that reason. A result emitted with a `suppressions` entry would appear as an open code-scanning alert, which is the opposite of what an adjudication with a reason is for.
+Second, the one consumer this format targets would publish it. GitHub's supported-properties table does not list `suppressions`, its page states that unlisted properties are ignored, and the upload action does not support the property. A result emitted with a `suppressions` entry would appear as an open code-scanning alert, which is the opposite of what an adjudication with a reason is for.
 
-The omission is visible rather than silent. The report's `totals.suppressions_in_effect` and `totals.reasons_recorded` carry the counts (Requirement 21.13), the summary line prints them (Requirement 33.8), and this document carries the same `totals` object under `runs[].properties.totals`. A suppression that matched nothing is not omitted: it is a `DS1703` result like any other finding.
+The omission is visible rather than silent. The report's `totals.suppressions_in_effect` and `totals.reasons_recorded` carry the counts, the summary line prints them, and this document carries the same `totals` object under `runs[].properties.totals`. A suppression that matched nothing is not omitted: it is a `DS1703` result like any other finding.
 
 ## What is never emitted
 
 | Not in the document | Why |
 | --- | --- |
 | A suppressed finding, and the `suppressions` property | The section above. |
-| A pending finding | It lives in an edge evaluation, is neither reported nor suppressed (Requirement 31.4), and the run that holds one exits with code 4 to say the report is an input to a merge and not an answer. The SARIF a lone analyzer writes for such a report omits it, the same as the text format, and the exit code carries the warning. |
-| A finding past the configured maximum count | Requirement 24.9; `totals.omitted` in the report and in `runs[].properties.totals` names how many. |
+| A pending finding | It lives in an edge evaluation, is neither reported nor suppressed, and the run that holds one exits with code 4 to say the report is an input to a merge and not an answer. The SARIF a lone analyzer writes for such a report omits it, the same as the text format, and the exit code carries the warning. |
+| A finding past the configured maximum count | `totals.omitted` in the report and in `runs[].properties.totals` names how many. |
 | `region.endColumn` | The finding carries no end column; SARIF's default is the end of `endLine`, which is the declaration's extent. |
-| `invocations`, `artifacts`, `versionControlProvenance` | Machine paths and command lines the report's determinism rule keeps out (Requirement 26.1); nothing GitHub needs, since every URI is relative. |
+| `invocations`, `artifacts`, `versionControlProvenance` | Machine paths and command lines the report's determinism rule keeps out; nothing GitHub needs, since every URI is relative. |
 | `fixes` | The report is the interface for an edit; no product edits source in this version. |
 | `codeFlows`, `stacks`, `graphs`, `taxa`, `rank`, `baselineState` | No finding has a flow, a stack or a taxonomy, and the baseline is a document of the report, not a SARIF state. |
 | `helpUri`, `help.markdown`, `properties.tags`, `properties.security-severity` | Not read, or read with a meaning that does not fit (`security-severity` marks a security alert). |

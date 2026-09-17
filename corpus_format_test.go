@@ -76,7 +76,6 @@ type expectationDocument struct {
 	Name        string           `json:"name"`
 	Description string           `json:"description"`
 	TargetKind  string           `json:"target_kind"`
-	Validates   []string         `json:"validates"`
 	Languages   []string         `json:"languages"`
 	Consumers   []string         `json:"consumers"`
 	Expect      []expectationRow `json:"expect"`

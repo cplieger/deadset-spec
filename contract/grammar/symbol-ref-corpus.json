@@ -1,14 +1,14 @@
 [
   {
-    "input": "go://github.com/cplieger/toolbelt/v3#",
+    "input": "go://example.com/app#",
     "language": "go",
     "form": "package",
     "accepted": true,
     "reason": "An empty fragment names the scope itself, here the package at the module root.",
-    "example": "package toolbelt"
+    "example": "package app"
   },
   {
-    "input": "go://github.com/cplieger/toolbelt/v3#Resolve",
+    "input": "go://example.com/app#Resolve",
     "language": "go",
     "form": "package-level",
     "accepted": true,
@@ -16,7 +16,7 @@
     "example": "func Resolve(name string) (Tool, error) {"
   },
   {
-    "input": "go://github.com/cplieger/toolbelt/v3#normalize",
+    "input": "go://example.com/app#normalize",
     "language": "go",
     "form": "package-level",
     "accepted": true,
@@ -24,7 +24,7 @@
     "example": "func normalize(name string) string {"
   },
   {
-    "input": "go://github.com/cplieger/toolbelt/v3#Catalog",
+    "input": "go://example.com/app#Catalog",
     "language": "go",
     "form": "package-level",
     "accepted": true,
@@ -32,7 +32,7 @@
     "example": "type Catalog struct {"
   },
   {
-    "input": "go://github.com/cplieger/langtag#Exact",
+    "input": "go://example.com/app#Exact",
     "language": "go",
     "form": "package-level",
     "accepted": true,
@@ -40,7 +40,7 @@
     "example": "const (\n\tExact Tier = iota"
   },
   {
-    "input": "go://github.com/cplieger/toolbelt/v3#ErrNotFound",
+    "input": "go://example.com/app#ErrNotFound",
     "language": "go",
     "form": "package-level",
     "accepted": true,
@@ -56,15 +56,15 @@
     "example": "func Ünused() {"
   },
   {
-    "input": "go://github.com/cplieger/toolbelt/v3#TestResolve",
+    "input": "go://example.com/app#TestResolve",
     "language": "go",
     "form": "package-level",
     "accepted": true,
     "reason": "A test function in an in-package test file shares the production package's scope.",
-    "example": "package toolbelt\n\nfunc TestResolve(t *testing.T) {"
+    "example": "package app\n\nfunc TestResolve(t *testing.T) {"
   },
   {
-    "input": "go://github.com/cplieger/toolbelt/v3/httpapi_test#TestSearch",
+    "input": "go://example.com/app/httpapi_test#TestSearch",
     "language": "go",
     "form": "package-level",
     "accepted": true,
@@ -72,7 +72,7 @@
     "example": "package httpapi_test\n\nfunc TestSearch(t *testing.T) {"
   },
   {
-    "input": "go://github.com/cplieger/toolbelt/v3/cmd/toolcatalog#run",
+    "input": "go://example.com/app/cmd/tool#run",
     "language": "go",
     "form": "package-level",
     "accepted": true,
@@ -80,7 +80,7 @@
     "example": "func run(args []string) error {"
   },
   {
-    "input": "go://github.com/cplieger/toolbelt/v3#Catalog.ResolveAlias",
+    "input": "go://example.com/app#Catalog.ResolveAlias",
     "language": "go",
     "form": "method",
     "accepted": true,
@@ -88,7 +88,7 @@
     "example": "func (c *Catalog) ResolveAlias(name string) string {"
   },
   {
-    "input": "go://github.com/cplieger/toolbelt/v3/internal/queue#List.Push",
+    "input": "go://example.com/app/internal/queue#List.Push",
     "language": "go",
     "form": "method",
     "accepted": true,
@@ -96,7 +96,7 @@
     "example": "func (l *List[T]) Push(v T) {"
   },
   {
-    "input": "go://github.com/cplieger/toolbelt/v3#Fetcher.Fetch",
+    "input": "go://example.com/app#Fetcher.Fetch",
     "language": "go",
     "form": "interface-method",
     "accepted": true,
@@ -104,7 +104,7 @@
     "example": "type Fetcher interface {\n\tFetch(ctx context.Context, url string) ([]byte, error)"
   },
   {
-    "input": "go://github.com/cplieger/toolbelt/v3#Catalog.entries",
+    "input": "go://example.com/app#Catalog.entries",
     "language": "go",
     "form": "field",
     "accepted": true,
@@ -112,7 +112,7 @@
     "example": "type Catalog struct {\n\tentries map[string]Tool"
   },
   {
-    "input": "go://github.com/cplieger/toolbelt/v3#Buffered.Buffer",
+    "input": "go://example.com/app#Buffered.Buffer",
     "language": "go",
     "form": "field",
     "accepted": true,
@@ -120,7 +120,7 @@
     "example": "type Buffered struct {\n\t*bytes.Buffer"
   },
   {
-    "input": "go://github.com/cplieger/toolbelt/v3#Manifest.Tools.Version",
+    "input": "go://example.com/app#Manifest.Tools.Version",
     "language": "go",
     "form": "field",
     "accepted": true,
@@ -128,7 +128,7 @@
     "example": "type Manifest struct {\n\tTools []struct{ Name, Version string }"
   },
   {
-    "input": "go://github.com/cplieger/langtag#Best[T]",
+    "input": "go://example.com/app#Best[T]",
     "language": "go",
     "form": "type-parameter",
     "accepted": true,
@@ -136,7 +136,7 @@
     "example": "func Best[T Tag](want T, have []T) (T, bool) {"
   },
   {
-    "input": "go://github.com/cplieger/toolbelt/v3/internal/legacy#render_windows.go:file",
+    "input": "go://example.com/app/internal/legacy#render_windows.go:file",
     "language": "go",
     "form": "file",
     "accepted": true,
@@ -144,7 +144,7 @@
     "example": "//go:build windows\n\npackage legacy"
   },
   {
-    "input": "go://github.com/cplieger/toolbelt/v3#github.com/example/left:require",
+    "input": "go://example.com/app#github.com/example/left:require",
     "language": "go",
     "form": "require",
     "accepted": true,
@@ -152,7 +152,7 @@
     "example": "require github.com/example/left v1.4.0"
   },
   {
-    "input": "go://github.com/cplieger/toolbelt/v3#github.com/old/mod@v1.2.3:replace",
+    "input": "go://example.com/app#github.com/old/mod@v1.2.3:replace",
     "language": "go",
     "form": "replace",
     "accepted": true,
@@ -160,7 +160,7 @@
     "example": "replace github.com/old/mod v1.2.3 => ../mod"
   },
   {
-    "input": "go://github.com/cplieger/toolbelt/v3#github.com/old/mod:replace",
+    "input": "go://example.com/app#github.com/old/mod:replace",
     "language": "go",
     "form": "replace",
     "accepted": true,
@@ -168,28 +168,28 @@
     "example": "replace github.com/old/mod => ../mod"
   },
   {
-    "input": "github.com/cplieger/toolbelt/v3#Catalog",
+    "input": "example.com/app#Catalog",
     "language": "go",
     "form": "package-level",
     "accepted": false,
     "reason": "No language prefix. Every reference starts with its language and the three characters ://, so that a Go symbol and a TypeScript symbol of one name stay distinct."
   },
   {
-    "input": "Go://github.com/cplieger/toolbelt/v3#Catalog",
+    "input": "Go://example.com/app#Catalog",
     "language": "go",
     "form": "package-level",
     "accepted": false,
     "reason": "The language prefix is lowercase and compared bytewise."
   },
   {
-    "input": "go:// github.com/cplieger/toolbelt/v3#Catalog",
+    "input": "go:// example.com/app#Catalog",
     "language": "go",
     "form": "package-level",
     "accepted": false,
     "reason": "Whitespace never appears in a Go reference."
   },
   {
-    "input": "go://github.com/cplieger/toolbelt/v3#1Catalog",
+    "input": "go://example.com/app#1Catalog",
     "language": "go",
     "form": "package-level",
     "accepted": false,
@@ -203,161 +203,161 @@
     "reason": "Percent-encoding is refused: a reference is compared as bytes and never decoded, so the non-ASCII identifier is carried as UTF-8."
   },
   {
-    "input": "go://github.com/cplieger/toolbelt/v3",
+    "input": "go://example.com/app",
     "language": "go",
     "form": "package",
     "accepted": false,
     "reason": "No fragment separator. The package itself is spelled with a trailing #, so that a scope is never mistaken for a symbol."
   },
   {
-    "input": "go://github.com/cplieger/toolbelt/v3/#",
+    "input": "go://example.com/app/#",
     "language": "go",
     "form": "package",
     "accepted": false,
     "reason": "An import path neither starts nor ends with a slash."
   },
   {
-    "input": "go://github.com/cplieger/toolbelt/v3.Catalog",
+    "input": "go://example.com/app.Catalog",
     "language": "go",
     "form": "package-level",
     "accepted": false,
-    "reason": "The dot-qualified shape of go/types.ObjectString has no fragment separator, and a path such as gopkg.in/yaml.v3.Node would split ambiguously."
+    "reason": "A dot-qualified shape has no fragment separator, and a path such as gopkg.in/yaml.v3.Node would split ambiguously."
   },
   {
-    "input": "go://github.com/cplieger/toolbelt/v3#(*Catalog).ResolveAlias",
+    "input": "go://example.com/app#(*Catalog).ResolveAlias",
     "language": "go",
     "form": "method",
     "accepted": false,
     "reason": "The display name with its receiver star is symbol.name, never the reference; a type has at most one method of a name whatever the receiver kind, so the star carries nothing."
   },
   {
-    "input": "go://github.com/cplieger/toolbelt/v3#Catalog.ResolveAlias(name)",
+    "input": "go://example.com/app#Catalog.ResolveAlias(name)",
     "language": "go",
     "form": "method",
     "accepted": false,
     "reason": "A parameter has no reference of its own; a finding about one carries the enclosing method's reference and names the parameter in its position and its symbol.name."
   },
   {
-    "input": "go://github.com/cplieger/toolbelt/v3#Catalog.ResolveAlias.",
+    "input": "go://example.com/app#Catalog.ResolveAlias.",
     "language": "go",
     "form": "method",
     "accepted": false,
     "reason": "A trailing dot leaves the chain incomplete."
   },
   {
-    "input": "go://github.com/cplieger/toolbelt/v3#Catalog#ResolveAlias",
+    "input": "go://example.com/app#Catalog#ResolveAlias",
     "language": "go",
     "form": "method",
     "accepted": false,
-    "reason": "Members are joined by a dot. The member navigation # of API Extractor's canonical form is not used, because # is the scope separator here."
+    "reason": "Members are joined by a dot. A second # is not a member separator, because # is the scope separator here."
   },
   {
-    "input": "go://github.com/cplieger/toolbelt/v3#Catalog.ResolveAlias:method",
+    "input": "go://example.com/app#Catalog.ResolveAlias:method",
     "language": "go",
     "form": "method",
     "accepted": false,
     "reason": "A declaration carries no selector; the Go selectors are file, require and replace, and each names a non-code subject."
   },
   {
-    "input": "go://github.com/cplieger/toolbelt/v3#Catalog.ResolveAlias\n",
+    "input": "go://example.com/app#Catalog.ResolveAlias\n",
     "language": "go",
     "form": "method",
     "accepted": false,
     "reason": "A reference never contains LF, so that it can be a line's field, a hash input separated by LF and a JSON string alike."
   },
   {
-    "input": "go://github.com/cplieger/toolbelt/v3#Catalog.ResolveAlias\r",
+    "input": "go://example.com/app#Catalog.ResolveAlias\r",
     "language": "go",
     "form": "method",
     "accepted": false,
     "reason": "A reference never contains CR."
   },
   {
-    "input": "go://github.com/cplieger/toolbelt/v3/internal/queue#List[T].Push",
+    "input": "go://example.com/app/internal/queue#List[T].Push",
     "language": "go",
     "form": "method",
     "accepted": false,
     "reason": "Type arguments never appear on a container; the method of a generic type is spelled List.Push."
   },
   {
-    "input": "go://github.com/cplieger/toolbelt/v3#Fetcher.Fetch()",
+    "input": "go://example.com/app#Fetcher.Fetch()",
     "language": "go",
     "form": "interface-method",
     "accepted": false,
     "reason": "A signature never appears; an interface method is named, not typed."
   },
   {
-    "input": "go://github.com/cplieger/toolbelt/v3#Catalog->entries",
+    "input": "go://example.com/app#Catalog->entries",
     "language": "go",
     "form": "field",
     "accepted": false,
     "reason": "The only member separator is a dot."
   },
   {
-    "input": "go://github.com/cplieger/toolbelt/v3#Catalog. entries",
+    "input": "go://example.com/app#Catalog. entries",
     "language": "go",
     "form": "field",
     "accepted": false,
     "reason": "Whitespace never appears in a Go reference, not even after the member separator."
   },
   {
-    "input": "go://github.com/cplieger/toolbelt/v3#Catalog/entries",
+    "input": "go://example.com/app#Catalog/entries",
     "language": "go",
     "form": "field",
     "accepted": false,
     "reason": "A slash belongs to the import path, before the #; a field is reached from its struct with a dot."
   },
   {
-    "input": "go://github.com/cplieger/langtag#Best[T Tag]",
+    "input": "go://example.com/app#Best[T Tag]",
     "language": "go",
     "form": "type-parameter",
     "accepted": false,
     "reason": "The constraint is not part of the reference; only the type parameter's name is."
   },
   {
-    "input": "go://github.com/cplieger/langtag#Best[]",
+    "input": "go://example.com/app#Best[]",
     "language": "go",
     "form": "type-parameter",
     "accepted": false,
     "reason": "Empty brackets name no type parameter."
   },
   {
-    "input": "go://github.com/cplieger/toolbelt/v3/internal/legacy#file:render_windows.go",
+    "input": "go://example.com/app/internal/legacy#file:render_windows.go",
     "language": "go",
     "form": "file",
     "accepted": false,
     "reason": "A selector follows its operand, after a colon, as in render_windows.go:file."
   },
   {
-    "input": "go://github.com/cplieger/toolbelt/v3/internal/legacy#render_windows.go:File",
+    "input": "go://example.com/app/internal/legacy#render_windows.go:File",
     "language": "go",
     "form": "file",
     "accepted": false,
     "reason": "Selectors are lowercase and compared bytewise."
   },
   {
-    "input": "go://github.com/cplieger/toolbelt/v3#github.com/example/left v1.4.0:require",
+    "input": "go://example.com/app#github.com/example/left v1.4.0:require",
     "language": "go",
     "form": "require",
     "accepted": false,
     "reason": "A require directive is spelled by its module path alone; the required version is the directive's value, not its identity, and whitespace never appears."
   },
   {
-    "input": "go://github.com/cplieger/toolbelt/v3#require github.com/example/left",
+    "input": "go://example.com/app#require github.com/example/left",
     "language": "go",
     "form": "require",
     "accepted": false,
     "reason": "The go.mod keyword order is not the reference: the selector follows the module path after a colon."
   },
   {
-    "input": "go://github.com/cplieger/toolbelt/v3#github.com/old/mod@v1.2.3:exclude",
+    "input": "go://example.com/app#github.com/old/mod@v1.2.3:exclude",
     "language": "go",
     "form": "replace",
     "accepted": false,
     "reason": "exclude is not a selector: an exclude directive is never a finding subject, so it has no reference."
   },
   {
-    "input": "ts://@cplieger/vibekit-web/src/wire.ts#",
+    "input": "ts://@example/app/src/wire.ts#",
     "language": "ts",
     "form": "module",
     "accepted": true,
@@ -365,7 +365,7 @@
     "example": "import type { Layout } from './layout';"
   },
   {
-    "input": "ts://@cplieger/vibekit-web/src/wire.ts#ServerEvent",
+    "input": "ts://@example/app/src/wire.ts#ServerEvent",
     "language": "ts",
     "form": "module-level",
     "accepted": true,
@@ -373,7 +373,7 @@
     "example": "export interface ServerEvent {"
   },
   {
-    "input": "ts://@cplieger/vibekit-web/src/features/tabs/index.ts#measure",
+    "input": "ts://@example/app/src/features/tabs/index.ts#measure",
     "language": "ts",
     "form": "module-level",
     "accepted": true,
@@ -381,7 +381,7 @@
     "example": "function measure(el: HTMLElement): Layout {"
   },
   {
-    "input": "ts://@cplieger/vibekit-web/src/features/tabs/index.ts#GAP",
+    "input": "ts://@example/app/src/features/tabs/index.ts#GAP",
     "language": "ts",
     "form": "module-level",
     "accepted": true,
@@ -389,7 +389,7 @@
     "example": "const GAP = 4;"
   },
   {
-    "input": "ts://@cplieger/vibekit-web/src/App.tsx#App",
+    "input": "ts://@example/app/src/App.tsx#App",
     "language": "ts",
     "form": "module-level",
     "accepted": true,
@@ -397,7 +397,7 @@
     "example": "export function App() {"
   },
   {
-    "input": "ts://@cplieger/vibekit-web/scripts/build.mjs#bundle",
+    "input": "ts://@example/app/scripts/build.mjs#bundle",
     "language": "ts",
     "form": "module-level",
     "accepted": true,
@@ -405,7 +405,7 @@
     "example": "export async function bundle() {"
   },
   {
-    "input": "ts://@cplieger/vibekit-web/src/types.d.ts#Manifest",
+    "input": "ts://@example/app/src/types.d.ts#Manifest",
     "language": "ts",
     "form": "module-level",
     "accepted": true,
@@ -421,7 +421,7 @@
     "example": "export interface ServerEvent {"
   },
   {
-    "input": "ts://@cplieger/vibekit-web/src/app.ts#default",
+    "input": "ts://@example/app/src/app.ts#default",
     "language": "ts",
     "form": "default-export",
     "accepted": true,
@@ -429,7 +429,7 @@
     "example": "export default class App {"
   },
   {
-    "input": "ts://@cplieger/vibekit-web/src/index.ts#TabStrip:alias",
+    "input": "ts://@example/app/src/index.ts#TabStrip:alias",
     "language": "ts",
     "form": "alias",
     "accepted": true,
@@ -437,7 +437,7 @@
     "example": "export { TabStrip } from './features/tabs';"
   },
   {
-    "input": "ts://@cplieger/vibekit-web/src/index.ts#Strip:alias",
+    "input": "ts://@example/app/src/index.ts#Strip:alias",
     "language": "ts",
     "form": "alias",
     "accepted": true,
@@ -445,7 +445,7 @@
     "example": "export { TabStrip as Strip } from './features/tabs';"
   },
   {
-    "input": "ts://@cplieger/vibekit-web/src/index.ts#default:alias",
+    "input": "ts://@example/app/src/index.ts#default:alias",
     "language": "ts",
     "form": "alias",
     "accepted": true,
@@ -453,7 +453,7 @@
     "example": "export default App;"
   },
   {
-    "input": "ts://@cplieger/vibekit-web/src/features/tabs/index.ts#TabStrip.cachedLayout",
+    "input": "ts://@example/app/src/features/tabs/index.ts#TabStrip.cachedLayout",
     "language": "ts",
     "form": "class-member",
     "accepted": true,
@@ -461,7 +461,7 @@
     "example": "private cachedLayout: Layout | null = null;"
   },
   {
-    "input": "ts://@cplieger/vibekit-web/src/features/tabs/index.ts#TabStrip.render",
+    "input": "ts://@example/app/src/features/tabs/index.ts#TabStrip.render",
     "language": "ts",
     "form": "class-member",
     "accepted": true,
@@ -469,7 +469,7 @@
     "example": "render(): void {"
   },
   {
-    "input": "ts://@cplieger/vibekit-web/src/features/tabs/index.ts#TabStrip.#frame",
+    "input": "ts://@example/app/src/features/tabs/index.ts#TabStrip.#frame",
     "language": "ts",
     "form": "private-member",
     "accepted": true,
@@ -477,7 +477,7 @@
     "example": "#frame = 0;"
   },
   {
-    "input": "ts://@cplieger/vibekit-web/src/features/tabs/index.ts#TabStrip.count:static",
+    "input": "ts://@example/app/src/features/tabs/index.ts#TabStrip.count:static",
     "language": "ts",
     "form": "static-member",
     "accepted": true,
@@ -485,7 +485,7 @@
     "example": "static count = 0;"
   },
   {
-    "input": "ts://@cplieger/vibekit-web/src/wire.ts#Headers.'content-type'",
+    "input": "ts://@example/app/src/wire.ts#Headers.'content-type'",
     "language": "ts",
     "form": "interface-member",
     "accepted": true,
@@ -493,7 +493,7 @@
     "example": "'content-type': string;"
   },
   {
-    "input": "ts://@cplieger/vibekit-web/src/wire.ts#Quirks.'it\\'s'",
+    "input": "ts://@example/app/src/wire.ts#Quirks.'it\\'s'",
     "language": "ts",
     "form": "interface-member",
     "accepted": true,
@@ -501,7 +501,7 @@
     "example": "\"it's\": boolean;"
   },
   {
-    "input": "ts://@cplieger/vibekit-web/src/features/tabs/index.ts#TabStrip.[Symbol.iterator]",
+    "input": "ts://@example/app/src/features/tabs/index.ts#TabStrip.[Symbol.iterator]",
     "language": "ts",
     "form": "computed-member",
     "accepted": true,
@@ -509,7 +509,7 @@
     "example": "*[Symbol.iterator](): Iterator<Tab> {"
   },
   {
-    "input": "ts://@cplieger/vibekit-web/src/wire.ts#ServerEvent.seq",
+    "input": "ts://@example/app/src/wire.ts#ServerEvent.seq",
     "language": "ts",
     "form": "interface-member",
     "accepted": true,
@@ -517,7 +517,7 @@
     "example": "seq: number;"
   },
   {
-    "input": "ts://@cplieger/vibekit-web/src/wire.ts#Labels.größe",
+    "input": "ts://@example/app/src/wire.ts#Labels.größe",
     "language": "ts",
     "form": "interface-member",
     "accepted": true,
@@ -525,7 +525,7 @@
     "example": "größe: string;"
   },
   {
-    "input": "ts://@cplieger/vibekit-web/src/layout.ts#Layout.gap",
+    "input": "ts://@example/app/src/layout.ts#Layout.gap",
     "language": "ts",
     "form": "type-member",
     "accepted": true,
@@ -533,7 +533,7 @@
     "example": "export type Layout = { gap: number; width: number };"
   },
   {
-    "input": "ts://@cplieger/vibekit-web/src/wire.ts#Kind.Resize",
+    "input": "ts://@example/app/src/wire.ts#Kind.Resize",
     "language": "ts",
     "form": "enum-member",
     "accepted": true,
@@ -541,7 +541,7 @@
     "example": "export enum Kind {\n  Resize = 'resize',"
   },
   {
-    "input": "ts://@cplieger/vibekit-web/src/wire.ts#Kind.'tab-close'",
+    "input": "ts://@example/app/src/wire.ts#Kind.'tab-close'",
     "language": "ts",
     "form": "enum-member",
     "accepted": true,
@@ -549,7 +549,7 @@
     "example": "'tab-close' = 'tab-close',"
   },
   {
-    "input": "ts://@cplieger/vibekit-web/src/wire.ts#Wire.Server.Event",
+    "input": "ts://@example/app/src/wire.ts#Wire.Server.Event",
     "language": "ts",
     "form": "namespace-member",
     "accepted": true,
@@ -557,7 +557,7 @@
     "example": "export namespace Wire { export namespace Server { export interface Event {"
   },
   {
-    "input": "ts://@cplieger/vibekit-web/src/wire.ts#decode<T>",
+    "input": "ts://@example/app/src/wire.ts#decode<T>",
     "language": "ts",
     "form": "type-parameter",
     "accepted": true,
@@ -565,7 +565,7 @@
     "example": "export function decode<T>(raw: string): T {"
   },
   {
-    "input": "ts://@cplieger/vibekit-web/src/wire.ts#Codec.decode<T>",
+    "input": "ts://@example/app/src/wire.ts#Codec.decode<T>",
     "language": "ts",
     "form": "type-parameter",
     "accepted": true,
@@ -573,7 +573,7 @@
     "example": "decode<T>(raw: string): T {"
   },
   {
-    "input": "ts://@cplieger/vibekit-web/src/wire.ts#Codec.of:static<T>",
+    "input": "ts://@example/app/src/wire.ts#Codec.of:static<T>",
     "language": "ts",
     "form": "type-parameter",
     "accepted": true,
@@ -581,7 +581,7 @@
     "example": "static of<T>(value: T): Codec {"
   },
   {
-    "input": "ts://@cplieger/vibekit-web/package.json#lodash:dependency",
+    "input": "ts://@example/app/package.json#lodash:dependency",
     "language": "ts",
     "form": "dependency",
     "accepted": true,
@@ -589,7 +589,7 @@
     "example": "\"dependencies\": { \"lodash\": \"4.17.21\" }"
   },
   {
-    "input": "ts://@cplieger/vibekit-web/package.json#@types/node:dev-dependency",
+    "input": "ts://@example/app/package.json#@types/node:dev-dependency",
     "language": "ts",
     "form": "dependency",
     "accepted": true,
@@ -597,7 +597,7 @@
     "example": "\"devDependencies\": { \"@types/node\": \"26.0.0\" }"
   },
   {
-    "input": "ts://@cplieger/ui-primitives/package.json#typescript:peer-dependency",
+    "input": "ts://@example/app/package.json#typescript:peer-dependency",
     "language": "ts",
     "form": "dependency",
     "accepted": true,
@@ -605,28 +605,28 @@
     "example": "\"peerDependencies\": { \"typescript\": \">=7.0.0\" }"
   },
   {
-    "input": "ts://@cplieger/vibekit-web/src/wire.ts",
+    "input": "ts://@example/app/src/wire.ts",
     "language": "ts",
     "form": "module",
     "accepted": false,
     "reason": "No fragment separator. The module itself is spelled with a trailing #, so that a scope is never mistaken for a symbol."
   },
   {
-    "input": "TS://@cplieger/vibekit-web/src/wire.ts#",
+    "input": "TS://@example/app/src/wire.ts#",
     "language": "ts",
     "form": "module",
     "accepted": false,
     "reason": "The language prefix is lowercase and compared bytewise."
   },
   {
-    "input": "ts://@cplieger/vibekit-web/src/wire#ServerEvent",
+    "input": "ts://@example/app/src/wire#ServerEvent",
     "language": "ts",
     "form": "module-level",
     "accepted": false,
     "reason": "The path names a source file with its real extension, never an import specifier with the extension dropped."
   },
   {
-    "input": "ts://@cplieger/vibekit-web#ServerEvent",
+    "input": "ts://@example/app#ServerEvent",
     "language": "ts",
     "form": "module-level",
     "accepted": false,
@@ -640,154 +640,154 @@
     "reason": "The package component is never empty; a package with no manifest name is spelled with a single dot."
   },
   {
-    "input": "ts://@cplieger/vibekit-web!src/wire.ts#ServerEvent",
+    "input": "ts://@example/app!src/wire.ts#ServerEvent",
     "language": "ts",
     "form": "module-level",
     "accepted": false,
-    "reason": "The ! of API Extractor's canonical form is not used; the package name and the path are joined by a slash."
+    "reason": "The package name and the path are joined by a slash, never by any other character."
   },
   {
-    "input": "ts://@cplieger/vibekit-web/src/wire.ts#Server Event",
+    "input": "ts://@example/app/src/wire.ts#Server Event",
     "language": "ts",
     "form": "module-level",
     "accepted": false,
     "reason": "Whitespace never appears outside a quoted component."
   },
   {
-    "input": "ts://@cplieger/vibekit-web/src/wire.ts#ServerEvent\n",
+    "input": "ts://@example/app/src/wire.ts#ServerEvent\n",
     "language": "ts",
     "form": "module-level",
     "accepted": false,
     "reason": "A reference never contains LF."
   },
   {
-    "input": "ts://@cplieger/vibekit-web/src/features/tabs/index.ts##frame",
+    "input": "ts://@example/app/src/features/tabs/index.ts##frame",
     "language": "ts",
     "form": "module-level",
     "accepted": false,
     "reason": "A private name exists only inside a class, so it never opens a fragment."
   },
   {
-    "input": "ts://@cplieger/vibekit-web/src/index.ts#TabStrip:export",
+    "input": "ts://@example/app/src/index.ts#TabStrip:export",
     "language": "ts",
     "form": "alias",
     "accepted": false,
     "reason": "export is not a selector; an export specifier's symbol carries the alias selector."
   },
   {
-    "input": "ts://@cplieger/vibekit-web/src/features/tabs/index.ts#TabStrip#cachedLayout",
+    "input": "ts://@example/app/src/features/tabs/index.ts#TabStrip#cachedLayout",
     "language": "ts",
     "form": "class-member",
     "accepted": false,
-    "reason": "Members are joined by a dot. The member navigation # of API Extractor's canonical form is not used, because # is the scope separator here and a private name's own sign."
+    "reason": "Members are joined by a dot. A # is not a member separator, because it is the scope separator here and a private name's own sign."
   },
   {
-    "input": "ts://@cplieger/vibekit-web/src/features/tabs/index.ts#TabStrip.(cachedLayout:instance)",
+    "input": "ts://@example/app/src/features/tabs/index.ts#TabStrip.(cachedLayout:instance)",
     "language": "ts",
     "form": "class-member",
     "accepted": false,
-    "reason": "TSDoc's parenthesized selector is not used; an instance member is bare and only a static member carries a selector."
+    "reason": "A parenthesized selector is not a form of this grammar; an instance member is bare and only a static member carries a selector."
   },
   {
-    "input": "ts://@cplieger/vibekit-web/src/features/tabs/index.ts#TabStrip.cachedLayout:instance",
+    "input": "ts://@example/app/src/features/tabs/index.ts#TabStrip.cachedLayout:instance",
     "language": "ts",
     "form": "class-member",
     "accepted": false,
     "reason": "instance is not a selector: an instance member is the unmarked case."
   },
   {
-    "input": "ts://@cplieger/vibekit-web/src/features/tabs/index.ts#TabStrip::cachedLayout",
+    "input": "ts://@example/app/src/features/tabs/index.ts#TabStrip::cachedLayout",
     "language": "ts",
     "form": "class-member",
     "accepted": false,
     "reason": "The only member separator is a dot."
   },
   {
-    "input": "ts://@cplieger/vibekit-web/src/features/tabs/index.ts#TabStrip.count:Static",
+    "input": "ts://@example/app/src/features/tabs/index.ts#TabStrip.count:Static",
     "language": "ts",
     "form": "static-member",
     "accepted": false,
     "reason": "Selectors are lowercase and compared bytewise."
   },
   {
-    "input": "ts://@cplieger/vibekit-web/src/features/tabs/index.ts#TabStrip:static.count",
+    "input": "ts://@example/app/src/features/tabs/index.ts#TabStrip:static.count",
     "language": "ts",
     "form": "static-member",
     "accepted": false,
     "reason": "A selector applies to the last component and ends the chain; nothing follows it but a type parameter."
   },
   {
-    "input": "ts://@cplieger/vibekit-web/src/wire.ts#Headers.\"content-type\"",
+    "input": "ts://@example/app/src/wire.ts#Headers.\"content-type\"",
     "language": "ts",
     "form": "interface-member",
     "accepted": false,
     "reason": "A quoted component uses single quotes, so that the reference sits inside a JSON string without escaping."
   },
   {
-    "input": "ts://@cplieger/vibekit-web/src/wire.ts#Headers.content-type",
+    "input": "ts://@example/app/src/wire.ts#Headers.content-type",
     "language": "ts",
     "form": "interface-member",
     "accepted": false,
     "reason": "A name that is not an identifier is quoted; a bare hyphen is not an identifier character."
   },
   {
-    "input": "ts://@cplieger/vibekit-web/src/wire.ts#Kind.Resize.",
+    "input": "ts://@example/app/src/wire.ts#Kind.Resize.",
     "language": "ts",
     "form": "enum-member",
     "accepted": false,
     "reason": "A trailing dot leaves the chain incomplete."
   },
   {
-    "input": "ts://@cplieger/vibekit-web/src/wire.ts#Kind/Resize",
+    "input": "ts://@example/app/src/wire.ts#Kind/Resize",
     "language": "ts",
     "form": "enum-member",
     "accepted": false,
     "reason": "A slash belongs to the scope, before the #; an enum member is reached from its enum with a dot."
   },
   {
-    "input": "ts://@cplieger/vibekit-web/src/wire.ts#Kind[Resize]",
+    "input": "ts://@example/app/src/wire.ts#Kind[Resize]",
     "language": "ts",
     "form": "enum-member",
     "accepted": false,
     "reason": "Square brackets spell a computed key, and a computed key is a member reached with a dot; an enum member is a plain name."
   },
   {
-    "input": "ts://@cplieger/vibekit-web/src/wire.ts#decode[T]",
+    "input": "ts://@example/app/src/wire.ts#decode[T]",
     "language": "ts",
     "form": "type-parameter",
     "accepted": false,
     "reason": "A TypeScript type parameter is spelled in angle brackets; square brackets are Go's spelling."
   },
   {
-    "input": "ts://@cplieger/vibekit-web/src/wire.ts#decode<T extends Tag>",
+    "input": "ts://@example/app/src/wire.ts#decode<T extends Tag>",
     "language": "ts",
     "form": "type-parameter",
     "accepted": false,
     "reason": "The constraint is not part of the reference; only the type parameter's name is."
   },
   {
-    "input": "ts://@cplieger/vibekit-web/src/wire.ts#Codec<T>.decode",
+    "input": "ts://@example/app/src/wire.ts#Codec<T>.decode",
     "language": "ts",
     "form": "type-parameter",
     "accepted": false,
     "reason": "Type arguments never appear on a container, and a type parameter of a type declaration is not a subject; only a function or method type parameter is."
   },
   {
-    "input": "ts://@cplieger/vibekit-web#lodash:dependency",
+    "input": "ts://@example/app#lodash:dependency",
     "language": "ts",
     "form": "dependency",
     "accepted": false,
     "reason": "A dependency is scoped by the manifest that declares it, so the scope ends in package.json."
   },
   {
-    "input": "ts://@cplieger/vibekit-web/package.json#lodash:devDependencies",
+    "input": "ts://@example/app/package.json#lodash:devDependencies",
     "language": "ts",
     "form": "dependency",
     "accepted": false,
     "reason": "The selectors are dependency, dev-dependency and peer-dependency, not the manifest's own key names."
   },
   {
-    "input": "ts://@cplieger/vibekit-web/package.json#lodash",
+    "input": "ts://@example/app/package.json#lodash",
     "language": "ts",
     "form": "dependency",
     "accepted": false,

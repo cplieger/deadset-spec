@@ -120,6 +120,17 @@
               "x-owner": "analyzer"
             }
           }
+        },
+        "template_dirs": {
+          "description": "Directory paths, relative to the target root, that the template-field exemption scans for member names: a field or member a template under one of these directories names is retained. An empty array, the default, means the class retains nothing.",
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "default": [],
+          "x-owner": "analyzer"
         }
       }
     },
@@ -157,7 +168,7 @@
       }
     },
     "severity": {
-      "description": "Per-issue-kind severity. A key is a code (DS1101) or a two-digit range prefix naming a whole family (DS18, the intra-function kinds); a value is allow, warn or deny, and a finding at or above the failing severity, deny unless the invocation lowers it, exits with the findings code. A kind this object does not name takes the default severity contract/kinds.json declares for it. Only a code's severity changes here; its reachability class is derived by the analysis.",
+      "description": "Per-issue-kind severity. A key is a code (DS1101) or a two-digit range prefix naming a whole family (DS18, the intra-function kinds); a value is allow, warn or deny, and a finding at or above the failing severity, reporters.fail_on, exits with the findings code. A kind this object does not name takes the default severity contract/kinds.json declares for it. Only a code's severity changes here; its reachability class is derived by the analysis.",
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
@@ -219,6 +230,13 @@
           "minimum": 0,
           "default": 0,
           "x-owner": "product"
+        },
+        "fail_on": {
+          "description": "The lowest severity at which a finding fails the run: deny, the default, fails only on a deny finding; warn fails on a warn or deny finding; allow fails on every finding. The committed form of the invocation's fail-on option, which outranks it.",
+          "type": "string",
+          "enum": ["allow", "warn", "deny"],
+          "default": "deny",
+          "x-owner": "product"
         }
       }
     },
@@ -245,6 +263,17 @@
             "minLength": 1
           },
           "default": ["**/*.test.{ts,tsx,mts,cts}"],
+          "x-owner": "ts-analyzer"
+        },
+        "entry_files": {
+          "description": "Glob patterns, relative to the target root, naming files whose exports are roots, beside the entry points the package manifest names. An empty array, the default, adds none.",
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "default": [],
           "x-owner": "ts-analyzer"
         }
       }
