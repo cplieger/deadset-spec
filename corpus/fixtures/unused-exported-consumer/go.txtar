@@ -1,0 +1,47 @@
+The Go rendering: a target module and the consumer module that references one
+of its two exported functions.
+
+-- fixture.json --
+{
+  "symbols": {
+    "DeadExport": { "file": "target/lib.go", "line": 6 },
+    "UsedByConsumer": { "file": "target/lib.go", "line": 11 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/lib.go --
+// Package target exports one symbol a consumer references and one symbol
+// nothing references.
+package target
+
+// DeadExport is exported and no loaded module references it.
+func DeadExport() string {
+	return "dead"
+}
+
+// UsedByConsumer is exported and the consumer module references it.
+func UsedByConsumer() string {
+	return "used"
+}
+-- consumer/go.mod --
+module example.com/consumer
+
+go 1.27.0
+
+require example.com/target v0.0.0
+
+replace example.com/target => ../target
+-- consumer/main.go --
+// Command consumer references one exported symbol of the target module.
+package main
+
+import "example.com/target"
+
+func main() {
+	if target.UsedByConsumer() == "" {
+		panic("the target returned an empty string")
+	}
+}

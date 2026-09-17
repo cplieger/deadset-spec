@@ -1,0 +1,37 @@
+{
+  "contract_version": "1.0.0",
+  "target": { "kind": "library" },
+  "analysis": {
+    "languages": ["go", "ts"],
+    "min_confidence": "probable",
+    "generated_files": "include",
+    "consumer_tests": "production",
+    "configurations": [
+      { "id": "linux-amd64", "os": "linux", "arch": "amd64", "tags": [] },
+      { "id": "linux-arm64", "os": "linux", "arch": "arm64", "tags": ["netgo"] }
+    ],
+    "matrix": { "complete": true },
+    "template_dirs": ["templates"]
+  },
+  "consumers": { "complete": true },
+  "roots": { "patterns": ["go://example.com/app#Catalog.*"] },
+  "severity": { "DS1101": "warn", "DS18": "allow" },
+  "exemptions": { "disabled": ["template-field"] },
+  "reporters": {
+    "formats": ["text", "sarif"],
+    "sort": "size",
+    "max_findings": 200,
+    "fail_on": "warn"
+  },
+  "go": {},
+  "ts": {
+    "test_files": ["**/*.test.ts"],
+    "entry_files": ["src/cli.ts"]
+  },
+  "provenance": {
+    "target.kind": "flag: --target-kind",
+    "analysis.min_confidence": "central: central.json",
+    "analysis.generated_files": "default",
+    "severity.DS1101": "central: central.json"
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "name": "missing-target-kind",
+  "description": "A repository configuration and a central configuration, neither of which supplies the target kind. The field has no default and is never inferred, so the run is refused naming it.",
+  "covers": ["missing-target-kind"]
+}

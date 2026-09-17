@@ -1,0 +1,726 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "deadset finding",
+  "description": "One finding: what an analyzer reports about one subject at one position, and the one object every reporter renders, so a text line, a SARIF result and the JSON report carry the same fields and a consumer reads one shape whichever surface it came from. The report that carries the findings array, the schema version that report declares, the edge-evaluation record that holds a pending finding and the stale-suppression record are declared in contract/report.schema.json. The order of the properties below is the order of the object's fields, so two runs over an unchanged tree write the same bytes. details is a per-kind object discriminated on code: each branch under allOf names the fields one set of codes carries and forbids those fields under every other code, so a code with no branch of its own carries an empty details, apart from removes_last_use_of on a deletable finding. Two per-kind rules are the analyzer's rather than this schema's, because contract/kinds.json owns the vocabulary they read: that code names a live row of that file, and that confidence is not above that row's max_class.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "code",
+    "kind",
+    "language",
+    "position",
+    "symbol",
+    "reachability_class",
+    "confidence",
+    "liveness_relation",
+    "test_only",
+    "generated",
+    "component",
+    "retained_by",
+    "configurations",
+    "consumers_loaded",
+    "fixability",
+    "severity",
+    "message",
+    "details"
+  ],
+  "properties": {
+    "code": {
+      "description": "The issue-kind code: DS followed by four digits, naming one live row of contract/kinds.json. The same string is the rule identifier of a SARIF result, the code of a suppression record and a configuration key.",
+      "type": "string",
+      "pattern": "^DS[0-9]{4}$"
+    },
+    "kind": {
+      "description": "The name of the kind, as the name field of the row code names in contract/kinds.json spells it: lowercase words joined by single hyphens.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$"
+    },
+    "language": {
+      "description": "The language of the analysis that produced the finding, drawn from the languages field of contract/kinds.json. A finding a merge emits for a declared cross-language edge carries the language of the side whose every evaluation is absent, and of the provides side where both sides are.",
+      "type": "string",
+      "enum": ["go", "ts"]
+    },
+    "position": {
+      "description": "Where the subject is in the file the analysis read.",
+      "$ref": "#/$defs/position"
+    },
+    "symbol": {
+      "description": "What the finding is about: the reference that survives an edit above it, the kind of subject, the display name a text line renders, and the container and span a consumer needs to act on it.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref", "kind", "name", "size_lines"],
+      "properties": {
+        "ref": {
+          "description": "The stable symbol reference of the subject. A finding about a configured root carries the root as the configuration spells it, which may be a pattern.",
+          "$ref": "#/$defs/symbol_reference"
+        },
+        "kind": {
+          "description": "What the finding is about, from the closed vocabulary below: lowercase ASCII letters and hyphens, which a text line renders ahead of the symbol name. The value names the subject at the position, and where that subject has no reference of its own it is a part of the declaration symbol.ref names. The values, each with the subject it names: function, a function declaration in either language; method, a method of a Go type or of a TypeScript class; type, a Go defined type or type alias, or a TypeScript type alias; class, a TypeScript class declaration; interface, an interface declaration in either language; enum, a TypeScript enum declaration; namespace, a TypeScript namespace declaration; variable, a package-level Go variable or a module-level TypeScript variable; constant, a Go constant that is not a member of an enumerated type; export-alias, a TypeScript export specifier, a symbol of its own beside the declaration it names; field, a field of a Go struct; class-member, a property or accessor of a TypeScript class, a private name included; type-member, a member of a TypeScript interface, or of the object type a type alias declares; interface-method, a method an interface declares, in either language; enum-member, a member of a TypeScript enum, or a Go constant of an enumerated type; satisfaction-assertion, a Go compile-time assertion that a type satisfies an interface; type-parameter, a type parameter of a function or method in either language; parameter, a parameter of a function or method in either language; receiver, the named receiver of a Go method; result, a result of a function or method in either language; statement, a statement of a function body in either language; case, a case clause of a switch in either language; store, a write to a local variable in either language; file, a source file in either language; dependency, a Go module requirement, or a TypeScript manifest dependency, development dependency or peer dependency; module-directive, a directive of a Go module file; suppression, an inline directive, an entry of the ignore file or a row of the baseline; root, a configured root, whether a reference or a pattern; edge, a declared cross-language edge.",
+          "type": "string",
+          "enum": [
+            "function",
+            "method",
+            "type",
+            "class",
+            "interface",
+            "enum",
+            "namespace",
+            "variable",
+            "constant",
+            "export-alias",
+            "field",
+            "class-member",
+            "type-member",
+            "interface-method",
+            "enum-member",
+            "satisfaction-assertion",
+            "type-parameter",
+            "parameter",
+            "receiver",
+            "result",
+            "statement",
+            "case",
+            "store",
+            "file",
+            "dependency",
+            "module-directive",
+            "suppression",
+            "root",
+            "edge"
+          ]
+        },
+        "name": {
+          "description": "The display name of the subject, which a text line renders verbatim: a Go method as (*Catalog).ResolveAlias, a TypeScript member as Container.member, a part of a declaration as that part's own name, and a declared cross-language edge as the edge identifier. It holds no carriage return and no line feed, and it holds no colon followed by a space, which is the separator a text line writes after it.",
+          "type": "string",
+          "pattern": "^[^\\r\\n]+$"
+        },
+        "parent": {
+          "description": "The reference of the container of the subject: the type, class, interface, enum or namespace that declares a member, and the package or module that declares a top-level symbol. Absent where the subject has no container.",
+          "$ref": "#/$defs/symbol_reference"
+        },
+        "exported": {
+          "description": "Whether the subject is visible outside the scope that declares it. Absent where the subject declares no visibility of its own, such as a file, a dependency, a module directive, a suppression, a configured root or a declared edge.",
+          "type": "boolean"
+        },
+        "size_lines": {
+          "description": "The number of source lines the subject spans, being position.end_line minus position.line plus one. It is the second key of the size order a reporter may be configured to use.",
+          "type": "integer",
+          "minimum": 1
+        },
+        "objectpath": {
+          "description": "A second key for a Go symbol: the path that names the symbol inside its package's type information, in the encoding of golang.org/x/tools/go/types/objectpath, so a consumer that already keys on that encoding joins on it without parsing a reference. Present on a Go symbol that has one, absent otherwise and absent on every TypeScript finding.",
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "reachability_class": {
+      "description": "What the analysis knows about the subject's callers, drawn from the reachability_classes field of contract/kinds.json: certain where every reference is visible, probable where a consumer is configured and not loaded, possible where no consumer information exists.",
+      "type": "string",
+      "enum": ["certain", "probable", "possible"]
+    },
+    "confidence": {
+      "description": "What the report claims: the reachability class capped by the max_class of the kind's row in contract/kinds.json, so it is never the higher of the two. It is the value a configured minimum confidence filters on and the value a text line renders in brackets.",
+      "type": "string",
+      "enum": ["certain", "probable", "possible"]
+    },
+    "liveness_relation": {
+      "description": "The relation under which the subject was decided: reference-counting, where one reference from any declaration keeps a subject live, or reachability, where only a path from a root does.",
+      "type": "string",
+      "enum": ["reference-counting", "reachability"]
+    },
+    "test_only": {
+      "description": "Whether every reference to the subject comes from a test file.",
+      "type": "boolean"
+    },
+    "generated": {
+      "description": "Whether the file at position.path is generated, as the run's generated-file rule decides.",
+      "type": "boolean"
+    },
+    "component": {
+      "description": "The dead component the subject belongs to, so a report is worked from its roots and one deletion removes a cluster.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "root", "symbol_count", "deletable_lines"],
+      "properties": {
+        "id": {
+          "description": "The identifier of the component, minted by the analyzer that reported it: that analyzer's own name, a solidus, and c- followed by digits. An analyzer prefixes every identifier it mints with its own name, so a merge unions components without renaming one and two reports never collide on an identifier.",
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*/c-[0-9]+$"
+        },
+        "root": {
+          "description": "Whether the subject is a root of the component, being a member no other member of the component references.",
+          "type": "boolean"
+        },
+        "symbol_count": {
+          "description": "The number of symbols that fall with the component: its own members and every dead symbol only this component reaches.",
+          "type": "integer",
+          "minimum": 1
+        },
+        "deletable_lines": {
+          "description": "The number of source lines the deletion of the component removes, summed over the symbols symbol_count counts.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "members": {
+          "description": "Every symbol of the component, this finding's own included, in the canonical order contract/grammar/merge.md fixes. Present where the run is configured to list a component in full, absent otherwise.",
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/positioned_symbol"
+          }
+        }
+      }
+    },
+    "retained_by": {
+      "description": "The exemption classes that held the subject back, each the class field of a row of contract/exemptions.json. Empty on every finding, because a symbol an exemption retained is not reported, which is what the field states checkably; a retained-symbol listing carries the same object with the classes that held each symbol.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "description": "The class field of a row of contract/exemptions.json.",
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$"
+      }
+    },
+    "configurations": {
+      "description": "The identifiers of the build configurations in which the finding holds, each the id of an entry of the report's configurations array. Empty on a finding a merge emits, which no configuration produced.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "description": "The id of an entry of the report's configurations array.",
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "consumers_loaded": {
+      "description": "The identifiers of the consumers loaded beside the target, each the id of an entry of the report's loaded-consumer list. Empty where no consumer loaded.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "description": "The id of a loaded consumer of the report.",
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "fixability": {
+      "description": "What a mechanical edit may do with the finding, drawn from the fixabilities field of contract/kinds.json: deletable, narrowable, manual, or none where nothing mechanical acts on it.",
+      "type": "string",
+      "enum": ["deletable", "narrowable", "manual", "none"]
+    },
+    "severity": {
+      "description": "The severity the run's resolved configuration gave the kind, drawn from the severities field of contract/kinds.json. It decides the level of a SARIF result and, with the exit-code table, the verdict of the run.",
+      "type": "string",
+      "enum": ["allow", "warn", "deny"]
+    },
+    "message": {
+      "description": "The finding's own sentence, rendered verbatim by a text line and by a SARIF result. It holds no carriage return and no line feed, and it does not end with a full stop, so a consumer appends a clause to the same sentence.",
+      "type": "string",
+      "pattern": "^[^\\r\\n]*[^.\\r\\n]$"
+    },
+    "analyzer": {
+      "description": "The name of the analyzer whose report carried this finding. Absent from an analyzer's own report, where the envelope's analyzer.name states it once for every record; present on a finding a merged report carries, which is what lets the canonical key order two analyzers' findings and a reader attribute one.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$"
+    },
+    "details": {
+      "description": "What only some kinds carry, discriminated on code by the branches under allOf. Every property below is declared here and each branch decides which codes carry it, so a field under a code that does not carry it is refused rather than ignored. An empty object is the value for every code with no branch of its own.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "narrower_visibility": {
+          "description": "The widest scope that contains every reference to the symbol, so the visibility the references support: file, where every reference is inside the file that declares the symbol; package, where every reference is inside the Go package or the npm package that declares it; module, where every reference is inside the target module, so the symbol may move behind an internal boundary.",
+          "type": "string",
+          "enum": ["file", "package", "module"]
+        },
+        "implementations": {
+          "description": "The concrete implementations of the interface the finding names, each with its position, so a reader sees what satisfies an interface nothing uses through the interface. A SARIF result carries each as a related location.",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/positioned_symbol"
+          }
+        },
+        "write_positions": {
+          "description": "Every position at which the subject is written, so the deletion set is visible. A SARIF result carries each as a related location.",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/position"
+          }
+        },
+        "excluded_by": {
+          "description": "The build constraint that excluded the file, as the file spells it. A file the tool chain ignored solely for importing C under a build with cgo disabled is not reported under this code and the report records it as excluded by cgo instead.",
+          "type": "string",
+          "minLength": 1
+        },
+        "dependency_class": {
+          "description": "The section that declares the dependency: require for a Go module requirement, and dependency, dev-dependency or peer-dependency for the manifest section that declares a TypeScript one. Each value is the selector a stable symbol reference spells for the same subject.",
+          "type": "string",
+          "enum": ["require", "dependency", "dev-dependency", "peer-dependency"]
+        },
+        "replacement": {
+          "description": "The right-hand side of the replace directive the finding names, as the module file spells it: a module path with its version, or a filesystem path. The replaced module and its version are in the symbol reference and are not repeated here.",
+          "type": "string",
+          "minLength": 1
+        },
+        "mechanism": {
+          "description": "Where the suppression record the finding reports lives: inline for a directive in the source, ignore for an entry of the ignore file, baseline for a row of the baseline.",
+          "type": "string",
+          "enum": ["inline", "ignore", "baseline"]
+        },
+        "entry": {
+          "description": "The suppression record the finding reports, in the shape an entry of the ignore file and a row of the baseline share. A field is absent exactly when the record lacks it, which is what the reason-free and the unscoped kinds report.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["code"],
+          "properties": {
+            "code": {
+              "description": "The code the record names, which is not this finding's own code. It may name a code no live row of contract/kinds.json carries, which is a record that can match nothing.",
+              "type": "string",
+              "pattern": "^DS[0-9]{4}$"
+            },
+            "symbol": {
+              "description": "The stable symbol reference the record names. Absent where an inline directive bound to no declaration.",
+              "$ref": "#/$defs/symbol_reference"
+            },
+            "path": {
+              "description": "The path of the file the record names. Absent on the record an unscoped-entry finding reports.",
+              "$ref": "#/$defs/relative_path"
+            },
+            "reason": {
+              "description": "Why the finding is not to be reported, or, in a baseline row, the analyzer name and version that recorded the row. Absent on the record a reason-free finding reports.",
+              "type": "string",
+              "pattern": "\\S"
+            }
+          }
+        },
+        "overlap": {
+          "description": "The external linters or rules that report the same kind in this finding's language, as the overlap field of the kind's row in contract/kinds.json lists them for that language, so a project already running one silences whichever side it prefers.",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "description": "One linter or rule of the kind's overlap list for this language.",
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "edge": {
+          "description": "The identifier of the declared cross-language edge the finding reports, as the edges document at the target root spells it and as an edge evaluation carries it.",
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_.-]+(/[A-Za-z0-9_.-]+)*$"
+        },
+        "sides": {
+          "description": "Every side of the edge an analyzer evaluated, with the symbol that side names and the state the evaluation reported. A side no analyzer evaluated is absent from this list, which is not the same as a side an analyzer evaluated as absent.",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "description": "One evaluated side of the edge.",
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["side", "symbol", "state"],
+            "properties": {
+              "side": {
+                "description": "Which side of the edge this is: provides, the side the pair names as used, or used_by, the side that uses it.",
+                "type": "string",
+                "enum": ["provides", "used_by"]
+              },
+              "symbol": {
+                "description": "The stable symbol reference this side of the edge names.",
+                "$ref": "#/$defs/symbol_reference"
+              },
+              "state": {
+                "description": "What the evaluation of this side reported: live, where the analyzer enumerates the symbol and holds no finding for it; dead, where it holds one; absent, where it enumerates no symbol under the reference.",
+                "type": "string",
+                "enum": ["live", "dead", "absent"]
+              }
+            }
+          }
+        },
+        "removes_last_use_of": {
+          "description": "The dependency whose last use the deletion of this subject removes, spelled as the module file or the manifest declares it. Carried only by a deletable finding.",
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": ["code"],
+        "properties": {
+          "code": {
+            "enum": ["DS1101", "DS1102", "DS1104"]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "details": {
+            "required": ["narrower_visibility"]
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "details": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": ["narrower_visibility"]
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["code"],
+        "properties": {
+          "code": {
+            "enum": ["DS1201", "DS1203", "DS1204"]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "details": {
+            "required": ["implementations"]
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "details": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": ["implementations"]
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["code"],
+        "properties": {
+          "code": {
+            "enum": ["DS1301", "DS1807"]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "details": {
+            "required": ["write_positions"]
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "details": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": ["write_positions"]
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["code"],
+        "properties": {
+          "code": {
+            "const": "DS1501"
+          }
+        }
+      },
+      "then": {
+        "allOf": [
+          {
+            "if": {
+              "required": ["language"],
+              "properties": {
+                "language": {
+                  "const": "go"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "details": {
+                  "required": ["excluded_by"]
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "details": {
+                  "not": {
+                    "required": ["excluded_by"]
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "else": {
+        "properties": {
+          "details": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": ["excluded_by"]
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["code"],
+        "properties": {
+          "code": {
+            "const": "DS1601"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "details": {
+            "required": ["dependency_class"]
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "details": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": ["dependency_class"]
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["code"],
+        "properties": {
+          "code": {
+            "const": "DS1605"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "details": {
+            "required": ["replacement"]
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "details": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": ["replacement"]
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["code"],
+        "properties": {
+          "code": {
+            "enum": ["DS1701", "DS1702", "DS1703"]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "details": {
+            "required": ["mechanism", "entry"]
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "details": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": ["mechanism"]
+                },
+                {
+                  "required": ["entry"]
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["code"],
+        "properties": {
+          "code": {
+            "const": "DS1705"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "details": {
+            "required": ["edge", "sides"]
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "details": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": ["edge"]
+                },
+                {
+                  "required": ["sides"]
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["code"],
+        "properties": {
+          "code": {
+            "enum": ["DS1801", "DS1802", "DS1803", "DS1805", "DS1807", "DS1809"]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "details": {
+            "required": ["overlap"]
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "details": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": ["overlap"]
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["fixability"],
+        "properties": {
+          "fixability": {
+            "const": "deletable"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "details": {
+            "not": {
+              "required": ["removes_last_use_of"]
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "position": {
+      "description": "A position in a file of the target: where a subject starts, and the line it ends on.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "line", "column", "end_line"],
+      "properties": {
+        "path": {
+          "description": "The file that holds the subject.",
+          "$ref": "#/$defs/relative_path"
+        },
+        "line": {
+          "description": "The line of the subject's first character, counted from one.",
+          "type": "integer",
+          "minimum": 1
+        },
+        "column": {
+          "description": "The column of the subject's first character, counted from one in UTF-16 code units. An analyzer whose native unit is bytes or code points converts before it writes the field, and a SARIF run names the unit in its columnKind.",
+          "type": "integer",
+          "minimum": 1
+        },
+        "end_line": {
+          "description": "The line of the subject's last character, counted from one; it equals line where the subject is on one line. A SARIF region carries it and no end column, so the region runs to the end of that line.",
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "relative_path": {
+      "description": "A path inside the target, relative to the target root, with the solidus as the separator on every platform: no leading ./, no trailing solidus, no segment that is . or .., never absolute, never a backslash separator, and no carriage return or line feed. A space, a colon and a character outside ASCII are written as they are.",
+      "type": "string",
+      "pattern": "^(?:[^/\\\\.\\r\\n][^/\\\\\\r\\n]*|\\.[^/\\\\.\\r\\n][^/\\\\\\r\\n]*|\\.\\.[^/\\\\\\r\\n]+)(?:/(?:[^/\\\\.\\r\\n][^/\\\\\\r\\n]*|\\.[^/\\\\.\\r\\n][^/\\\\\\r\\n]*|\\.\\.[^/\\\\\\r\\n]+))*$"
+    },
+    "symbol_reference": {
+      "description": "A stable symbol reference in the grammar contract/grammar/symbol-ref.md states for the language, which owns that grammar: go://<import-path>#<fragment> for Go, and ts://<package-name>/<source-path>#<fragment> for TypeScript. It is compared as bytes wherever two references meet.",
+      "type": "string",
+      "minLength": 1
+    },
+    "positioned_symbol": {
+      "description": "A symbol named beside its position, so a reader and a related location of a SARIF result both reach it.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref", "position"],
+      "properties": {
+        "ref": {
+          "description": "The stable symbol reference of the symbol.",
+          "$ref": "#/$defs/symbol_reference"
+        },
+        "position": {
+          "description": "Where the symbol is.",
+          "$ref": "#/$defs/position"
+        }
+      }
+    }
+  }
+}

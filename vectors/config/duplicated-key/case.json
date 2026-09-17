@@ -1,0 +1,5 @@
+{
+  "name": "duplicated-key",
+  "description": "A repository configuration naming one key twice at the same level with different values. The run is refused naming that key, so neither value is chosen silently.",
+  "covers": ["duplicated-key"]
+}

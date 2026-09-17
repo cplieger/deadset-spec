@@ -1,0 +1,21 @@
+{
+  "name": "interface-satisfaction-conversion",
+  "description": "A method no call site names is retained by the interface-satisfaction class, because a value of its receiver's type is converted to an interface the method satisfies. The exported function beside it is reported, so the fixture pins the exemption without pinning silence.",
+  "languages": ["go"],
+  "target_kind": "library",
+  "consumers": ["consumer"],
+  "expect": [
+    {
+      "symbol": "SatisfiesWriter",
+      "report": "none",
+      "retained_by": ["interface-satisfaction"]
+    },
+    {
+      "symbol": "DeadExport",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

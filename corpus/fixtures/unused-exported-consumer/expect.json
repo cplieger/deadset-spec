@@ -1,0 +1,20 @@
+{
+  "name": "unused-exported-consumer",
+  "description": "An exported declaration nothing references is reported; one a loaded consumer references is not. Both renderings declare the same two subjects, so the two analyzers answer one expectation file.",
+  "languages": ["go", "ts"],
+  "target_kind": "library",
+  "consumers": ["consumer"],
+  "expect": [
+    {
+      "symbol": "DeadExport",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "UsedByConsumer",
+      "report": "none"
+    }
+  ]
+}

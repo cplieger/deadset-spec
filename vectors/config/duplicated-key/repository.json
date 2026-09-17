@@ -1,0 +1,5 @@
+{
+  "target": { "kind": "library" },
+  "severity": { "DS1101": "warn" },
+  "severity": { "DS1101": "deny" }
+}

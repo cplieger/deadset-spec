@@ -295,8 +295,8 @@ The refused entries and rows are in the corpus under `reason-required` (no `reas
 ## What other documents fix
 
 - `symbol-ref.md`: the grammar of the `symbol` value, per language.
-- `finding.schema.json`: the `DS1701`, `DS1702` and `DS1703` finding shapes and their `details` (`mechanism`, `entry`), and `symbol.ref` and `position.path`, the two fields an entry is matched against.
-- `report.schema.json`: the `stale_suppressions` array and the `totals` fields `suppressions_in_effect`, `reasons_recorded` and `stale_suppressions`.
+- [`finding.schema.json`](../finding.schema.json): the `DS1701`, `DS1702` and `DS1703` finding shapes and their `details` (`mechanism`, `entry`), and `symbol.ref` and `position.path`, the two fields an entry is matched against.
+- [`report.schema.json`](../report.schema.json): the `stale_suppressions` array and the `totals` fields `suppressions_in_effect`, `reasons_recorded` and `stale_suppressions`.
 - [`kinds.json`](../kinds.json): the three codes, their `deny` severity, and `DS1703`'s `"fixed": true`.
 - [`exit-codes.json`](../exit-codes.json): code 1 for a run with a stale suppression, code 2 for a malformed directive or document.
 - [`text-line.md`](text-line.md): how a stale suppression renders, and the path form the `path` key shares.

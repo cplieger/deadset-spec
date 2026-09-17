@@ -1,0 +1,5 @@
+{
+  "name": "quoted-key-with-a-dot",
+  "description": "A repository configuration whose top-level key is a dotted setting path written inside quotes, the spelling a resolved configuration uses for a provenance entry. The closed key list declares nested objects and no key of that name, so the run is refused.",
+  "covers": ["quoted-key-with-a-dot"]
+}

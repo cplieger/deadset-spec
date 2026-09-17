@@ -239,8 +239,8 @@ One row per property this mapping emits, with the row of GitHub's supported-prop
 
 ## What other documents fix
 
-- `finding.schema.json`: the finding fields this page maps, the unit of `position.column` that decides `columnKind`, and the field carrying a component's member list.
-- `report.schema.json`: the envelope, `analyzer`, `totals`, the stale-suppression record and the analyzer name kept on each merged record.
+- [`finding.schema.json`](../finding.schema.json): the finding fields this page maps, the unit of `position.column` that decides `columnKind`, and the field carrying a component's member list.
+- [`report.schema.json`](../report.schema.json): the envelope, `analyzer`, `totals`, the stale-suppression record and the analyzer name kept on each merged record.
 - [`kinds.json`](../kinds.json): every rule's `code`, `name`, `rule`, `precondition`, `default_severity` and `max_class`.
 - `symbol-ref.md`: the reference `deadsetSymbolRef/v1` digests.
 - [`merge.md`](merge.md): the order of results and the `DS1705` finding the merge run carries.

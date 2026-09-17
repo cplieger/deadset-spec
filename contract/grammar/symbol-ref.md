@@ -284,8 +284,8 @@ A reference is valid when it matches one of its language's expressions. A refuse
 
 ## What other documents fix
 
-- `finding.schema.json`: the `symbol` object, its `ref`, `parent`, `name`, `kind` and `objectpath` fields, and what `symbol.ref` carries for a finding whose subject is a configured root (`DS1704`) or a declared edge (`DS1705`).
-- `report.schema.json`: the edge-evaluation record whose `symbol` is a reference, and the stale-suppression record whose `symbol.ref` is the reference the suppression named.
+- [`finding.schema.json`](../finding.schema.json): the `symbol` object, its `ref`, `parent`, `name`, `kind` and `objectpath` fields, and what `symbol.ref` carries for a finding whose subject is a configured root (`DS1704`) or a declared edge (`DS1705`).
+- [`report.schema.json`](../report.schema.json): the edge-evaluation record whose `symbol` is a reference, and the stale-suppression record whose `symbol.ref` is the reference the suppression named.
 - `suppression.md`: the ignore entry and baseline row that carry a reference beside a path, and the inline directive that names none because its position is the declaration below it.
 - [`config.schema.json`](../config.schema.json): `roots.patterns`, the one place a pattern is accepted.
 - [`kinds.json`](../kinds.json): the kinds whose subjects fix which forms exist, and the self-check kinds that report a reference matching nothing.

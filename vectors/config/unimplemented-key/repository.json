@@ -1,0 +1,4 @@
+{
+  "target": { "kind": "application" },
+  "reporters": { "fail_under": "warn" }
+}

@@ -144,8 +144,13 @@ func TestConfigSchema_TargetKindIsRequiredWithNoDefault(t *testing.T) {
 	if !kind.required {
 		t.Errorf("schema[target].required contains kind = %t, want true", kind.required)
 	}
-	if target := lookupKey(t, keys, "target"); !target.required {
-		t.Errorf("schema[root].required contains target = %t, want true", target.required)
+	// No key is required at the root: each source is optional and the
+	// resolved configuration is what must name a target kind.
+	if target := lookupKey(t, keys, "target"); target.required {
+		t.Errorf("schema[root].required contains target = %t, want false", target.required)
+	}
+	if root := lookupKey(t, keys, "root"); len(stringSlice(root.node["required"])) != 0 {
+		t.Errorf("schema[root].required = %v, want empty", root.node["required"])
 	}
 }
 

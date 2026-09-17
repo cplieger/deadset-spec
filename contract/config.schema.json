@@ -1,10 +1,9 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "deadset configuration",
-  "description": "The closed key list every deadset product reads. A repository configuration (deadset.json at the target root) and a central configuration (the file the invocation names) are both instances of this schema; a command-line flag outranks the repository configuration, which outranks the central configuration, which outranks the default each key declares here. A key this list does not declare fails the decode and exits with the usage code, so no product implements a parser or a validator for it. Every key carries its JSON type, its default where it has one, the product that reads it under x-owner (product: every product; analyzer: every analyzer; orchestrator, go-analyzer, ts-analyzer: that one), and whether it is required through the enclosing object's required array. No key admits arbitrary nesting: every object closes with additionalProperties false. The one key resolution ignores is provenance, marked x-ignored-by-resolution.",
+  "description": "The closed key list every deadset product reads. A repository configuration (deadset.json at the target root) and a central configuration (the file the invocation names) are both instances of this schema; a command-line flag outranks the repository configuration, which outranks the central configuration, which outranks the default each key declares here. Each source is optional and neither has to be complete on its own, so no key is required at the root; the resolved configuration is what must name a target kind, and a run whose sources all omit it exits with the usage code. A key this list does not declare fails the decode and exits with the usage code, so no product implements a parser or a validator for it. Every key carries its JSON type, its default where it has one, the product that reads it under x-owner (product: every product; analyzer: every analyzer; orchestrator, go-analyzer, ts-analyzer: that one), and whether it is required through the enclosing object's required array. No key admits arbitrary nesting: every object closes with additionalProperties false. The one key resolution ignores is provenance, marked x-ignored-by-resolution.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["target"],
   "properties": {
     "contract_version": {
       "description": "The Contract version this configuration is written against, as a semantic version. A resolved configuration names the Contract version the product that printed it implements, and a product treats an absent key as its own version, so the key has no literal default.",
@@ -168,7 +167,7 @@
       }
     },
     "severity": {
-      "description": "Per-issue-kind severity. A key is a code (DS1101) or a two-digit range prefix naming a whole family (DS18, the intra-function kinds); a value is allow, warn or deny, and a finding at or above the failing severity, reporters.fail_on, exits with the findings code. A kind this object does not name takes the default severity contract/kinds.json declares for it. Only a code's severity changes here; its reachability class is derived by the analysis.",
+      "description": "Per-issue-kind severity. A key is a code (DS1101) or a two-digit range prefix naming a whole family (DS18, the intra-function kinds); a value is allow, warn or deny, and a finding at or above the failing severity, reporters.fail_on, exits with the findings code. A kind this object does not name takes the default severity contract/kinds.json declares for it. A key naming a kind whose severity the Contract fixes is an unimplemented key, and so is a family prefix whose range holds such a kind: DS17 is refused because DS1703 is fixed on at deny. Only a code's severity changes here; its reachability class is derived by the analysis.",
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
