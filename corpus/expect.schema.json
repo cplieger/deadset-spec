@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "deadset conformance expectation file",
+  "description": "The language-neutral expectation file of one conformance fixture, expect.json. It names what an analyzer must report and what it must not report, per issue kind and per exemption class, and it binds to each language rendering through one thing only: the fixture-local logical name in each expectation's symbol field, which the rendering's manifest, fixture.json, maps to a file and a line. No field of an expectation names a language; the fixture-level languages array is the one place a language appears, and it names which renderings exist rather than what any of them contains. The expectation list is exhaustive for the target: a finding on a position no expectation resolves to fails the analyzer.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name", "description", "languages", "target_kind", "expect"],
+  "properties": {
+    "name": {
+      "description": "The fixture's name, equal to the name of the directory that holds it: lowercase words joined by single hyphens.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$"
+    },
+    "description": {
+      "description": "One or two sentences on what the fixture pins: the behavior that must be reported and the behavior that must not.",
+      "type": "string",
+      "minLength": 1
+    },
+    "validates": {
+      "description": "The requirement clauses the fixture pins, each as section.clause, in the requirements document this contract is derived from. Informational: no runner reads it.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[0-9]+\\.[0-9]+$"
+      }
+    },
+    "languages": {
+      "description": "The languages the fixture has a rendering for, drawn from the languages field of contract/kinds.json. Every expectation applies to every rendering listed, so every logical name must resolve through every rendering's manifest. An analyzer answers the fixture only when its language is listed.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": ["go", "ts"]
+      }
+    },
+    "target_kind": {
+      "description": "The target kind the runner configures for the analysis, which decides the reachability class of every finding. It has no default, as the configuration key it feeds has none.",
+      "type": "string",
+      "enum": ["application", "library"]
+    },
+    "consumers": {
+      "description": "The logical names of the consumers the runner loads beside the target, each rooted at the directory of that name at the rendering root. Absent or empty means the target is analyzed alone.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$"
+      }
+    },
+    "expect": {
+      "description": "One expectation per subject, exhaustive for the target. Each names a subject by its logical name and states what an analyzer must report there.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["symbol", "report"],
+        "properties": {
+          "symbol": {
+            "description": "The fixture-local logical name of the subject: a declaration, a member, a file, a dependency line or a suppression entry. It is the key into each rendering's manifest and is never a language spelling; the manifest says what each rendering declares under it. Dotted segments are allowed so a member can be named under its container.",
+            "type": "string",
+            "pattern": "^[A-Za-z_][A-Za-z0-9_]*(\\.[A-Za-z_][A-Za-z0-9_]*)*$"
+          },
+          "report": {
+            "description": "The code of the issue kind an analyzer must report at the subject's position, drawn from the code field of a live row in contract/kinds.json, or the literal none when the analyzer must report nothing there.",
+            "type": "string",
+            "pattern": "^(DS[0-9]{4}|none)$"
+          },
+          "confidence": {
+            "description": "The confidence the reported finding must carry, drawn from the reachability_classes field of contract/kinds.json. Required when report is a code, forbidden when it is none.",
+            "type": "string",
+            "enum": ["certain", "probable", "possible"]
+          },
+          "reachability_class": {
+            "description": "The reachability class the reported finding must carry, drawn from the reachability_classes field of contract/kinds.json. Optional on a reported subject, forbidden when report is none.",
+            "type": "string",
+            "enum": ["certain", "probable", "possible"]
+          },
+          "liveness_relation": {
+            "description": "The liveness relation that must have produced the finding: reference-counting, where one reference from any declaration keeps a symbol live, or reachability, where only a path from a root does. Optional on a reported subject, forbidden when report is none.",
+            "type": "string",
+            "enum": ["reference-counting", "reachability"]
+          },
+          "retained_by": {
+            "description": "The exemption classes that hold the subject back, drawn from the class field of contract/exemptions.json. Allowed only when report is none, because a reported finding never carries a non-empty retained_by; the analyzer's retained-symbol listing must name exactly these classes at the subject's position.",
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$"
+            }
+          }
+        },
+        "if": {
+          "properties": {
+            "report": { "const": "none" }
+          }
+        },
+        "then": {
+          "not": {
+            "anyOf": [
+              { "required": ["confidence"] },
+              { "required": ["reachability_class"] },
+              { "required": ["liveness_relation"] }
+            ]
+          }
+        },
+        "else": {
+          "required": ["confidence"],
+          "not": { "required": ["retained_by"] }
+        }
+      }
+    }
+  }
+}

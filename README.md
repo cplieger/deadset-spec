@@ -52,7 +52,7 @@ func TestKindsAreCurrent(t *testing.T) {
 - The issue-kind vocabulary. Every kind has a code, the prefix `DS` and four digits, grouped by family into numbered ranges. A code renders identically in a text output line, an ignore entry, a configuration key and a SARIF rule identifier, and a retired code stays retired for the life of the code space.
 - The exemption classes: the reasons an unreferenced symbol is still live, such as a method that satisfies an interface.
 - The finding schema and the report schema, so every analyzer emits the same JSON object shape and the same SARIF mapping.
-- The suppression grammar: an inline directive and an ignore-file entry, both scoped to a path and both carrying a reason, plus the rule that a suppression matching nothing is itself reported.
+- The suppression grammar: an inline directive on the line above a declaration, an ignore-file entry scoped to one symbol in one file, and a baseline row of the same shape, each carrying a reason, plus the rule that a suppression matching nothing is itself reported.
 - The exit-code table, `contract/exit-codes.json`: 0 clean, 1 findings at or above the failing severity or a stale suppression, 2 usage error, 3 load or type-check failure, 4 a report holding a finding whose cross-language reference is still unresolved.
 - The text-line format, position first as `path:line:col`, so one grep expression matches the output of every analyzer.
 - The merge of several reports into one, stated as an algorithm with a deterministic order, together with published input and output vectors so a merge implementation is tested against declared data rather than against another implementation.

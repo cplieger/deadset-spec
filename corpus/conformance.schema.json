@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "deadset declared gaps",
+  "description": "The declared-gap file a product commits beside its source, conformance.json. It names the corpus version the product answers and every capability the product declines, so that an expectation the product does not answer is reported as a gap rather than failing silently: an expectation the product neither answers nor declares here is a failure. A capability is what an expectation exercises, which corpus.json's runner block defines as the expectation's report code when that is not none and each class in its retained_by, so a gap names an issue kind or an exemption class, never a fixture as a whole. Every row carries a reason, because the file is strict JSON and holds no comments; the reason is what a reader of the product's conformance results sees beside each gap. The shape follows the way established suites record a known non-answer: the Web Platform Tests metadata disables a test with a value that is the reason for the disablement and marks a feature not-implementing rather than deleting its tests, and WebAssembly engines running the specification test suite keep per-test unsupported lists with the reason beside each entry; here the reason is a required field rather than a comment beside a list entry.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["corpus_version", "product", "gaps"],
+  "properties": {
+    "corpus_version": {
+      "description": "The corpus_version of corpus.json this file answers. A product's conformance run against a corpus of another major version is not a conformance result, so a gap declared against one major says nothing about another.",
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "product": {
+      "description": "The product the gaps belong to.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "name": {
+          "description": "The product's name as its report envelope states it in analyzer.name: lowercase words joined by single hyphens.",
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$"
+        },
+        "version": {
+          "description": "The product version the gaps were declared for. Optional in this committed file, because a version written into source goes stale at every release; the conformance results document names the version that actually ran.",
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(-[0-9A-Za-z.-]+)?(\\+[0-9A-Za-z.-]+)?$"
+        }
+      }
+    },
+    "gaps": {
+      "description": "Every capability the product declines, one row per fixture and capability. Required even when empty, so an empty array is the product's positive statement that it declines nothing. Two rows never share a fixture, symbol and capability.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["fixture", "capability", "reason"],
+        "properties": {
+          "fixture": {
+            "description": "The name of the fixture the gap applies to, as its expect.json spells it. A fixture absent from the corpus at the declared corpus_version is a defect in this file.",
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$"
+          },
+          "symbol": {
+            "description": "The logical name of one expectation in the fixture, when the gap is narrower than the fixture. Absent, the gap covers every expectation in the fixture that exercises the capability.",
+            "type": "string",
+            "pattern": "^[A-Za-z_][A-Za-z0-9_]*(\\.[A-Za-z_][A-Za-z0-9_]*)*$"
+          },
+          "capability": {
+            "description": "The capability declined: an issue-kind code from the code field of a live row in contract/kinds.json, or an exemption class from the class field of contract/exemptions.json. It must be a capability the named expectations exercise; a gap naming a capability no expectation in the fixture exercises covers nothing.",
+            "type": "string",
+            "pattern": "^(DS[0-9]{4}|[a-z][a-z0-9]*(-[a-z0-9]+)*)$"
+          },
+          "reason": {
+            "description": "Why the product does not implement the capability, in one or two sentences for a reader of the product's conformance results: what is missing, and where applicable the tool or convention the gap stands in for. Required on every row, so a gap is never a bare entry.",
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          }
+        }
+      }
+    }
+  }
+}

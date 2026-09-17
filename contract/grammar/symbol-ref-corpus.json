@@ -1,0 +1,796 @@
+[
+  {
+    "input": "go://github.com/cplieger/toolbelt/v3#",
+    "language": "go",
+    "form": "package",
+    "accepted": true,
+    "reason": "An empty fragment names the scope itself, here the package at the module root.",
+    "example": "package toolbelt"
+  },
+  {
+    "input": "go://github.com/cplieger/toolbelt/v3#Resolve",
+    "language": "go",
+    "form": "package-level",
+    "accepted": true,
+    "reason": "A package-level function, spelled by its declared name.",
+    "example": "func Resolve(name string) (Tool, error) {"
+  },
+  {
+    "input": "go://github.com/cplieger/toolbelt/v3#normalize",
+    "language": "go",
+    "form": "package-level",
+    "accepted": true,
+    "reason": "An unexported package-level function; case is kept as declared and nothing marks the visibility.",
+    "example": "func normalize(name string) string {"
+  },
+  {
+    "input": "go://github.com/cplieger/toolbelt/v3#Catalog",
+    "language": "go",
+    "form": "package-level",
+    "accepted": true,
+    "reason": "A package-level type; the same form names a struct, an interface, a defined type and an alias.",
+    "example": "type Catalog struct {"
+  },
+  {
+    "input": "go://github.com/cplieger/langtag#Exact",
+    "language": "go",
+    "form": "package-level",
+    "accepted": true,
+    "reason": "A package-level constant; a Go enumerated member is a package-level constant and takes this form.",
+    "example": "const (\n\tExact Tier = iota"
+  },
+  {
+    "input": "go://github.com/cplieger/toolbelt/v3#ErrNotFound",
+    "language": "go",
+    "form": "package-level",
+    "accepted": true,
+    "reason": "A package-level variable.",
+    "example": "var ErrNotFound = errors.New(\"tool not found\")"
+  },
+  {
+    "input": "go://example.com/fixture#Ünused",
+    "language": "go",
+    "form": "package-level",
+    "accepted": true,
+    "reason": "A non-ASCII identifier is carried as its UTF-8 bytes, never percent-encoded and never normalized.",
+    "example": "func Ünused() {"
+  },
+  {
+    "input": "go://github.com/cplieger/toolbelt/v3#TestResolve",
+    "language": "go",
+    "form": "package-level",
+    "accepted": true,
+    "reason": "A test function in an in-package test file shares the production package's scope.",
+    "example": "package toolbelt\n\nfunc TestResolve(t *testing.T) {"
+  },
+  {
+    "input": "go://github.com/cplieger/toolbelt/v3/httpapi_test#TestSearch",
+    "language": "go",
+    "form": "package-level",
+    "accepted": true,
+    "reason": "A test function in an external test package is scoped by that package's own path, the directory path with the _test suffix.",
+    "example": "package httpapi_test\n\nfunc TestSearch(t *testing.T) {"
+  },
+  {
+    "input": "go://github.com/cplieger/toolbelt/v3/cmd/toolcatalog#run",
+    "language": "go",
+    "form": "package-level",
+    "accepted": true,
+    "reason": "A symbol in a main package is scoped by the package's import path like any other.",
+    "example": "func run(args []string) error {"
+  },
+  {
+    "input": "go://github.com/cplieger/toolbelt/v3#Catalog.ResolveAlias",
+    "language": "go",
+    "form": "method",
+    "accepted": true,
+    "reason": "A method is its receiver's base type name, a dot and the method name; the pointer star of the receiver never appears.",
+    "example": "func (c *Catalog) ResolveAlias(name string) string {"
+  },
+  {
+    "input": "go://github.com/cplieger/toolbelt/v3/internal/queue#List.Push",
+    "language": "go",
+    "form": "method",
+    "accepted": true,
+    "reason": "A method on a generic type names the type without its type parameters.",
+    "example": "func (l *List[T]) Push(v T) {"
+  },
+  {
+    "input": "go://github.com/cplieger/toolbelt/v3#Fetcher.Fetch",
+    "language": "go",
+    "form": "interface-method",
+    "accepted": true,
+    "reason": "An interface method takes the same form as a concrete method: the interface name, a dot and the method name.",
+    "example": "type Fetcher interface {\n\tFetch(ctx context.Context, url string) ([]byte, error)"
+  },
+  {
+    "input": "go://github.com/cplieger/toolbelt/v3#Catalog.entries",
+    "language": "go",
+    "form": "field",
+    "accepted": true,
+    "reason": "A struct field always carries its struct; a field name alone would be a package-level reference.",
+    "example": "type Catalog struct {\n\tentries map[string]Tool"
+  },
+  {
+    "input": "go://github.com/cplieger/toolbelt/v3#Buffered.Buffer",
+    "language": "go",
+    "form": "field",
+    "accepted": true,
+    "reason": "An embedded field is spelled by its field name, which Go defines as the unqualified type name.",
+    "example": "type Buffered struct {\n\t*bytes.Buffer"
+  },
+  {
+    "input": "go://github.com/cplieger/toolbelt/v3#Manifest.Tools.Version",
+    "language": "go",
+    "form": "field",
+    "accepted": true,
+    "reason": "A field of an anonymous struct type is reached through the field that carries the type, here through a slice element.",
+    "example": "type Manifest struct {\n\tTools []struct{ Name, Version string }"
+  },
+  {
+    "input": "go://github.com/cplieger/langtag#Best[T]",
+    "language": "go",
+    "form": "type-parameter",
+    "accepted": true,
+    "reason": "A type parameter of a function is the function name followed by the parameter name in square brackets, Go's own instantiation syntax.",
+    "example": "func Best[T Tag](want T, have []T) (T, bool) {"
+  },
+  {
+    "input": "go://github.com/cplieger/toolbelt/v3/internal/legacy#render_windows.go:file",
+    "language": "go",
+    "form": "file",
+    "accepted": true,
+    "reason": "A source file is its base name and the file selector, scoped by the import path of the directory that holds it.",
+    "example": "//go:build windows\n\npackage legacy"
+  },
+  {
+    "input": "go://github.com/cplieger/toolbelt/v3#github.com/example/left:require",
+    "language": "go",
+    "form": "require",
+    "accepted": true,
+    "reason": "A require directive is the required module path and the require selector, scoped by the module whose go.mod carries it.",
+    "example": "require github.com/example/left v1.4.0"
+  },
+  {
+    "input": "go://github.com/cplieger/toolbelt/v3#github.com/old/mod@v1.2.3:replace",
+    "language": "go",
+    "form": "replace",
+    "accepted": true,
+    "reason": "A replace directive that names a version carries it after an at sign, because two replace lines for one module at two versions are distinct directives.",
+    "example": "replace github.com/old/mod v1.2.3 => ../mod"
+  },
+  {
+    "input": "go://github.com/cplieger/toolbelt/v3#github.com/old/mod:replace",
+    "language": "go",
+    "form": "replace",
+    "accepted": true,
+    "reason": "A replace directive with no version has no at sign.",
+    "example": "replace github.com/old/mod => ../mod"
+  },
+  {
+    "input": "github.com/cplieger/toolbelt/v3#Catalog",
+    "language": "go",
+    "form": "package-level",
+    "accepted": false,
+    "reason": "No language prefix. Every reference starts with its language and the three characters ://, so that a Go symbol and a TypeScript symbol of one name stay distinct."
+  },
+  {
+    "input": "Go://github.com/cplieger/toolbelt/v3#Catalog",
+    "language": "go",
+    "form": "package-level",
+    "accepted": false,
+    "reason": "The language prefix is lowercase and compared bytewise."
+  },
+  {
+    "input": "go:// github.com/cplieger/toolbelt/v3#Catalog",
+    "language": "go",
+    "form": "package-level",
+    "accepted": false,
+    "reason": "Whitespace never appears in a Go reference."
+  },
+  {
+    "input": "go://github.com/cplieger/toolbelt/v3#1Catalog",
+    "language": "go",
+    "form": "package-level",
+    "accepted": false,
+    "reason": "A Go identifier does not start with a digit."
+  },
+  {
+    "input": "go://example.com/fixture#%C3%9Cnused",
+    "language": "go",
+    "form": "package-level",
+    "accepted": false,
+    "reason": "Percent-encoding is refused: a reference is compared as bytes and never decoded, so the non-ASCII identifier is carried as UTF-8."
+  },
+  {
+    "input": "go://github.com/cplieger/toolbelt/v3",
+    "language": "go",
+    "form": "package",
+    "accepted": false,
+    "reason": "No fragment separator. The package itself is spelled with a trailing #, so that a scope is never mistaken for a symbol."
+  },
+  {
+    "input": "go://github.com/cplieger/toolbelt/v3/#",
+    "language": "go",
+    "form": "package",
+    "accepted": false,
+    "reason": "An import path neither starts nor ends with a slash."
+  },
+  {
+    "input": "go://github.com/cplieger/toolbelt/v3.Catalog",
+    "language": "go",
+    "form": "package-level",
+    "accepted": false,
+    "reason": "The dot-qualified shape of go/types.ObjectString has no fragment separator, and a path such as gopkg.in/yaml.v3.Node would split ambiguously."
+  },
+  {
+    "input": "go://github.com/cplieger/toolbelt/v3#(*Catalog).ResolveAlias",
+    "language": "go",
+    "form": "method",
+    "accepted": false,
+    "reason": "The display name with its receiver star is symbol.name, never the reference; a type has at most one method of a name whatever the receiver kind, so the star carries nothing."
+  },
+  {
+    "input": "go://github.com/cplieger/toolbelt/v3#Catalog.ResolveAlias(name)",
+    "language": "go",
+    "form": "method",
+    "accepted": false,
+    "reason": "A parameter has no reference of its own; a finding about one carries the enclosing method's reference and names the parameter in its position and its symbol.name."
+  },
+  {
+    "input": "go://github.com/cplieger/toolbelt/v3#Catalog.ResolveAlias.",
+    "language": "go",
+    "form": "method",
+    "accepted": false,
+    "reason": "A trailing dot leaves the chain incomplete."
+  },
+  {
+    "input": "go://github.com/cplieger/toolbelt/v3#Catalog#ResolveAlias",
+    "language": "go",
+    "form": "method",
+    "accepted": false,
+    "reason": "Members are joined by a dot. The member navigation # of API Extractor's canonical form is not used, because # is the scope separator here."
+  },
+  {
+    "input": "go://github.com/cplieger/toolbelt/v3#Catalog.ResolveAlias:method",
+    "language": "go",
+    "form": "method",
+    "accepted": false,
+    "reason": "A declaration carries no selector; the Go selectors are file, require and replace, and each names a non-code subject."
+  },
+  {
+    "input": "go://github.com/cplieger/toolbelt/v3#Catalog.ResolveAlias\n",
+    "language": "go",
+    "form": "method",
+    "accepted": false,
+    "reason": "A reference never contains LF, so that it can be a line's field, a hash input separated by LF and a JSON string alike."
+  },
+  {
+    "input": "go://github.com/cplieger/toolbelt/v3#Catalog.ResolveAlias\r",
+    "language": "go",
+    "form": "method",
+    "accepted": false,
+    "reason": "A reference never contains CR."
+  },
+  {
+    "input": "go://github.com/cplieger/toolbelt/v3/internal/queue#List[T].Push",
+    "language": "go",
+    "form": "method",
+    "accepted": false,
+    "reason": "Type arguments never appear on a container; the method of a generic type is spelled List.Push."
+  },
+  {
+    "input": "go://github.com/cplieger/toolbelt/v3#Fetcher.Fetch()",
+    "language": "go",
+    "form": "interface-method",
+    "accepted": false,
+    "reason": "A signature never appears; an interface method is named, not typed."
+  },
+  {
+    "input": "go://github.com/cplieger/toolbelt/v3#Catalog->entries",
+    "language": "go",
+    "form": "field",
+    "accepted": false,
+    "reason": "The only member separator is a dot."
+  },
+  {
+    "input": "go://github.com/cplieger/toolbelt/v3#Catalog. entries",
+    "language": "go",
+    "form": "field",
+    "accepted": false,
+    "reason": "Whitespace never appears in a Go reference, not even after the member separator."
+  },
+  {
+    "input": "go://github.com/cplieger/toolbelt/v3#Catalog/entries",
+    "language": "go",
+    "form": "field",
+    "accepted": false,
+    "reason": "A slash belongs to the import path, before the #; a field is reached from its struct with a dot."
+  },
+  {
+    "input": "go://github.com/cplieger/langtag#Best[T Tag]",
+    "language": "go",
+    "form": "type-parameter",
+    "accepted": false,
+    "reason": "The constraint is not part of the reference; only the type parameter's name is."
+  },
+  {
+    "input": "go://github.com/cplieger/langtag#Best[]",
+    "language": "go",
+    "form": "type-parameter",
+    "accepted": false,
+    "reason": "Empty brackets name no type parameter."
+  },
+  {
+    "input": "go://github.com/cplieger/toolbelt/v3/internal/legacy#file:render_windows.go",
+    "language": "go",
+    "form": "file",
+    "accepted": false,
+    "reason": "A selector follows its operand, after a colon, as in render_windows.go:file."
+  },
+  {
+    "input": "go://github.com/cplieger/toolbelt/v3/internal/legacy#render_windows.go:File",
+    "language": "go",
+    "form": "file",
+    "accepted": false,
+    "reason": "Selectors are lowercase and compared bytewise."
+  },
+  {
+    "input": "go://github.com/cplieger/toolbelt/v3#github.com/example/left v1.4.0:require",
+    "language": "go",
+    "form": "require",
+    "accepted": false,
+    "reason": "A require directive is spelled by its module path alone; the required version is the directive's value, not its identity, and whitespace never appears."
+  },
+  {
+    "input": "go://github.com/cplieger/toolbelt/v3#require github.com/example/left",
+    "language": "go",
+    "form": "require",
+    "accepted": false,
+    "reason": "The go.mod keyword order is not the reference: the selector follows the module path after a colon."
+  },
+  {
+    "input": "go://github.com/cplieger/toolbelt/v3#github.com/old/mod@v1.2.3:exclude",
+    "language": "go",
+    "form": "replace",
+    "accepted": false,
+    "reason": "exclude is not a selector: an exclude directive is never a finding subject, so it has no reference."
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/src/wire.ts#",
+    "language": "ts",
+    "form": "module",
+    "accepted": true,
+    "reason": "An empty fragment names the scope itself, here the module: a package name, then the file's path inside the package with its real extension.",
+    "example": "import type { Layout } from './layout';"
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/src/wire.ts#ServerEvent",
+    "language": "ts",
+    "form": "module-level",
+    "accepted": true,
+    "reason": "An exported module-level declaration, spelled by its declared name; a value and a type of one name in one module are one symbol and one reference.",
+    "example": "export interface ServerEvent {"
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/src/features/tabs/index.ts#measure",
+    "language": "ts",
+    "form": "module-level",
+    "accepted": true,
+    "reason": "A module-level declaration that is not exported takes the same form; nothing marks the visibility.",
+    "example": "function measure(el: HTMLElement): Layout {"
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/src/features/tabs/index.ts#GAP",
+    "language": "ts",
+    "form": "module-level",
+    "accepted": true,
+    "reason": "A module-level variable.",
+    "example": "const GAP = 4;"
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/src/App.tsx#App",
+    "language": "ts",
+    "form": "module-level",
+    "accepted": true,
+    "reason": "A .tsx file is a module like any other; the extension is the file's own.",
+    "example": "export function App() {"
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/scripts/build.mjs#bundle",
+    "language": "ts",
+    "form": "module-level",
+    "accepted": true,
+    "reason": "A JavaScript module is under the ts prefix, because one analyzer covers both languages and the prefix names the analyzer's language family.",
+    "example": "export async function bundle() {"
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/src/types.d.ts#Manifest",
+    "language": "ts",
+    "form": "module-level",
+    "accepted": true,
+    "reason": "A declaration file keeps its .d.ts extension.",
+    "example": "export interface Manifest {"
+  },
+  {
+    "input": "ts://./src/wire.ts#ServerEvent",
+    "language": "ts",
+    "form": "module-level",
+    "accepted": true,
+    "reason": "When no manifest above the file carries a name, the package component is a single dot and the path is relative to the target root; an npm name never starts with a dot, so the two cannot collide.",
+    "example": "export interface ServerEvent {"
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/src/app.ts#default",
+    "language": "ts",
+    "form": "default-export",
+    "accepted": true,
+    "reason": "A default export is spelled default, its export name; the local class name, if any, is symbol.name.",
+    "example": "export default class App {"
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/src/index.ts#TabStrip:alias",
+    "language": "ts",
+    "form": "alias",
+    "accepted": true,
+    "reason": "An export specifier creates an alias symbol distinct from the declaration it names; the alias selector keeps the two apart when they share a module and a name.",
+    "example": "export { TabStrip } from './features/tabs';"
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/src/index.ts#Strip:alias",
+    "language": "ts",
+    "form": "alias",
+    "accepted": true,
+    "reason": "A renamed re-export is spelled by its exported name.",
+    "example": "export { TabStrip as Strip } from './features/tabs';"
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/src/index.ts#default:alias",
+    "language": "ts",
+    "form": "alias",
+    "accepted": true,
+    "reason": "A default export written as a separate statement is an alias of the declaration it names.",
+    "example": "export default App;"
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/src/features/tabs/index.ts#TabStrip.cachedLayout",
+    "language": "ts",
+    "form": "class-member",
+    "accepted": true,
+    "reason": "An instance member is the class name, a dot and the member name; the private modifier changes nothing in the spelling.",
+    "example": "private cachedLayout: Layout | null = null;"
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/src/features/tabs/index.ts#TabStrip.render",
+    "language": "ts",
+    "form": "class-member",
+    "accepted": true,
+    "reason": "A method is a member like a property; a getter and a setter of one name are one symbol and one reference.",
+    "example": "render(): void {"
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/src/features/tabs/index.ts#TabStrip.#frame",
+    "language": "ts",
+    "form": "private-member",
+    "accepted": true,
+    "reason": "A private name keeps its hash sign, which is part of the name in the language; the scope separator is the first # of the reference, so a later # is a name.",
+    "example": "#frame = 0;"
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/src/features/tabs/index.ts#TabStrip.count:static",
+    "language": "ts",
+    "form": "static-member",
+    "accepted": true,
+    "reason": "A static member always carries the static selector, because a class may declare a static and an instance member of one name.",
+    "example": "static count = 0;"
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/src/wire.ts#Headers.'content-type'",
+    "language": "ts",
+    "form": "interface-member",
+    "accepted": true,
+    "reason": "A member whose name is not an identifier is written as a single-quoted string.",
+    "example": "'content-type': string;"
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/src/wire.ts#Quirks.'it\\'s'",
+    "language": "ts",
+    "form": "interface-member",
+    "accepted": true,
+    "reason": "Inside a quoted component a quote, a backslash, LF and CR are escaped as \\', \\\\, \\n and \\r; every other character stands for itself.",
+    "example": "\"it's\": boolean;"
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/src/features/tabs/index.ts#TabStrip.[Symbol.iterator]",
+    "language": "ts",
+    "form": "computed-member",
+    "accepted": true,
+    "reason": "A member declared with a computed key is spelled as the key's source text in square brackets, whitespace removed.",
+    "example": "*[Symbol.iterator](): Iterator<Tab> {"
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/src/wire.ts#ServerEvent.seq",
+    "language": "ts",
+    "form": "interface-member",
+    "accepted": true,
+    "reason": "An interface member is the interface name, a dot and the member name.",
+    "example": "seq: number;"
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/src/wire.ts#Labels.größe",
+    "language": "ts",
+    "form": "interface-member",
+    "accepted": true,
+    "reason": "A non-ASCII identifier is carried as UTF-8 and is not quoted, because it is an identifier.",
+    "example": "größe: string;"
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/src/layout.ts#Layout.gap",
+    "language": "ts",
+    "form": "type-member",
+    "accepted": true,
+    "reason": "A member of the object type a type alias declares is the alias name, a dot and the member name.",
+    "example": "export type Layout = { gap: number; width: number };"
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/src/wire.ts#Kind.Resize",
+    "language": "ts",
+    "form": "enum-member",
+    "accepted": true,
+    "reason": "An enum member is the enum name, a dot and the member name.",
+    "example": "export enum Kind {\n  Resize = 'resize',"
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/src/wire.ts#Kind.'tab-close'",
+    "language": "ts",
+    "form": "enum-member",
+    "accepted": true,
+    "reason": "An enum member declared with a string-literal name is quoted like any other non-identifier name.",
+    "example": "'tab-close' = 'tab-close',"
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/src/wire.ts#Wire.Server.Event",
+    "language": "ts",
+    "form": "namespace-member",
+    "accepted": true,
+    "reason": "Nested namespaces are a chain of names from the module-level declaration inward.",
+    "example": "export namespace Wire { export namespace Server { export interface Event {"
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/src/wire.ts#decode<T>",
+    "language": "ts",
+    "form": "type-parameter",
+    "accepted": true,
+    "reason": "A type parameter of a function is the function name followed by the parameter name in angle brackets, the language's own type-argument syntax.",
+    "example": "export function decode<T>(raw: string): T {"
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/src/wire.ts#Codec.decode<T>",
+    "language": "ts",
+    "form": "type-parameter",
+    "accepted": true,
+    "reason": "A type parameter of a method follows the method's own reference.",
+    "example": "decode<T>(raw: string): T {"
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/src/wire.ts#Codec.of:static<T>",
+    "language": "ts",
+    "form": "type-parameter",
+    "accepted": true,
+    "reason": "On a static method the static selector comes first and the type parameter last.",
+    "example": "static of<T>(value: T): Codec {"
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/package.json#lodash:dependency",
+    "language": "ts",
+    "form": "dependency",
+    "accepted": true,
+    "reason": "A manifest dependency is scoped by the manifest, spelled by the dependency's package name, and carries the selector of the manifest section that declares it.",
+    "example": "\"dependencies\": { \"lodash\": \"4.17.21\" }"
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/package.json#@types/node:dev-dependency",
+    "language": "ts",
+    "form": "dependency",
+    "accepted": true,
+    "reason": "A scoped dependency keeps its scope; the dev-dependency selector names the devDependencies section.",
+    "example": "\"devDependencies\": { \"@types/node\": \"26.0.0\" }"
+  },
+  {
+    "input": "ts://@cplieger/ui-primitives/package.json#typescript:peer-dependency",
+    "language": "ts",
+    "form": "dependency",
+    "accepted": true,
+    "reason": "The peer-dependency selector names the peerDependencies section.",
+    "example": "\"peerDependencies\": { \"typescript\": \">=7.0.0\" }"
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/src/wire.ts",
+    "language": "ts",
+    "form": "module",
+    "accepted": false,
+    "reason": "No fragment separator. The module itself is spelled with a trailing #, so that a scope is never mistaken for a symbol."
+  },
+  {
+    "input": "TS://@cplieger/vibekit-web/src/wire.ts#",
+    "language": "ts",
+    "form": "module",
+    "accepted": false,
+    "reason": "The language prefix is lowercase and compared bytewise."
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/src/wire#ServerEvent",
+    "language": "ts",
+    "form": "module-level",
+    "accepted": false,
+    "reason": "The path names a source file with its real extension, never an import specifier with the extension dropped."
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web#ServerEvent",
+    "language": "ts",
+    "form": "module-level",
+    "accepted": false,
+    "reason": "A package name alone is not a scope: a module-level declaration lives in one file, and the file is part of the reference."
+  },
+  {
+    "input": "ts:///src/wire.ts#ServerEvent",
+    "language": "ts",
+    "form": "module-level",
+    "accepted": false,
+    "reason": "The package component is never empty; a package with no manifest name is spelled with a single dot."
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web!src/wire.ts#ServerEvent",
+    "language": "ts",
+    "form": "module-level",
+    "accepted": false,
+    "reason": "The ! of API Extractor's canonical form is not used; the package name and the path are joined by a slash."
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/src/wire.ts#Server Event",
+    "language": "ts",
+    "form": "module-level",
+    "accepted": false,
+    "reason": "Whitespace never appears outside a quoted component."
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/src/wire.ts#ServerEvent\n",
+    "language": "ts",
+    "form": "module-level",
+    "accepted": false,
+    "reason": "A reference never contains LF."
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/src/features/tabs/index.ts##frame",
+    "language": "ts",
+    "form": "module-level",
+    "accepted": false,
+    "reason": "A private name exists only inside a class, so it never opens a fragment."
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/src/index.ts#TabStrip:export",
+    "language": "ts",
+    "form": "alias",
+    "accepted": false,
+    "reason": "export is not a selector; an export specifier's symbol carries the alias selector."
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/src/features/tabs/index.ts#TabStrip#cachedLayout",
+    "language": "ts",
+    "form": "class-member",
+    "accepted": false,
+    "reason": "Members are joined by a dot. The member navigation # of API Extractor's canonical form is not used, because # is the scope separator here and a private name's own sign."
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/src/features/tabs/index.ts#TabStrip.(cachedLayout:instance)",
+    "language": "ts",
+    "form": "class-member",
+    "accepted": false,
+    "reason": "TSDoc's parenthesized selector is not used; an instance member is bare and only a static member carries a selector."
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/src/features/tabs/index.ts#TabStrip.cachedLayout:instance",
+    "language": "ts",
+    "form": "class-member",
+    "accepted": false,
+    "reason": "instance is not a selector: an instance member is the unmarked case."
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/src/features/tabs/index.ts#TabStrip::cachedLayout",
+    "language": "ts",
+    "form": "class-member",
+    "accepted": false,
+    "reason": "The only member separator is a dot."
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/src/features/tabs/index.ts#TabStrip.count:Static",
+    "language": "ts",
+    "form": "static-member",
+    "accepted": false,
+    "reason": "Selectors are lowercase and compared bytewise."
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/src/features/tabs/index.ts#TabStrip:static.count",
+    "language": "ts",
+    "form": "static-member",
+    "accepted": false,
+    "reason": "A selector applies to the last component and ends the chain; nothing follows it but a type parameter."
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/src/wire.ts#Headers.\"content-type\"",
+    "language": "ts",
+    "form": "interface-member",
+    "accepted": false,
+    "reason": "A quoted component uses single quotes, so that the reference sits inside a JSON string without escaping."
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/src/wire.ts#Headers.content-type",
+    "language": "ts",
+    "form": "interface-member",
+    "accepted": false,
+    "reason": "A name that is not an identifier is quoted; a bare hyphen is not an identifier character."
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/src/wire.ts#Kind.Resize.",
+    "language": "ts",
+    "form": "enum-member",
+    "accepted": false,
+    "reason": "A trailing dot leaves the chain incomplete."
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/src/wire.ts#Kind/Resize",
+    "language": "ts",
+    "form": "enum-member",
+    "accepted": false,
+    "reason": "A slash belongs to the scope, before the #; an enum member is reached from its enum with a dot."
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/src/wire.ts#Kind[Resize]",
+    "language": "ts",
+    "form": "enum-member",
+    "accepted": false,
+    "reason": "Square brackets spell a computed key, and a computed key is a member reached with a dot; an enum member is a plain name."
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/src/wire.ts#decode[T]",
+    "language": "ts",
+    "form": "type-parameter",
+    "accepted": false,
+    "reason": "A TypeScript type parameter is spelled in angle brackets; square brackets are Go's spelling."
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/src/wire.ts#decode<T extends Tag>",
+    "language": "ts",
+    "form": "type-parameter",
+    "accepted": false,
+    "reason": "The constraint is not part of the reference; only the type parameter's name is."
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/src/wire.ts#Codec<T>.decode",
+    "language": "ts",
+    "form": "type-parameter",
+    "accepted": false,
+    "reason": "Type arguments never appear on a container, and a type parameter of a type declaration is not a subject; only a function or method type parameter is."
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web#lodash:dependency",
+    "language": "ts",
+    "form": "dependency",
+    "accepted": false,
+    "reason": "A dependency is scoped by the manifest that declares it, so the scope ends in package.json."
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/package.json#lodash:devDependencies",
+    "language": "ts",
+    "form": "dependency",
+    "accepted": false,
+    "reason": "The selectors are dependency, dev-dependency and peer-dependency, not the manifest's own key names."
+  },
+  {
+    "input": "ts://@cplieger/vibekit-web/package.json#lodash",
+    "language": "ts",
+    "form": "dependency",
+    "accepted": false,
+    "reason": "A dependency always carries its section selector, and package.json is not a module, so no symbol form applies either."
+  }
+]

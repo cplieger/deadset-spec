@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "deadset conformance rendering manifest",
+  "description": "The manifest of one language rendering of a conformance fixture, fixture.json: a section of the Go rendering's txtar archive, a file at the root of the TypeScript rendering's directory, one schema for both. Its only job is the binding the expectation file cannot make: it maps every fixture-local logical name the expectation file uses to the file and the line where this rendering declares that subject, in whatever spelling this language uses. Every name the expectation file uses must appear here, and no other name may, so a manifest never carries a subject the corpus does not test. The manifest does not restate the fixture's name, description or requirement clauses; those live once, in the expectation file.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["symbols"],
+  "properties": {
+    "symbols": {
+      "description": "The binding table, keyed by logical name exactly as the expectation file spells it. Each value is the position of that subject in this rendering.",
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "pattern": "^[A-Za-z_][A-Za-z0-9_]*(\\.[A-Za-z_][A-Za-z0-9_]*)*$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["file", "line"],
+        "properties": {
+          "file": {
+            "description": "The path of the file that declares the subject, relative to the rendering root, with forward slashes and no empty, dot or dot-dot segment. The rendering root is the archive for Go and the ts/ directory for TypeScript, so target/ and each consumer directory are its first segments.",
+            "type": "string",
+            "pattern": "^(\\.?[A-Za-z0-9_@-][A-Za-z0-9_@.-]*)(/\\.?[A-Za-z0-9_@-][A-Za-z0-9_@.-]*)*$"
+          },
+          "line": {
+            "description": "The 1-based line of the file on which the subject is declared: the line a finding for it carries in its position.",
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
+    }
+  }
+}
