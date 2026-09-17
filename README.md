@@ -1,8 +1,5 @@
 # deadset-spec
 
-[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/PROJECT_ID/badge)](https://www.bestpractices.dev/projects/PROJECT_ID)
-[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/cplieger/deadset-spec/badge)](https://scorecard.dev/viewer/?uri=github.com/cplieger/deadset-spec)
-
 The contract every deadset dead-code analyzer implements, and the conformance corpus each one passes before it releases.
 
 ## What this is
