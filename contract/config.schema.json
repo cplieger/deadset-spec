@@ -1,0 +1,266 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "deadset configuration",
+  "description": "The closed key list every deadset product reads. A repository configuration (deadset.json at the target root) and a central configuration (the file the invocation names) are both instances of this schema; a command-line flag outranks the repository configuration, which outranks the central configuration, which outranks the default each key declares here. A key this list does not declare fails the decode and exits with the usage code, so no product implements a parser or a validator for it. Every key carries its JSON type, its default where it has one, the product that reads it under x-owner (product: every product; analyzer: every analyzer; orchestrator, go-analyzer, ts-analyzer: that one), and whether it is required through the enclosing object's required array. No key admits arbitrary nesting: every object closes with additionalProperties false. The one key resolution ignores is provenance, marked x-ignored-by-resolution.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["target"],
+  "properties": {
+    "contract_version": {
+      "description": "The Contract version this configuration is written against, as a semantic version. A resolved configuration names the Contract version the product that printed it implements, and a product treats an absent key as its own version, so the key has no literal default.",
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "x-owner": "product"
+    },
+    "target": {
+      "description": "What is being analyzed. Required, because its one key is.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind"],
+      "x-owner": "product",
+      "properties": {
+        "kind": {
+          "description": "Whether the target is an application, whose every caller is in the analyzed graph, or a library, whose published API has callers outside it. Required with no default, and never inferred from the presence of an executable entry point: a library that also ships a command would be misclassified. A run whose sources both omit it exits with the usage code naming this key.",
+          "type": "string",
+          "enum": ["application", "library"],
+          "x-owner": "product"
+        }
+      }
+    },
+    "analysis": {
+      "description": "How the analysis is scoped and filtered.",
+      "type": "object",
+      "additionalProperties": false,
+      "x-owner": "product",
+      "properties": {
+        "languages": {
+          "description": "The languages in scope. An empty array, the default, means the orchestrator detects them from the target tree; a non-empty array replaces detection.",
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": ["go", "ts"]
+          },
+          "default": [],
+          "x-owner": "orchestrator"
+        },
+        "min_confidence": {
+          "description": "The lowest reachability class a finding must reach to be reported. possible, the default, reports every finding; probable omits findings about a library's exported symbols with no consumer information; certain reports only findings whose every caller is in the analyzed graph.",
+          "type": "string",
+          "enum": ["certain", "probable", "possible"],
+          "default": "possible",
+          "x-owner": "analyzer"
+        },
+        "generated_files": {
+          "description": "Whether declarations in generated files are analyzed. exclude, the default, retains every declaration in a generated file under the generated-file exemption; include reports them, with every such finding marked as one no mechanical edit may act on.",
+          "type": "string",
+          "enum": ["exclude", "include"],
+          "default": "exclude",
+          "x-owner": "analyzer"
+        },
+        "consumer_tests": {
+          "description": "How a reference from a consumer's test file counts. test, the default, counts it as a test reference, so a symbol only consumer tests reach is reported as test-only use; production counts it as a production reference.",
+          "type": "string",
+          "enum": ["test", "production"],
+          "default": "test",
+          "x-owner": "analyzer"
+        },
+        "configurations": {
+          "description": "The build matrix. Each entry names one configuration the target builds under; a symbol is reported only when it is dead in every entry. An empty array, the default, derives the matrix from the build constraints present in the target tree plus the host platform, and a derived matrix is never complete.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "os", "arch"],
+            "properties": {
+              "id": {
+                "description": "The name the report uses for this configuration.",
+                "type": "string",
+                "minLength": 1,
+                "x-owner": "analyzer"
+              },
+              "os": {
+                "description": "The target operating system, as the toolchain names it.",
+                "type": "string",
+                "minLength": 1,
+                "x-owner": "analyzer"
+              },
+              "arch": {
+                "description": "The target architecture, as the toolchain names it.",
+                "type": "string",
+                "minLength": 1,
+                "x-owner": "analyzer"
+              },
+              "tags": {
+                "description": "The build tags in effect for this configuration.",
+                "type": "array",
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "default": [],
+                "x-owner": "analyzer"
+              }
+            }
+          },
+          "default": [],
+          "x-owner": "analyzer"
+        },
+        "matrix": {
+          "description": "Declarations about the build matrix.",
+          "type": "object",
+          "additionalProperties": false,
+          "x-owner": "analyzer",
+          "properties": {
+            "complete": {
+              "description": "Declares that configurations lists every configuration the target builds. Only under a complete matrix is a source file no configuration builds reported (DS1501). The default is false, because a matrix derived from the constraints in the tree cannot see a Boolean build constraint or a configuration no file names.",
+              "type": "boolean",
+              "default": false,
+              "x-owner": "analyzer"
+            }
+          }
+        }
+      }
+    },
+    "consumers": {
+      "description": "Declarations about the consumer set. The consumers themselves come from an already-populated workspace or from the explicit scope the invocation passes, never from this file.",
+      "type": "object",
+      "additionalProperties": false,
+      "x-owner": "analyzer",
+      "properties": {
+        "complete": {
+          "description": "Declares that every consumer of the target's published API is declared. While this holds and every declared consumer loads, the published packages are closed world and the visibility-narrowing kinds report on them. The default is false.",
+          "type": "boolean",
+          "default": false,
+          "x-owner": "analyzer"
+        }
+      }
+    },
+    "roots": {
+      "description": "Symbols the analysis treats as live without a reference, in addition to the roots the analysis marks itself.",
+      "type": "object",
+      "additionalProperties": false,
+      "x-owner": "analyzer",
+      "properties": {
+        "patterns": {
+          "description": "Symbol references, or patterns over them, in the grammar contract/grammar/symbol-ref.md states. A pattern that matches no symbol is reported as a finding (DS1704) rather than silently ignored.",
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "default": [],
+          "x-owner": "analyzer"
+        }
+      }
+    },
+    "severity": {
+      "description": "Per-issue-kind severity. A key is a code (DS1101) or a two-digit range prefix naming a whole family (DS18, the intra-function kinds); a value is allow, warn or deny, and a finding at or above the failing severity, deny unless the invocation lowers it, exits with the findings code. A kind this object does not name takes the default severity contract/kinds.json declares for it. Only a code's severity changes here; its reachability class is derived by the analysis.",
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^DS[0-9]{2}([0-9]{2})?$": {
+          "type": "string",
+          "enum": ["allow", "warn", "deny"]
+        }
+      },
+      "default": {},
+      "x-owner": "analyzer"
+    },
+    "exemptions": {
+      "description": "Switches over the computed exemption classes.",
+      "type": "object",
+      "additionalProperties": false,
+      "x-owner": "analyzer",
+      "properties": {
+        "disabled": {
+          "description": "Exemption classes switched off, by the class names contract/exemptions.json declares, so that an exemption suspected of hiding a defect can be tested. A disabled class retains nothing.",
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]*$"
+          },
+          "default": [],
+          "x-owner": "analyzer"
+        }
+      }
+    },
+    "reporters": {
+      "description": "How findings are rendered.",
+      "type": "object",
+      "additionalProperties": false,
+      "x-owner": "product",
+      "properties": {
+        "formats": {
+          "description": "The output formats rendered from the one ordered finding list: text (one finding per line, position first), json (the report document), github (one workflow annotation per failing finding and per stale suppression), sarif (SARIF 2.1.0 for code scanning) and template (a user-supplied template).",
+          "type": "array",
+          "uniqueItems": true,
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "enum": ["text", "json", "github", "sarif", "template"]
+          },
+          "default": ["text"],
+          "x-owner": "product"
+        },
+        "sort": {
+          "description": "The order findings are rendered in. position, the default, is the canonical order (path, line, column, code, symbol, analyzer); size orders by deletable lines, largest first.",
+          "type": "string",
+          "enum": ["position", "size"],
+          "default": "position",
+          "x-owner": "product"
+        },
+        "max_findings": {
+          "description": "The most findings a rendering prints. 0, the default, prints every finding; a positive count prints at most that many and reports the number omitted.",
+          "type": "integer",
+          "minimum": 0,
+          "default": 0,
+          "x-owner": "product"
+        }
+      }
+    },
+    "go": {
+      "description": "The section the Go analyzer owns; the orchestrator passes it through unread. The Go analyzer classifies test files by the language's own rule and declares no key of its own in this Contract version.",
+      "type": "object",
+      "additionalProperties": false,
+      "x-owner": "go-analyzer",
+      "properties": {}
+    },
+    "ts": {
+      "description": "The section the TypeScript analyzer owns; the orchestrator passes it through unread.",
+      "type": "object",
+      "additionalProperties": false,
+      "x-owner": "ts-analyzer",
+      "properties": {
+        "test_files": {
+          "description": "Glob patterns, relative to the target root, naming the files classified as test files. The default is the naming most TypeScript projects follow; a project whose tests are named otherwise sets its own so that a symbol only its tests reach is reported as test-only use.",
+          "type": "array",
+          "uniqueItems": true,
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "default": ["**/*.test.{ts,tsx,mts,cts}"],
+          "x-owner": "ts-analyzer"
+        }
+      }
+    },
+    "provenance": {
+      "description": "The source of each resolved setting, as the resolved-configuration printout writes it: a key is a setting's dotted path (target.kind, severity.DS1101) and a value is default, or repository, central or flag followed by a colon, a space and the file or flag that supplied the value. Accepted on input so that a printed resolved configuration reads back as a repository configuration, and ignored by resolution, so its presence in any source changes no resolved value.",
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z][a-z_]*(\\.[A-Za-z0-9_]+)*$": {
+          "type": "string",
+          "pattern": "^(default|(repository|central|flag): .+)$"
+        }
+      },
+      "x-ignored-by-resolution": true,
+      "x-owner": "product"
+    }
+  }
+}

@@ -1,29 +1,30 @@
 {
+  "description": "The exit codes every analyzer and the orchestrator return, so that one gate reads every product the same way. Codes 2 and 3 end a run before any verdict exists and print no finding list. Codes 4, 1 and 0 are verdicts about a complete report, and when more than one verdict condition holds the highest code wins: a pending finding outranks findings and stale suppressions, because an unmerged report cannot be read as an answer at all, and those outrank a clean result. A finding whose severity is warn never fails a run.",
   "exit_codes": [
     {
       "code": 0,
       "name": "clean",
-      "meaning": "No finding at or above the failing severity and no stale suppression."
+      "meaning": "The report holds no finding at or above the failing severity, no stale suppression and no pending finding. Also the code a run returns when the exit code is configured off, while still printing the report."
     },
     {
       "code": 1,
       "name": "findings",
-      "meaning": "At least one finding at or above the failing severity, or at least one stale suppression."
+      "meaning": "The report holds at least one finding at or above the failing severity, or at least one stale suppression, whatever severity the configuration assigns to any other kind; the count of stale suppressions is named."
     },
     {
       "code": 2,
       "name": "usage",
-      "meaning": "Malformed invocation, missing target kind, unimplemented configuration key, unknown symbol in an explanation request, or a requested source edit."
+      "meaning": "The invocation is malformed, no configuration source supplies the target kind, a configuration source names a key the product does not implement, an explanation request names a symbol that does not exist, or a flag asks the product to edit source. The usage text is printed and no analysis runs."
     },
     {
       "code": 3,
       "name": "failure",
-      "meaning": "Load, type-check, consumer, configuration-matrix, analyzer-resolution or digest failure."
+      "meaning": "The target, a declared consumer or a build configuration failed to load or type-check, a file's references could not be resolved, an analyzer could not be found, described or admitted, an acquired artifact's digest did not match, or a pending finding met no other side at the merge. The errors are printed and no finding list is, so a partial result is never read as a clean tree."
     },
     {
       "code": 4,
       "name": "pending",
-      "meaning": "The report holds at least one pending finding whose cross-language edge has not been evaluated."
+      "meaning": "The report holds at least one pending finding, a finding whose cross-language edge the other side has not evaluated, and the count of pending findings is named. A report with this code is an input to a merge, not an answer."
     }
   ]
 }

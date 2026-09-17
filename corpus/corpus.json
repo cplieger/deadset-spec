@@ -1,0 +1,65 @@
+{
+  "description": "The conformance corpus: the fixtures every deadset analyzer passes as a condition of its release. corpus_version is the semantic version of the corpus as one unit, independent of the contract version in contract/contract.json and of this repository's release tags, because the two move for different reasons: the contract moves when a vocabulary or a schema changes, the corpus moves when a fixture is added, which happens each time an analyzer implements a kind. It starts at 1.0.0 because the first published corpus is the one every analyzer's first release answers, and a version below 1.0.0 would claim the fixtures may change without notice, which they may not. The major number moves when an existing expectation changes its answer or a format field changes incompatibly, the minor when a fixture or an optional field is added, the patch when only descriptions change. Every analyzer names the corpus version it answers in its conformance report, and a run against a corpus of another major version is not a conformance result.",
+  "corpus_version": "1.0.0",
+  "layout": {
+    "description": "Where the parts of a fixture live. A fixture is one directory under fixtures/, named by the value of its expectation file's name field. It holds exactly one expectation file and one rendering per language the expectation file lists. The Go rendering is one txtar archive whose sections are the files of the rendering, fixture.json among them; the TypeScript rendering is a directory holding the same files. Inside a rendering, the target being analyzed lives under the target directory and each consumer the expectation file names lives in a directory of that name at the rendering root, so a consumer named consumer is target/'s sibling consumer/. Every path in a manifest is relative to the rendering root, which is the archive for Go and the ts/ directory for TypeScript.",
+    "fixture_directory": "corpus/fixtures/<name>/",
+    "expectation_file": "expect.json",
+    "manifest_file": "fixture.json",
+    "renderings": {
+      "go": "go.txtar",
+      "ts": "ts/"
+    },
+    "target_directory": "target/",
+    "consumer_directory": "<consumer>/"
+  },
+  "schemas": {
+    "description": "The JSON Schema 2020-12 document each fixture file is an instance of, and the two documents an analyzer exchanges with the corpus: the declared gaps it commits and the results its runner writes.",
+    "expectation_file": "corpus/expect.schema.json",
+    "manifest_file": "corpus/fixture.schema.json",
+    "declared_gaps": "corpus/conformance.schema.json",
+    "results": "corpus/conformance-results.schema.json"
+  },
+  "vocabularies": {
+    "description": "The closed vocabularies an expectation file draws a value from, keyed by the expectation-file field that uses each and naming the contract file and the field within it that declares the values. A value outside its vocabulary fails the corpus itself, so an issue kind or an exemption class cannot enter a fixture before it enters the contract.",
+    "fields": {
+      "report": {
+        "file": "contract/kinds.json",
+        "field": "kinds[].code",
+        "also": ["none"],
+        "description": "The code of a live issue kind, or the literal none for a subject that must not be reported."
+      },
+      "retained_by": {
+        "file": "contract/exemptions.json",
+        "field": "exemptions[].class",
+        "description": "The exemption classes that hold a subject back from being reported."
+      },
+      "confidence": {
+        "file": "contract/kinds.json",
+        "field": "reachability_classes",
+        "description": "The confidence a reported finding carries, which is its reachability class capped by the kind's maximum class."
+      },
+      "reachability_class": {
+        "file": "contract/kinds.json",
+        "field": "reachability_classes",
+        "description": "The reachability class derived from the target kind and the loaded consumers."
+      },
+      "languages": {
+        "file": "contract/kinds.json",
+        "field": "languages",
+        "description": "The languages a fixture has a rendering for. This is the one place a fixture names a language; no field of an expectation does."
+      }
+    }
+  },
+  "runner": {
+    "description": "What an analyzer does with a fixture, stated so that two analyzers sharing no code answer it the same way.",
+    "select": "The analyzer answers every fixture whose expectation file lists its language, and only through the rendering for that language. A fixture that lists the language and has no rendering for it fails the corpus, not the analyzer.",
+    "load": "The analyzer extracts or copies the rendering to a scratch directory, runs over target/ with the expectation file's target_kind as the configured target kind and each name in consumers as a loaded consumer rooted at the directory of that name, and leaves every file of the rendering byte-identical.",
+    "resolve": "Each expectation's symbol is a fixture-local logical name. The analyzer maps it through the rendering's manifest to a file and a line, and a finding answers the expectation when its position is in that file on that line. A logical name the manifest does not carry, or carries without a file or a line, is a defect in the corpus.",
+    "report_phase": "For an expectation whose report is a code, the analyzer must produce exactly one finding at the resolved position under that code, carrying the confidence the expectation names and, where the expectation names them, the reachability class and the liveness relation. For an expectation whose report is none, the analyzer must produce no finding at the resolved position; where the expectation names retained_by, the analyzer's retained-symbol listing must name that position with exactly those classes.",
+    "closed_world": "The expectation list is exhaustive. A finding on a position no expectation resolves to fails the analyzer, so the corpus pins the absence of a false positive as firmly as the presence of a true one.",
+    "suppression_phase": "For every expectation whose report is a code, the analyzer writes the reported finding into the rendering's ignore file in the documented form, runs again over the same scratch copy, and must produce no finding at that position and no stale-suppression finding for the entry. Both languages run the same two phases, so a divergence in matching or scoping is a conformance failure.",
+    "capabilities": "The capabilities an expectation exercises are its report code when that is not none and each class in its retained_by. An analyzer that does not implement one records a declared gap naming the fixture and the capability, and the runner reports the expectation as a gap rather than as a pass or a fail. An expectation with report none and no retained_by exercises no capability and admits no gap.",
+    "results": "Each fixture ends as pass, gap or fail. An expectation the analyzer neither answers nor declares a gap for is a fail, never a silence."
+  }
+}

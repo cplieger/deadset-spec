@@ -1,0 +1,295 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "deadset conformance results",
+  "description": "The per-fixture results document a product's corpus runner writes, conformance-results.json. It records, for one product answering one language's renderings of one corpus version, every fixture the product answered and what the product reported at every expectation, so that the corpus repository's own suite can compare two products expectation by expectation with no dependency between them. Every fixture ends as exactly one of pass, gap or fail, and so does every expectation within it: pass when the product answered the expectation as written, gap when a declared gap in the product's conformance.json covers the capability the expectation exercises, fail otherwise, including an expectation the product neither answered nor declared, a finding at a position no expectation resolves to, and a fixture the runner could not complete. The document repeats no expectation: the corpus is the one owner of what was expected, each row names the expectation by its fixture and logical symbol, and carries what the product actually reported, so a stale gap (a declared gap over an expectation the product in fact answers correctly) is readable as a gap row whose actual answer matches the corpus. The digest a product cites in its report envelope's analyzer.conformance block is sha256: followed by the lowercase hexadecimal SHA-256 of this file's bytes exactly as the runner wrote them, so a reader holding the file recomputes it and the runner must write the file deterministically: properties in the order this schema lists them, fixtures ordered by name, expectations by symbol, unexpected findings by file, then line, then report, and two runs over an unchanged product and corpus produce byte-identical files. Two products are never required to agree on a digest, only on their answers. The two-level vocabulary follows the mozlog protocol behind the Web Platform Tests results format, where a test with subtests carries a status of its own kind while each subtest carries a pass-or-fail status and an optional message; the exhaustive per-fixture unexpected list follows knip's fixture tests, which pin their counters exactly so an extra finding fails the fixture.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["corpus_version", "product", "result", "totals", "fixtures"],
+  "properties": {
+    "corpus_version": {
+      "description": "The corpus_version of corpus.json the runner answered, copied from the corpus it ran, not from the product's conformance.json; the two must agree in major or the run is not a conformance result.",
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "product": {
+      "description": "The product that ran, and the language whose renderings it answered.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version", "language"],
+      "properties": {
+        "name": {
+          "description": "The product's name as its report envelope states it in analyzer.name.",
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$"
+        },
+        "version": {
+          "description": "The product version that ran, as its report envelope states it in analyzer.version.",
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(-[0-9A-Za-z.-]+)?(\\+[0-9A-Za-z.-]+)?$"
+        },
+        "language": {
+          "description": "The language whose renderings the runner loaded, drawn from the languages field of contract/kinds.json. A product claiming more than one language runs the corpus once per language and writes one results document per run, so every fixture appears at most once here.",
+          "type": "string",
+          "enum": ["go", "ts"]
+        }
+      }
+    },
+    "result": {
+      "description": "The product's result over the whole corpus, the value its report envelope carries in analyzer.conformance.result: fail when any fixture failed, pass otherwise. A gap never lowers the result, because a declared gap is the permitted way to leave a capability unimplemented; a product with gaps and no failures has passed the corpus, and an orchestrator refuses to run a product whose result is not pass.",
+      "type": "string",
+      "enum": ["pass", "fail"]
+    },
+    "totals": {
+      "description": "The fixture counts the runner prints, so a reader compares them without counting rows: fixtures equals the length of the fixtures array and equals pass plus gap plus fail.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fixtures", "pass", "gap", "fail"],
+      "properties": {
+        "fixtures": {
+          "description": "The number of fixtures the runner answered: every fixture whose expectation file lists the product's language.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "pass": {
+          "description": "The number of fixtures whose result is pass.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "gap": {
+          "description": "The number of fixtures whose result is gap.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "fail": {
+          "description": "The number of fixtures whose result is fail.",
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "fixtures": {
+      "description": "One row per fixture the runner answered, ordered by fixture name. A fixture the corpus holds for the product's language and this array omits is a failure the corpus self-test reports, so the array is exhaustive rather than a list of what went wrong.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["fixture", "result", "expectations", "unexpected"],
+        "properties": {
+          "fixture": {
+            "description": "The fixture's name, as its expect.json spells it. A name the corpus does not hold at the declared corpus_version is a defect in this document.",
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$"
+          },
+          "result": {
+            "description": "The fixture's result: fail when any expectation failed, when any finding sits at a position no expectation resolves to, or when the runner could not complete the fixture; otherwise gap when any expectation is a gap; otherwise pass.",
+            "type": "string",
+            "enum": ["pass", "gap", "fail"]
+          },
+          "expectations": {
+            "description": "One row per expectation in the fixture's expect.json, ordered by symbol, each naming what the product reported at the expectation's resolved position. Empty only when the runner could not run the fixture at all, in which case the result is fail and message says why.",
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["symbol", "result", "actual"],
+              "properties": {
+                "symbol": {
+                  "description": "The expectation's logical name, exactly as expect.json spells it. With the fixture name it identifies the expectation in the corpus, which is where the expected answer lives.",
+                  "type": "string",
+                  "pattern": "^[A-Za-z_][A-Za-z0-9_]*(\\.[A-Za-z_][A-Za-z0-9_]*)*$"
+                },
+                "result": {
+                  "description": "The expectation's result: pass when actual matches the expectation and, where the expectation is a reported code, the suppression phase held; gap when a declared gap covers the capability the expectation exercises, whatever actual holds; fail otherwise. An expectation whose report is none and whose retained_by is empty exercises no capability and is never a gap.",
+                  "type": "string",
+                  "enum": ["pass", "gap", "fail"]
+                },
+                "capability": {
+                  "description": "The capability the covering declared gap names, an issue-kind code or an exemption class. Present exactly when result is gap.",
+                  "type": "string",
+                  "pattern": "^(DS[0-9]{4}|[a-z][a-z0-9]*(-[a-z0-9]+)*)$"
+                },
+                "actual": {
+                  "description": "What the product reported at the resolved position after the first analysis, in the expectation file's own vocabulary so the two are compared field by field: the finding's code and confidence when it reported one, none and the retained-symbol classes when it did not. This is the answer the cross-language agreement check compares between two products.",
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["report"],
+                  "properties": {
+                    "report": {
+                      "description": "The code of the finding the product reported at the position, or the literal none when it reported nothing there.",
+                      "type": "string",
+                      "pattern": "^(DS[0-9]{4}|none)$"
+                    },
+                    "confidence": {
+                      "description": "The confidence the reported finding carried, drawn from the reachability_classes field of contract/kinds.json. Required when report is a code, forbidden when it is none.",
+                      "type": "string",
+                      "enum": ["certain", "probable", "possible"]
+                    },
+                    "reachability_class": {
+                      "description": "The reachability class the reported finding carried. Optional on a reported finding, forbidden when report is none.",
+                      "type": "string",
+                      "enum": ["certain", "probable", "possible"]
+                    },
+                    "liveness_relation": {
+                      "description": "The liveness relation the reported finding carried. Optional on a reported finding, forbidden when report is none.",
+                      "type": "string",
+                      "enum": ["reference-counting", "reachability"]
+                    },
+                    "retained_by": {
+                      "description": "The exemption classes the product's retained-symbol listing named at the position, drawn from the class field of contract/exemptions.json. Allowed only when report is none; absent or empty when the listing names the position under no class.",
+                      "type": "array",
+                      "uniqueItems": true,
+                      "items": {
+                        "type": "string",
+                        "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$"
+                      }
+                    }
+                  },
+                  "if": {
+                    "properties": {
+                      "report": { "const": "none" }
+                    }
+                  },
+                  "then": {
+                    "not": {
+                      "anyOf": [
+                        { "required": ["confidence"] },
+                        { "required": ["reachability_class"] },
+                        { "required": ["liveness_relation"] }
+                      ]
+                    }
+                  },
+                  "else": {
+                    "required": ["confidence"],
+                    "not": { "required": ["retained_by"] }
+                  }
+                },
+                "suppression": {
+                  "description": "The outcome of the second analysis, after the runner wrote the reported finding into the rendering's ignore file. Present exactly when the expectation's report is a code and the first analysis reported a finding there, because only then is there a finding to suppress; absent otherwise. The expectation passes only when suppressed is true and stale is false, and both fields are compared between two products by the cross-language agreement check.",
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["suppressed", "stale"],
+                  "properties": {
+                    "suppressed": {
+                      "description": "Whether the second analysis reported no finding at the position.",
+                      "type": "boolean"
+                    },
+                    "stale": {
+                      "description": "Whether the second analysis reported a stale-suppression finding for the entry the runner wrote.",
+                      "type": "boolean"
+                    }
+                  }
+                },
+                "message": {
+                  "description": "The runner's one-line account of a fail or a gap for a human reader, naming what differed. Never present on a pass, and never the only record of the difference: actual carries the answer.",
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S"
+                }
+              },
+              "if": {
+                "properties": {
+                  "result": { "const": "gap" }
+                },
+                "required": ["result"]
+              },
+              "then": {
+                "required": ["capability"]
+              },
+              "else": {
+                "not": { "required": ["capability"] }
+              }
+            }
+          },
+          "unexpected": {
+            "description": "Every finding the first analysis reported at a position no expectation of the fixture resolves to, ordered by file, then line, then report. The expectation list is exhaustive for the target, so any entry here fails the fixture. Required even when empty, so an empty array is the runner's positive statement that the closed-world check ran and found nothing.",
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["file", "line", "report"],
+              "properties": {
+                "file": {
+                  "description": "The path of the file the finding names, relative to the rendering root, in the manifest's path form.",
+                  "type": "string",
+                  "pattern": "^(\\.?[A-Za-z0-9_@-][A-Za-z0-9_@.-]*)(/\\.?[A-Za-z0-9_@-][A-Za-z0-9_@.-]*)*$"
+                },
+                "line": {
+                  "description": "The 1-based line the finding names.",
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "report": {
+                  "description": "The code of the finding.",
+                  "type": "string",
+                  "pattern": "^DS[0-9]{4}$"
+                }
+              }
+            }
+          },
+          "message": {
+            "description": "The runner's one-line account of a fixture-level failure for a human reader: a rendering that would not load, an analysis that did not complete, or a closed-world violation summarized. Never present on a pass.",
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "unexpected": { "minItems": 1 }
+              },
+              "required": ["unexpected"]
+            },
+            "then": {
+              "properties": {
+                "result": { "const": "fail" }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "expectations": { "maxItems": 0 }
+              },
+              "required": ["expectations"]
+            },
+            "then": {
+              "properties": {
+                "result": { "const": "fail" }
+              },
+              "required": ["message"]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "if": {
+    "properties": {
+      "result": { "const": "pass" }
+    },
+    "required": ["result"]
+  },
+  "then": {
+    "properties": {
+      "totals": {
+        "properties": {
+          "fail": { "const": 0 }
+        }
+      }
+    }
+  },
+  "else": {
+    "properties": {
+      "totals": {
+        "properties": {
+          "fail": { "minimum": 1 }
+        }
+      }
+    }
+  }
+}
