@@ -1,0 +1,6 @@
+{
+  "target": { "kind": "application" },
+  "analysis": { "min_confidence": "certain", "generated_files": "include" },
+  "severity": { "DS1101": "deny", "DS1201": "warn" },
+  "reporters": { "fail_on": "warn" }
+}

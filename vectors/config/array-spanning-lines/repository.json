@@ -1,0 +1,11 @@
+{
+  "target": { "kind": "library" },
+  "roots": {
+    "patterns": [
+      "go://example.com/app#Catalog.*",
+      "go://example.com/app/internal/*#*",
+      "ts://@example/app/src/generated/*.ts#*"
+    ]
+  },
+  "severity": { "DS1101": "allow" }
+}

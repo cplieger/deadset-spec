@@ -1,0 +1,7 @@
+{
+  "symbols": {
+    "ReachedByStringIndex": { "file": "target/registry.ts", "line": 4 },
+    "UnreadPrivate": { "file": "target/registry.ts", "line": 7 },
+    "UnreferencedPrivate": { "file": "target/registry.ts", "line": 10 }
+  }
+}

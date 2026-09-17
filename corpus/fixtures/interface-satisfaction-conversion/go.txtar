@@ -1,0 +1,68 @@
+The Go rendering: a target module whose one method satisfies io.Writer at a
+conversion, beside an exported function nothing references, and the consumer
+module that references the target's entry point.
+
+-- fixture.json --
+{
+  "symbols": {
+    "SatisfiesWriter": { "file": "target/sink.go", "line": 14 },
+    "DeadExport": { "file": "target/sink.go", "line": 29 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/sink.go --
+// Package target holds a method retained by a conversion to an interface and
+// an exported function nothing references.
+package target
+
+import "io"
+
+// Sink counts the bytes written to it.
+type Sink struct {
+	total int
+}
+
+// Write records the length of p and reports it as written. No call site names
+// it: the conversion in Drain is what reaches it.
+func (s *Sink) Write(p []byte) (int, error) {
+	s.total += len(p)
+	return len(p), nil
+}
+
+// Drain copies r into a Sink and reports the number of bytes it took.
+func Drain(r io.Reader) (int, error) {
+	var s Sink
+	if _, err := io.Copy(&s, r); err != nil {
+		return 0, err
+	}
+	return s.total, nil
+}
+
+// DeadExport is exported and no loaded module references it.
+func DeadExport() {}
+-- consumer/go.mod --
+module example.com/consumer
+
+go 1.27.0
+
+require example.com/target v0.0.0
+
+replace example.com/target => ../target
+-- consumer/main.go --
+// Command consumer references the target module's entry point.
+package main
+
+import (
+	"strings"
+
+	"example.com/target"
+)
+
+func main() {
+	if _, err := target.Drain(strings.NewReader("payload")); err != nil {
+		panic(err)
+	}
+}

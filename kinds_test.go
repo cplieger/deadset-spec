@@ -2,6 +2,7 @@ package spec_test
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/fs"
 	"maps"
@@ -15,6 +16,22 @@ import (
 )
 
 const kindsPath = "contract/kinds.json"
+
+// The rules that govern the code space as a whole are pure functions over a
+// decoded document, so the committed document and a planted copy carrying one
+// violation go through the same code; vocabulary_test.go drives the planted
+// copies. Each violation is one error wrapping the rule's sentinel, so a
+// caller names both the rule and the code it caught.
+var (
+	errCodeShape             = errors.New("code is not the prefix followed by four digits")
+	errCodeAssignedTwice     = errors.New("code assigned to two live kinds")
+	errRangeSpan             = errors.New("range span is not two codes with start at or before end")
+	errRangesStraddle        = errors.New("two ranges cover one code")
+	errCodeOutsideRanges     = errors.New("code sits in no range")
+	errCodeInSeveralRanges   = errors.New("code sits in more than one range")
+	errRetiredCodeReused     = errors.New("live kind carries a retired code")
+	errLiveRowInRetiredRange = errors.New("live kind sits in a retired range")
+)
 
 // kindsDocument mirrors contract/kinds.json. Booleans are pointers so an
 // absent field is distinguishable from a false one.
@@ -112,6 +129,97 @@ func optional[T any](p *T) string {
 	return fmt.Sprint(*p)
 }
 
+// span returns a range's numeric bounds, and false when either end is not a
+// code or the range runs backwards.
+func span(r codeRange) (start, end int, ok bool) {
+	start, end = codeNumber(r.Start), codeNumber(r.End)
+	return start, end, start >= 0 && end >= start
+}
+
+// isRetired reports whether a range is marked retired; an absent marker reads
+// as live, and the field's presence is checked separately.
+func isRetired(r codeRange) bool { return isSet(r.Retired) && *r.Retired }
+
+// checkCodeAssignment reports every live row whose code is not a code of the
+// space and every code two live rows carry: one code names at most one kind.
+func checkCodeAssignment(doc kindsDocument) []error {
+	var errs []error
+	rows := make(map[string]int, len(doc.Kinds))
+	for _, k := range doc.Kinds {
+		if codeNumber(k.Code) < 0 {
+			errs = append(errs, fmt.Errorf("%w: Kind(%q).code = %q, want %s followed by four digits", errCodeShape, k.Name, k.Code, doc.Prefix))
+			continue
+		}
+		rows[k.Code]++
+	}
+	for _, code := range slices.Sorted(maps.Keys(rows)) {
+		if rows[code] > 1 {
+			errs = append(errs, fmt.Errorf("%w: Kind(%s) live rows = %d, want 1", errCodeAssignedTwice, code, rows[code]))
+		}
+	}
+	return errs
+}
+
+// checkRangeAssignment reports a range whose span is not two ordered codes,
+// two ranges that cover one code, and every live code that does not sit in
+// exactly one range.
+func checkRangeAssignment(doc kindsDocument) []error {
+	var errs []error
+	for _, r := range doc.Ranges {
+		if _, _, ok := span(r); !ok {
+			errs = append(errs, fmt.Errorf("%w: Range(%s) span = %q..%q, want two %s codes with start at or before end", errRangeSpan, r.Start, r.Start, r.End, doc.Prefix))
+		}
+	}
+	for i, outer := range doc.Ranges {
+		outerStart, outerEnd, outerOK := span(outer)
+		for _, inner := range doc.Ranges[i+1:] {
+			innerStart, innerEnd, innerOK := span(inner)
+			if !outerOK || !innerOK {
+				continue
+			}
+			if outerStart <= innerEnd && innerStart <= outerEnd {
+				errs = append(errs, fmt.Errorf("%w: Range(%s) = %s..%s and Range(%s) = %s..%s, want one range per code", errRangesStraddle, outer.Start, outer.Start, outer.End, inner.Start, inner.Start, inner.End))
+			}
+		}
+	}
+	for _, k := range doc.Kinds {
+		n := codeNumber(k.Code)
+		if n < 0 {
+			continue // checkCodeAssignment owns the shape of a code.
+		}
+		hits := rangesContaining(doc.Ranges, n)
+		switch {
+		case len(hits) == 0:
+			errs = append(errs, fmt.Errorf("%w: Kind(%s) ranges = 0, want 1", errCodeOutsideRanges, k.Code))
+		case len(hits) > 1:
+			errs = append(errs, fmt.Errorf("%w: Kind(%s) ranges = %d (%s, %s), want 1", errCodeInSeveralRanges, k.Code, len(hits), hits[0].Start, hits[1].Start))
+		}
+	}
+	return errs
+}
+
+// checkRetirement reports every live row carrying a retired code and every
+// live row inside a retired range: a code leaves the space once and never
+// names another kind afterwards.
+func checkRetirement(doc kindsDocument) []error {
+	retired := make(map[string]retiredKind, len(doc.Retired))
+	for _, r := range doc.Retired {
+		retired[r.Code] = r
+	}
+	var errs []error
+	for _, k := range doc.Kinds {
+		if r, ok := retired[k.Code]; ok {
+			errs = append(errs, fmt.Errorf("%w: Kind(%s) = %q, want the code left retired from %q", errRetiredCodeReused, k.Code, k.Name, r.Name))
+		}
+		for _, hit := range rangesContaining(doc.Ranges, codeNumber(k.Code)) {
+			if isRetired(hit) {
+				errs = append(errs, fmt.Errorf("%w: Kind(%s) range = %s..%s, want a live range", errLiveRowInRetiredRange, k.Code, hit.Start, hit.End))
+			}
+		}
+	}
+	return errs
+}
+
 func TestKindsRangesAreEightLiveAndOneRetired(t *testing.T) {
 	doc := loadKinds(t)
 	var live, retired int
@@ -120,11 +228,7 @@ func TestKindsRangesAreEightLiveAndOneRetired(t *testing.T) {
 			if r.Family == "" || r.Description == "" || !isSet(r.Retired) {
 				t.Errorf("Range(%s) fields = family %q, description %q, retired %s, want every field present", r.Start, r.Family, r.Description, optional(r.Retired))
 			}
-			start, end := codeNumber(r.Start), codeNumber(r.End)
-			if start < 0 || end < start {
-				t.Errorf("Range(%s) span = %q..%q, want two DSnnnn codes with start <= end", r.Start, r.Start, r.End)
-			}
-			if isSet(r.Retired) && *r.Retired {
+			if isRetired(r) {
 				retired++
 			} else {
 				live++
@@ -136,31 +240,37 @@ func TestKindsRangesAreEightLiveAndOneRetired(t *testing.T) {
 	}
 }
 
-func TestKindsEveryLiveRowIsUniqueRangedAndComplete(t *testing.T) {
+// TestKindsCodesAreAssignedOnce drives the code-assignment rule over the
+// committed document; vocabulary_test.go drives it over a planted duplicate.
+func TestKindsCodesAreAssignedOnce(t *testing.T) {
+	for _, err := range checkCodeAssignment(loadKinds(t)) {
+		t.Errorf("checkCodeAssignment(%s): %v", kindsPath, err)
+	}
+}
+
+// TestKindsRangesCoverEveryLiveCodeOnce drives the range-assignment rule over
+// the committed document; vocabulary_test.go drives it over a planted straddle.
+func TestKindsRangesCoverEveryLiveCodeOnce(t *testing.T) {
+	for _, err := range checkRangeAssignment(loadKinds(t)) {
+		t.Errorf("checkRangeAssignment(%s): %v", kindsPath, err)
+	}
+}
+
+// TestKindsRetiredCodesAreNotReassigned drives the retirement rule over the
+// committed document; vocabulary_test.go drives it over planted re-assignments.
+func TestKindsRetiredCodesAreNotReassigned(t *testing.T) {
+	for _, err := range checkRetirement(loadKinds(t)) {
+		t.Errorf("checkRetirement(%s): %v", kindsPath, err)
+	}
+}
+
+func TestKindsEveryLiveRowIsCompleteAndInVocabulary(t *testing.T) {
 	doc := loadKinds(t)
 	if got := len(doc.Kinds); got != 31 {
 		t.Errorf("len(Kinds(%s)) = %d, want 31", kindsPath, got)
 	}
-	seen := make(map[string]bool, len(doc.Kinds))
 	for _, k := range doc.Kinds {
 		t.Run(k.Code, func(t *testing.T) {
-			n := codeNumber(k.Code)
-			if n < 0 {
-				t.Fatalf("Kind(%q).code = %q, want %s followed by four digits", k.Code, k.Code, doc.Prefix)
-			}
-			if seen[k.Code] {
-				t.Errorf("Kind(%s) occurrences = 2, want 1", k.Code)
-			}
-			seen[k.Code] = true
-
-			hits := rangesContaining(doc.Ranges, n)
-			switch {
-			case len(hits) != 1:
-				t.Errorf("Kind(%s) ranges = %d, want exactly 1", k.Code, len(hits))
-			case isSet(hits[0].Retired) && *hits[0].Retired:
-				t.Errorf("Kind(%s) range = %s (retired), want a live range", k.Code, hits[0].Start)
-			}
-
 			missing := missingKindFields(k)
 			if len(missing) != 0 {
 				t.Errorf("Kind(%s) missing fields = %v, want none", k.Code, missing)
@@ -336,9 +446,6 @@ func TestKindsRetiredCodesStayRetired(t *testing.T) {
 			if r.Name == "" {
 				t.Errorf("Retired(%s).name = %q, want the name of the kind that once held the code", code, r.Name)
 			}
-			if slices.ContainsFunc(doc.Kinds, func(k kindRow) bool { return k.Code == code }) {
-				t.Errorf("Kinds(%s) contains %s, want the retired code absent from every live row", kindsPath, code)
-			}
 			if hits := rangesContaining(doc.Ranges, codeNumber(code)); len(hits) != 1 {
 				t.Errorf("Retired(%s) ranges = %d, want exactly 1", code, len(hits))
 			}
@@ -376,23 +483,17 @@ func TestKindsRetiredRowsCarryCodeAndNameOnly(t *testing.T) {
 	}
 }
 
-func TestKindsRetiredRangeHoldsNoLiveRow(t *testing.T) {
+// TestKindsTheOnlyRetiredRangeIsDS1400 pins which range is retired; that no
+// live row sits inside it is the retirement rule, driven above.
+func TestKindsTheOnlyRetiredRangeIsDS1400(t *testing.T) {
 	doc := loadKinds(t)
 	for _, r := range doc.Ranges {
-		if !isSet(r.Retired) || !*r.Retired {
+		if !isRetired(r) {
 			continue
 		}
-		t.Run(r.Start, func(t *testing.T) {
-			if r.Start != "DS1400" {
-				t.Errorf("RetiredRange(%s) = %s..%s, want DS1400..DS1499 as the only retired range", r.Start, r.Start, r.End)
-			}
-			for _, k := range doc.Kinds {
-				n := codeNumber(k.Code)
-				if codeNumber(r.Start) <= n && n <= codeNumber(r.End) {
-					t.Errorf("Kinds(%s) contains %s inside retired range %s, want none", kindsPath, k.Code, r.Start)
-				}
-			}
-		})
+		if r.Start != "DS1400" || r.End != "DS1499" {
+			t.Errorf("RetiredRange(%s) = %s..%s, want DS1400..DS1499 as the only retired range", r.Start, r.Start, r.End)
+		}
 	}
 }
 

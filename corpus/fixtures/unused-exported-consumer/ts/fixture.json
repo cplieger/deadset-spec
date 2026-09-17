@@ -1,0 +1,6 @@
+{
+  "symbols": {
+    "DeadExport": { "file": "target/lib.ts", "line": 2 },
+    "UsedByConsumer": { "file": "target/lib.ts", "line": 7 }
+  }
+}

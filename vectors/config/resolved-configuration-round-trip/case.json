@@ -1,0 +1,5 @@
+{
+  "name": "resolved-configuration-round-trip",
+  "description": "The resolved configuration of the provenance-on-input case, read back as the repository configuration. Every setting the document names now comes from the repository and the provenance object it carries is ignored, so resolution returns the same document.",
+  "covers": ["resolved-configuration-round-trip"]
+}

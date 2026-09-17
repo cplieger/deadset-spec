@@ -1,0 +1,4 @@
+{
+  "target": { "kind": "application" },
+  "analysis.min_confidence": "certain"
+}

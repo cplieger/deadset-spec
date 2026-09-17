@@ -1,0 +1,5 @@
+{
+  "name": "unimplemented-key",
+  "description": "A repository configuration naming a key the closed key list does not declare, inside a section it does. The run is refused naming that key, so a misspelled or unimplemented setting is never a value silently ignored.",
+  "covers": ["unimplemented-key"]
+}

@@ -1,0 +1,5 @@
+{
+  "name": "array-spanning-lines",
+  "description": "A roots.patterns array written over several lines, beside a central configuration and a flag. The array resolves to the same value a one-line array carries, the flag outranks both documents, the repository outranks the central document, and a severity code only the central document names keeps its central value.",
+  "covers": ["array-spanning-lines"]
+}

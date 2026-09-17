@@ -2,7 +2,7 @@
 
 The merge is a function over analyzer reports. It takes one or more reports and the range of finding-schema versions the caller accepts, and it returns one merged report and one exit code. The merged report holds no pending finding. The function reads nothing but its arguments: no source tree, no edges document, no network and no clock. Two calls over the same reports in a different order return the same bytes and the same exit code.
 
-This page states the algorithm for an implementer who has no access to any existing implementation. The published test vectors under `vectors/merge/` pin an implementation against declared inputs and outputs rather than against another implementation; each case holds its input reports, its accepted schema range, its byte-exact expected report and its expected exit code. The report envelope, the finding object and the edge-evaluation record are declared in `report.schema.json` and are not restated here. The exit codes are the table in [`exit-codes.json`](../exit-codes.json). The symbol references the key compares follow `symbol-ref.md`.
+This page states the algorithm for an implementer who has no access to any existing implementation. The published test vectors under `vectors/merge/` pin an implementation against declared inputs and outputs rather than against another implementation; each case holds its input reports, its accepted schema range, its byte-exact expected report and its expected exit code. The report envelope and the edge-evaluation record are declared in `report.schema.json`, the finding object in `finding.schema.json`, and neither is restated here. The exit codes are the table in [`exit-codes.json`](../exit-codes.json). The symbol references the key compares follow `symbol-ref.md`.
 
 ## Vocabulary
 
@@ -60,7 +60,7 @@ Exit code: 3 under rule 1; otherwise none.
 
 For each edge in the index, in bytewise order of the edge identifier: if at least one side of the edge holds at least one evaluation and every evaluation of that side is `absent`, emit one `DS1705` finding for the edge. The edge names a symbol that no analyzer claiming its language enumerates. One finding per edge, however many sides are absent.
 
-The finding is built from the edge's evaluations alone: the edge identifier, and each side's symbol and state. The merge reads no edges document, so the finding's position is the target-relative path of `deadset-edges.json` with the line and column `report.schema.json` fixes for a document-level finding, and its `symbol` and `details` fields are what `kinds.json` and `report.schema.json` declare for the code. An `absent` evaluation carries no finding and only the merge emits `DS1705`, so no input report holds one for an edge and the merge never doubles one.
+The finding is built from the edge's evaluations alone: the edge identifier, and each side's symbol and state. The merge reads no edges document, so the finding's position is the target-relative path of `deadset-edges.json` with the line and column `report.schema.json` fixes for a document-level finding, and its `symbol` and `details` fields are what `finding.schema.json` declares for the code. An `absent` evaluation carries no finding and only the merge emits `DS1705`, so no input report holds one for an edge and the merge never doubles one.
 
 Three shapes reach this step: every side `absent`; a `dead` side whose paired side is `absent`, where step 4 dropped the pending finding; and a `live` side whose paired side is `absent`. Exit code: none. `DS1705` carries the `deny` severity, so step 7 returns 1 whenever this step emits.
 
@@ -131,8 +131,9 @@ The same key orders `stale_suppressions` and `declared_gaps`. Each component is 
 
 ## What other documents fix
 
-- `report.schema.json`: the envelope, the finding object, the edge-evaluation record, the field each record type supplies to the key, and the position of a document-level finding.
-- `kinds.json`: the `DS1705` row, its severity and the `details` shape the emitted finding carries.
+- [`report.schema.json`](../report.schema.json): the envelope, the edge-evaluation record, the field each record type supplies to the key, and the position of a document-level finding.
+- [`finding.schema.json`](../finding.schema.json): the finding object the page orders, its `details` branches, and the shape of the emitted `DS1705` finding.
+- [`kinds.json`](../kinds.json): the `DS1705` row and its severity.
 - [`exit-codes.json`](../exit-codes.json): the meaning of each code step 7 returns.
 - `symbol-ref.md`: the grammar of the references the key compares bytewise.
 - `vectors/merge/`: one directory per case, each with its input reports, its accepted schema range, its byte-exact expected report and its expected exit code.

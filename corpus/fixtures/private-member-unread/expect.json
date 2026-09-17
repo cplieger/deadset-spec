@@ -1,0 +1,26 @@
+{
+  "name": "private-member-unread",
+  "description": "A private member the constructor writes and nothing reads is reported as a write-only symbol, and a private member nothing names at all is reported as an unused member. A member declared with the private modifier and reached by name through a string index is retained instead, because that access is a name match rather than a reference.",
+  "languages": ["ts"],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "UnreadPrivate",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    },
+    {
+      "symbol": "UnreferencedPrivate",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "ReachedByStringIndex",
+      "report": "none",
+      "retained_by": ["reflective-lookup"]
+    }
+  ]
+}

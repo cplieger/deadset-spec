@@ -1,0 +1,3 @@
+{
+  "reporters": { "fail_on": "warn" }
+}

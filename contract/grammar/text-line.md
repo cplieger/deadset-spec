@@ -98,7 +98,7 @@ The expression is written in the intersection of two dialects, RE2 as Go's `rege
 | `confidence` | `confidence` |
 | `code` | `code` |
 
-The expression is the format's definition: a product's text reporter conforms when every line it writes for a finding matches it, and when the groups equal the finding's fields. It is not a validator of the values inside the groups; that `kind` is in the vocabulary, that `code` is a live code in `kinds.json` and that `confidence` is not above the kind's ceiling are the finding schema's checks, made on the JSON report.
+The expression is the format's definition: a product's text reporter conforms when every line it writes for a finding matches it, and when the groups equal the finding's fields. It is not a validator of the values inside the groups. That `kind` is in the vocabulary is the finding schema's check, made on the JSON report; that `code` is a live code and that `confidence` is not above the kind's ceiling are the analyzer's, because both read `kinds.json`, which the schema does not restate.
 
 ### Accepted
 
@@ -147,8 +147,8 @@ grep -E '^.+:[1-9][0-9]*:[1-9][0-9]*: .+ \[(certain|probable|possible)\] \(DS[0-
 
 ## What other documents fix
 
-- `finding.schema.json`: the `position` object and the unit `column` counts, the `symbol.kind` vocabulary, `symbol.name` and `symbol.size_lines`, and `confidence`.
-- `report.schema.json`: the stale-suppression record and the fields it supplies to `kind`, `name`, `message` and the position; the fixed position of a document-level finding.
+- [`finding.schema.json`](../finding.schema.json): the `position` object and the unit `column` counts, the `symbol.kind` vocabulary, `symbol.name` and `symbol.size_lines`, and `confidence`.
+- [`report.schema.json`](../report.schema.json): the stale-suppression record and the fields it supplies to `kind`, `name`, `message` and the position; the fixed position of a document-level finding.
 - [`kinds.json`](../kinds.json): the live codes and each kind's confidence ceiling.
 - [`merge.md`](merge.md): the canonical key that orders the lines.
 - [`exit-codes.json`](../exit-codes.json): the code a run returns alongside the lines, including code 4 for a report that holds a pending finding.

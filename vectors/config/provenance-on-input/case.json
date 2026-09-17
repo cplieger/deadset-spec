@@ -1,0 +1,5 @@
+{
+  "name": "provenance-on-input",
+  "description": "A repository configuration that carries a provenance object naming sources no run used. Resolution ignores the key, so every resolved value is the one the rest of the document supplies and the printed provenance names the source resolution found.",
+  "covers": ["provenance-on-input"]
+}
