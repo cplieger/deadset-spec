@@ -1,0 +1,124 @@
+{
+  "schema_version": "1.0.0",
+  "contract_version": "1.0.0",
+  "analyzer": {
+    "name": "deadset-go",
+    "version": "1.0.0",
+    "languages": ["go"],
+    "schema_versions_accepted": ["1.0.0"],
+    "conformance": {
+      "corpus_version": "1.0.0",
+      "result": "pass",
+      "digest": "sha256:38e1d6dd6a720d1e0ac5e25106ae8473a3e99d09c9dc1c170f567147833da193"
+    }
+  },
+  "target": { "kind": "library", "root": "src/app", "identity": "example.com/app" },
+  "configurations": [
+    { "id": "linux-amd64", "os": "linux", "arch": "amd64", "tags": [] },
+    { "id": "linux-arm64", "os": "linux", "arch": "arm64", "tags": ["netgo"] }
+  ],
+  "consumers": {
+    "declared": 1,
+    "loaded": [{ "id": "example.com/consumer", "role": "consumer", "path": "../consumer" }],
+    "unavailable": []
+  },
+  "findings": [
+    {
+      "code": "DS1001",
+      "kind": "unused-exported",
+      "language": "go",
+      "position": { "path": "catalog.go", "line": 214, "column": 6, "end_line": 231 },
+      "symbol": {
+        "ref": "go://example.com/app#Catalog.ResolveAlias",
+        "kind": "method",
+        "name": "(*Catalog).ResolveAlias",
+        "parent": "go://example.com/app#Catalog",
+        "exported": true,
+        "size_lines": 18,
+        "objectpath": "Catalog.M0"
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "liveness_relation": "reference-counting",
+      "test_only": false,
+      "generated": false,
+      "component": { "id": "deadset-go/c-0007", "root": true, "symbol_count": 3, "deletable_lines": 41 },
+      "retained_by": [],
+      "configurations": ["linux-amd64", "linux-arm64"],
+      "consumers_loaded": ["example.com/consumer"],
+      "fixability": "deletable",
+      "severity": "deny",
+      "message": "exported method has no reference in the target and none from any loaded consumer",
+      "details": {}
+    },
+    {
+      "code": "DS1101",
+      "kind": "unnecessary-export",
+      "language": "go",
+      "position": { "path": "normalize.go", "line": 12, "column": 6, "end_line": 27 },
+      "symbol": {
+        "ref": "go://example.com/app#Normalize",
+        "kind": "function",
+        "name": "Normalize",
+        "parent": "go://example.com/app#",
+        "exported": true,
+        "size_lines": 16,
+        "objectpath": "Normalize"
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "liveness_relation": "reference-counting",
+      "test_only": false,
+      "generated": false,
+      "component": { "id": "deadset-go/c-0011", "root": true, "symbol_count": 1, "deletable_lines": 0 },
+      "retained_by": [],
+      "configurations": ["linux-amd64", "linux-arm64"],
+      "consumers_loaded": ["example.com/consumer"],
+      "fixability": "narrowable",
+      "severity": "warn",
+      "message": "exported function is referenced only inside the package that declares it",
+      "details": { "narrower_visibility": "package" }
+    },
+    {
+      "code": "DS1801",
+      "kind": "unused-parameter",
+      "language": "go",
+      "position": { "path": "resolve.go", "line": 42, "column": 18, "end_line": 42 },
+      "symbol": {
+        "ref": "go://example.com/app#Resolve",
+        "kind": "parameter",
+        "name": "opts",
+        "size_lines": 1,
+        "objectpath": "Resolve"
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "liveness_relation": "reference-counting",
+      "test_only": false,
+      "generated": false,
+      "component": { "id": "deadset-go/c-0038", "root": true, "symbol_count": 1, "deletable_lines": 0 },
+      "retained_by": [],
+      "configurations": ["linux-amd64", "linux-arm64"],
+      "consumers_loaded": ["example.com/consumer"],
+      "fixability": "manual",
+      "severity": "warn",
+      "message": "no reference to the parameter exists inside the function body",
+      "details": { "overlap": ["revive unused-parameter", "gopls unusedparams", "unparam"] }
+    }
+  ],
+  "edge_evaluations": [],
+  "stale_suppressions": [],
+  "declared_gaps": [],
+  "excluded_by_cgo": [],
+  "test_file_rules": [{ "rule": "go-test-suffix", "matched": 61 }],
+  "totals": {
+    "findings": 3,
+    "by_severity": { "allow": 0, "warn": 2, "deny": 1 },
+    "deletable_lines": 41,
+    "suppressions_in_effect": 0,
+    "reasons_recorded": 0,
+    "stale_suppressions": 0,
+    "pending": 0,
+    "omitted": 0
+  }
+}

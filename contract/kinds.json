@@ -185,7 +185,7 @@
       "max_class": "certain",
       "fixability": "narrowable",
       "fixed": false,
-      "precondition": "Closed world only. Reported in a file that is not an entry file and that either belongs to a project whose consumer set the configuration declares complete or is reached by no manifest export."
+      "precondition": "Closed world only. Reported in a file that is not an entry file and that either belongs to a project whose consumer set the configuration declares complete or is reached by no manifest export. A declared cross-language edge counts as a reference from outside the file; where the edge's other side is unknown to the analyzer the finding is emitted pending."
     },
     {
       "code": "DS1201",
@@ -367,7 +367,7 @@
       "max_class": "certain",
       "fixability": "manual",
       "fixed": false,
-      "precondition": "The signature must be free, defined by the exemption list of unparam applied by name: the function is not exported from a target whose consumer set is not declared complete, is not a method retained by interface satisfaction, is not used as a value, is not a go:linkname or cgo target, and is not a stub whose body is empty or only panics. A parameter is part of the function's type, and a caller the analysis cannot see may pass it.",
+      "precondition": "The signature must be free, defined as follows: the function is not exported from a target whose consumer set is not declared complete, is not a method retained by interface satisfaction, is not used as a value, is not a go:linkname or cgo target, and is not a stub whose body is empty or only panics. A parameter is part of the function's type, and a caller the analysis cannot see may pass it.",
       "overlap": {
         "go": ["revive unused-parameter", "gopls unusedparams", "unparam"],
         "ts": ["tsc --noUnusedParameters", "@typescript-eslint/no-unused-vars"]

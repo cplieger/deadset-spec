@@ -42,7 +42,8 @@ func TestKindsAreCurrent(t *testing.T) {
 
 ## API
 
-- `spec.Contract`, `spec.Corpus`, `spec.Vectors`: three `embed.FS` values holding the `contract/`, `corpus/` and `vectors/` trees at the module version. Paths inside them start with the directory name.
+- `spec.Contract`, `spec.Corpus`, `spec.Vectors`, `spec.Examples`: four `embed.FS` values holding the `contract/`, `corpus/`, `vectors/` and `examples/` trees at the module version. Paths inside them start with the directory name.
+- `examples/` holds one finding document per kind family, one report per envelope state, and refused documents with an index naming what each one violates, so an analyzer can test its own decoder and its own schema check against declared data.
 - Nothing else is exported. A helper that interprets a document belongs to the analyzer that reads it.
 
 ## The contract
@@ -56,6 +57,15 @@ func TestKindsAreCurrent(t *testing.T) {
 - The exit-code table, `contract/exit-codes.json`: 0 clean, 1 findings at or above the failing severity or a stale suppression, 2 usage error, 3 load or type-check failure, 4 a report holding a finding whose cross-language reference is still unresolved.
 - The text-line format, position first as `path:line:col`, so one grep expression matches the output of every analyzer.
 - The merge of several reports into one, stated as an algorithm with a deterministic order, together with published input and output vectors so a merge implementation is tested against declared data rather than against another implementation.
+- The configuration document, `contract/config.schema.json`: a closed key list, the precedence between the repository file, the central file and the invocation's flags, and the resolved configuration a run prints, with published vectors so a resolution is tested against declared data too.
+
+Each of those formats is stated in full under [`contract/grammar/`](contract/grammar) or in the schema that carries it. The vocabularies also have reference pages, which is where a reader starts:
+
+- [Issue kinds](docs/kinds.md): every kind with its code, rule, languages, default, severity and fixability, the confidence ceiling this contract version gives every kind, and every retired code.
+- [Exemption classes](docs/exemptions.md): every class with its detection rule, what it retains, its per-language mechanism and its answer on TypeScript member visibility.
+- [Exit codes](docs/exit-codes.md): the five codes, what decides each and which one wins when more than one applies.
+- [Cross-language edges](docs/edges.md): the edges document, the three states a side takes, the pending finding and what a merge does with each pairing.
+- [Migrating from punused](docs/migrating-from-punused.md): the pass from a `.punused-ignore` file to `deadset-ignore.json`, with the `EU1001` and `EU1002` mapping.
 
 ## What counts as an issue kind
 

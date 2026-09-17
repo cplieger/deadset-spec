@@ -21,7 +21,7 @@ Each line is one finding object from the JSON report, rendered from eight of its
 
 | Field | Source in the finding | Form |
 | --- | --- | --- |
-| `path` | `position.path` | The path relative to the target root, with `/` as the separator on every platform, no leading `./`, no trailing `/`, not percent-encoded. Never an absolute path and never the target root itself, because a host detail has no place in the default text output. |
+| `path` | `position.path` | The path relative to the target root, with `/` as the separator on every platform, no leading `./`, no trailing `/`. Beyond that separator normalization the producer encodes nothing: each element carries the bytes the tree holds it under, so a space, a `%` or a non-ASCII character in a name appears as itself. Never an absolute path and never the target root itself, because a host detail has no place in the default text output. |
 | `line` | `position.line` | A positive decimal integer, 1-based, no sign, no leading zero. |
 | `col` | `position.column` | A positive decimal integer, 1-based, no sign, no leading zero. It counts the unit `finding.schema.json` fixes for `position.column`; this page does not restate the unit. |
 | `kind` | `symbol.kind` | One value from the closed vocabulary `finding.schema.json` declares for `symbol.kind`: lowercase ASCII letters and hyphens, such as `method`, `class-member` or `file`. |

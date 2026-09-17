@@ -42,7 +42,7 @@ A member is named, never numbered by its position in its container, so inserting
 go://<import-path>#<fragment>
 ```
 
-### The scope
+### The Go scope
 
 The scope is the import path of the package that declares the symbol: the module path from `go.mod`, then `/` and the package's directory below the module root, which is what `go list` reports as `ImportPath` and what `types.Package.Path()` returns. The package at the module root has the module path alone as its scope. A `main` package is scoped like any other. The corpus carries `go://example.com/app/cmd/tool#run`.
 
@@ -97,7 +97,7 @@ Two spellings parse and match nothing, and the self-check kinds are the safety n
 ts://<package-name>/<source-path>#<fragment>
 ```
 
-### The scope
+### The TypeScript scope
 
 The scope is the module: the name of the package the file belongs to, then `/`, then the file's path inside that package, with `/` as the separator and the file's own extension. The package name is the `name` field of the nearest `package.json` at or above the file's directory, up to the target root, and the path is relative to that manifest's directory.
 

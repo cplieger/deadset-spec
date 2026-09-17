@@ -1,0 +1,39 @@
+{
+  "code": "DS1705",
+  "kind": "stale-cross-language-edge",
+  "language": "ts",
+  "position": { "path": "deadset-edges.json", "line": 1, "column": 1, "end_line": 1 },
+  "symbol": {
+    "ref": "ts://@example/app/src/wire.ts#ServerEvent",
+    "kind": "edge",
+    "name": "wire/ServerEvent",
+    "size_lines": 1
+  },
+  "reachability_class": "certain",
+  "confidence": "certain",
+  "liveness_relation": "reference-counting",
+  "test_only": false,
+  "generated": false,
+  "component": { "id": "deadset/c-0001", "root": true, "symbol_count": 1, "deletable_lines": 0 },
+  "retained_by": [],
+  "configurations": [],
+  "consumers_loaded": [],
+  "fixability": "none",
+  "severity": "deny",
+  "message": "no analyzer that ran enumerates the symbol the used_by side of the edge names",
+  "details": {
+    "edge": "wire/ServerEvent",
+    "sides": [
+      {
+        "side": "provides",
+        "symbol": "go://example.com/app#ServerEvent",
+        "state": "live"
+      },
+      {
+        "side": "used_by",
+        "symbol": "ts://@example/app/src/wire.ts#ServerEvent",
+        "state": "absent"
+      }
+    ]
+  }
+}

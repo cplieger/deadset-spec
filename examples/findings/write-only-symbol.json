@@ -1,0 +1,33 @@
+{
+  "code": "DS1301",
+  "kind": "write-only-symbol",
+  "language": "go",
+  "position": { "path": "scan.go", "line": 18, "column": 5, "end_line": 18 },
+  "symbol": {
+    "ref": "go://example.com/app#lastScan",
+    "kind": "variable",
+    "name": "lastScan",
+    "parent": "go://example.com/app#",
+    "exported": false,
+    "size_lines": 1,
+    "objectpath": "lastScan"
+  },
+  "reachability_class": "certain",
+  "confidence": "certain",
+  "liveness_relation": "reference-counting",
+  "test_only": false,
+  "generated": false,
+  "component": { "id": "deadset-go/c-0019", "root": true, "symbol_count": 1, "deletable_lines": 1 },
+  "retained_by": [],
+  "configurations": ["linux-amd64"],
+  "consumers_loaded": [],
+  "fixability": "deletable",
+  "severity": "deny",
+  "message": "package-level variable is written and never read by production code",
+  "details": {
+    "write_positions": [
+      { "path": "scan.go", "line": 41, "column": 2, "end_line": 41 },
+      { "path": "scan.go", "line": 77, "column": 3, "end_line": 77 }
+    ]
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "schema_version": "1.0.0",
+  "contract_version": "1.0.0",
+  "analyzer": {
+    "name": "deadset-go",
+    "version": "1.0.0",
+    "languages": [
+      "go"
+    ],
+    "schema_versions_accepted": [
+      "1.0.0"
+    ],
+    "conformance": {
+      "corpus_version": "1.0.0",
+      "result": "pass",
+      "digest": "sha256:fb237604539ae340a82c566bac533eff435e19596423b1990a5f7533d07d6593"
+    }
+  },
+  "target": {
+    "kind": "application",
+    "root": ".",
+    "identity": "example.com/app"
+  },
+  "configurations": [
+    {
+      "id": "linux-amd64",
+      "os": "linux",
+      "arch": "amd64",
+      "tags": []
+    }
+  ],
+  "consumers": {
+    "declared": 0,
+    "loaded": [],
+    "unavailable": []
+  },
+  "findings": [],
+  "edge_evaluations": [
+    {
+      "edge": "wire/ServerEvent",
+      "side": "provides",
+      "symbol": "go://example.com/app/internal/wire#ServerEvent",
+      "state": "absent"
+    }
+  ],
+  "stale_suppressions": [],
+  "declared_gaps": [],
+  "excluded_by_cgo": [],
+  "test_file_rules": [
+    {
+      "rule": "go-test-suffix",
+      "matched": 3
+    }
+  ],
+  "totals": {
+    "findings": 0,
+    "by_severity": {
+      "allow": 0,
+      "warn": 0,
+      "deny": 0
+    },
+    "deletable_lines": 0,
+    "suppressions_in_effect": 0,
+    "reasons_recorded": 0,
+    "stale_suppressions": 0,
+    "pending": 0,
+    "omitted": 0
+  }
+}

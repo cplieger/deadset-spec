@@ -1,0 +1,175 @@
+{
+  "schema_version": "1.0.0",
+  "contract_version": "1.0.0",
+  "analyzer": {
+    "name": "deadset",
+    "version": "1.0.0",
+    "languages": ["go", "ts"],
+    "schema_versions_accepted": ["1.0.0"],
+    "conformance": {
+      "corpus_version": "1.0.0",
+      "result": "pass",
+      "digest": "sha256:d3b1eac654f8f4a17e430f846ba6b2a00cf35e39609f8275b75295da63b3f725"
+    }
+  },
+  "merged_from": [
+    {
+      "name": "deadset-go",
+      "version": "1.0.0",
+      "digest": "sha256:da34805c36e00a21a4769860acdea3cb84ffdc2580d6205ddd74461d18e43ae6"
+    },
+    {
+      "name": "deadset-ts",
+      "version": "1.0.0",
+      "digest": "sha256:c5b8664245f23f797fc16bd700847e280aec9b2926075fadec52517b2af4b4aa"
+    }
+  ],
+  "target": { "kind": "library", "root": "src/app", "identity": "example.com/app" },
+  "configurations": [{ "id": "linux-amd64", "os": "linux", "arch": "amd64", "tags": [] }],
+  "consumers": { "declared": 0, "loaded": [], "unavailable": [] },
+  "findings": [
+    {
+      "code": "DS1001",
+      "kind": "unused-exported",
+      "language": "go",
+      "position": { "path": "catalog.go", "line": 214, "column": 6, "end_line": 231 },
+      "symbol": {
+        "ref": "go://example.com/app#Catalog.ResolveAlias",
+        "kind": "method",
+        "name": "(*Catalog).ResolveAlias",
+        "parent": "go://example.com/app#Catalog",
+        "exported": true,
+        "size_lines": 18,
+        "objectpath": "Catalog.M0"
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "liveness_relation": "reference-counting",
+      "test_only": false,
+      "generated": false,
+      "component": { "id": "deadset-go/c-0007", "root": true, "symbol_count": 3, "deletable_lines": 41 },
+      "retained_by": [],
+      "configurations": ["linux-amd64"],
+      "consumers_loaded": [],
+      "fixability": "deletable",
+      "severity": "deny",
+      "message": "exported method has no reference in the target",
+      "analyzer": "deadset-go",
+      "details": {}
+    },
+    {
+      "code": "DS1705",
+      "kind": "stale-cross-language-edge",
+      "language": "ts",
+      "position": { "path": "deadset-edges.json", "line": 1, "column": 1, "end_line": 1 },
+      "symbol": {
+        "ref": "ts://@example/app/src/wire.ts#ServerEvent",
+        "kind": "edge",
+        "name": "wire/ServerEvent",
+        "size_lines": 1
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "liveness_relation": "reference-counting",
+      "test_only": false,
+      "generated": false,
+      "component": { "id": "deadset/c-0001", "root": true, "symbol_count": 1, "deletable_lines": 0 },
+      "retained_by": [],
+      "configurations": [],
+      "consumers_loaded": [],
+      "fixability": "none",
+      "severity": "deny",
+      "message": "no analyzer that ran enumerates the symbol the used_by side of the edge names",
+      "details": {
+        "edge": "wire/ServerEvent",
+        "sides": [
+          { "side": "provides", "symbol": "go://example.com/app#ServerEvent", "state": "live" },
+          { "side": "used_by", "symbol": "ts://@example/app/src/wire.ts#ServerEvent", "state": "absent" }
+        ]
+      }
+    },
+    {
+      "code": "DS1001",
+      "kind": "unused-exported",
+      "language": "ts",
+      "position": { "path": "src/wire.ts", "line": 12, "column": 7, "end_line": 17 },
+      "symbol": {
+        "ref": "ts://@example/app/src/wire.ts#legacyFrame",
+        "kind": "variable",
+        "name": "legacyFrame",
+        "parent": "ts://@example/app/src/wire.ts#",
+        "exported": true,
+        "size_lines": 6
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "liveness_relation": "reference-counting",
+      "test_only": false,
+      "generated": false,
+      "component": { "id": "deadset-ts/c-0004", "root": true, "symbol_count": 1, "deletable_lines": 6 },
+      "retained_by": [],
+      "configurations": ["linux-amd64"],
+      "consumers_loaded": [],
+      "fixability": "deletable",
+      "severity": "deny",
+      "message": "exported variable has no reference in the target",
+      "analyzer": "deadset-ts",
+      "details": {}
+    }
+  ],
+  "edge_evaluations": [
+    {
+      "edge": "wire/ServerEvent",
+      "side": "provides",
+      "symbol": "go://example.com/app#ServerEvent",
+      "state": "live",
+      "analyzer": "deadset-go"
+    },
+    {
+      "edge": "wire/ServerEvent",
+      "side": "used_by",
+      "symbol": "ts://@example/app/src/wire.ts#ServerEvent",
+      "state": "absent",
+      "analyzer": "deadset-ts"
+    }
+  ],
+  "stale_suppressions": [
+    {
+      "code": "DS1703",
+      "mechanism": "ignore",
+      "entry": {
+        "code": "DS1001",
+        "symbol": "go://example.com/app#Catalog.legacyAlias",
+        "path": "catalog.go",
+        "reason": "removal is breaking for the published API"
+      },
+      "position": { "path": "deadset-ignore.json", "line": 7, "column": 5 },
+      "symbol": "go://example.com/app#Catalog.legacyAlias",
+      "message": "the ignore entry named DS1001 and the symbol it names reports DS1003",
+      "analyzer": "deadset-go"
+    }
+  ],
+  "declared_gaps": [
+    {
+      "fixture": "private-member-unread",
+      "capability": "DS1003",
+      "reason": "member-level analysis is not implemented, so no member of a class is reported",
+      "analyzer": "deadset-ts"
+    }
+  ],
+  "excluded_by_cgo": [],
+  "test_file_rules": [
+    { "rule": "go-test-suffix", "matched": 61 },
+    { "rule": "ts-test-glob", "matched": 12 }
+  ],
+  "totals": {
+    "findings": 3,
+    "by_severity": { "allow": 0, "warn": 0, "deny": 3 },
+    "deletable_lines": 47,
+    "suppressions_in_effect": 0,
+    "reasons_recorded": 1,
+    "stale_suppressions": 1,
+    "pending": 0,
+    "omitted": 0
+  }
+}

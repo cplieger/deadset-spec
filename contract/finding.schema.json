@@ -144,7 +144,7 @@
       "required": ["id", "root", "symbol_count", "deletable_lines"],
       "properties": {
         "id": {
-          "description": "The identifier of the component, minted by the analyzer that reported it: that analyzer's own name, a solidus, and c- followed by digits. An analyzer prefixes every identifier it mints with its own name, so a merge unions components without renaming one and two reports never collide on an identifier.",
+          "description": "The identifier of the component, minted by the analyzer that reported it: that analyzer's own name, a solidus, and c- followed by digits. The digit count is the minter's choice and carries no meaning: an identifier is compared as bytes, never as a number, so c-1 and c-0001 are two identifiers and neither form is canonical. An analyzer prefixes every identifier it mints with its own name, so a merge unions components without renaming one and two reports never collide on an identifier.",
           "type": "string",
           "pattern": "^[a-z][a-z0-9-]*/c-[0-9]+$"
         },

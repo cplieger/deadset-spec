@@ -1,0 +1,64 @@
+{
+  "schema_version": "1.0.0",
+  "contract_version": "1.0.0",
+  "analyzer": {
+    "name": "deadset-go",
+    "version": "1.0.0",
+    "languages": ["go"],
+    "schema_versions_accepted": ["1.0.0"],
+    "conformance": {
+      "corpus_version": "1.0.0",
+      "result": "pass",
+      "digest": "sha256:38e1d6dd6a720d1e0ac5e25106ae8473a3e99d09c9dc1c170f567147833da193"
+    }
+  },
+  "target": { "kind": "library", "root": "src/app", "identity": "example.com/app" },
+  "configurations": [{ "id": "linux-amd64", "os": "linux", "arch": "amd64", "tags": [] }],
+  "consumers": {
+    "declared": 1,
+    "loaded": [],
+    "unavailable": [
+      {
+        "id": "example.com/consumer",
+        "role": "consumer",
+        "reason": "the configuration declared the consumer and named no path to load it from"
+      }
+    ]
+  },
+  "findings": [],
+  "edge_evaluations": [],
+  "stale_suppressions": [],
+  "declared_gaps": [
+    {
+      "fixture": "interface-satisfaction-conversion",
+      "capability": "interface-satisfaction",
+      "reason": "the analyzer retains a satisfying method set only for a value converted to an interface at a call site it loaded, so a conversion inside a consumer it did not load is out of reach"
+    },
+    {
+      "fixture": "private-member-unread",
+      "capability": "DS1003",
+      "reason": "member-level analysis is not implemented, so no member of a type is reported"
+    },
+    {
+      "fixture": "unused-exported-consumer",
+      "symbol": "Lib.Helper",
+      "capability": "DS1001",
+      "reason": "the expectation names a method reached through an embedded field, which the reference walk does not follow"
+    }
+  ],
+  "excluded_by_cgo": ["internal/bridge/glue.go"],
+  "test_file_rules": [
+    { "rule": "configured-test-glob", "matched": 4 },
+    { "rule": "go-test-suffix", "matched": 61 }
+  ],
+  "totals": {
+    "findings": 0,
+    "by_severity": { "allow": 0, "warn": 0, "deny": 0 },
+    "deletable_lines": 0,
+    "suppressions_in_effect": 0,
+    "reasons_recorded": 0,
+    "stale_suppressions": 0,
+    "pending": 0,
+    "omitted": 0
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "code": "DS1601",
+  "kind": "unused-dependency",
+  "language": "ts",
+  "position": { "path": "package.json", "line": 24, "column": 5, "end_line": 24 },
+  "symbol": {
+    "ref": "ts://@example/app/package.json#lodash:dependency",
+    "kind": "dependency",
+    "name": "lodash",
+    "size_lines": 1
+  },
+  "reachability_class": "certain",
+  "confidence": "certain",
+  "liveness_relation": "reachability",
+  "test_only": false,
+  "generated": false,
+  "component": { "id": "deadset-ts/c-0031", "root": true, "symbol_count": 1, "deletable_lines": 1 },
+  "retained_by": [],
+  "configurations": ["default"],
+  "consumers_loaded": [],
+  "fixability": "manual",
+  "severity": "deny",
+  "message": "no import in the target needs the declared dependency",
+  "details": { "dependency_class": "dependency" }
+}

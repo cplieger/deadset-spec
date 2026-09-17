@@ -1,0 +1,120 @@
+{
+  "schema_version": "1.0.0",
+  "contract_version": "1.0.0",
+  "analyzer": {
+    "name": "deadset-go",
+    "version": "1.0.0",
+    "languages": [
+      "go"
+    ],
+    "schema_versions_accepted": [
+      "1.0.0"
+    ],
+    "conformance": {
+      "corpus_version": "1.0.0",
+      "result": "pass",
+      "digest": "sha256:38e1d6dd6a720d1e0ac5e25106ae8473a3e99d09c9dc1c170f567147833da193"
+    }
+  },
+  "target": {
+    "kind": "library",
+    "root": "src/app",
+    "identity": "example.com/app"
+  },
+  "configurations": [
+    {
+      "id": "linux-amd64",
+      "os": "linux",
+      "arch": "amd64",
+      "tags": []
+    },
+    {
+      "id": "linux-arm64",
+      "os": "linux",
+      "arch": "arm64",
+      "tags": [
+        "netgo"
+      ]
+    }
+  ],
+  "consumers": {
+    "declared": 1,
+    "loaded": [
+      {
+        "id": "example.com/consumer",
+        "role": "consumer",
+        "path": "../consumer"
+      }
+    ],
+    "unavailable": []
+  },
+  "findings": [
+    {
+      "code": "DS1001",
+      "kind": "unused-exported",
+      "language": "go",
+      "position": {
+        "path": "catalog.go",
+        "line": 214,
+        "column": 6,
+        "end_line": 231
+      },
+      "symbol": {
+        "ref": "go://example.com/app#Catalog.ResolveAlias",
+        "kind": "method",
+        "name": "(*Catalog).ResolveAlias",
+        "parent": "go://example.com/app#Catalog",
+        "exported": true,
+        "size_lines": 18,
+        "objectpath": "Catalog.M0"
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "liveness_relation": "reference-counting",
+      "test_only": false,
+      "generated": false,
+      "component": {
+        "id": "c-0007",
+        "root": true,
+        "symbol_count": 3,
+        "deletable_lines": 41
+      },
+      "retained_by": [],
+      "configurations": [
+        "linux-amd64",
+        "linux-arm64"
+      ],
+      "consumers_loaded": [
+        "example.com/consumer"
+      ],
+      "fixability": "deletable",
+      "severity": "deny",
+      "message": "exported method has no reference in the target and none from any loaded consumer",
+      "details": {}
+    }
+  ],
+  "edge_evaluations": [],
+  "stale_suppressions": [],
+  "declared_gaps": [],
+  "excluded_by_cgo": [],
+  "test_file_rules": [
+    {
+      "rule": "go-test-suffix",
+      "matched": 61
+    }
+  ],
+  "totals": {
+    "findings": 1,
+    "by_severity": {
+      "allow": 0,
+      "warn": 0,
+      "deny": 1
+    },
+    "deletable_lines": 41,
+    "suppressions_in_effect": 0,
+    "reasons_recorded": 0,
+    "stale_suppressions": 0,
+    "pending": 0,
+    "omitted": 0
+  }
+}

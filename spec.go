@@ -1,6 +1,6 @@
-// Package spec carries the deadset contract, the conformance corpus and the
-// published test vectors as embedded file trees, so a Go program can pin them
-// at a module version. It is a data carrier: no deadset analyzer or
+// Package spec carries the deadset contract, the conformance corpus, the
+// published test vectors and the example documents as embedded file trees, so a
+// Go program can pin them at a module version. It is a data carrier: no deadset analyzer or
 // orchestrator executes anything in this module, and a helper that interprets
 // a document belongs to the product that reads it.
 package spec
@@ -24,3 +24,10 @@ var Corpus embed.FS
 //
 //go:embed vectors
 var Vectors embed.FS
+
+// Examples holds the examples/ tree: the finding and report documents that
+// illustrate the schemas, and the negative documents a conforming validator
+// refuses.
+//
+//go:embed examples
+var Examples embed.FS
