@@ -9,7 +9,41 @@ The contract every deadset dead-code analyzer implements, and the conformance co
 
 deadset finds dead code in Go and TypeScript repositories: declarations nothing reaches, exports nothing outside the package uses, files nothing imports, dependencies nothing requires. It ships as three programs from three repositories. [deadset-go](https://github.com/cplieger/deadset-go) analyzes a Go module. [deadset-ts](https://github.com/cplieger/deadset-ts) analyzes a TypeScript or JavaScript package. [deadset](https://github.com/cplieger/deadset) runs both, resolves the references that cross the language boundary, and merges their reports into one.
 
-This repository holds what those three programs agree on. It contains data and documentation only, no code any of them executes, so a third party can write a conforming analyzer for another language from this repository alone.
+This repository holds what those three programs agree on: data and documentation, plus a Go test harness that checks them. No analyzer executes anything here, so a third party can write a conforming analyzer for another language from this repository alone. The harness makes the repository the Go module `github.com/cplieger/deadset-spec`, and that module is also how a Go program pins the contract and the corpus at a version: it requires the module at a tag and reads the embedded files.
+
+## Install
+
+```sh
+go get github.com/cplieger/deadset-spec@latest
+```
+
+The module is a test dependency for a Go analyzer that runs the corpus. A TypeScript analyzer clones the repository at a tag instead; no npm package is published.
+
+## Usage
+
+```go
+import (
+    "io/fs"
+    "testing"
+
+    "github.com/cplieger/deadset-spec"
+)
+
+func TestKindsAreCurrent(t *testing.T) {
+    data, err := fs.ReadFile(spec.Contract, "contract/kinds.json")
+    if err != nil {
+        t.Fatalf("fs.ReadFile(Contract, kinds.json) = %v, want the document present", err)
+    }
+    // decode data and compare it with the kinds this analyzer implements
+}
+```
+
+`fs.WalkDir(spec.Corpus, "corpus/fixtures", ...)` lists the fixtures; each rendering is extracted to a temporary directory before analysis.
+
+## API
+
+- `spec.Contract`, `spec.Corpus`, `spec.Vectors`: three `embed.FS` values holding the `contract/`, `corpus/` and `vectors/` trees at the module version. Paths inside them start with the directory name.
+- Nothing else is exported. A helper that interprets a document belongs to the analyzer that reads it.
 
 ## The contract
 
@@ -35,6 +69,8 @@ A finding that fails the first test is a bug, a missing declaration or a design 
 ## The conformance corpus
 
 `corpus/` holds fixture projects per language and, per fixture, a language-neutral expectation file naming what an analyzer must report and must not report for each issue kind and each exemption class. Every analyzer runs the corpus as a condition of its own release. Where an analyzer does not implement a capability an expectation covers, it records a declared gap in its conformance report; an expectation that is neither answered nor declared fails the analyzer. Where two analyzers answer the same expectation, the corpus requires them to agree on the code, the confidence and the suppression behavior.
+
+A fixture ships one rendering per language. A Go rendering is one `go.txtar` archive holding the target module and its consumer modules as sections, so the archive never reads as a Go module of this repository. A TypeScript rendering is a directory holding the same projects as files, because a package needs a real `package.json` on disk to resolve modules. Both carry the same `fixture.json` manifest, which maps each symbol name the expectation file uses to a file and line in that rendering.
 
 ## Contributing
 
