@@ -1,6 +1,6 @@
 # The text line
 
-The text format writes one finding per line, position first, in one shape for every analyzer (Requirements 2.12, 24.1). The shape exists so that one search expression finds every finding in the output of the Go analyzer, the TypeScript analyzer and the merged output alike, and so that an editor or a log viewer that already links `path:line:col` links these lines too. This page states the format field by field for an implementer who has no access to any existing implementation, and it publishes the regular expression both first-party products use in their golden tests. Every string under [Accepted](#accepted) matches the expression and every string under [Refused](#refused) does not; the grammar self-test in this repository checks both sets.
+The text format writes one finding per line, position first, in one shape for every analyzer. One search expression therefore finds every finding in a single analyzer's output and in merged output alike, and an editor or a log viewer that links `path:line:col` links these lines too. This page states the format field by field for an implementer who has no access to any existing implementation, and it publishes the regular expression that defines it. Every string under [Accepted](#accepted) matches the expression and every string under [Refused](#refused) does not; the grammar self-test in this repository checks both sets.
 
 ## The shape
 
@@ -21,18 +21,18 @@ Each line is one finding object from the JSON report, rendered from eight of its
 
 | Field | Source in the finding | Form |
 | --- | --- | --- |
-| `path` | `position.path` | The path relative to the target root, with `/` as the separator on every platform, no leading `./`, no trailing `/`, not percent-encoded. Never an absolute path and never the target root itself, because a host detail has no place in the default text output (Requirement 24.6). |
+| `path` | `position.path` | The path relative to the target root, with `/` as the separator on every platform, no leading `./`, no trailing `/`, not percent-encoded. Never an absolute path and never the target root itself, because a host detail has no place in the default text output. |
 | `line` | `position.line` | A positive decimal integer, 1-based, no sign, no leading zero. |
 | `col` | `position.column` | A positive decimal integer, 1-based, no sign, no leading zero. It counts the unit `finding.schema.json` fixes for `position.column`; this page does not restate the unit. |
 | `kind` | `symbol.kind` | One value from the closed vocabulary `finding.schema.json` declares for `symbol.kind`: lowercase ASCII letters and hyphens, such as `method`, `class-member` or `file`. |
 | `name` | `symbol.name` | The symbol's display name, verbatim. For a Go method that is the `(*Catalog).ResolveAlias` form; for a TypeScript member it is `Container.member`. `symbol-ref.md` and `finding.schema.json` fix the name; this page only carries it. |
 | `message` | `message` | The finding's message, verbatim. |
 | `confidence` | `confidence` | One of `certain`, `probable` or `possible`. It is the `confidence` field, the one `--min-confidence` filters on, and never `reachability_class`. |
-| `CODE` | `code` | The issue-kind code, `DS` followed by four digits, rendered exactly as it appears in an ignore entry, a configuration key and a SARIF rule identifier (Requirement 2.5). |
+| `CODE` | `code` | The issue-kind code, `DS` followed by four digits, rendered exactly as it appears in an ignore entry, a configuration key and a SARIF rule identifier. |
 
 ## Separators, and the order of the fields
 
-The position comes first because that is where every compiler, `go vet`, `gopls`, [staticcheck](https://staticcheck.dev/docs/running-staticcheck/cli/formatters/) and [ESLint's `unix` formatter](https://eslint.org/docs/latest/use/formatters/) put it, so editors, terminals and CI log viewers already turn `path:line:col` into a link, and so one expression anchored at the start of the line matches both analyzers' output. The code comes last, in parentheses, which is staticcheck's convention and the one `punused` used; a reader scanning a long report finds the code at a fixed distance from the right margin, and a filter for one code is one expression on the tail.
+The position comes first, so that editors, terminals and log viewers turn `path:line:col` into a link and one expression anchored at the start of the line matches every analyzer's output. The code comes last, in parentheses: a reader scanning a long report finds the code at a fixed distance from the right margin, and a filter for one code is one expression on the tail.
 
 The separators, in order:
 
@@ -58,30 +58,30 @@ Nothing else is constrained. A path with a space, a colon or a non-ASCII charact
 
 ## Three cases with no special form
 
-**A finding with no column does not exist.** Every finding carries a line and a column, the document-level ones included: a file nothing builds or imports (`DS1501`, `DS1502`), a dependency or module directive (`DS1601`, `DS1605`), an unmatched root (`DS1704`) and a stale edge (`DS1705`) each render at the line and column `report.schema.json` fixes for that record, which is the declaring line where one exists (the `require` line in `go.mod`, the entry in `package.json`) and the document's fixed position otherwise. So the format has no `path:line:` form, and a reporter never emits one. This differs from Go's `token.Position`, whose [`String`](https://pkg.go.dev/go/token#Position.String) method drops the column when it is zero; an analyzer built on that method renders `position.line` and `position.column` from the finding rather than the token position. Rendered:
+**A finding with no column does not exist.** Every finding carries a line and a column, the document-level ones included: a file nothing builds or imports (`DS1501`, `DS1502`), a dependency or module directive (`DS1601`, `DS1605`), an unmatched root (`DS1704`) and a stale edge (`DS1705`) each render at the line and column `report.schema.json` fixes for that record, which is the declaring line where one exists (the `require` line in `go.mod`, the entry in `package.json`) and the document's fixed position otherwise. So the format has no `path:line:` form, and a reporter never emits one. A reporter renders `line` and `col` from the finding's `position.line` and `position.column`, never from a position type that omits a zero column. Rendered:
 
 ```text
 go.mod:12:2: dependency github.com/example/left: required by no package in the build list [certain] (DS1601)
 internal/legacy/render_windows.go:1:1: file internal/legacy/render_windows.go: built under no declared configuration [certain] (DS1501)
 ```
 
-**A stale suppression renders as a finding under `DS1703`.** Requirement 21.9 makes a suppression that matches no current finding a finding of its own, so it takes the same line shape as every other finding. Its position is the suppression's own site: the line of the directive comment for an inline directive, the entry's line in `deadset-ignore.json` for an ignore entry, and the row's line in `deadset-baseline.json` for a baseline row. Its `kind`, `name` and `message` are the fields `report.schema.json` maps to them for a stale-suppression record. Its confidence is `certain` and its code is always `DS1703`, because the kind is fixed on at `deny` and no configuration lowers it. Rendered, for an inline directive one line above the declaration it named:
+**A stale suppression renders as a finding under `DS1703`.** A suppression that matches no current finding is a finding of its own, so it takes the same line shape as every other finding. Its position is the suppression's own site: the line of the directive comment for an inline directive, the entry's line in `deadset-ignore.json` for an ignore entry, and the row's line in `deadset-baseline.json` for a baseline row. Its `kind`, `name` and `message` are the fields `report.schema.json` maps to them for a stale-suppression record. Its confidence is `certain` and its code is always `DS1703`, because the kind is fixed on at `deny` and no configuration lowers it. Rendered, for an inline directive one line above the declaration it named:
 
 ```text
-catalog.go:213:1: suppression go://github.com/cplieger/toolbelt/v3#Catalog.ResolveAlias: inline directive for DS1001 matches no current finding [certain] (DS1703)
+catalog.go:213:1: suppression go://example.com/app#Catalog.ResolveAlias: inline directive for DS1001 matches no current finding [certain] (DS1703)
 ```
 
-**A pending finding is not rendered.** A finding that waits on a cross-language edge lives inside an edge evaluation, is neither reported nor suppressed (Requirement 31.4), and appears in no `findings` array, so the text reporter writes no line for it. The run names the count instead: an analyzer holding at least one exits with code 4 and says how many (Requirement 25.8), and the merged report of the orchestrator holds none. A suppressed finding is not rendered either; a matched suppression marks its symbol live before the sweep, so no finding exists to render, and the summary's suppression counts are where that is visible (Requirement 21.13).
+**A pending finding is not rendered.** A finding that waits on a cross-language edge lives inside an edge evaluation, is neither reported nor suppressed, and appears in no `findings` array, so the text reporter writes no line for it. The run names the count instead: an analyzer holding at least one exits with code 4 and says how many, and the merged report of the orchestrator holds none. A suppressed finding is not rendered either; a matched suppression marks its symbol live before the sweep, so no finding exists to render, and the summary's suppression counts are where that is visible.
 
 ## Order, and the lines around the findings
 
-The text reporter writes the report's `findings` in their report order, which is the canonical key `merge.md` defines, `(path, line, column, code, symbol.ref, analyzer.name)`; then the report's `stale_suppressions` in their report order. Where a sort by size is configured (Requirement 24.7), the reporter orders findings by `component.deletable_lines` descending, then `symbol.size_lines` descending, then the canonical key, and stale suppressions follow unchanged. Where a maximum finding count is configured (Requirement 24.9), the reporter writes the first lines in that order up to the maximum and then reports the number omitted.
+The text reporter writes the report's `findings` in their report order, which is the canonical key `merge.md` defines, `(path, line, column, code, symbol.ref, analyzer.name)`; then the report's `stale_suppressions` in their report order. Where a sort by size is configured, the reporter orders findings by `component.deletable_lines` descending, then `symbol.size_lines` descending, then the canonical key, and stale suppressions follow unchanged. Where a maximum finding count is configured, the reporter writes the first lines in that order up to the maximum and then reports the number omitted.
 
-Finding lines go to standard output. The summary, the omitted count, the deletable-line total (Requirement 24.8), the remediation text and every load error are not finding lines, and none of them matches the expression below, so a filter on the expression yields exactly the finding lines. No timestamp, duration or host detail appears in the output (Requirement 24.6), and two runs over an unchanged tree write the same bytes (Requirement 26.1).
+Finding lines go to standard output. The summary, the omitted count, the deletable-line total, the remediation text and every load error are not finding lines, and none of them matches the expression below, so a filter on the expression yields exactly the finding lines. No timestamp, duration or host detail appears in the output, and two runs over an unchanged tree write the same bytes.
 
 ## The expression
 
-The expression is written in the intersection of two dialects, RE2 as Go's `regexp` package implements it ([syntax](https://pkg.go.dev/regexp/syntax)) and ECMAScript `RegExp` with no flags, so one string compiles unchanged in both first-party products. Named groups use the `(?<name>...)` spelling both dialects accept (Go since 1.22). Character classes are spelled `[^\r\n]` rather than `.`, because `.` excludes different characters in the two dialects (LF only in RE2, four line terminators in ECMAScript) and the class makes them agree. Lazy quantifiers (`+?`) and the anchors `^` and `$` behave the same in both with no flags set: `$` matches only at the end of the input, so a line is matched without its terminator.
+The expression is written in the intersection of two dialects, RE2 as Go's `regexp` package implements it ([syntax](https://pkg.go.dev/regexp/syntax)) and ECMAScript `RegExp` with no flags, so one string compiles unchanged in a Go implementation and in a TypeScript one. Named groups use the `(?<name>...)` spelling both dialects accept (Go since 1.22). Character classes are spelled `[^\r\n]` rather than `.`, because `.` excludes different characters in the two dialects (LF only in RE2, four line terminators in ECMAScript) and the class makes them agree. Lazy quantifiers (`+?`) and the anchors `^` and `$` behave the same in both with no flags set: `$` matches only at the end of the input, so a line is matched without its terminator.
 
 ```text
 ^(?<path>[^\r\n]+?):(?<line>[1-9][0-9]*):(?<col>[1-9][0-9]*): (?<kind>[a-z][a-z-]*) (?<name>[^\r\n]+?): (?<message>[^\r\n]+?) \[(?<confidence>certain|probable|possible)\] \((?<code>DS[0-9]{4})\)$
@@ -98,7 +98,7 @@ The expression is written in the intersection of two dialects, RE2 as Go's `rege
 | `confidence` | `confidence` |
 | `code` | `code` |
 
-The expression is the format's definition for the golden tests: a product's text reporter passes when every line it writes for a finding matches, and when the groups equal the finding's fields. It is not a validator of the values inside the groups; that `kind` is in the vocabulary, that `code` is a live code in `kinds.json` and that `confidence` is not above the kind's ceiling are the finding schema's checks, made on the JSON report.
+The expression is the format's definition: a product's text reporter conforms when every line it writes for a finding matches it, and when the groups equal the finding's fields. It is not a validator of the values inside the groups; that `kind` is in the vocabulary, that `code` is a live code in `kinds.json` and that `confidence` is not above the kind's ceiling are the finding schema's checks, made on the JSON report.
 
 ### Accepted
 
@@ -107,7 +107,7 @@ catalog.go:214:6: method (*Catalog).ResolveAlias: exported method has no referen
 src/features/tabs/index.ts:1182:11: class-member TabStrip.cachedLayout: private member is written and never read [certain] (DS1301)
 go.mod:12:2: dependency github.com/example/left: required by no package in the build list [certain] (DS1601)
 internal/legacy/render_windows.go:1:1: file internal/legacy/render_windows.go: built under no declared configuration [certain] (DS1501)
-catalog.go:213:1: suppression go://github.com/cplieger/toolbelt/v3#Catalog.ResolveAlias: inline directive for DS1001 matches no current finding [certain] (DS1703)
+catalog.go:213:1: suppression go://example.com/app#Catalog.ResolveAlias: inline directive for DS1001 matches no current finding [certain] (DS1703)
 odd:name.go:3:1: function weird: message with [brackets] and (parens): still one line [possible] (DS1002)
 src/x.ts:9:3: class-member Foo.'my key': private member is written and never read [certain] (DS1301)
 ```
@@ -128,7 +128,7 @@ DS1001: catalog.go:214:6: method (*Catalog).ResolveAlias: exported method has no
 catalog.go:214:6: method (*Catalog).ResolveAlias: exported method has no reference [probable] (DS1001) 
 ```
 
-In order: no column; no colon after the column and no confidence, which is the `punused` line shape; no confidence; the code outside parentheses; a confidence outside the vocabulary; a code outside the `DS` code space, the shape the step this toolkit replaces emitted (Requirement 2.6); a zero line number; the code before the position; a trailing space after the closing parenthesis.
+In order: no column; no colon after the column and no confidence; no confidence; the code outside parentheses; a confidence outside the vocabulary; a code outside the `DS` code space; a zero line number; the code before the position; a trailing space after the closing parenthesis.
 
 ## A filter for a shell
 
@@ -144,18 +144,6 @@ It is a filter, not a parser: it selects the finding lines out of a run's output
 grep -E '^.+:[1-9][0-9]*:[1-9][0-9]*: .+ \[(certain|probable|possible)\] \(DS[0-9]{4}\)$' run.txt |
   sed -E 's/^.* \((DS[0-9]{4})\)$/\1/' | sort | uniq -c
 ```
-
-## How the shape compares with other tools
-
-The format takes the parts of its neighbours that a filter can rely on and drops the parts that vary. Whoever has scripted around one of these tools already knows most of this one.
-
-| Tool | Line shape | Difference from this format |
-| --- | --- | --- |
-| [staticcheck](https://staticcheck.dev/docs/running-staticcheck/cli/formatters/) (`text`) | `path:line:col: message (CODE)` | Same position and code placement. This format inserts `kind name:` after the position and `[confidence]` before the code, so a filter can read the symbol and the confidence without parsing the message. |
-| `go vet`, `gopls` | `path:line:col: message` | Same position. No code, so a filter cannot select one rule. |
-| [ESLint `unix`](https://eslint.org/docs/latest/use/formatters/) | `path:line:col: message [Error/rule-id]` | Same position. The rule identifier sits inside the bracket with the severity; this format keeps the severity out of the line (it is the exit code's business) and gives the confidence the bracket. |
-| [`punused`](https://github.com/bep/punused) | `path:line:col message (CODE)` | No colon after the column, so a filter written for compiler output misses it; the second refused line above is that shape. Its codes were `EU1001` and `EU1002`, which are outside the code space (Requirement 2.6). |
-| [knip](https://knip.dev/features/reporters) (`symbols`, `compact`) | `path: symbol, symbol` under a heading per issue type | No position on the line and no code; the heading carries the kind. Its `json` reporter is where the line and column live. |
 
 ## What other documents fix
 

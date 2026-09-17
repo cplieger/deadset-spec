@@ -1,5 +1,5 @@
 {
-  "description": "The issue-kind vocabulary. Every code is the prefix followed by four digits, assigned to at most one kind for the life of the space: a retired code stays retired and is listed here so re-use is checkable. A kind is admitted only when what it reports is dead code, deletable or narrowable without a behavior change, and when it is decidable exactly from type information and the graph. `default_enabled` and `default_severity` are what a configuration overrides unless `fixed` is true; `max_class` caps the confidence a finding of the kind may carry; `fixability` says what a mechanical edit may do with the finding; `precondition` is a condition the analyzer checks before it reports; `derived_from` names the kinds a derived kind is computed from, the finding being reported once under the most specific code; `overlap` names, per language, the external linters or rules that report the same kind, with `[\"none known\"]` and `[\"not applicable\"]` as its two sentinel values. A retired row or range carries `retired_by_decision`, the number of the recorded design decision that removed it, and `reason`, why it is not dead code or not exactly decidable.",
+  "description": "The issue-kind vocabulary. Every code is the prefix followed by four digits, assigned to at most one kind for the life of the space: a retired code stays retired and is listed here so re-use is checkable. `default_enabled` and `default_severity` are what a configuration overrides unless `fixed` is true; `max_class` caps the confidence a finding of the kind may carry; `fixability` says what a mechanical edit may do with the finding; `precondition` is a condition the analyzer checks before it reports; `derived_from` names the kinds a derived kind is computed from, the finding being reported once under the most specific code; `overlap` names, per language, the external linters or rules that report the same kind, with `[\"none known\"]` and `[\"not applicable\"]` as its two sentinel values. A retired row carries the code and the name of the kind that once held it.",
   "prefix": "DS",
   "languages": ["go", "ts"],
   "severities": ["allow", "warn", "deny"],
@@ -39,8 +39,7 @@
       "end": "DS1499",
       "family": "redundant-surface",
       "retired": true,
-      "retired_by_decision": 27,
-      "description": "Retired range. An earlier revision assigned it to alias-only and forwarding-only declarations; both were removed because a referenced alias or forwarder is redundant surface rather than dead code, so the range holds no live kind and its two codes stay assigned to nothing."
+      "description": "The range is retired and holds no live kind."
     },
     {
       "start": "DS1500",
@@ -455,117 +454,79 @@
   "retired": [
     {
       "code": "DS1202",
-      "name": "single-implementation-interface",
-      "retired_by_decision": 27,
-      "reason": "A used interface with one implementation is the normal consumer-side seam, not dead code; a reviewer's call."
+      "name": "single-implementation-interface"
     },
     {
       "code": "DS1401",
-      "name": "alias-only-declaration",
-      "retired_by_decision": 27,
-      "reason": "A referenced alias or re-export is redundant surface rather than dead code, a reviewer's call, and an unreferenced one is already unused-exported."
+      "name": "alias-only-declaration"
     },
     {
       "code": "DS1402",
-      "name": "forwarding-only-symbol",
-      "retired_by_decision": 27,
-      "reason": "A referenced forwarding function is redundant surface rather than dead code, a reviewer's call."
+      "name": "forwarding-only-symbol"
     },
     {
       "code": "DS1503",
-      "name": "duplicate-export",
-      "retired_by_decision": 27,
-      "reason": "Two exports of one value are not dead code: when one name is unused, unused-exported already reports it, and when both are used nothing is dead."
+      "name": "duplicate-export"
     },
     {
       "code": "DS1504",
-      "name": "import-cycle",
-      "retired_by_decision": 27,
-      "reason": "An import cycle is architecture linting rather than dead code; the Go compiler refuses one and knip ships the check disabled for the same reason."
+      "name": "import-cycle"
     },
     {
       "code": "DS1505",
-      "name": "orphan-test-data",
-      "retired_by_decision": 27,
-      "reason": "A test data file is read by a path string or a directory walk, so its use is detectable only by matching string literals against paths, which is not exact decidability from type information and the graph."
+      "name": "orphan-test-data"
     },
     {
       "code": "DS1506",
-      "name": "unread-embed-pattern",
-      "retired_by_decision": 27,
-      "reason": "An embedded file is read by a runtime path, so its use is detectable only by matching string literals against paths, which is not exact decidability from type information and the graph."
+      "name": "unread-embed-pattern"
     },
     {
       "code": "DS1507",
-      "name": "unused-message-key",
-      "retired_by_decision": 27,
-      "reason": "A message-catalogue key is looked up by a string at run time, so its use is detectable only by matching string literals against keys, which is not exact decidability from type information and the graph."
+      "name": "unused-message-key"
     },
     {
       "code": "DS1602",
-      "name": "undeclared-dependency",
-      "retired_by_decision": 27,
-      "reason": "A used dependency nothing declares is a missing declaration, a correctness defect the compiler and knip's unlisted rule own, not dead code."
+      "name": "undeclared-dependency"
     },
     {
       "code": "DS1603",
-      "name": "test-only-dependency",
-      "retired_by_decision": 27,
-      "reason": "A dependency used only from tests is a classification rather than deadness, and Go has no development-dependency section to move one to."
+      "name": "test-only-dependency"
     },
     {
       "code": "DS1604",
-      "name": "unresolved-import",
-      "retired_by_decision": 27,
-      "reason": "An unresolved import specifier is a compile error the compiler owns, not dead code."
+      "name": "unresolved-import"
     },
     {
       "code": "DS1606",
-      "name": "unused-tool-directive",
-      "retired_by_decision": 27,
-      "reason": "A tool directive is invoked by a shell command in a container build file, a makefile or a continuous-integration job, outside anything the analysis reads, so its use is detectable only by text search."
+      "name": "unused-tool-directive"
     },
     {
       "code": "DS1607",
-      "name": "unused-workspace-entry",
-      "retired_by_decision": 32,
-      "reason": "A workspace use entry exists to run commands in that module whether or not another member imports it, an external entry point by definition, the same flaw that retired the tool-directive kind."
+      "name": "unused-workspace-entry"
     },
     {
       "code": "DS1608",
-      "name": "unused-binary",
-      "retired_by_decision": 32,
-      "reason": "A manifest bin entry is an entry point for the package's consumers by definition, so internal unreachability does not make the command dead; knip's own binaries check means the opposite thing, an unlisted binary."
+      "name": "unused-binary"
     },
     {
       "code": "DS1804",
-      "name": "constant-result",
-      "retired_by_decision": 27,
-      "reason": "A result always equal to one value is a design smell rather than dead code; unparam owns it."
+      "name": "constant-result"
     },
     {
       "code": "DS1806",
-      "name": "discarded-pure-result",
-      "retired_by_decision": 27,
-      "reason": "A discarded result of a pure call is a bug rather than dead code; go vet unusedresult and staticcheck SA4017 own it."
+      "name": "discarded-pure-result"
     },
     {
       "code": "DS1808",
-      "name": "write-to-copy",
-      "retired_by_decision": 27,
-      "reason": "A write to a copy is a bug rather than dead code; gopls unusedwrite owns it."
+      "name": "write-to-copy"
     },
     {
       "code": "DS1810",
-      "name": "empty-branch",
-      "retired_by_decision": 27,
-      "reason": "An empty branch is a smell rather than dead code; staticcheck SA9003 and eslint no-empty own it."
+      "name": "empty-branch"
     },
     {
       "code": "DS1811",
-      "name": "redundant-conversion",
-      "retired_by_decision": 27,
-      "reason": "A redundant conversion is a smell rather than dead code; unconvert and @typescript-eslint/no-unnecessary-type-assertion own it."
+      "name": "redundant-conversion"
     }
   ]
 }

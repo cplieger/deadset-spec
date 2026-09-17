@@ -1,6 +1,6 @@
 [
   {
-    "input": { "comment": "//deadset:ignore DS1001 -- Reached only through arrapi.SeriesClient; see arrapi/series.go:88.", "line_offset": -1 },
+    "input": { "comment": "//deadset:ignore DS1001 -- Reached only through the generated client; see client_gen.go:88.", "line_offset": -1 },
     "kind": "inline",
     "accepted": true,
     "rule": "spelling-no-space",
@@ -70,21 +70,21 @@
     "reason": "A separator followed by whitespace only: an empty reason is no reason, DS1701."
   },
   {
-    "input": { "comment": "//deadset:ignore DS1001 -- Reached only through arrapi.SeriesClient.", "line_offset": 0 },
+    "input": { "comment": "//deadset:ignore DS1001 -- Reached only through the generated client.", "line_offset": 0 },
     "kind": "inline",
     "accepted": false,
     "rule": "line-above",
-    "reason": "A trailing directive on the declaration's own line, the //nolint and eslint-disable-line placement: it binds nothing and is reported as DS1703 (stale-suppression)."
+    "reason": "A trailing directive on the declaration's own line: it binds nothing and is reported as DS1703 (stale-suppression)."
   },
   {
-    "input": { "comment": "//deadset:ignore DS1001 -- Reached only through arrapi.SeriesClient.", "line_offset": -2 },
+    "input": { "comment": "//deadset:ignore DS1001 -- Reached only through the generated client.", "line_offset": -2 },
     "kind": "inline",
     "accepted": false,
     "rule": "line-above",
     "reason": "Two lines above the declaration, with a blank line or a doc-comment line between: it binds nothing and is reported as DS1703."
   },
   {
-    "input": { "comment": "//deadset:ignore DS1001 -- Reached only through arrapi.SeriesClient.", "line_offset": 1 },
+    "input": { "comment": "//deadset:ignore DS1001 -- Reached only through the generated client.", "line_offset": 1 },
     "kind": "inline",
     "accepted": false,
     "rule": "line-above",
@@ -95,52 +95,52 @@
     "kind": "inline",
     "accepted": false,
     "rule": "namespace",
-    "reason": "golangci-lint's namespace. Not a directive of this contract: it suppresses nothing, and the finding it sits above stays reported."
+    "reason": "Another linter's namespace. Not a directive of this contract: it suppresses nothing, and the finding it sits above stays reported."
   },
   {
     "input": { "comment": "//lint:ignore U1000 legacy hook kept for the plugin loader", "line_offset": -1 },
     "kind": "inline",
     "accepted": false,
     "rule": "namespace",
-    "reason": "staticcheck's namespace. Not a directive of this contract."
+    "reason": "Another linter's namespace. Not a directive of this contract."
   },
   {
     "input": { "comment": "// eslint-disable-next-line @typescript-eslint/no-unused-vars -- kept for the snapshot serializer", "line_offset": -1 },
     "kind": "inline",
     "accepted": false,
     "rule": "namespace",
-    "reason": "ESLint's namespace. Not a directive of this contract."
+    "reason": "Another linter's namespace, with a description after two hyphens. Not a directive of this contract."
   },
   {
     "input": { "comment": "//revive:disable-next-line:unused-receiver", "line_offset": -1 },
     "kind": "inline",
     "accepted": false,
     "rule": "namespace",
-    "reason": "revive's namespace. Not a directive of this contract."
+    "reason": "Another linter's namespace, with the rule name after a second colon. Not a directive of this contract."
   },
   {
-    "input": { "comment": "//deadset-ignore DS1001 -- Reached only through arrapi.SeriesClient.", "line_offset": -1 },
+    "input": { "comment": "//deadset-ignore DS1001 -- Reached only through the generated client.", "line_offset": -1 },
     "kind": "inline",
     "accepted": false,
     "rule": "namespace",
     "reason": "A hyphen where the namespace has a colon: not in the deadset: namespace, so not a directive, and the finding above which it sits stays reported."
   },
   {
-    "input": { "comment": "// Deadset:ignore DS1001 -- Reached only through arrapi.SeriesClient.", "line_offset": -1 },
+    "input": { "comment": "// Deadset:ignore DS1001 -- Reached only through the generated client.", "line_offset": -1 },
     "kind": "inline",
     "accepted": false,
     "rule": "namespace",
     "reason": "The namespace is lowercase, as Go's tool-directive convention requires; a capital letter puts the comment outside it."
   },
   {
-    "input": { "comment": "// TODO deadset:ignore DS1001 -- Reached only through arrapi.SeriesClient.", "line_offset": -1 },
+    "input": { "comment": "// TODO deadset:ignore DS1001 -- Reached only through the generated client.", "line_offset": -1 },
     "kind": "inline",
     "accepted": false,
     "rule": "first-token",
     "reason": "deadset:ignore is not the first token of the comment, so the comment is prose, not a directive."
   },
   {
-    "input": { "comment": "/* deadset:ignore DS1001 -- Reached only through arrapi.SeriesClient. */", "line_offset": -1 },
+    "input": { "comment": "/* deadset:ignore DS1001 -- Reached only through the generated client. */", "line_offset": -1 },
     "kind": "inline",
     "accepted": false,
     "rule": "line-comment-only",
@@ -151,143 +151,143 @@
     "kind": "inline",
     "accepted": false,
     "rule": "line-comment-only",
-    "reason": "knip's JSDoc tag. A block comment in another tool's namespace: not a directive of this contract."
+    "reason": "A documentation tag in a block comment: not a directive of this contract."
   },
   {
-    "input": { "comment": "//deadset:disable DS1001 -- Reached only through arrapi.SeriesClient.", "line_offset": -1 },
+    "input": { "comment": "//deadset:disable DS1001 -- Reached only through the generated client.", "line_offset": -1 },
     "kind": "inline",
     "accepted": false,
     "rule": "directive-name",
     "reason": "The namespace is this contract's but the directive name is not ignore, the only name the contract defines: the run ends with exit code 2 naming the line."
   },
   {
-    "input": { "comment": "//deadset:ignoreDS1001 -- Reached only through arrapi.SeriesClient.", "line_offset": -1 },
+    "input": { "comment": "//deadset:ignoreDS1001 -- Reached only through the generated client.", "line_offset": -1 },
     "kind": "inline",
     "accepted": false,
     "rule": "directive-name",
     "reason": "No whitespace after the directive name makes the name ignoreDS1001, which the contract does not define: exit code 2."
   },
   {
-    "input": { "comment": "//deadset:ignore -- Reached only through arrapi.SeriesClient.", "line_offset": -1 },
+    "input": { "comment": "//deadset:ignore -- Reached only through the generated client.", "line_offset": -1 },
     "kind": "inline",
     "accepted": false,
     "rule": "code-list",
     "reason": "No code: a directive names at least one code. Malformed, exit code 2."
   },
   {
-    "input": { "comment": "//deadset:ignore DS1001, DS1002 -- Reached only through arrapi.SeriesClient.", "line_offset": -1 },
+    "input": { "comment": "//deadset:ignore DS1001, DS1002 -- Reached only through the generated client.", "line_offset": -1 },
     "kind": "inline",
     "accepted": false,
     "rule": "code-list",
     "reason": "Whitespace inside the code list: the list is codes joined by a comma alone. Malformed, exit code 2."
   },
   {
-    "input": { "comment": "//deadset:ignore U1000 -- Reached only through arrapi.SeriesClient.", "line_offset": -1 },
+    "input": { "comment": "//deadset:ignore U1000 -- Reached only through the generated client.", "line_offset": -1 },
     "kind": "inline",
     "accepted": false,
     "rule": "code-list",
-    "reason": "staticcheck's code shape inside this contract's directive: a code is DS followed by four digits. Malformed, exit code 2."
+    "reason": "A code outside the DS code space inside this contract's directive: a code is DS followed by four digits. Malformed, exit code 2."
   },
   {
-    "input": { "comment": "//deadset:ignore ds1001 -- Reached only through arrapi.SeriesClient.", "line_offset": -1 },
+    "input": { "comment": "//deadset:ignore ds1001 -- Reached only through the generated client.", "line_offset": -1 },
     "kind": "inline",
     "accepted": false,
     "rule": "code-list",
     "reason": "A lowercase code: the code is rendered identically on every surface, and that rendering is uppercase DS. Malformed, exit code 2."
   },
   {
-    "input": { "comment": "//deadset:ignore DS1001 Reached only through arrapi.SeriesClient.", "line_offset": -1 },
+    "input": { "comment": "//deadset:ignore DS1001 Reached only through the generated client.", "line_offset": -1 },
     "kind": "inline",
     "accepted": false,
     "rule": "reason-separator",
     "reason": "Text after the code list with no -- separator: the reason clause begins at the separator and nowhere else. Malformed, exit code 2."
   },
   {
-    "input": { "comment": "//deadset:ignore DS1001 --Reached only through arrapi.SeriesClient.", "line_offset": -1 },
+    "input": { "comment": "//deadset:ignore DS1001 --Reached only through the generated client.", "line_offset": -1 },
     "kind": "inline",
     "accepted": false,
     "rule": "reason-separator",
     "reason": "The separator is the token -- with whitespace on both sides; --Reached is neither the separator nor a reason. Malformed, exit code 2."
   },
   {
-    "input": { "comment": "//deadset:ignore DS1001 --- Reached only through arrapi.SeriesClient.", "line_offset": -1 },
+    "input": { "comment": "//deadset:ignore DS1001 --- Reached only through the generated client.", "line_offset": -1 },
     "kind": "inline",
     "accepted": false,
     "rule": "reason-separator",
     "reason": "Three hyphens: the separator is exactly two, one spelling per form. Malformed, exit code 2."
   },
   {
-    "input": { "code": "DS1001", "symbol": "go://github.com/cplieger/toolbelt/v3#Catalog.ResolveAlias", "path": "catalog.go", "reason": "Kept for the v3 API promise; removing it is a major bump. Revisit at v4." },
+    "input": { "code": "DS1001", "symbol": "go://example.com/app#Catalog.ResolveAlias", "path": "catalog.go", "reason": "Kept for the v3 API promise; removing it is a major bump. Revisit at v4." },
     "kind": "ignore-entry",
     "accepted": true,
     "rule": "entry-shape",
     "reason": "The four keys, each a non-empty string: a code in the code space, a stable symbol reference, a target-relative path and a reason."
   },
   {
-    "input": { "code": "DS1003", "symbol": "ts://@cplieger/vibekit-web/src/features/tabs/index.ts#TabStrip.cachedLayout", "path": "src/features/tabs/index.ts", "reason": "Read by the Vitest snapshot serializer through a string index." },
+    "input": { "code": "DS1003", "symbol": "ts://@example/app/src/features/tabs/index.ts#TabStrip.cachedLayout", "path": "src/features/tabs/index.ts", "reason": "Read by the Vitest snapshot serializer through a string index." },
     "kind": "ignore-entry",
     "accepted": true,
     "rule": "entry-shape",
     "reason": "A TypeScript entry; the reference already carries the source path and the path key repeats it, because the shape is the same for every language."
   },
   {
-    "input": { "code": "DS1002", "symbol": "go://github.com/cplieger/toolbelt/v3/httpapi#routeTable", "path": "httpapi/routes.go", "reason": "Referenced from routes_gen.go, which the analysis excludes as generated." },
+    "input": { "code": "DS1002", "symbol": "go://example.com/app/httpapi#routeTable", "path": "httpapi/routes.go", "reason": "Referenced from routes_gen.go, which the analysis excludes as generated." },
     "kind": "ignore-entry",
     "accepted": true,
     "rule": "entry-shape",
     "reason": "A symbol in a nested package: the reference carries the package directory and the path carries the file."
   },
   {
-    "input": { "code": "DS1001", "symbol": "go://github.com/cplieger/toolbelt/v3#Catalog.ResolveAlias", "path": "catalog.go" },
+    "input": { "code": "DS1001", "symbol": "go://example.com/app#Catalog.ResolveAlias", "path": "catalog.go" },
     "kind": "ignore-entry",
     "accepted": false,
     "rule": "reason-required",
     "reason": "No reason key: the entry is refused and reported as DS1701 (suppression-without-reason); it binds nothing."
   },
   {
-    "input": { "code": "DS1001", "symbol": "go://github.com/cplieger/toolbelt/v3#Catalog.ResolveAlias", "path": "catalog.go", "reason": "" },
+    "input": { "code": "DS1001", "symbol": "go://example.com/app#Catalog.ResolveAlias", "path": "catalog.go", "reason": "" },
     "kind": "ignore-entry",
     "accepted": false,
     "rule": "reason-required",
     "reason": "An empty reason is no reason: DS1701."
   },
   {
-    "input": { "code": "DS1001", "symbol": "go://github.com/cplieger/toolbelt/v3#Catalog.ResolveAlias", "path": "catalog.go", "reason": "   " },
+    "input": { "code": "DS1001", "symbol": "go://example.com/app#Catalog.ResolveAlias", "path": "catalog.go", "reason": "   " },
     "kind": "ignore-entry",
     "accepted": false,
     "rule": "reason-required",
     "reason": "A whitespace-only reason is no reason: DS1701."
   },
   {
-    "input": { "code": "DS1001", "symbol": "go://github.com/cplieger/toolbelt/v3#Catalog.ResolveAlias", "reason": "Kept for the v3 API promise." },
+    "input": { "code": "DS1001", "symbol": "go://example.com/app#Catalog.ResolveAlias", "reason": "Kept for the v3 API promise." },
     "kind": "ignore-entry",
     "accepted": false,
     "rule": "path-required",
     "reason": "A symbol and no path: the entry is refused and reported as DS1702 (unscoped-ignore-entry) rather than matched, so a bare name cannot mask a match in another file."
   },
   {
-    "input": { "code": "DS1001", "symbol": "go://github.com/cplieger/toolbelt/v3#Catalog.ResolveAlias", "path": "", "reason": "Kept for the v3 API promise." },
+    "input": { "code": "DS1001", "symbol": "go://example.com/app#Catalog.ResolveAlias", "path": "", "reason": "Kept for the v3 API promise." },
     "kind": "ignore-entry",
     "accepted": false,
     "rule": "path-required",
     "reason": "An empty path is no path: DS1702."
   },
   {
-    "input": { "code": "DS1001", "symbol": "go://github.com/cplieger/toolbelt/v3#Catalog.ResolveAlias", "path": "/src/toolbelt/catalog.go", "reason": "Kept for the v3 API promise." },
+    "input": { "code": "DS1001", "symbol": "go://example.com/app#Catalog.ResolveAlias", "path": "/src/app/catalog.go", "reason": "Kept for the v3 API promise." },
     "kind": "ignore-entry",
     "accepted": false,
     "rule": "path-form",
     "reason": "An absolute path: the path is relative to the target root, as the finding's position renders it. Malformed, exit code 2."
   },
   {
-    "input": { "code": "DS1001", "symbol": "go://github.com/cplieger/toolbelt/v3#Catalog.ResolveAlias", "path": "./catalog.go", "reason": "Kept for the v3 API promise." },
+    "input": { "code": "DS1001", "symbol": "go://example.com/app#Catalog.ResolveAlias", "path": "./catalog.go", "reason": "Kept for the v3 API promise." },
     "kind": "ignore-entry",
     "accepted": false,
     "rule": "path-form",
     "reason": "A leading ./ is not part of the rendered path form. Malformed, exit code 2."
   },
   {
-    "input": { "code": "DS1001", "symbol": "go://github.com/cplieger/toolbelt/v3#Catalog.ResolveAlias", "path": "internal\\legacy\\catalog.go", "reason": "Kept for the v3 API promise." },
+    "input": { "code": "DS1001", "symbol": "go://example.com/app#Catalog.ResolveAlias", "path": "internal\\legacy\\catalog.go", "reason": "Kept for the v3 API promise." },
     "kind": "ignore-entry",
     "accepted": false,
     "rule": "path-form",
@@ -298,80 +298,80 @@
     "kind": "ignore-entry",
     "accepted": false,
     "rule": "symbol-form",
-    "reason": "A bare name where a stable symbol reference with a language scheme is required; this is the punused ignore shape. Malformed, exit code 2."
+    "reason": "A bare name where a stable symbol reference with a language scheme is required. Malformed, exit code 2."
   },
   {
-    "input": { "code": "DS1001", "symbol": "go://github.com/cplieger/toolbelt/v3#Catalog.*", "path": "catalog.go", "reason": "Kept for the v3 API promise." },
+    "input": { "code": "DS1001", "symbol": "go://example.com/app#Catalog.*", "path": "catalog.go", "reason": "Kept for the v3 API promise." },
     "kind": "ignore-entry",
     "accepted": false,
     "rule": "symbol-form",
-    "reason": "A pattern: the symbol is compared for equality and admits no glob or regular expression, which is what knip's ignoreMembers admits and what masked matches in 60 files. Malformed, exit code 2."
+    "reason": "A pattern: the symbol is compared for equality and admits no glob or regular expression. Malformed, exit code 2."
   },
   {
-    "input": { "code": "EU1002", "symbol": "go://github.com/cplieger/toolbelt/v3#Catalog.ResolveAlias", "path": "catalog.go", "reason": "Kept for the v3 API promise." },
+    "input": { "code": "EU1002", "symbol": "go://example.com/app#Catalog.ResolveAlias", "path": "catalog.go", "reason": "Kept for the v3 API promise." },
     "kind": "ignore-entry",
     "accepted": false,
     "rule": "code-form",
-    "reason": "A code outside the DS code space, the shape the step this toolkit replaces emitted. Malformed, exit code 2."
+    "reason": "A code outside the DS code space. Malformed, exit code 2."
   },
   {
-    "input": { "code": "ds1001", "symbol": "go://github.com/cplieger/toolbelt/v3#Catalog.ResolveAlias", "path": "catalog.go", "reason": "Kept for the v3 API promise." },
+    "input": { "code": "ds1001", "symbol": "go://example.com/app#Catalog.ResolveAlias", "path": "catalog.go", "reason": "Kept for the v3 API promise." },
     "kind": "ignore-entry",
     "accepted": false,
     "rule": "code-form",
     "reason": "A lowercase code: one rendering on every surface. Malformed, exit code 2."
   },
   {
-    "input": { "code": "DS1001", "symbol": "go://github.com/cplieger/toolbelt/v3#Catalog.ResolveAlias", "path": "catalog.go", "line": 214, "reason": "Kept for the v3 API promise." },
+    "input": { "code": "DS1001", "symbol": "go://example.com/app#Catalog.ResolveAlias", "path": "catalog.go", "line": 214, "reason": "Kept for the v3 API promise." },
     "kind": "ignore-entry",
     "accepted": false,
     "rule": "closed-keys",
     "reason": "A line key: the key list is closed and a line-keyed entry goes stale on every edit above it. The decoder refuses the document, exit code 2."
   },
   {
-    "input": { "code": ["DS1001", "DS1002"], "symbol": "go://github.com/cplieger/toolbelt/v3#Catalog.ResolveAlias", "path": "catalog.go", "reason": "Kept for the v3 API promise." },
+    "input": { "code": ["DS1001", "DS1002"], "symbol": "go://example.com/app#Catalog.ResolveAlias", "path": "catalog.go", "reason": "Kept for the v3 API promise." },
     "kind": "ignore-entry",
     "accepted": false,
     "rule": "value-type",
     "reason": "code is one string, never an array; one entry names one code. The decoder refuses the document, exit code 2."
   },
   {
-    "input": { "code": "DS1001", "symbol": "go://github.com/cplieger/toolbelt/v3#Catalog.ResolveAlias", "path": "catalog.go", "reason": 42 },
+    "input": { "code": "DS1001", "symbol": "go://example.com/app#Catalog.ResolveAlias", "path": "catalog.go", "reason": 42 },
     "kind": "ignore-entry",
     "accepted": false,
     "rule": "value-type",
     "reason": "reason is a string; a number is a type error the decoder refuses, exit code 2, not an empty reason."
   },
   {
-    "input": { "code": "DS1001", "symbol": "go://github.com/cplieger/toolbelt/v3#Catalog.ResolveAlias", "path": "catalog.go", "reason": "recorded by deadset-go 1.0.0" },
+    "input": { "code": "DS1001", "symbol": "go://example.com/app#Catalog.ResolveAlias", "path": "catalog.go", "reason": "recorded by deadset-go 1.0.0" },
     "kind": "baseline-row",
     "accepted": true,
     "rule": "row-shape",
     "reason": "The same four keys as an ignore entry; the reason is the provenance the analyzer wrote, never a judgement."
   },
   {
-    "input": { "code": "DS1301", "symbol": "ts://@cplieger/vibekit-web/src/features/tabs/index.ts#TabStrip.cachedLayout", "path": "src/features/tabs/index.ts", "reason": "recorded by deadset-ts 1.0.0" },
+    "input": { "code": "DS1301", "symbol": "ts://@example/app/src/features/tabs/index.ts#TabStrip.cachedLayout", "path": "src/features/tabs/index.ts", "reason": "recorded by deadset-ts 1.0.0" },
     "kind": "baseline-row",
     "accepted": true,
     "rule": "row-shape",
     "reason": "A row the TypeScript analyzer wrote."
   },
   {
-    "input": { "code": "DS1001", "symbol": "go://github.com/cplieger/toolbelt/v3#Catalog.ResolveAlias", "path": "catalog.go" },
+    "input": { "code": "DS1001", "symbol": "go://example.com/app#Catalog.ResolveAlias", "path": "catalog.go" },
     "kind": "baseline-row",
     "accepted": false,
     "rule": "reason-required",
     "reason": "A row with no reason: refused and reported as DS1701, the same as an ignore entry; a hand-edited baseline does not get to drop the field."
   },
   {
-    "input": { "code": "DS1001", "symbol": "go://github.com/cplieger/toolbelt/v3#Catalog.ResolveAlias", "reason": "recorded by deadset-go 1.0.0" },
+    "input": { "code": "DS1001", "symbol": "go://example.com/app#Catalog.ResolveAlias", "reason": "recorded by deadset-go 1.0.0" },
     "kind": "baseline-row",
     "accepted": false,
     "rule": "path-required",
     "reason": "A row with no path: refused and reported as DS1702, the same as an ignore entry."
   },
   {
-    "input": { "code": "DS1001", "symbol": "go://github.com/cplieger/toolbelt/v3#Catalog.ResolveAlias", "path": "catalog.go", "line": 214, "reason": "recorded by deadset-go 1.0.0" },
+    "input": { "code": "DS1001", "symbol": "go://example.com/app#Catalog.ResolveAlias", "path": "catalog.go", "line": 214, "reason": "recorded by deadset-go 1.0.0" },
     "kind": "baseline-row",
     "accepted": false,
     "rule": "closed-keys",
