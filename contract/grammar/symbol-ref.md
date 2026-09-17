@@ -66,7 +66,7 @@ A member is its container's name, a dot and its own name, and a chain of members
 
 **A struct field** is `Type.Field`. An embedded field is spelled by its field name, which the language defines as the unqualified type name ([Go specification, struct types](https://go.dev/ref/spec#Struct_types)): `Buffered.Buffer` for `*bytes.Buffer` embedded in `Buffered`. A field of an anonymous struct type is reached through the field that carries the type, whatever pointer, slice, array, channel or map-value wrappers sit between: `Manifest.Tools.Version` for `Tools []struct{ Name, Version string }`. A field always carries its struct: a field name alone is a package-level reference, and two structs may each declare a field of one name, so the whole chain is what identifies the field rather than labelling it.
 
-**A type parameter** of a function is the function name followed by the parameter name in square brackets, the language's own instantiation syntax: `Best[T]` for `func Best[T Tag](want T, have []T)`. The constraint never appears. Only a function's type parameters have a form, because `DS1303` reports on functions and methods only and a Go method declares no type parameters of its own; a type's parameters belong to the type and are not a subject ([`kinds.json`](../kinds.json), `DS1303`).
+**A type parameter** of a function is the function name followed by the parameter name in square brackets, the language's own instantiation syntax: `Best[T]` for `func Best[T Tag](want T, have []T)`. A type parameter of a method follows the method's own reference in the same brackets: `Catalog.Decode[T]` for `func (c *Catalog) Decode[T any](raw string) (T, error)`. The constraint never appears. The brackets carry the declaration's own type parameter and never a receiver type's, so `List.Map[T]` names `T` of `func (l *List[E]) Map[T any](f func(E) T) []T` and `E` belongs to `List`. An interface method declares no type parameters, so the form never applies to one. Only a function's and a method's type parameters have a form, because `DS1303` reports on functions and methods only; a type's parameters belong to the type and are not a subject ([`kinds.json`](../kinds.json), `DS1303`). The chain therefore carries at most one member: a type parameter is declared on a function or a method and nowhere else, a function declares one at package level and a method's container is a package-level type, so `Type.Method[T]` is the longest form and a deeper chain names no declaration.
 
 A Go enumerated member is a package-level constant and takes the package-level form. Type arguments never appear on a container, in either language: the type parameter list is part of the declaration, not of its identity.
 
@@ -89,7 +89,7 @@ Each of the following has no reference of its own. A finding whose subject is on
 - **A field of an anonymous struct that is a map key, a function parameter or result type, or an element of an interface method's signature.** The chain steps into an anonymous struct only through the wrappers named above, because a map's key struct and value struct could otherwise produce one reference for two fields. The carrying field or declaration is the reference.
 - **A promoted field or method, a cgo name, and a symbol of a package outside the target.** None is a declaration of the target.
 
-Two spellings parse and match nothing, and the self-check kinds are the safety net for both: a field written without its struct is syntactically a package-level reference, and an object path such as `T.UM0.RA1.F0` is syntactically a member chain. A suppression carrying either is reported as `DS1703`.
+Three spellings parse and match nothing, and the self-check kinds are the safety net for each: a field written without its struct is syntactically a package-level reference; a type parameter in brackets on a declaration that declares none, a type or an interface method, is syntactically a function's or a method's; and an object path such as `T.UM0.RA1.F0` is syntactically a member chain. A suppression carrying one is reported as `DS1703`.
 
 ## TypeScript and JavaScript
 
@@ -149,7 +149,7 @@ A member of a type alias is a member of the object type literal the alias declar
 
 ### Type parameters
 
-A type parameter of a function or method is the function's or method's reference followed by the parameter name in angle brackets, the language's type-argument syntax: `decode<T>` for `export function decode<T>(raw: string): T`, `Codec.decode<T>` for a method, and `Codec.of:static<T>` for a static method, the selector first and the type parameter last. The constraint never appears, and a type's own parameters have no form, for the reason `DS1303` states. Go spells the same subject with square brackets; each language keeps its own bracket, and the two never meet in one reference.
+A type parameter of a function or method is the function's or method's reference followed by the parameter name in angle brackets, the language's type-argument syntax: `decode<T>` for `export function decode<T>(raw: string): T`, `Codec.decode<T>` for a method, and `Codec.of:static<T>` for a static method, the selector first and the type parameter last. The chain carries any depth, because a container may nest: a class inside a namespace is a namespace member, so the type parameter of that class's method is `Wire.Server.Codec.decode<T>`. The constraint never appears, and a type's own parameters have no form, for the reason `DS1303` states. Go spells the same subject with square brackets; each language keeps its own bracket, and the two never meet in one reference.
 
 ### The module and a dependency
 
@@ -216,7 +216,7 @@ Each row is anchored, `^` to `$`, and is the whole reference. The corpus names t
 | go | `package` | `^go://GO_PATH#$` |
 | go | `package-level` | `^go://GO_PATH#GO_IDENT$` |
 | go | `method`, `interface-method`, `field` | `^go://GO_PATH#GO_IDENT(?:\.GO_IDENT)+$` |
-| go | `type-parameter` | `^go://GO_PATH#GO_IDENT\[GO_IDENT\]$` |
+| go | `type-parameter` | `^go://GO_PATH#GO_IDENT(?:\.GO_IDENT)?\[GO_IDENT\]$` |
 | go | `file` | `^go://GO_PATH#GO_FILE:file$` |
 | go | `require` | `^go://GO_PATH#GO_PATH(?:@GO_VERSION)?:require$` |
 | go | `replace` | `^go://GO_PATH#GO_PATH(?:@GO_VERSION)?:replace$` |
@@ -243,7 +243,7 @@ go method, interface-method, field
 ^go://[A-Za-z0-9._~-]+(?:/[A-Za-z0-9._~-]+)*#(?:[A-Za-z_]|[^\x00-\x7F])(?:[A-Za-z0-9_]|[^\x00-\x7F])*(?:\.(?:[A-Za-z_]|[^\x00-\x7F])(?:[A-Za-z0-9_]|[^\x00-\x7F])*)+$
 
 go type-parameter
-^go://[A-Za-z0-9._~-]+(?:/[A-Za-z0-9._~-]+)*#(?:[A-Za-z_]|[^\x00-\x7F])(?:[A-Za-z0-9_]|[^\x00-\x7F])*\[(?:[A-Za-z_]|[^\x00-\x7F])(?:[A-Za-z0-9_]|[^\x00-\x7F])*\]$
+^go://[A-Za-z0-9._~-]+(?:/[A-Za-z0-9._~-]+)*#(?:[A-Za-z_]|[^\x00-\x7F])(?:[A-Za-z0-9_]|[^\x00-\x7F])*(?:\.(?:[A-Za-z_]|[^\x00-\x7F])(?:[A-Za-z0-9_]|[^\x00-\x7F])*)?\[(?:[A-Za-z_]|[^\x00-\x7F])(?:[A-Za-z0-9_]|[^\x00-\x7F])*\]$
 
 go file
 ^go://[A-Za-z0-9._~-]+(?:/[A-Za-z0-9._~-]+)*#[^/\\:#\r\n]+\.go:file$

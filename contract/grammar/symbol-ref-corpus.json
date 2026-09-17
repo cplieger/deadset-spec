@@ -136,6 +136,22 @@
     "example": "func Best[T Tag](want T, have []T) (T, bool) {"
   },
   {
+    "input": "go://example.com/app#Catalog.Decode[T]",
+    "language": "go",
+    "form": "type-parameter",
+    "accepted": true,
+    "reason": "A type parameter of a method follows the method's own reference.",
+    "example": "func (c *Catalog) Decode[T any](raw string) (T, error) {"
+  },
+  {
+    "input": "go://example.com/app/internal/queue#List.Map[T]",
+    "language": "go",
+    "form": "type-parameter",
+    "accepted": true,
+    "reason": "The brackets carry the method's own type parameter; the receiver type's parameter is the type's and is not a subject.",
+    "example": "func (l *List[E]) Map[T any](f func(E) T) []T {"
+  },
+  {
     "input": "go://example.com/app/internal/legacy#render_windows.go:file",
     "language": "go",
     "form": "file",
@@ -320,6 +336,20 @@
     "form": "type-parameter",
     "accepted": false,
     "reason": "Empty brackets name no type parameter."
+  },
+  {
+    "input": "go://example.com/app/internal/queue#List[E].Map[T]",
+    "language": "go",
+    "form": "type-parameter",
+    "accepted": false,
+    "reason": "Type arguments never appear on a container; a method's type parameter follows List.Map and the receiver type's parameter has no reference."
+  },
+  {
+    "input": "go://example.com/app#Manifest.Tools.Version[T]",
+    "language": "go",
+    "form": "type-parameter",
+    "accepted": false,
+    "reason": "A type parameter follows a function or a method, so no chain deeper than a type and its method carries one."
   },
   {
     "input": "go://example.com/app/internal/legacy#file:render_windows.go",
@@ -581,6 +611,22 @@
     "example": "static of<T>(value: T): Codec {"
   },
   {
+    "input": "ts://@example/app/src/wire.ts#Wire.Codec.decode<T>",
+    "language": "ts",
+    "form": "type-parameter",
+    "accepted": true,
+    "reason": "A container may nest, so a method of a class inside a namespace carries its type parameter at the end of the whole chain.",
+    "example": "export namespace Wire { export class Codec { decode<T>(raw: string): T {"
+  },
+  {
+    "input": "ts://@example/app/src/wire.ts#Wire.Server.Codec.decode<T>",
+    "language": "ts",
+    "form": "type-parameter",
+    "accepted": true,
+    "reason": "The chain carries any depth, because a namespace nests inside a namespace.",
+    "example": "export namespace Wire { export namespace Server { export class Codec { decode<T>(raw: string): T {"
+  },
+  {
     "input": "ts://@example/app/package.json#lodash:dependency",
     "language": "ts",
     "form": "dependency",
@@ -771,6 +817,20 @@
     "form": "type-parameter",
     "accepted": false,
     "reason": "Type arguments never appear on a container, and a type parameter of a type declaration is not a subject; only a function or method type parameter is."
+  },
+  {
+    "input": "ts://@example/app/src/wire.ts#Wire..Codec.decode<T>",
+    "language": "ts",
+    "form": "type-parameter",
+    "accepted": false,
+    "reason": "A component is never empty, whatever the depth of the chain."
+  },
+  {
+    "input": "ts://@example/app/src/wire.ts#Wire.Codec.decode.<T>",
+    "language": "ts",
+    "form": "type-parameter",
+    "accepted": false,
+    "reason": "The type parameter follows the last component of the chain with no separator between them."
   },
   {
     "input": "ts://@example/app#lodash:dependency",

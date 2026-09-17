@@ -394,6 +394,31 @@ func TestSymbolRefCorpusMatchesItsFormAndNothingElse(t *testing.T) {
 	}
 }
 
+func TestSymbolRefAcceptedCasesMatchOneExpressionEach(t *testing.T) {
+	forms := compileSymbolRefForms(t)
+	for i, c := range loadSymbolRefCorpus(t) {
+		if !c.Accepted {
+			continue
+		}
+		t.Run(caseName("only", strconv.Itoa(i), c.Language, c.Form), func(t *testing.T) {
+			key := symbolFormKey{language: c.Language, form: c.Form}
+			re, ok := forms[key]
+			if !ok {
+				t.Fatalf("case %d (%q) names form %s, want a form the page publishes", i, c.Input, key)
+			}
+			var others []symbolFormKey
+			for _, matched := range matchingSymbolForms(forms, c.Input) {
+				if forms[matched].String() != re.String() {
+					others = append(others, matched)
+				}
+			}
+			if others != nil {
+				t.Errorf("accepted case %d (%q) of form %s also matches %v, want the forms to accept disjoint sets", i, c.Input, key, others)
+			}
+		})
+	}
+}
+
 func TestSymbolRefCorpusCoversEveryPublishedForm(t *testing.T) {
 	accepted := make(map[symbolFormKey]int)
 	for _, c := range loadSymbolRefCorpus(t) {
