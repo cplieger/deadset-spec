@@ -328,11 +328,16 @@ func missingKindFields(k kindRow) []string {
 	return missing
 }
 
-func TestKindsOnlyStaleSuppressionIsFixed(t *testing.T) {
+// fixedKinds are the two self-check kinds a configuration cannot move: a
+// suppression and a configured root that name something no longer present
+// mean the same thing and carry the same posture.
+var fixedKinds = []string{"DS1703", "DS1704"}
+
+func TestKindsOnlyTheStaleConfigurationKindsAreFixed(t *testing.T) {
 	doc := loadKinds(t)
 	for _, k := range doc.Kinds {
 		t.Run(k.Code, func(t *testing.T) {
-			want := k.Code == "DS1703"
+			want := slices.Contains(fixedKinds, k.Code)
 			if !isSet(k.Fixed) || *k.Fixed != want {
 				t.Errorf("Kind(%s).fixed = %s, want %v", k.Code, optional(k.Fixed), want)
 			}

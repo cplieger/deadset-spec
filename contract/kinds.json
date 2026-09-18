@@ -339,12 +339,12 @@
       "code": "DS1704",
       "name": "unmatched-root",
       "languages": ["go", "ts"],
-      "rule": "A configured root that matches no symbol, or a configured root pattern that matches no symbol. A root set nobody checks silently changes every result, so a stale one is a finding.",
+      "rule": "A configured root that matches no symbol, or a configured root pattern that matches no symbol. A root set nobody checks silently changes every result, so a stale one is a finding. The kind is fixed on at deny: no flag, no severity setting and no exception reduces it below a finding, and a configuration naming this code under a severity key is an unimplemented key.",
       "default_enabled": true,
       "default_severity": "deny",
       "max_class": "certain",
       "fixability": "none",
-      "fixed": false
+      "fixed": true
     },
     {
       "code": "DS1705",
