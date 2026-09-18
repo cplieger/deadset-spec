@@ -20,6 +20,7 @@
   "reporters": {
     "formats": ["text", "sarif"],
     "sort": "size",
+    "cascade": "roots",
     "max_findings": 200,
     "fail_on": "warn"
   },

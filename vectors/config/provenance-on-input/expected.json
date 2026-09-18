@@ -20,6 +20,7 @@
   "reporters": {
     "formats": ["text", "sarif"],
     "sort": "size",
+    "cascade": "roots",
     "max_findings": 200,
     "fail_on": "warn"
   },
@@ -45,6 +46,7 @@
     "exemptions.disabled": "repository: repository.json",
     "reporters.formats": "repository: repository.json",
     "reporters.sort": "repository: repository.json",
+    "reporters.cascade": "repository: repository.json",
     "reporters.max_findings": "repository: repository.json",
     "reporters.fail_on": "repository: repository.json",
     "ts.test_files": "repository: repository.json",

@@ -223,6 +223,13 @@
           "default": "position",
           "x-owner": "product"
         },
+        "cascade": {
+          "description": "How a dead component is rendered: roots, the default, lists a component's root members with the count of symbols and lines that fall with it; full lists every member of every component as well.",
+          "type": "string",
+          "enum": ["roots", "full"],
+          "default": "roots",
+          "x-owner": "product"
+        },
         "max_findings": {
           "description": "The most findings a rendering prints. 0, the default, prints every finding; a positive count prints at most that many and reports the number omitted.",
           "type": "integer",

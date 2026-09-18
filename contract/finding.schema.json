@@ -149,7 +149,7 @@
           "pattern": "^[a-z][a-z0-9-]*/c-[0-9]+$"
         },
         "root": {
-          "description": "Whether the subject is a root of the component, being a member no other member of the component references.",
+          "description": "Whether the subject is a root member of its component: a member that no dead component outside its own references and whose container is not itself dead, so a report is worked from it. A cycle has as many root members as members with no dead predecessor outside the cycle, so every component has at least one.",
           "type": "boolean"
         },
         "symbol_count": {
