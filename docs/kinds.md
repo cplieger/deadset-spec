@@ -281,7 +281,9 @@ From `contract/kinds.json`, row `DS1703`.
 
 ### DS1704 unmatched-root
 
-A configured root that matches no symbol, or a configured root pattern that matches no symbol. A root set nobody checks silently changes every result, so a stale one is a finding.
+A configured root that matches no symbol, or a configured root pattern that matches no symbol. A root set nobody checks silently changes every result, so a stale one is a finding. The kind is fixed on at deny: no flag, no severity setting and no exception reduces it below a finding, and a configuration naming this code under a severity key is an unimplemented key.
+
+The row carries `"fixed": true`. No configuration changes this kind's enablement or its severity: a configuration that names this code under a severity key, or a family prefix whose range holds it, names a key the product does not implement and the run ends with the usage code (from `contract/config.schema.json`, `severity`, and `contract/exit-codes.json`, code 2).
 
 From `contract/kinds.json`, row `DS1704`.
 
