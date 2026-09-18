@@ -13,6 +13,16 @@ reported, so a finding carries `retained_by` present and empty (from
 The vocabulary is closed: a conformance expectation naming a class this file does not declare is a
 defect in the expectation.
 
+Every exemption an analyzer records names the site its evidence was found at, so a maintainer can go
+and read that evidence for every class and not only for the text-matching ones. Each also carries
+one clause of detail naming the relation and the thing it relates to (`satisfies io.Writer`,
+`named by {{.Title}}`). A class whose evidence is a type relation names the conversion or the
+consumer site, a class whose evidence is a text match names the position of the matching text, the
+generated-file class names the package clause of the generated file, and the linker, cgo, assembly
+and plugin class names the directive, or the package clause of the file that declares the symbol
+where the evidence is the shape of the package. The detail is display text; the class name is the
+machine-readable half.
+
 This page states every class, one section each. The fields:
 
 - **Languages** are the languages the class runs on, `go` for Go and `ts` for TypeScript and
@@ -20,8 +30,6 @@ This page states every class, one section each. The fields:
 - **Confidence** uses the report's reachability vocabulary: `certain` for a class derived from a
   type relation, `possible` for a class derived from a text match (from `contract/kinds.json`,
   `reachability_classes`).
-- **Names the site** is `names_site`: whether the recorded exemption names the source site that
-  produced it.
 - **Rule** is the detection rule stated for an implementer in any language, and **mechanism**
   restates it in each listed language's own terms.
 - **Retains** names what the class keeps.
@@ -34,21 +42,21 @@ This page states every class, one section each. The fields:
   members by name therefore applies to `private` and not to `#private`, and a `#private` member
   with no reference in its own class body is reported whatever else the program does.
 
-| Class | Languages | Confidence | Names the site |
-| --- | --- | --- | --- |
-| `interface-satisfaction` | `go`, `ts` | `certain` | no |
-| `encoding-reflection` | `go` | `certain` | no |
-| `format-verb-contract` | `go` | `certain` | no |
-| `errors-duck-typing` | `go` | `certain` | no |
-| `enum-group` | `go`, `ts` | `certain` | no |
-| `generated-file` | `go` | `certain` | no |
-| `linkname-cgo-asm-plugin` | `go` | `certain` | no |
-| `template-field` | `go`, `ts` | `possible` | yes |
-| `reflective-lookup` | `go`, `ts` | `possible` | yes |
-| `decorator` | `ts` | `certain` | no |
-| `injection-container` | `ts` | `certain` | no |
-| `framework-lifecycle` | `ts` | `certain` | no |
-| `serialization-contract` | `ts` | `certain` | no |
+| Class | Languages | Confidence |
+| --- | --- | --- |
+| `interface-satisfaction` | `go`, `ts` | `certain` |
+| `encoding-reflection` | `go` | `certain` |
+| `format-verb-contract` | `go` | `certain` |
+| `errors-duck-typing` | `go` | `certain` |
+| `enum-group` | `go`, `ts` | `certain` |
+| `generated-file` | `go` | `certain` |
+| `linkname-cgo-asm-plugin` | `go` | `certain` |
+| `template-field` | `go`, `ts` | `possible` |
+| `reflective-lookup` | `go`, `ts` | `possible` |
+| `decorator` | `ts` | `certain` |
+| `injection-container` | `ts` | `certain` |
+| `framework-lifecycle` | `ts` | `certain` |
+| `serialization-contract` | `ts` | `certain` |
 
 ## The classes
 
@@ -68,21 +76,21 @@ From `contract/exemptions.json`, class `interface-satisfaction`.
 
 ### encoding-reflection
 
-A type whose values reach a consumer that inspects them by name at runtime, namely reflection, a standard encoder or decoder, a template engine, a database scan target, a sort interface or a log-value interface, has its exported methods and its tagged fields retained, because that consumer names them by string and the reference graph holds no edge to them.
+A type whose values reach a consumer that inspects them by name at runtime has its exported methods, its exported fields and its tagged fields retained, on the type and on every type the consumer walks to through its fields.
 
-Retains: The exported methods and the struct fields carrying a tag, on every type that flows into such a consumer.
+Retains: The exported methods, the exported fields and the struct fields carrying a tag, on every type that flows into such a consumer and on every defined type reached from those types' fields through a pointer, an array, a slice, a map key or value, or an embedded field; the reach stops at an interface-typed field.
 
-Mechanism in Go: A type T flows into the class when a value of T, or a pointer to one, is an argument of a function or method of `reflect`, `encoding/json`, `encoding/xml`, `encoding/gob`, `text/template` or `html/template`, is a `database/sql` `Scan` target, or is converted to `sort.Interface` or `slog.LogValuer`. Retain T's exported methods and every field of T that carries a struct tag.
+Mechanism in Go: A type T flows into the class when a value of T, or a pointer to one, is an argument of a function or method of `reflect`, `encoding/json`, `encoding/xml`, `encoding/gob`, `text/template` or `html/template`, is a `database/sql` `Scan` target, is converted to `sort.Interface`, or is an argument of a `log/slog` logging function, of a `*slog.Logger` method or of an attribute constructor. Retain T's exported methods, its exported fields and its fields carrying a struct tag, and retain the same three sets on every defined type reached from the fields of a retained type through a pointer, an array, a slice, a map key or value, or an embedded field, applied until no further type joins. The reach stops at an interface-typed field, whose dynamic type the analysis does not see.
 
 From `contract/exemptions.json`, class `encoding-reflection`.
 
 ### format-verb-contract
 
-A type whose values reach a formatting verb that calls its string or error method has that method retained: the formatting package invokes `String` or `Error` through an interface at runtime, so the method has no static reference.
+A type whose values reach a formatting facility that calls its string or error method has that method retained: the facility invokes `String` or `Error` through an interface at runtime, so the method has no static reference.
 
 Retains: The `String() string` and `Error() string` methods of the formatted type.
 
-Mechanism in Go: A value of type T is an operand of a `fmt` print, format or error-construction function (`Print`, `Sprintf`, `Errorf` and their siblings) under a verb valid for a string operand (`%v`, `%s`, `%q`, `%x`, `%X`, and the verb-less `Print` and `Println` forms); retain T's `String` and `Error` methods. A method that satisfies `io.Writer` or `http.RoundTripper` is retained by `interface-satisfaction`, not by this class.
+Mechanism in Go: A value of type T is an operand of a function that formats its operands with the `fmt` machinery, under a verb valid for a string operand (`%v`, `%s`, `%q`, `%x`, `%X`, the wrapping verb `%w` of `fmt.Errorf`, and the verb-less print forms); retain T's `String() string` and `Error() string` methods. The functions are the `fmt` print, format and error-construction functions (`Print`, `Println`, `Printf`, `Sprint`, `Sprintln`, `Sprintf`, `Fprint`, `Fprintln`, `Fprintf`, `Append`, `Appendln`, `Appendf`, `Errorf`), the `log` package's print, fatal and panic functions and the same methods of `*log.Logger`, the `testing.TB` methods `Log`, `Logf`, `Error`, `Errorf`, `Fatal`, `Fatalf`, `Skip` and `Skipf`, the `log/slog` logging functions and `*slog.Logger` methods (`Debug`, `Info`, `Warn`, `Error`, their context forms, `Log` and `LogAttrs`) and the `slog.Any`, `slog.Group` and `slog.Attr`-constructing functions, and any function of the analyzed program whose final parameter is variadic `...any` and which passes that parameter, or a format string together with it, to one of the functions in this list, applied until no further function joins. A format string that is not a constant binds every operand of the call. An operand of a `log/slog` logging function reaches this class and `encoding-reflection` both. A method that satisfies `io.Writer` or `http.RoundTripper` is retained by `interface-satisfaction`, not by this class.
 
 From `contract/exemptions.json`, class `format-verb-contract`.
 
@@ -122,21 +130,21 @@ From `contract/exemptions.json`, class `generated-file`.
 
 ### linkname-cgo-asm-plugin
 
-A symbol that another compilation unit or the runtime reaches by name outside the type checker's view is retained: a linker-level alias, a symbol exported to C, a symbol an assembly file names, or a symbol looked up through the plugin package.
+A symbol that another compilation unit or the runtime reaches by name outside the type checker's view is retained: a linker-level alias, a symbol exported to C, a symbol an assembly file names, or an exported symbol of a package whose shape is a plugin's.
 
-Retains: The named symbol.
+Retains: The named symbol, and every exported function and variable of a plugin's main package.
 
-Mechanism in Go: Retain a function or variable named on either side of a `//go:linkname` directive in any loaded package, a function carrying a `//export` directive in a cgo file, a symbol named by a `TEXT ·name` directive in an assembly file of the same package, and an exported symbol of a plugin's main package whose name is the string argument of a `plugin` `Lookup` call.
+Mechanism in Go: Retain a function or variable named on either side of a `//go:linkname` directive in a file that imports `"unsafe"`, in any loaded package, the only kind of file the directive binds in; a function carrying a `//export` directive in a cgo file; a symbol named by a `TEXT ·name` directive in an assembly file of the same package; and an exported function or variable of a main package that declares no `main` function, which is the shape of a plugin's main package. A name a `plugin` `Lookup` call carries is retained by `reflective-lookup` in the package that holds the call.
 
 From `contract/exemptions.json`, class `linkname-cgo-asm-plugin`.
 
 ### template-field
 
-Where the project configures template directories, a member whose name appears in a template as a field or method reference is retained at the lowest confidence, and the exemption names the template site that matched. The evidence is a text match, not a type relation, so this is a weak class and it applies only where the project asked for it.
+Where the project configures template directories, a member whose name appears in a template as a field or method reference is retained at the lowest confidence, and the exemption names the template site that matched. Where the language's template grammar has action delimiters, the project configures the pair the scan reads and the grammar's own pair stands where it does not. The evidence is a text match, not a type relation, so this is a weak class and it applies only where the project asked for it.
 
 Retains: The field or method whose name the template references, on any type.
 
-Mechanism in Go: Scan every file under the configured template directories for `{{ .Name }}`, `{{ .Name arg }}` and `{{ $x.Name }}` action references, the `text/template` and `html/template` field and method syntax; retain every exported field and method named `Name`, recording the template file and line.
+Mechanism in Go: Scan every file under the configured template directories, parsed with the action delimiters the configuration sets in `analysis.template_delimiters` and with the `text/template` delimiters `{{` and `}}` where it sets none, and retain every exported field and method whose name appears as a field or method reference in any form the template grammar records: a field reference on the dot, on a variable, or on the result of a parenthesized pipeline or of a call, at every position of a chain, so that `.Page.Title` names `Page` and `Title`. Record the template file and line.
 
 Mechanism in TypeScript: Scan every file under the configured template directories for the member's name in an interpolation or binding position; retain every member so named, recording the template file and line.
 

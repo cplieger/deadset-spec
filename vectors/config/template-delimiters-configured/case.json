@@ -1,0 +1,5 @@
+{
+  "name": "template-delimiters-configured",
+  "description": "A repository configuration setting both action delimiters of the template-field exemption. The resolved configuration carries the pair the repository names instead of the template grammar's own pair, under one provenance entry for the pair.",
+  "covers": ["template-delimiters-configured"]
+}

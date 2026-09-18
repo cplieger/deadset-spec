@@ -1,11 +1,10 @@
 {
-  "description": "An exemption is a named class of reason for which an analyzer keeps a symbol the reference graph alone would report. Each class has a detection rule an analyzer computes from its language's type information and program graph, never from a text search except where a class says so; the analyzer records the class name in the symbol's `retained_by` field, lists the held-back symbols and their classes on request, and lets a maintainer disable any class by name so an exemption suspected of hiding a defect can be tested. The vocabulary is closed: a conformance expectation whose `retained_by` names a class absent from this file is a defect in the expectation. Fields: `languages` names the languages the class runs on (`go`, `ts`); `confidence` uses the report's reachability vocabulary, `certain` for a class derived from a type relation and `possible` for a class derived from a text match; `names_site` says whether the recorded exemption names the source site that produced it; `rule` is the detection rule stated for an implementer in any language; `mechanism` restates it in each listed language's own terms; `retains` names what the class keeps. `typescript_visibility` is present on every class that runs on TypeScript and states whether the class can retain a class member declared with the `private` modifier and whether it can retain one declared with a `#private` name; a class that retains no class member states false for both. The two differ at runtime: `private` is a compile-time constraint only, so a `private` member stays reachable by its name through a string index, a decorator, a container or a serializer, while a `#private` name cannot be named from outside its class body at all. Every class that reaches members by name therefore applies to `private` and not to `#private`, and a `#private` member with no reference in its own class body is reported whatever else the program does.",
+  "description": "An exemption is a named class of reason for which an analyzer keeps a symbol the reference graph alone would report. Each class has a detection rule an analyzer computes from its language's type information and program graph, never from a text search except where a class says so; the analyzer records the class name in the symbol's `retained_by` field, lists the held-back symbols and their classes on request, and lets a maintainer disable any class by name so an exemption suspected of hiding a defect can be tested. Every recorded exemption names the source site its evidence was found at and carries one clause of detail naming the relation and the thing it relates to, `satisfies io.Writer` or `named by {{.Title}}`: a class derived from a type relation names the conversion or the consumer site, a class derived from a text match names the position of the matching text, the generated-file class names the package clause of the generated file, and the linker, cgo, assembly and plugin class names the directive, or the package clause of the file that declares the symbol where the evidence is the shape of the package. The vocabulary is closed: a conformance expectation whose `retained_by` names a class absent from this file is a defect in the expectation. Fields: `languages` names the languages the class runs on (`go`, `ts`); `confidence` uses the report's reachability vocabulary, `certain` for a class derived from a type relation and `possible` for a class derived from a text match; `rule` is the detection rule stated for an implementer in any language; `mechanism` restates it in each listed language's own terms; `retains` names what the class keeps. `typescript_visibility` is present on every class that runs on TypeScript and states whether the class can retain a class member declared with the `private` modifier and whether it can retain one declared with a `#private` name; a class that retains no class member states false for both. The two differ at runtime: `private` is a compile-time constraint only, so a `private` member stays reachable by its name through a string index, a decorator, a container or a serializer, while a `#private` name cannot be named from outside its class body at all. Every class that reaches members by name therefore applies to `private` and not to `#private`, and a `#private` member with no reference in its own class body is reported whatever else the program does.",
   "exemptions": [
     {
       "class": "interface-satisfaction",
       "languages": ["go", "ts"],
       "confidence": "certain",
-      "names_site": false,
       "rule": "A method is retained when a value of its receiver's type reaches a position typed as an interface the method helps satisfy. The analyzer records every site where a value of type T is converted or assigned to an interface type I (an explicit conversion or a satisfaction assertion, an assignment, an argument, a return value, an element stored in an I-typed container) and, for each recorded (T, I) pair, retains the methods of T that satisfy I. The assertion is not a use of I beyond itself: when nothing else uses I as a type, I is still reported as an unused satisfaction assertion while T's methods stay retained.",
       "retains": "The methods of T that satisfy I, for each recorded (T, I) pair.",
       "mechanism": {
@@ -18,29 +17,26 @@
       "class": "encoding-reflection",
       "languages": ["go"],
       "confidence": "certain",
-      "names_site": false,
-      "rule": "A type whose values reach a consumer that inspects them by name at runtime, namely reflection, a standard encoder or decoder, a template engine, a database scan target, a sort interface or a log-value interface, has its exported methods and its tagged fields retained, because that consumer names them by string and the reference graph holds no edge to them.",
-      "retains": "The exported methods and the struct fields carrying a tag, on every type that flows into such a consumer.",
+      "rule": "A type whose values reach a consumer that inspects them by name at runtime has its exported methods, its exported fields and its tagged fields retained, on the type and on every type the consumer walks to through its fields.",
+      "retains": "The exported methods, the exported fields and the struct fields carrying a tag, on every type that flows into such a consumer and on every defined type reached from those types' fields through a pointer, an array, a slice, a map key or value, or an embedded field; the reach stops at an interface-typed field.",
       "mechanism": {
-        "go": "A type T flows into the class when a value of T, or a pointer to one, is an argument of a function or method of `reflect`, `encoding/json`, `encoding/xml`, `encoding/gob`, `text/template` or `html/template`, is a `database/sql` `Scan` target, or is converted to `sort.Interface` or `slog.LogValuer`. Retain T's exported methods and every field of T that carries a struct tag."
+        "go": "A type T flows into the class when a value of T, or a pointer to one, is an argument of a function or method of `reflect`, `encoding/json`, `encoding/xml`, `encoding/gob`, `text/template` or `html/template`, is a `database/sql` `Scan` target, is converted to `sort.Interface`, or is an argument of a `log/slog` logging function, of a `*slog.Logger` method or of an attribute constructor. Retain T's exported methods, its exported fields and its fields carrying a struct tag, and retain the same three sets on every defined type reached from the fields of a retained type through a pointer, an array, a slice, a map key or value, or an embedded field, applied until no further type joins. The reach stops at an interface-typed field, whose dynamic type the analysis does not see."
       }
     },
     {
       "class": "format-verb-contract",
       "languages": ["go"],
       "confidence": "certain",
-      "names_site": false,
-      "rule": "A type whose values reach a formatting verb that calls its string or error method has that method retained: the formatting package invokes `String` or `Error` through an interface at runtime, so the method has no static reference.",
+      "rule": "A type whose values reach a formatting facility that calls its string or error method has that method retained: the facility invokes `String` or `Error` through an interface at runtime, so the method has no static reference.",
       "retains": "The `String() string` and `Error() string` methods of the formatted type.",
       "mechanism": {
-        "go": "A value of type T is an operand of a `fmt` print, format or error-construction function (`Print`, `Sprintf`, `Errorf` and their siblings) under a verb valid for a string operand (`%v`, `%s`, `%q`, `%x`, `%X`, and the verb-less `Print` and `Println` forms); retain T's `String` and `Error` methods. A method that satisfies `io.Writer` or `http.RoundTripper` is retained by `interface-satisfaction`, not by this class."
+        "go": "A value of type T is an operand of a function that formats its operands with the `fmt` machinery, under a verb valid for a string operand (`%v`, `%s`, `%q`, `%x`, `%X`, the wrapping verb `%w` of `fmt.Errorf`, and the verb-less print forms); retain T's `String() string` and `Error() string` methods. The functions are the `fmt` print, format and error-construction functions (`Print`, `Println`, `Printf`, `Sprint`, `Sprintln`, `Sprintf`, `Fprint`, `Fprintln`, `Fprintf`, `Append`, `Appendln`, `Appendf`, `Errorf`), the `log` package's print, fatal and panic functions and the same methods of `*log.Logger`, the `testing.TB` methods `Log`, `Logf`, `Error`, `Errorf`, `Fatal`, `Fatalf`, `Skip` and `Skipf`, the `log/slog` logging functions and `*slog.Logger` methods (`Debug`, `Info`, `Warn`, `Error`, their context forms, `Log` and `LogAttrs`) and the `slog.Any`, `slog.Group` and `slog.Attr`-constructing functions, and any function of the analyzed program whose final parameter is variadic `...any` and which passes that parameter, or a format string together with it, to one of the functions in this list, applied until no further function joins. A format string that is not a constant binds every operand of the call. An operand of a `log/slog` logging function reaches this class and `encoding-reflection` both. A method that satisfies `io.Writer` or `http.RoundTripper` is retained by `interface-satisfaction`, not by this class."
       }
     },
     {
       "class": "errors-duck-typing",
       "languages": ["go"],
       "confidence": "certain",
-      "names_site": false,
       "rule": "The standard error helpers reach comparison and unwrapping methods by duck typing rather than through a declared interface, so those methods have no static reference and are retained on any type the program uses as an error.",
       "retains": "Methods with signature `Is(error) bool`, `As(any) bool`, `Unwrap() error` or `Unwrap() []error` on a type reachable as an error.",
       "mechanism": {
@@ -51,7 +47,6 @@
       "class": "enum-group",
       "languages": ["go", "ts"],
       "confidence": "certain",
-      "names_site": false,
       "rule": "A member of an enumerated type whose values can arrive by conversion rather than by name is never dead in isolation. When the type carries a string, text or binary conversion method, or a value of the type is produced from an integer or from a decoded wire value, every member of that type is retained, so that a member reached only by value is never reported.",
       "retains": "Every member of the enumerated type.",
       "mechanism": {
@@ -64,7 +59,6 @@
       "class": "generated-file",
       "languages": ["go"],
       "confidence": "certain",
-      "names_site": false,
       "rule": "Every declaration in a generated file is retained by default, because the generator owns the file and a deletion there is undone at the next generation. When a project configures generated files as included, the analyzer reports findings in them instead and marks each such finding as one no mechanical edit may act on.",
       "retains": "Every declaration in the file.",
       "mechanism": {
@@ -75,22 +69,20 @@
       "class": "linkname-cgo-asm-plugin",
       "languages": ["go"],
       "confidence": "certain",
-      "names_site": false,
-      "rule": "A symbol that another compilation unit or the runtime reaches by name outside the type checker's view is retained: a linker-level alias, a symbol exported to C, a symbol an assembly file names, or a symbol looked up through the plugin package.",
-      "retains": "The named symbol.",
+      "rule": "A symbol that another compilation unit or the runtime reaches by name outside the type checker's view is retained: a linker-level alias, a symbol exported to C, a symbol an assembly file names, or an exported symbol of a package whose shape is a plugin's.",
+      "retains": "The named symbol, and every exported function and variable of a plugin's main package.",
       "mechanism": {
-        "go": "Retain a function or variable named on either side of a `//go:linkname` directive in any loaded package, a function carrying a `//export` directive in a cgo file, a symbol named by a `TEXT ·name` directive in an assembly file of the same package, and an exported symbol of a plugin's main package whose name is the string argument of a `plugin` `Lookup` call."
+        "go": "Retain a function or variable named on either side of a `//go:linkname` directive in a file that imports `\"unsafe\"`, in any loaded package, the only kind of file the directive binds in; a function carrying a `//export` directive in a cgo file; a symbol named by a `TEXT ·name` directive in an assembly file of the same package; and an exported function or variable of a main package that declares no `main` function, which is the shape of a plugin's main package. A name a `plugin` `Lookup` call carries is retained by `reflective-lookup` in the package that holds the call."
       }
     },
     {
       "class": "template-field",
       "languages": ["go", "ts"],
       "confidence": "possible",
-      "names_site": true,
-      "rule": "Where the project configures template directories, a member whose name appears in a template as a field or method reference is retained at the lowest confidence, and the exemption names the template site that matched. The evidence is a text match, not a type relation, so this is a weak class and it applies only where the project asked for it.",
+      "rule": "Where the project configures template directories, a member whose name appears in a template as a field or method reference is retained at the lowest confidence, and the exemption names the template site that matched. Where the language's template grammar has action delimiters, the project configures the pair the scan reads and the grammar's own pair stands where it does not. The evidence is a text match, not a type relation, so this is a weak class and it applies only where the project asked for it.",
       "retains": "The field or method whose name the template references, on any type.",
       "mechanism": {
-        "go": "Scan every file under the configured template directories for `{{ .Name }}`, `{{ .Name arg }}` and `{{ $x.Name }}` action references, the `text/template` and `html/template` field and method syntax; retain every exported field and method named `Name`, recording the template file and line.",
+        "go": "Scan every file under the configured template directories, parsed with the action delimiters the configuration sets in `analysis.template_delimiters` and with the `text/template` delimiters `{{` and `}}` where it sets none, and retain every exported field and method whose name appears as a field or method reference in any form the template grammar records: a field reference on the dot, on a variable, or on the result of a parenthesized pipeline or of a call, at every position of a chain, so that `.Page.Title` names `Page` and `Title`. Record the template file and line.",
         "ts": "Scan every file under the configured template directories for the member's name in an interpolation or binding position; retain every member so named, recording the template file and line."
       },
       "typescript_visibility": { "private": true, "private_name": false }
@@ -99,7 +91,6 @@
       "class": "reflective-lookup",
       "languages": ["go", "ts"],
       "confidence": "possible",
-      "names_site": true,
       "rule": "A symbol whose name appears as a string literal that reaches a reflective lookup call is retained at the lowest confidence, and the exemption names the lookup site. The evidence is a string match beside a call, not a type relation, so this is a weak class.",
       "retains": "The method, field or member whose name matches the string literal.",
       "mechanism": {
@@ -112,7 +103,6 @@
       "class": "decorator",
       "languages": ["ts"],
       "confidence": "certain",
-      "names_site": false,
       "rule": "A member that carries a decorator, or whose class carries a decorator, is retained: the decorator receives the member or the class at runtime and may reach the member by name, so the decorator's own symbol counts as a reference to what it decorates.",
       "retains": "The decorated member, and every member of a decorated class that a decorator can name at runtime.",
       "mechanism": {
@@ -124,7 +114,6 @@
       "class": "injection-container",
       "languages": ["ts"],
       "confidence": "certain",
-      "names_site": false,
       "rule": "Where the project configures a dependency-injection container, a class registered with it has its constructor and the members the container injects retained, because the container instantiates the class and populates those members with no reference in the program's own code.",
       "retains": "The class's constructor and every injected member.",
       "mechanism": {
@@ -136,7 +125,6 @@
       "class": "framework-lifecycle",
       "languages": ["ts"],
       "confidence": "certain",
-      "names_site": false,
       "rule": "Where the project declares a framework, a member whose name matches that framework's lifecycle contract, on a class reachable as that framework's component, is retained, because the framework calls it by name.",
       "retains": "The lifecycle member.",
       "mechanism": {
@@ -148,7 +136,6 @@
       "class": "serialization-contract",
       "languages": ["ts"],
       "confidence": "certain",
-      "names_site": false,
       "rule": "A class whose instances flow into a serializer or a schema validator has its data members retained, because the serializer reads them by name at runtime; its methods are not retained, because a serializer never calls them.",
       "retains": "The class's properties, never its methods.",
       "mechanism": {

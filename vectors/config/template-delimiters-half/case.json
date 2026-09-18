@@ -1,0 +1,5 @@
+{
+  "name": "template-delimiters-half",
+  "description": "A repository configuration setting one member of the template delimiter pair. Both members are required once the object is present, so the run is refused naming the missing member rather than pairing the one member with a default.",
+  "covers": ["template-delimiters-half"]
+}

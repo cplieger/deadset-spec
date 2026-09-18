@@ -1,0 +1,7 @@
+{
+  "target": { "kind": "library" },
+  "analysis": {
+    "template_dirs": ["templates"],
+    "template_delimiters": { "left": "[[", "right": "]]" }
+  }
+}
