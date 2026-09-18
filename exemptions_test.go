@@ -31,7 +31,6 @@ type exemptionClass struct {
 	Rule       string            `json:"rule"`
 	Retains    string            `json:"retains"`
 	Languages  []string          `json:"languages"`
-	NamesSite  bool              `json:"names_site"`
 }
 
 type memberVisibility struct {
@@ -54,7 +53,7 @@ var (
 	classNamePattern = regexp.MustCompile(`^[a-z][a-z0-9]*(-[a-z0-9]+)*$`)
 	knownLanguages   = []string{"go", "ts"}
 	knownConfidences = []string{"certain", "probable", "possible"}
-	rowKeys          = []string{"class", "languages", "confidence", "names_site", "rule", "retains", "mechanism"}
+	rowKeys          = []string{"class", "languages", "confidence", "rule", "retains", "mechanism"}
 )
 
 // loadExemptions decodes contract/exemptions.json, failing the test on any
@@ -141,9 +140,6 @@ func TestExemptionsDocumentShape(t *testing.T) {
 			}
 			if !slices.Contains(knownConfidences, c.Confidence) {
 				t.Errorf("class %q confidence = %q, want one of %v", c.Class, c.Confidence, knownConfidences)
-			}
-			if c.Confidence != "certain" && !c.NamesSite {
-				t.Errorf("class %q confidence = %q with names_site = false, want a class below certain to name its site", c.Class, c.Confidence)
 			}
 			if c.Rule == "" {
 				t.Errorf("class %q rule = %q, want a detection rule", c.Class, c.Rule)

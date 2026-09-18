@@ -1,5 +1,5 @@
 {
-  "contract_version": "1.0.0",
+  "contract_version": "1.1.0",
   "target": { "kind": "library" },
   "analysis": {
     "languages": ["go", "ts"],
@@ -11,7 +11,8 @@
       { "id": "linux-arm64", "os": "linux", "arch": "arm64", "tags": ["netgo"] }
     ],
     "matrix": { "complete": true },
-    "template_dirs": ["templates"]
+    "template_dirs": ["templates"],
+    "template_delimiters": { "left": "<%", "right": "%>" }
   },
   "consumers": { "complete": true },
   "roots": { "patterns": ["go://example.com/app#Catalog.*"] },

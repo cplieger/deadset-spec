@@ -35,6 +35,8 @@ var configVectorAspects = []string{
 	"provenance-on-input",
 	"quoted-key-with-a-dot",
 	"resolved-configuration-round-trip",
+	"template-delimiters-configured",
+	"template-delimiters-half",
 	"unimplemented-key",
 }
 

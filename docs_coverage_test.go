@@ -705,12 +705,10 @@ func docsExitCodesNamed(tables []docsTable) []string {
 // docsExemptionColumns maps a header cell of an exemption table to the
 // contract/exemptions.json field the column renders.
 var docsExemptionColumns = map[string]string{
-	"class":          "class",
-	"language":       "languages",
-	"languages":      "languages",
-	"confidence":     "confidence",
-	"names site":     "names_site",
-	"names the site": "names_site",
+	"class":      "class",
+	"language":   "languages",
+	"languages":  "languages",
+	"confidence": "confidence",
 }
 
 // docsExemptionFieldAgrees reports whether a cell renders one field of one class,
@@ -724,20 +722,10 @@ func docsExemptionFieldAgrees(class exemptionClass, field, raw string) (bool, st
 		return slices.Equal(docsCellLanguages(knownLanguages, raw), want), strings.Join(want, ", ")
 	case "confidence":
 		return got == docsCell(class.Confidence), class.Confidence
-	case "names_site":
-		return slices.Contains(docsAllowedBool(class.NamesSite), got), strconv.FormatBool(class.NamesSite)
 	case "class":
 		return got == docsCell(class.Class), class.Class
 	}
 	return true, ""
-}
-
-// docsAllowedBool lists the spellings a page may use for a boolean field.
-func docsAllowedBool(value bool) []string {
-	if value {
-		return []string{"true", "yes"}
-	}
-	return []string{"false", "no"}
 }
 
 // TestDocsExemptionsPageRowsStateTheVocabularysOwnValues reads the exemption

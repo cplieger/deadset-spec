@@ -130,6 +130,28 @@
           },
           "default": [],
           "x-owner": "analyzer"
+        },
+        "template_delimiters": {
+          "description": "The action delimiters the template-field exemption parses a template with: left opens an action and right closes it. Both members are required when the object is present, because a pair with one member set names no delimiters at all. The default is the template grammar's own pair. The pair is one value: a higher-ranked source replaces both members together, and a resolved configuration carries one provenance entry for it, analysis.template_delimiters.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["left", "right"],
+          "x-owner": "analyzer",
+          "properties": {
+            "left": {
+              "description": "The text that opens an action.",
+              "type": "string",
+              "minLength": 1,
+              "x-owner": "analyzer"
+            },
+            "right": {
+              "description": "The text that closes an action.",
+              "type": "string",
+              "minLength": 1,
+              "x-owner": "analyzer"
+            }
+          },
+          "default": { "left": "{{", "right": "}}" }
         }
       }
     },

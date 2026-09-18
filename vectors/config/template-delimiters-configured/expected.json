@@ -4,29 +4,23 @@
   "analysis": {
     "languages": [],
     "min_confidence": "possible",
-    "generated_files": "include",
+    "generated_files": "exclude",
     "consumer_tests": "test",
     "configurations": [],
     "matrix": { "complete": false },
-    "template_dirs": [],
-    "template_delimiters": { "left": "{{", "right": "}}" }
+    "template_dirs": ["templates"],
+    "template_delimiters": { "left": "[[", "right": "]]" }
   },
   "consumers": { "complete": false },
-  "roots": {
-    "patterns": [
-      "go://example.com/app#Catalog.*",
-      "go://example.com/app/internal/*#*",
-      "ts://@example/app/src/generated/*.ts#*"
-    ]
-  },
-  "severity": { "DS1101": "allow", "DS1201": "warn" },
+  "roots": { "patterns": [] },
+  "severity": {},
   "exemptions": { "disabled": [] },
   "reporters": {
     "formats": ["text"],
     "sort": "position",
     "cascade": "roots",
     "max_findings": 0,
-    "fail_on": "warn"
+    "fail_on": "deny"
   },
   "go": {},
   "ts": {
@@ -37,23 +31,22 @@
     "contract_version": "default",
     "target.kind": "repository: repository.json",
     "analysis.languages": "default",
-    "analysis.min_confidence": "flag: --min-confidence",
-    "analysis.generated_files": "central: central.json",
+    "analysis.min_confidence": "default",
+    "analysis.generated_files": "default",
     "analysis.consumer_tests": "default",
     "analysis.configurations": "default",
     "analysis.matrix.complete": "default",
-    "analysis.template_dirs": "default",
-    "analysis.template_delimiters": "default",
+    "analysis.template_dirs": "repository: repository.json",
+    "analysis.template_delimiters": "repository: repository.json",
     "consumers.complete": "default",
-    "roots.patterns": "repository: repository.json",
-    "severity.DS1101": "repository: repository.json",
-    "severity.DS1201": "central: central.json",
+    "roots.patterns": "default",
+    "severity": "default",
     "exemptions.disabled": "default",
     "reporters.formats": "default",
     "reporters.sort": "default",
     "reporters.cascade": "default",
     "reporters.max_findings": "default",
-    "reporters.fail_on": "central: central.json",
+    "reporters.fail_on": "default",
     "ts.test_files": "default",
     "ts.entry_files": "default"
   }
