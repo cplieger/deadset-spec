@@ -154,7 +154,7 @@
       "x-owner": "analyzer",
       "properties": {
         "patterns": {
-          "description": "Symbol references, or patterns over them, in the grammar contract/grammar/symbol-ref.md states. A pattern that matches no symbol is reported as a finding (DS1704) rather than silently ignored.",
+          "description": "Symbol references, or patterns over them, in the grammar contract/grammar/symbol-ref.md states. Each entry is matched against the reference of every symbol the analysis enumerates: `*` matches any run of characters including the solidus, `?` matches exactly one character counted as a Unicode code point, no other character is special, and an entry holding neither wildcard matches only the symbol whose reference it spells exactly. Every symbol an entry matches is a root, and an entry matching no symbol is reported as a finding (DS1704) rather than silently ignored.",
           "type": "array",
           "uniqueItems": true,
           "items": {
