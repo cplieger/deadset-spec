@@ -23,6 +23,7 @@
   "reporters": {
     "formats": ["text"],
     "sort": "position",
+    "cascade": "roots",
     "max_findings": 0,
     "fail_on": "warn"
   },
@@ -48,6 +49,7 @@
     "exemptions.disabled": "default",
     "reporters.formats": "default",
     "reporters.sort": "default",
+    "reporters.cascade": "default",
     "reporters.max_findings": "default",
     "reporters.fail_on": "central: central.json",
     "ts.test_files": "default",
