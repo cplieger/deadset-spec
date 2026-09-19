@@ -152,7 +152,7 @@
         "required": ["id", "os", "arch", "tags"],
         "properties": {
           "id": {
-            "description": "The name this report uses for the configuration, as the configuration document spells it. Every finding's configurations list names ids from this array.",
+            "description": "The name this report uses for the configuration, as the configuration document spells it. Every finding's configurations list names ids from this array. A configuration the analysis derived rather than read from the configuration document is identified by its operating system and its architecture joined by a hyphen, with each of its tags appended after a further hyphen in the order the configuration lists them: linux-amd64, linux-amd64-integration.",
             "type": "string",
             "minLength": 1
           },
@@ -512,7 +512,7 @@
           "minimum": 0
         },
         "suppressions_in_effect": {
-          "description": "How many suppression records bound to a symbol that would otherwise have produced a finding under the record's code. It is where a suppressed finding is visible, because no record for it appears in findings or in any output rendered from findings.",
+          "description": "How many suppression records bound to a symbol that would otherwise have produced a finding under the record's code. It is where a suppressed finding is visible, because no record for it appears in findings or in any output rendered from findings. A record bound to a symbol whose code the configuration sets to allow is dormant rather than in effect and is not counted here, so turning a kind off never turns its adjudications into findings.",
           "type": "integer",
           "minimum": 0
         },

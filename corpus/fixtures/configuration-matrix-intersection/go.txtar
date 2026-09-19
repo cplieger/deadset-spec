@@ -1,0 +1,52 @@
+The Go rendering: one module whose two architecture files give a run a matrix of
+two configurations, because each file's name carries the build constraint of one
+architecture and neither names an operating system. The matrix the manifest
+declares is what the intersection is read against: a helper is reported only
+where it is dead under every configuration it is declared in.
+
+-- fixture.json --
+{
+  "configurations": ["linux-amd64", "linux-arm64"],
+  "symbols": {
+    "shared": { "file": "target/main.go", "line": 8 },
+    "wide": { "file": "target/main.go", "line": 12 },
+    "unusedEverywhere": { "file": "target/main.go", "line": 15 },
+    "unusedOnArm64": { "file": "target/boot_arm64.go", "line": 8 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target exercises the build matrix: a helper both architecture files
+// call, a helper one of them alone calls, and a helper neither calls.
+package main
+
+func main() {}
+
+// shared is called from the init function of both architecture files.
+func shared() {}
+
+// wide is called from the amd64 file alone, so it is live under that
+// configuration and dead under the other.
+func wide() {}
+
+// unusedEverywhere is called from nothing under either configuration.
+func unusedEverywhere() {}
+-- target/boot_amd64.go --
+package main
+
+func init() {
+	shared()
+	wide()
+}
+-- target/boot_arm64.go --
+package main
+
+func init() {
+	shared()
+}
+
+// unusedOnArm64 is declared by the arm64 build alone and called from nothing.
+func unusedOnArm64() {}

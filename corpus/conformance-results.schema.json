@@ -136,6 +136,15 @@
                       "type": "string",
                       "enum": ["reference-counting", "reachability"]
                     },
+                    "configurations": {
+                      "description": "The configurations the reported finding named, by identifier, ordered as the rendering's manifest orders its build matrix. Optional on a reported finding, because a rendering with no build matrix gives a finding nothing to name, and forbidden when report is none.",
+                      "type": "array",
+                      "uniqueItems": true,
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
                     "retained_by": {
                       "description": "The exemption classes the product's retained-symbol listing named at the position, drawn from the class field of contract/exemptions.json. Allowed only when report is none; absent or empty when the listing names the position under no class.",
                       "type": "array",
@@ -156,7 +165,8 @@
                       "anyOf": [
                         { "required": ["confidence"] },
                         { "required": ["reachability_class"] },
-                        { "required": ["liveness_relation"] }
+                        { "required": ["liveness_relation"] },
+                        { "required": ["configurations"] }
                       ]
                     }
                   },

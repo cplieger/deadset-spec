@@ -70,6 +70,14 @@
     "reason": "A separator followed by whitespace only: an empty reason is no reason, DS1701."
   },
   {
+    "input": { "comment": "//deadset:ignore DS1001,DS1101", "line_offset": -1 },
+    "kind": "inline",
+    "accepted": false,
+    "rule": "reason-required",
+    "reason": "Two codes and no reason: one record per code, each refused and each reported as DS1701, so the directive is two findings at one line.",
+    "reports": ["DS1701", "DS1701"]
+  },
+  {
     "input": { "comment": "//deadset:ignore DS1001 -- Reached only through the generated client.", "line_offset": 0 },
     "kind": "inline",
     "accepted": false,
@@ -271,6 +279,14 @@
     "accepted": false,
     "rule": "path-required",
     "reason": "An empty path is no path: DS1702."
+  },
+  {
+    "input": { "code": "DS1001", "symbol": "go://example.com/app#Catalog.ResolveAlias" },
+    "kind": "ignore-entry",
+    "accepted": false,
+    "rule": "reason-required",
+    "reason": "Neither a reason nor a path: the two rules are separate checks and both report, so the entry is DS1701 and DS1702 at one position and a maintainer who supplies the reason still sees the missing path.",
+    "reports": ["DS1701", "DS1702"]
   },
   {
     "input": { "code": "DS1001", "symbol": "go://example.com/app#Catalog.ResolveAlias", "path": "/src/app/catalog.go", "reason": "Kept for the v3 API promise." },

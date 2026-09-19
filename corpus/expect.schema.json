@@ -74,6 +74,16 @@
             "type": "string",
             "enum": ["reference-counting", "reachability"]
           },
+          "configurations": {
+            "description": "The configurations the reported finding must name, by identifier, drawn from the build matrix the rendering's manifest declares and ordered as that matrix orders them. A finding holds in exactly the configurations in which its subject is declared, so a subject one configuration alone declares names that one and a subject every configuration declares names them all. Optional on a reported subject and forbidden when report is none; a fixture whose renderings declare no build matrix names none.",
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
           "retained_by": {
             "description": "The exemption classes that hold the subject back, drawn from the class field of contract/exemptions.json. Allowed only when report is none, because a reported finding never carries a non-empty retained_by; the analyzer's retained-symbol listing must name exactly these classes at the subject's position.",
             "type": "array",
@@ -95,7 +105,8 @@
             "anyOf": [
               { "required": ["confidence"] },
               { "required": ["reachability_class"] },
-              { "required": ["liveness_relation"] }
+              { "required": ["liveness_relation"] },
+              { "required": ["configurations"] }
             ]
           }
         },

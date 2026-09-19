@@ -288,6 +288,7 @@ func answeredResults(t *testing.T, fixtures []expectationDocument, language stri
 					Confidence:        want.Confidence,
 					ReachabilityClass: want.ReachabilityClass,
 					LivenessRelation:  want.LivenessRelation,
+					Configurations:    want.Configurations,
 					RetainedBy:        want.RetainedBy,
 				},
 			}

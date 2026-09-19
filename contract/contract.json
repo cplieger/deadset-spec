@@ -1,6 +1,6 @@
 {
   "description": "The version of this contract, the report schema versions it accepts and the operating systems a released analyzer supports. contract_version is the semantic version of the contract as one unit, independent of every analyzer's version and of this repository's release tags; it moves only when a document under contract/ changes in a way an implementation can observe, and every analyzer names the contract version it implements in its report and in its resolved configuration. schema_versions lists every value a report's schema_version field may carry under this contract version; a merge admits a report whose schema_version is in this list and refuses one that is not, naming both versions. platforms is the closed set of operating systems every product supports, each spelled as the os field of a report configuration spells it; the set names operating systems only.",
-  "contract_version": "1.1.0",
+  "contract_version": "1.2.0",
   "schema_versions": ["1.0.0"],
   "platforms": ["linux"]
 }
