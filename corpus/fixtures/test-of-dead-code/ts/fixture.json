@@ -1,0 +1,10 @@
+{
+  "symbols": {
+    "DeadOne": { "file": "target/catalog.ts", "line": 6 },
+    "DeadTwo": { "file": "target/catalog.ts", "line": 11 },
+    "Live": { "file": "target/catalog.ts", "line": 16 },
+    "TestDeadOnly": { "file": "target/catalog.test.ts", "line": 6 },
+    "TestMixed": { "file": "target/catalog.test.ts", "line": 10 },
+    "assertSum": { "file": "target/catalog.test.ts", "line": 16 }
+  }
+}

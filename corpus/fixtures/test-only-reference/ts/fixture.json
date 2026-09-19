@@ -1,0 +1,6 @@
+{
+  "symbols": {
+    "OnlyTested": { "file": "target/catalog.ts", "line": 6 },
+    "Production": { "file": "target/catalog.ts", "line": 11 }
+  }
+}

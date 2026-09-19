@@ -1,0 +1,66 @@
+The Go rendering: one module whose importable package holds a live and a dead
+declaration of each shape the unused-declaration kinds report. An exported
+function nothing names, an unexported function nothing names, a field nothing
+names, and an exported function whose only reference is its own call to itself,
+beside the live declaration of each shape the command reaches. Nothing in the
+module imports anything outside the standard library, so the rendering loads with
+no network access.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Counter.Live": { "file": "target/catalog/catalog.go", "line": 26 },
+    "Counter.Total": { "file": "target/catalog/catalog.go", "line": 30 },
+    "Counter.stale": { "file": "target/catalog/catalog.go", "line": 27 },
+    "Recurse": { "file": "target/catalog/catalog.go", "line": 17 },
+    "Resolve": { "file": "target/catalog/catalog.go", "line": 7 },
+    "Used": { "file": "target/catalog/catalog.go", "line": 4 },
+    "helper": { "file": "target/catalog/catalog.go", "line": 13 },
+    "usedHelper": { "file": "target/catalog/catalog.go", "line": 10 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/catalog/catalog.go --
+package catalog
+
+// Used is referenced from the command, so it is live under both relations.
+func Used() int { return usedHelper() }
+
+// Resolve is referenced by nothing at all.
+func Resolve() int { return 2 }
+
+// usedHelper is referenced from Used.
+func usedHelper() int { return 3 }
+
+// helper is referenced by nothing at all.
+func helper() int { return 4 }
+
+// Recurse calls itself and nothing else calls it, so it carries one reference and
+// no path from a root reaches it.
+func Recurse(n int) int {
+	if n <= 0 {
+		return 0
+	}
+	return Recurse(n - 1)
+}
+
+// Counter carries one field the command reads and one nothing reads.
+type Counter struct {
+	Live  int
+	stale int
+}
+
+// Total reads the field the command sets.
+func (c Counter) Total() int { return c.Live }
+-- target/main.go --
+package main
+
+import "example.com/target/catalog"
+
+func main() {
+	c := catalog.Counter{Live: 1}
+	println(catalog.Used(), c.Total())
+}

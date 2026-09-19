@@ -1,0 +1,10 @@
+{
+  "name": "applied-replace-local-dependency",
+  "description": "A module file whose direct requirement a package of the target imports and whose replace directive resolves that requirement to a module the build list holds. Neither directive is reported, so the dependency kinds report a requirement and a replace only where the requirement is unbacked and the replace redirects nothing.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "expect": [
+    { "symbol": "BackedRequirement", "report": "none" },
+    { "symbol": "AppliedReplace", "report": "none" }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "name": "deprecated-and-unused",
+  "description": "A declaration carrying a deprecation marker and no production reference is reported under the deprecated code rather than under the unused code its visibility would otherwise select, a function, a member and each name of one grouped declaration alike. A deprecated declaration a production file still references is reported under no code, so the marker alone never produces a finding.",
+  "languages": ["go", "ts"],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Old",
+      "report": "DS1006",
+      "symbol_kind": "function",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Stale",
+      "report": "DS1006",
+      "symbol_kind": "variable",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "StaleToo",
+      "report": "DS1006",
+      "symbol_kind": "variable",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Counter.Old",
+      "report": "DS1006",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    { "symbol": "Kept", "report": "none" },
+    { "symbol": "Fresh", "report": "none" },
+    { "symbol": "Counter.Live", "report": "none" }
+  ]
+}

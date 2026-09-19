@@ -1,0 +1,43 @@
+{
+  "name": "unused-declaration-visibility",
+  "description": "A dead declaration of each shape the unused-declaration kinds separate: an exported one is reported under one code, an unexported one under another, a member under a third, and an exported declaration whose only reference is its own recursive call is reported under the exported code by the reachability relation rather than by reference counting. The live declaration of each shape is reported under no code.",
+  "languages": ["go", "ts"],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Resolve",
+      "report": "DS1001",
+      "symbol_kind": "function",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Recurse",
+      "report": "DS1001",
+      "symbol_kind": "function",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reachability"
+    },
+    {
+      "symbol": "helper",
+      "report": "DS1002",
+      "symbol_kind": "function",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Counter.stale",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    { "symbol": "Used", "report": "none" },
+    { "symbol": "usedHelper", "report": "none" },
+    { "symbol": "Counter.Live", "report": "none" },
+    { "symbol": "Counter.Total", "report": "none" }
+  ]
+}

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"io/fs"
 	"maps"
+	"os"
 	"path"
 	"regexp"
 	"slices"
@@ -167,4 +168,120 @@ func TestContractPagesNameNoSchemaVersionTheContractRefuses(t *testing.T) {
 			}
 		})
 	}
+}
+
+// contractBaselinePath is the committed record of the closed vocabularies at the
+// published contract version, which is what makes that version's own rule
+// enforceable for the part of a contract change that is a set.
+const contractBaselinePath = "testdata/contract-baseline.json"
+
+// contractBaselineDocument mirrors testdata/contract-baseline.json; an unknown
+// key fails the decode.
+type contractBaselineDocument struct {
+	Description      string   `json:"description"`
+	ContractVersion  string   `json:"contract_version"`
+	SchemaVersions   []string `json:"schema_versions"`
+	KindCodes        []string `json:"kind_codes"`
+	RetiredCodes     []string `json:"retired_codes"`
+	ExemptionClasses []string `json:"exemption_classes"`
+	SymbolKinds      []string `json:"symbol_kinds"`
+	ExitCodes        []int    `json:"exit_codes"`
+}
+
+// loadContractBaseline decodes the committed baseline, failing the test on any
+// setup error and on an empty set, because an empty set pins nothing.
+func loadContractBaseline(t *testing.T) contractBaselineDocument {
+	t.Helper()
+	data, err := os.ReadFile(contractBaselinePath)
+	if err != nil {
+		t.Fatalf("Setup: os.ReadFile(%q): %v", contractBaselinePath, err)
+	}
+	dec := json.NewDecoder(bytes.NewReader(data))
+	dec.DisallowUnknownFields()
+	var doc contractBaselineDocument
+	if err = dec.Decode(&doc); err != nil {
+		t.Fatalf("Setup: decoding %s: %v", contractBaselinePath, err)
+	}
+	sets := map[string]int{
+		"schema_versions":   len(doc.SchemaVersions),
+		"kind_codes":        len(doc.KindCodes),
+		"retired_codes":     len(doc.RetiredCodes),
+		"exemption_classes": len(doc.ExemptionClasses),
+		"symbol_kinds":      len(doc.SymbolKinds),
+		"exit_codes":        len(doc.ExitCodes),
+	}
+	for _, name := range slices.Sorted(maps.Keys(sets)) {
+		if sets[name] == 0 {
+			t.Fatalf("Setup: %s records no %s, want the published set", contractBaselinePath, name)
+		}
+	}
+	return doc
+}
+
+// TestContractVersionMovesWithEveryClosedVocabulary enforces the rule
+// contract.json states for itself and could not check: the version moves when a
+// document under contract/ changes in a way an implementation can observe. The
+// baseline records every closed vocabulary at the version it names, so a code, a
+// class, a subject kind, an exit code or an admitted report shape added or retired
+// while the published version stays where the baseline left it fails here, and
+// moving the version and rewriting the baseline in one change is the green path.
+//
+// The sets are the observable part of a contract change that a comparison can
+// decide. An observable change no set holds, a mechanism sentence for example,
+// moves the version and leaves the baseline alone, which is why this is an
+// equality over vocabularies rather than a digest of the tree: a digest would make
+// a description a version bump.
+func TestContractVersionMovesWithEveryClosedVocabulary(t *testing.T) {
+	contract := loadContract(t)
+	baseline := loadContractBaseline(t)
+
+	if baseline.ContractVersion != contract.ContractVersion {
+		t.Fatalf("%s records contract_version %q and %s publishes %q: the two move in one change, so rewrite %s for the published version",
+			contractBaselinePath, baseline.ContractVersion, contractPath, contract.ContractVersion, contractBaselinePath)
+	}
+
+	kinds := loadKinds(t)
+	live := make([]string, len(kinds.Kinds))
+	for i, row := range kinds.Kinds {
+		live[i] = row.Code
+	}
+	retired := make([]string, len(kinds.Retired))
+	for i, row := range kinds.Retired {
+		retired[i] = row.Code
+	}
+	classes := make([]string, len(loadExemptions(t).Exemptions))
+	for i, class := range loadExemptions(t).Exemptions {
+		classes[i] = class.Class
+	}
+	table := mustLoadExitCodes(t)
+	codes := make([]int, len(table.ExitCodes))
+	for i, row := range table.ExitCodes {
+		codes[i] = row.Code
+	}
+
+	for _, tc := range []struct {
+		file string
+		name string
+		got  []string
+		want []string
+	}{
+		{name: "schema_versions", file: contractPath, got: contract.SchemaVersions, want: baseline.SchemaVersions},
+		{name: "kind_codes", file: kindsPath, got: live, want: baseline.KindCodes},
+		{name: "retired_codes", file: kindsPath, got: retired, want: baseline.RetiredCodes},
+		{name: "exemption_classes", file: exemptionsPath, got: classes, want: baseline.ExemptionClasses},
+		{name: "symbol_kinds", file: findingSchemaPath, got: enumAt(loadFindingSchema(t), "properties/symbol/properties/kind"), want: baseline.SymbolKinds},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			if !slices.Equal(tc.got, tc.want) {
+				t.Errorf("%s declares %s %v and %s records %v at contract_version %q: a value added or retired moves the version, so move it in %s and rewrite %s in one change",
+					tc.file, tc.name, tc.got, contractBaselinePath, tc.want, contract.ContractVersion, contractPath, contractBaselinePath)
+			}
+		})
+	}
+	t.Run("exit_codes", func(t *testing.T) {
+		if !slices.Equal(codes, baseline.ExitCodes) {
+			t.Errorf("%s declares exit_codes %v and %s records %v at contract_version %q: a value added or retired moves the version, so move it in %s and rewrite %s in one change",
+				exitCodesPath, codes, contractBaselinePath, baseline.ExitCodes, contract.ContractVersion, contractPath, contractBaselinePath)
+		}
+	})
 }

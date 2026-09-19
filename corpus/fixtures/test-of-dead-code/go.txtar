@@ -1,0 +1,60 @@
+The Go rendering: one module with two tests, one whose every referenced
+declaration of the target is dead and one that reaches a live declaration as
+well, beside a helper the two tests share. Nothing in the module imports anything
+outside the standard library, so the rendering loads with no network access.
+
+-- fixture.json --
+{
+  "symbols": {
+    "DeadOne": { "file": "target/catalog/catalog.go", "line": 4 },
+    "DeadTwo": { "file": "target/catalog/catalog.go", "line": 7 },
+    "Live": { "file": "target/catalog/catalog.go", "line": 10 },
+    "TestDeadOnly": { "file": "target/catalog/catalog_test.go", "line": 5 },
+    "TestMixed": { "file": "target/catalog/catalog_test.go", "line": 9 },
+    "assertSum": { "file": "target/catalog/catalog_test.go", "line": 15 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/catalog/catalog.go --
+package catalog
+
+// DeadOne has no production reference.
+func DeadOne() int { return 1 }
+
+// DeadTwo has no production reference.
+func DeadTwo() int { return 2 }
+
+// Live is referenced from the command.
+func Live() int { return 3 }
+-- target/catalog/catalog_test.go --
+package catalog
+
+import "testing"
+
+func TestDeadOnly(t *testing.T) {
+	assertSum(t, DeadOne()+DeadTwo(), 3)
+}
+
+func TestMixed(t *testing.T) {
+	assertSum(t, DeadOne()+Live(), 4)
+}
+
+// assertSum is a helper the tests share, declared in a test file and referenced
+// from test files alone.
+func assertSum(t *testing.T, got, want int) {
+	t.Helper()
+	if got != want {
+		t.Errorf("the sum of the declarations is %d, want %d", got, want)
+	}
+}
+-- target/main.go --
+package main
+
+import "example.com/target/catalog"
+
+func main() {
+	println(catalog.Live())
+}

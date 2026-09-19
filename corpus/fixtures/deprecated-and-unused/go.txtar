@@ -1,0 +1,63 @@
+The Go rendering: one module carrying four declarations marked deprecated by the
+convention the standard tools recognize, a function, two names of one grouped
+variable declaration and a field, of which the command still calls one. Nothing in
+the module imports anything outside the standard library, so the rendering loads
+with no network access.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Counter.Live": { "file": "target/catalog/catalog.go", "line": 27 },
+    "Counter.Old": { "file": "target/catalog/catalog.go", "line": 30 },
+    "Fresh": { "file": "target/catalog/catalog.go", "line": 22 },
+    "Kept": { "file": "target/catalog/catalog.go", "line": 11 },
+    "Old": { "file": "target/catalog/catalog.go", "line": 6 },
+    "Stale": { "file": "target/catalog/catalog.go", "line": 17 },
+    "StaleToo": { "file": "target/catalog/catalog.go", "line": 18 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/catalog/catalog.go --
+package catalog
+
+// Old resolved an alias the way the first release did.
+//
+// Deprecated: nothing references it; Fresh does the same work.
+func Old() int { return 1 }
+
+// Kept resolves an alias.
+//
+// Deprecated: Fresh does the same work, and the command still calls this one.
+func Kept() int { return 2 }
+
+// Stale is deprecated in a grouped declaration.
+//
+// Deprecated: nothing sets it.
+var (
+	Stale    = 3
+	StaleToo = 4
+)
+
+// Fresh resolves an alias.
+func Fresh() int { return 5 }
+
+// Counter carries a deprecated field nothing reads.
+type Counter struct {
+	// Live is read from the command.
+	Live int
+
+	// Deprecated: nothing reads it.
+	Old int
+}
+-- target/main.go --
+package main
+
+import "example.com/target/catalog"
+
+func main() {
+	c := catalog.Counter{Live: 1}
+	println(catalog.Kept(), catalog.Fresh(), c.Live)
+}

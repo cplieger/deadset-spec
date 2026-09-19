@@ -1,0 +1,43 @@
+The Go rendering: two modules, the target and the dependency its module file
+requires and reaches through a replace naming the dependency directory relative to
+the target. The target imports a package the dependency provides, so the
+requirement is backed and the replace is applied, and neither directive is
+reported. The replace is what makes the requirement resolvable, so the rendering
+loads with no network access and the required module is never fetched.
+
+-- fixture.json --
+{
+  "symbols": {
+    "AppliedReplace": { "file": "target/go.mod", "line": 7 },
+    "BackedRequirement": { "file": "target/go.mod", "line": 5 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+
+require example.com/dep v0.0.0
+
+replace example.com/dep v0.0.0 => ../dep
+-- target/main.go --
+// Command target imports the module its own module file requires, so the
+// requirement is backed by an import and the replace that resolves it is applied.
+package main
+
+import "example.com/dep"
+
+func main() {
+	println(dep.Value())
+}
+-- dep/go.mod --
+module example.com/dep
+
+go 1.27.0
+-- dep/value.go --
+// Package dep is the second module of the rendering: the target's module file
+// requires it and names this directory through a replace.
+package dep
+
+// Value is the declaration the target references.
+func Value() int { return 1 }
