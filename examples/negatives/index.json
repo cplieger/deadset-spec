@@ -72,6 +72,13 @@
       "violates": "a finding about a configured root carries a liveness relation, which only a finding about a declaration carries"
     },
     {
+      "file": "liveness-relation-on-an-unused-parameter.json",
+      "schema": "contract/finding.schema.json",
+      "constraint": "not",
+      "instance_path": "",
+      "violates": "a finding about a parameter carries a liveness relation, which only a finding about a declaration carries"
+    },
+    {
       "file": "message-ends-with-full-stop.json",
       "schema": "contract/report.schema.json",
       "constraint": "pattern",

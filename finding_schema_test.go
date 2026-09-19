@@ -41,12 +41,19 @@ var findingFields = []string{
 var findingOptionalFields = []string{"analyzer", "liveness_relation"}
 
 // findingNoRelationKinds are the symbol kinds that are not declarations, so a
-// finding about one carries no liveness relation: a source file, a dependency,
-// a module directive, a suppression record and a configured root are artifacts
-// the run read rather than symbols it swept. The declared cross-language edge
-// is not here: a merge emits that finding from the edge's evaluations and it
-// carries a relation, which the example and the first merge vector pin.
-var findingNoRelationKinds = []string{"dependency", "file", "module-directive", "root", "suppression"}
+// finding about one carries no liveness relation. Five are artifacts the run
+// read rather than symbols it swept: a source file, a dependency, a module
+// directive, a suppression record and a configured root. Six are parts of the
+// declaration the finding's symbol.ref names: a parameter, a receiver, a
+// result, a statement, a case and a store, each decided inside its declaration
+// rather than by a relation over the reference graph. The declared
+// cross-language edge is not here: a merge emits that finding from the edge's
+// evaluations and it carries a relation, which the example and the first merge
+// vector pin.
+var findingNoRelationKinds = []string{
+	"case", "dependency", "file", "module-directive", "parameter", "receiver",
+	"result", "root", "statement", "store", "suppression",
+}
 
 // findingLiveSubjectCodes are the codes whose subject the analysis holds live,
 // so their findings carry no liveness relation: the three narrowing kinds

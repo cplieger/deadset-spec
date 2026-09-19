@@ -2,7 +2,12 @@
   "code": "DS1801",
   "kind": "unused-parameter",
   "language": "go",
-  "position": { "path": "resolve.go", "line": 42, "column": 18, "end_line": 42 },
+  "position": {
+    "path": "resolve.go",
+    "line": 42,
+    "column": 18,
+    "end_line": 42
+  },
   "symbol": {
     "ref": "go://example.com/app#Resolve",
     "kind": "parameter",
@@ -12,9 +17,15 @@
   },
   "reachability_class": "certain",
   "confidence": "certain",
+  "liveness_relation": "reference-counting",
   "test_only": false,
   "generated": false,
-  "component": { "id": "deadset-go/c-0038", "root": true, "symbol_count": 1, "deletable_lines": 0 },
+  "component": {
+    "id": "deadset-go/c-0038",
+    "root": true,
+    "symbol_count": 1,
+    "deletable_lines": 0
+  },
   "retained_by": [],
   "configurations": ["linux-amd64"],
   "consumers_loaded": [],

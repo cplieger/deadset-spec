@@ -121,6 +121,11 @@
                       "type": "string",
                       "pattern": "^(DS[0-9]{4}|none)$"
                     },
+                    "symbol_kind": {
+                      "description": "The symbol.kind the reported finding carried, drawn from the vocabulary contract/finding.schema.json declares. Optional on a reported finding, so a runner answering a fixture whose expectations name no subject kind omits it, and forbidden when report is none.",
+                      "type": "string",
+                      "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$"
+                    },
                     "confidence": {
                       "description": "The confidence the reported finding carried, drawn from the reachability_classes field of contract/kinds.json. Required when report is a code, forbidden when it is none.",
                       "type": "string",
@@ -163,6 +168,7 @@
                   "then": {
                     "not": {
                       "anyOf": [
+                        { "required": ["symbol_kind"] },
                         { "required": ["confidence"] },
                         { "required": ["reachability_class"] },
                         { "required": ["liveness_relation"] },

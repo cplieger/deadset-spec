@@ -1,0 +1,22 @@
+{
+  "name": "unused-requirement-noop-replace",
+  "description": "A module file whose direct requirement no package of the target imports, and whose replace directive names that same module. The requirement is reported once at the line it is written on and the directive once at its own line, so the two answers agree that nothing imports the module rather than contradicting each other, and neither is a second finding about the other's line.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "UnusedRequirement",
+      "report": "DS1601",
+      "symbol_kind": "dependency",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    },
+    {
+      "symbol": "NoopReplace",
+      "report": "DS1605",
+      "symbol_kind": "module-directive",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    }
+  ]
+}

@@ -86,6 +86,7 @@ type expectationDocument struct {
 type expectationRow struct {
 	Symbol            string   `json:"symbol"`
 	Report            string   `json:"report"`
+	SymbolKind        string   `json:"symbol_kind"`
 	Confidence        string   `json:"confidence"`
 	ReachabilityClass string   `json:"reachability_class"`
 	LivenessRelation  string   `json:"liveness_relation"`
@@ -137,7 +138,7 @@ var (
 
 	// vocabularyFields are the expectation-file fields corpus.json must name
 	// a closed vocabulary for.
-	vocabularyFields = []string{"confidence", "languages", "reachability_class", "report", "retained_by"}
+	vocabularyFields = []string{"confidence", "languages", "reachability_class", "report", "retained_by", "symbol_kind"}
 )
 
 // decodeStrict decodes one JSON object, failing on any key the target type
@@ -757,6 +758,58 @@ func TestExpectSchemaEnumsAreTheContractVocabularies(t *testing.T) {
 			t.Errorf("report pattern = %q, want %q", got, want)
 		}
 	})
+}
+
+// TestExpectSchemaSymbolKindBindsToAReportedSubject pins both directions of the
+// arm the subject-kind member sits under: a row that names a code may name the
+// subject's kind, and a row that reports nothing may not, because there is no
+// finding whose subject kind could be asserted. The member's own value resolves
+// against contract/finding.schema.json in corpus_selftest_test.go; this is the
+// schema's arm rather than the vocabulary.
+func TestExpectSchemaSymbolKindBindsToAReportedSubject(t *testing.T) {
+	cases := []struct {
+		name string
+		row  string
+		want string
+	}{
+		{
+			name: "a_reported_subject_may_name_its_kind",
+			row:  `{"symbol":"UnusedOption","report":"DS1801","symbol_kind":"parameter","confidence":"certain"}`,
+		},
+		{
+			name: "a_reported_subject_need_not_name_its_kind",
+			row:  `{"symbol":"UnusedOption","report":"DS1801","confidence":"certain"}`,
+		},
+		{
+			name: "an_unreported_subject_may_not_name_a_kind",
+			row:  `{"symbol":"UsedByConsumer","report":"none","symbol_kind":"function"}`,
+			want: "/expect/0",
+		},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			document := `{"name":"planted","description":"One planted expectation.","languages":["go"],"target_kind":"application","expect":[` + tc.row + `]}`
+			problems, err := validationProblems(expectSchemaPath, []byte(document))
+			if err != nil {
+				t.Fatalf("Setup: validationProblems(%q, %s): %v", expectSchemaPath, tc.name, err)
+			}
+			if tc.want == "" {
+				if len(problems) != 0 {
+					t.Errorf("validationProblems(%q, %s) = %v, want no violation", expectSchemaPath, tc.name, problems)
+				}
+				return
+			}
+			named := false
+			for _, problem := range problems {
+				if problem.InstanceLocation == tc.want && problem.names("not") {
+					named = true
+				}
+			}
+			if !named {
+				t.Errorf("validationProblems(%q, %s) = %v, want the not constraint at %q", expectSchemaPath, tc.name, problems, tc.want)
+			}
+		})
+	}
 }
 
 func TestCorpusSchemasAreClosedAndDescribed(t *testing.T) {
