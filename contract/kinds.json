@@ -259,7 +259,7 @@
       "code": "DS1501",
       "name": "file-never-built",
       "languages": ["go", "ts"],
-      "rule": "A source file no configuration in the build matrix builds. On the Go side the finding names the build constraint that excluded the file.",
+      "rule": "A source file no configuration in the build matrix builds. On the Go side the finding names the build constraint that excluded the file. A file whose build constraint is the ignore tag is never reported: the toolchain applies no build constraint to a file named on its own command line, so that tag is the toolchain's convention for a file built by hand. A file any other custom tag excludes is reported under a matrix the configuration declares complete, because completeness is the maintainer's assertion that the listed configurations are every one the target builds, and a configuration the maintainer builds by hand belongs in that list.",
       "default_enabled": true,
       "default_severity": "deny",
       "max_class": "certain",

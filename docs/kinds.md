@@ -210,7 +210,7 @@ Source files nothing builds or imports. From `contract/kinds.json`, the `non-cod
 
 ### DS1501 file-never-built
 
-A source file no configuration in the build matrix builds. On the Go side the finding names the build constraint that excluded the file.
+A source file no configuration in the build matrix builds. On the Go side the finding names the build constraint that excluded the file. A file whose build constraint is the ignore tag is never reported: the toolchain applies no build constraint to a file named on its own command line, so that tag is the toolchain's convention for a file built by hand. A file any other custom tag excludes is reported under a matrix the configuration declares complete, because completeness is the maintainer's assertion that the listed configurations are every one the target builds, and a configuration the maintainer builds by hand belongs in that list.
 
 Precondition: Reported only when the configuration declares the build matrix complete, and never for a file the toolchain ignored solely because it imports "C" under a build with cgo disabled; such a file is recorded as excluded by cgo rather than as never built.
 

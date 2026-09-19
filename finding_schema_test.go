@@ -35,10 +35,18 @@ var findingFields = []string{
 
 // findingOptionalFields are the fields a finding may omit. An analyzer's own
 // report states the analyzer once in the envelope, so that field is present
-// only on a finding a merged report carries; a finding whose subject the
-// analysis holds live carries no liveness relation, and the arm that decides
-// which codes those are is findingLiveSubjectCodes below.
+// only on a finding a merged report carries; a finding no relation decided
+// carries no liveness relation, and the two halves of that rule are
+// findingNoRelationKinds and findingLiveSubjectCodes below.
 var findingOptionalFields = []string{"analyzer", "liveness_relation"}
+
+// findingNoRelationKinds are the symbol kinds that are not declarations, so a
+// finding about one carries no liveness relation: a source file, a dependency,
+// a module directive, a suppression record and a configured root are artifacts
+// the run read rather than symbols it swept. The declared cross-language edge
+// is not here: a merge emits that finding from the edge's evaluations and it
+// carries a relation, which the example and the first merge vector pin.
+var findingNoRelationKinds = []string{"dependency", "file", "module-directive", "root", "suppression"}
 
 // findingLiveSubjectCodes are the codes whose subject the analysis holds live,
 // so their findings carry no liveness relation: the three narrowing kinds
@@ -242,7 +250,9 @@ func findingSchemaArms(t *testing.T, schema map[string]any) (branches []findingD
 		if len(codes) == 0 || len(fields) == 0 {
 			// An arm that requires no details field decides a top-level
 			// member instead: the deletable-only field and the liveness
-			// relation are the two, and each has its own test.
+			// relation are the two, and each has its own test. The liveness
+			// arm also conditions on the subject, so it names no code at
+			// the top level of its condition.
 			others = append(others, node)
 			continue
 		}
@@ -252,20 +262,41 @@ func findingSchemaArms(t *testing.T, schema map[string]any) (branches []findingD
 }
 
 // findingLivenessArm returns the one arm of allOf that decides the liveness
-// relation, being the arm conditioning on code that requires no details field.
+// relation, being the arm that requires that member of every finding its
+// condition does not match.
 func findingLivenessArm(t *testing.T, schema map[string]any) map[string]any {
 	t.Helper()
 	_, others := findingSchemaArms(t, schema)
 	var found []map[string]any
 	for _, arm := range others {
-		if len(findingDiscriminator(arm["if"])) != 0 {
+		if slices.Contains(stringSlice(objectAt(arm, "else")["required"]), "liveness_relation") {
 			found = append(found, arm)
 		}
 	}
 	if len(found) != 1 {
-		t.Fatalf("arms conditioning on code and requiring no details field = %d, want 1 for liveness_relation", len(found))
+		t.Fatalf("arms requiring liveness_relation of every finding they do not match = %d, want 1", len(found))
 	}
 	return found[0]
+}
+
+// findingLivenessCondition returns the codes and the symbol kinds the liveness
+// arm's condition names: its alternatives are one enum over symbol.kind and one
+// over code, and neither is read without the other.
+func findingLivenessCondition(t *testing.T, arm map[string]any) (codes, kinds []string) {
+	t.Helper()
+	alternatives, ok := objectAt(arm, "if")["anyOf"].([]any)
+	if !ok {
+		t.Fatalf("Setup: the liveness arm's condition = %v, want alternatives over the code and the symbol kind", arm["if"])
+	}
+	for _, alternative := range alternatives {
+		branch, ok := alternative.(map[string]any)
+		if !ok {
+			t.Fatalf("Setup: the liveness arm holds %v, want a subschema object", alternative)
+		}
+		codes = append(codes, findingDiscriminator(branch)...)
+		kinds = append(kinds, enumAt(branch, "properties/symbol/properties/kind")...)
+	}
+	return findingSorted(codes), findingSorted(kinds)
 }
 
 // findingLiveCodes lists every live code of the vocabulary, sorted.
@@ -635,15 +666,16 @@ func TestFindingSchemaDetailsBranchesFollowTheKinds(t *testing.T) {
 	})
 
 	t.Run("the_deletable_field_rides_on_no_code", func(t *testing.T) {
-		var arm map[string]any
+		var found []map[string]any
 		for _, other := range others {
-			if len(findingDiscriminator(other["if"])) == 0 {
-				arm = other
+			if len(objectAt(other, "if/properties/fixability")) != 0 {
+				found = append(found, other)
 			}
 		}
-		if arm == nil {
-			t.Fatalf("arms conditioning on a field other than code = 0, want 1 for %s", findingDeletableOnlyField)
+		if len(found) != 1 {
+			t.Fatalf("arms conditioning on the fixability = %d, want 1 for %s", len(found), findingDeletableOnlyField)
 		}
+		arm := found[0]
 		if got := findingForbiddenDetails(arm["else"]); !slices.Equal(got, []string{findingDeletableOnlyField}) {
 			t.Errorf("the fixability arm forbids %v, want %v", got, []string{findingDeletableOnlyField})
 		}
@@ -775,18 +807,34 @@ func TestFindingSchemaDetailsBranchesFollowTheKinds(t *testing.T) {
 }
 
 // TestFindingSchemaLiveSubjectCodesCarryNoLivenessRelation pins the one arm of
-// allOf that decides a top-level member by code: a finding whose subject the
-// analysis holds live carries no liveness relation, and every other code
-// carries one. The field is therefore optional in the schema's own required
-// list and mandatory or forbidden per code here.
+// allOf that decides a top-level member by the subject: a finding whose subject
+// is not a declaration, and a finding whose subject the analysis holds live,
+// carry no liveness relation, and every other finding carries one. The field is
+// therefore optional in the schema's own required list and mandatory or
+// forbidden per subject here.
 func TestFindingSchemaLiveSubjectCodesCarryNoLivenessRelation(t *testing.T) {
 	schema := loadFindingSchema(t)
 	arm := findingLivenessArm(t, schema)
+	codes, kinds := findingLivenessCondition(t, arm)
 
 	t.Run("codes", func(t *testing.T) {
-		got := findingSorted(findingDiscriminator(arm["if"]))
-		if want := findingSorted(findingLiveSubjectCodes); !slices.Equal(got, want) {
-			t.Errorf("the liveness arm names %v, want the live-subject codes %v", got, want)
+		if want := findingSorted(findingLiveSubjectCodes); !slices.Equal(codes, want) {
+			t.Errorf("the liveness arm names %v, want the live-subject codes %v", codes, want)
+		}
+	})
+
+	t.Run("subject_kinds", func(t *testing.T) {
+		if want := findingSorted(findingNoRelationKinds); !slices.Equal(kinds, want) {
+			t.Errorf("the liveness arm names %v, want the kinds that are no declaration %v", kinds, want)
+		}
+	})
+
+	t.Run("every_named_kind_is_in_the_vocabulary", func(t *testing.T) {
+		vocabulary := enumAt(schema, "properties/symbol/properties/kind")
+		for _, kind := range kinds {
+			if !slices.Contains(vocabulary, kind) {
+				t.Errorf("the liveness arm names %q, want a symbol kind of %s", kind, findingSchemaPath)
+			}
 		}
 	})
 
