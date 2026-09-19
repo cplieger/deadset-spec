@@ -30,6 +30,7 @@
     "members": [
       {
         "ref": "go://example.com/app#Catalog.ResolveAlias",
+        "name": "(*Catalog).ResolveAlias",
         "position": {
           "path": "catalog.go",
           "line": 214,
@@ -39,6 +40,7 @@
       },
       {
         "ref": "go://example.com/app#Catalog.aliasIndex",
+        "name": "(*Catalog).aliasIndex",
         "position": {
           "path": "catalog.go",
           "line": 233,
@@ -48,6 +50,7 @@
       },
       {
         "ref": "go://example.com/app#foldAlias",
+        "name": "foldAlias",
         "position": {
           "path": "fold.go",
           "line": 61,

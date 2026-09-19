@@ -512,7 +512,7 @@
           "minimum": 0
         },
         "suppressions_in_effect": {
-          "description": "How many suppression records bound to a symbol that would otherwise have produced a finding under the record's code. It is where a suppressed finding is visible, because no record for it appears in findings or in any output rendered from findings. A record bound to a symbol whose code the configuration sets to allow is dormant rather than in effect and is not counted here, so turning a kind off never turns its adjudications into findings.",
+          "description": "How many suppression records bound to a symbol that would otherwise have produced a finding under the record's code. It is where a suppressed finding is visible, because no record for it appears in findings or in any output rendered from findings. A record bound to a symbol whose finding the configuration withholds, by setting the severity of its code to allow or by setting a minimum confidence the finding does not reach, is dormant rather than in effect and is not counted here, so turning a kind off or raising the confidence floor never turns its adjudications into findings.",
           "type": "integer",
           "minimum": 0
         },

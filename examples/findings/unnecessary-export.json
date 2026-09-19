@@ -14,7 +14,6 @@
   },
   "reachability_class": "certain",
   "confidence": "certain",
-  "liveness_relation": "reference-counting",
   "test_only": false,
   "generated": false,
   "component": { "id": "deadset-go/c-0011", "root": true, "symbol_count": 1, "deletable_lines": 0 },

@@ -27,10 +27,12 @@
     "implementations": [
       {
         "ref": "ts://@example/app/src/http.ts#HTTPFetcher.fetch",
+        "name": "HTTPFetcher.fetch",
         "position": { "path": "src/http.ts", "line": 19, "column": 3, "end_line": 26 }
       },
       {
         "ref": "ts://@example/app/src/memory.ts#MemoryFetcher.fetch",
+        "name": "MemoryFetcher.fetch",
         "position": { "path": "src/memory.ts", "line": 11, "column": 3, "end_line": 14 }
       }
     ]

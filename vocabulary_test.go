@@ -425,6 +425,80 @@ func TestVocabularyExpectationReportCodesNameALiveKind(t *testing.T) {
 	}
 }
 
+// relationOnALiveSubject lists the report codes of the rows that name a liveness
+// relation for a code whose finding carries none, so the expectation could never
+// be answered.
+func relationOnALiveSubject(rows []expectationRow) []string {
+	var refused []string
+	for _, row := range rows {
+		if row.LivenessRelation == "" || !slices.Contains(findingLiveSubjectCodes, row.Report) {
+			continue
+		}
+		if !slices.Contains(refused, row.Report) {
+			refused = append(refused, row.Report)
+		}
+	}
+	return refused
+}
+
+// TestVocabularyExpectationsNameNoLivenessRelationForALiveSubject pins the
+// corpus against the finding schema's own rule: a finding whose subject the
+// analysis holds live carries no liveness relation, so an expectation naming one
+// for such a code asks for a field the answer cannot hold.
+func TestVocabularyExpectationsNameNoLivenessRelationForALiveSubject(t *testing.T) {
+	fixtures, err := fs.Glob(spec.Corpus, path.Join(fixturesDir, "*", expectFile))
+	if err != nil {
+		t.Fatalf("Setup: fs.Glob(Corpus, %s): %v", path.Join(fixturesDir, "*", expectFile), err)
+	}
+	for _, p := range fixtures {
+		t.Run("fixture_"+path.Base(path.Dir(p)), func(t *testing.T) {
+			data, err := fs.ReadFile(spec.Corpus, p)
+			if err != nil {
+				t.Fatalf("Setup: fs.ReadFile(Corpus, %q): %v", p, err)
+			}
+			var doc expectationDocument
+			if err := decodeStrict(data, &doc); err != nil {
+				t.Fatalf("Setup: decoding %s: %v", p, err)
+			}
+			if got := relationOnALiveSubject(doc.Expect); len(got) != 0 {
+				t.Errorf("relationOnALiveSubject(%q) = %v, want no liveness relation under a code whose subject %s holds live", p, got, findingSchemaPath)
+			}
+		})
+	}
+
+	planted := []struct {
+		name string
+		rows []expectationRow
+		want []string
+	}{
+		{
+			name: "a_relation_on_a_dead_subject",
+			rows: []expectationRow{{Symbol: "DeadExport", Report: "DS1001", LivenessRelation: "reference-counting"}},
+		},
+		{
+			name: "no_relation_on_a_live_subject",
+			rows: []expectationRow{{Symbol: "UnreadPrivate", Report: "DS1301", Confidence: "certain"}},
+		},
+		{
+			name: "a_relation_on_a_write_only_subject",
+			rows: []expectationRow{{Symbol: "UnreadPrivate", Report: "DS1301", LivenessRelation: "reference-counting"}},
+			want: []string{"DS1301"},
+		},
+		{
+			name: "a_relation_on_a_narrowing_subject",
+			rows: []expectationRow{{Symbol: "Normalize", Report: "DS1101", LivenessRelation: "reachability"}},
+			want: []string{"DS1101"},
+		},
+	}
+	for _, tc := range planted {
+		t.Run("planted_"+tc.name, func(t *testing.T) {
+			if got := relationOnALiveSubject(tc.rows); !slices.Equal(got, tc.want) {
+				t.Errorf("relationOnALiveSubject(%+v) = %v, want %v", tc.rows, got, tc.want)
+			}
+		})
+	}
+}
+
 // severityKeyErrors reports every key of a configuration's severity object the
 // vocabulary does not resolve: a key the schema's own pattern refuses, a code
 // no live kind carries, a two-digit family prefix no live range carries, and a

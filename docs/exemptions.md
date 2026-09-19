@@ -13,6 +13,13 @@ reported, so a finding carries `retained_by` present and empty (from
 The vocabulary is closed: a conformance expectation naming a class this file does not declare is a
 defect in the expectation.
 
+An exemption's evidence site decides which run records it: under a production sweep, which counts no
+reference from a test file, an exemption whose evidence site is in a test file does not hold, for
+every class in this file. A conversion, an encoder or template destination, a directive, a
+generated-file clause or a matching text in a test file retains nothing for production, exactly as a
+reference from a test file makes nothing live for production, and the symbol is reported under the
+code its production references select; a run that counts test references records the exemption.
+
 Every exemption an analyzer records names the site its evidence was found at, so a maintainer can go
 and read that evidence for every class and not only for the text-matching ones. Each also carries
 one clause of detail naming the relation and the thing it relates to (`satisfies io.Writer`,
@@ -66,7 +73,7 @@ A method is retained when a value of its receiver's type reaches a position type
 
 Retains: The methods of T that satisfy I, for each recorded (T, I) pair.
 
-Mechanism in Go: Build the conversion set from the type-checked program: an assertion of the form `var _ I = (*T)(nil)` or `var _ I = T{}`, a value passed to a parameter of type I, a value returned into a result of type I, a value assigned to a variable or field of type I, and an element stored into an I-typed slice, map, channel or struct field. For each (T, I) pair, `types.Implements(T, I)` decides satisfaction and the method set of T that I requires is retained. A type registered with `flag.Var`, or used as an `io.Writer` or an `http.RoundTripper`, is an ordinary member of the conversion set, so those methods are retained here and by no other class.
+Mechanism in Go: Build the conversion set from the type-checked program: an assertion of the form `var _ I = (*T)(nil)` or `var _ I = T{}`, a value passed to a parameter of type I, a value returned into a result of type I, a value assigned to a variable or field of type I, and an element stored into an I-typed slice, map, channel or struct field. For each (T, I) pair, `types.Implements(T, I)` decides satisfaction and the method set of T that I requires is retained. A type registered with `flag.Var`, or used as an `io.Writer`, an `http.RoundTripper` or a `sort.Interface`, is an ordinary member of the conversion set, so those methods are retained here and by no other class.
 
 Mechanism in TypeScript: Build the same conversion set over class instance types flowing into interface-typed positions: an `implements` clause, an assignment, an argument, a return value, an element stored in an interface-typed container. For each (class, interface) pair, the checker's assignability test decides satisfaction and the members the interface requires are retained.
 
@@ -76,11 +83,11 @@ From `contract/exemptions.json`, class `interface-satisfaction`.
 
 ### encoding-reflection
 
-A type whose values reach a consumer that inspects them by name at runtime has its exported methods, its exported fields and its tagged fields retained, on the type and on every type the consumer walks to through its fields.
+A type whose values reach a consumer that inspects them by name at runtime has the members that consumer reads retained, on the type and on every type the consumer walks to through its fields. What is retained is per destination: a destination that reads fields alone retains the exported fields and the tagged fields, and a destination that also resolves a method by name retains the exported methods as well.
 
-Retains: The exported methods, the exported fields and the struct fields carrying a tag, on every type that flows into such a consumer and on every defined type reached from those types' fields through a pointer, an array, a slice, a map key or value, or an embedded field; the reach stops at an interface-typed field.
+Retains: The exported fields and the struct fields carrying a tag, and the exported methods as well for a destination that resolves a method by name, on every type that flows into such a destination and on every defined type reached from those types' fields through a pointer, an array, a slice, a map key or value, or an embedded field; the reach stops at an interface-typed field.
 
-Mechanism in Go: A type T flows into the class when a value of T, or a pointer to one, is an argument of a function or method of `reflect`, `encoding/json`, `encoding/xml`, `encoding/gob`, `text/template` or `html/template`, is a `database/sql` `Scan` target, is converted to `sort.Interface`, or is an argument of a `log/slog` logging function, of `slog.With`, of a `*slog.Logger` method, `With` among them, of `(*slog.Record).Add` or of an attribute constructor. Retain T's exported methods, its exported fields and its fields carrying a struct tag, and retain the same three sets on every defined type reached from the fields of a retained type through a pointer, an array, a slice, a map key or value, or an embedded field, applied until no further type joins. The reach stops at an interface-typed field, whose dynamic type the analysis does not see.
+Mechanism in Go: A type T flows into the class when a value of T, or a pointer to one, reaches one of the destinations below. Retain on T the members that destination reads, and retain the same members on every defined type reached from the fields of a retained type through a pointer, an array, a slice, a map key or value, or an embedded field, applied until no further type joins. The reach stops at an interface-typed field, whose dynamic type the analysis does not see. Fields alone are retained for a destination that reads fields and resolves no method by name: an argument of a function or method of `encoding/json`, `encoding/xml` or `encoding/gob`, a `database/sql` `Scan` target, an argument of `reflect.DeepEqual`, an argument of any function or method of `reflect` other than the method-reaching calls below, and an argument of a `log/slog` logging function, of `slog.With`, of a `*slog.Logger` method, `With` among them, of `(*slog.Record).Add` or of an attribute constructor. Fields and exported methods are retained for a destination that resolves a method by name: an argument of a function or method of `text/template` or `html/template`, and a value reaching a method-reaching `reflect` call, being `Method`, `MethodByName` or `NumMethod` on a `reflect.Value` or a `reflect.Type`, or a `reflect.Value` the program calls a method through. A conversion to `sort.Interface` is an ordinary interface conversion rather than a destination of this class, so the methods that interface requires are retained by `interface-satisfaction`.
 
 From `contract/exemptions.json`, class `encoding-reflection`.
 
