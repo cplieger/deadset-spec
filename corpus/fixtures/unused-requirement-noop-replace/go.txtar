@@ -1,0 +1,30 @@
+The Go rendering: one module whose module file declares two inert directives
+about one module that exists and that no file imports. The requirement is
+direct and no package of the target imports a package the module provides, so
+the requirement is unbacked; the replace names that same module, which provides
+no package the load reaches, so the directive redirects nothing. The two
+subjects are the two lines the directives are written on. Nothing in the module
+imports anything outside the standard library, so the rendering loads with no
+network access and the required module is never fetched.
+
+-- fixture.json --
+{
+  "symbols": {
+    "UnusedRequirement": { "file": "target/go.mod", "line": 5 },
+    "NoopReplace": { "file": "target/go.mod", "line": 7 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+
+require golang.org/x/sync v0.16.0
+
+replace golang.org/x/sync v0.16.0 => golang.org/x/sync v0.17.0
+-- target/main.go --
+// Command target imports nothing, so the module its module file requires and
+// replaces provides no package the load reaches.
+package main
+
+func main() {}

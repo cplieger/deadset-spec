@@ -1,11 +1,11 @@
 {
-  "schema_version": "3.0.0",
-  "contract_version": "1.4.0",
+  "schema_version": "4.0.0",
+  "contract_version": "1.5.0",
   "analyzer": {
     "name": "deadset-go",
     "version": "1.0.0",
     "languages": ["go"],
-    "schema_versions_accepted": ["3.0.0"],
+    "schema_versions_accepted": ["4.0.0"],
     "conformance": {
       "corpus_version": "1.0.0",
       "result": "pass",

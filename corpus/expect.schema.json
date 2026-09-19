@@ -59,6 +59,11 @@
             "type": "string",
             "pattern": "^(DS[0-9]{4}|none)$"
           },
+          "symbol_kind": {
+            "description": "The kind of subject the reported finding must be about, drawn from the symbol.kind vocabulary of contract/finding.schema.json, which owns that vocabulary and states what each value names. It is what lets an expectation pin the subject half of that schema's rule on the liveness relation: a row naming a kind the rule lists as carrying no relation expects a finding with no liveness relation, and a row naming any other kind expects one. Optional on a reported subject, so a row that omits it states nothing about the subject's kind, and forbidden when report is none. The value names a subject rather than a language, and a fixture listing more than one rendering names a kind every listed language declares a subject for, because every expectation applies to every rendering.",
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$"
+          },
           "confidence": {
             "description": "The confidence the reported finding must carry, drawn from the reachability_classes field of contract/kinds.json. Required when report is a code, forbidden when it is none.",
             "type": "string",
@@ -103,6 +108,7 @@
         "then": {
           "not": {
             "anyOf": [
+              { "required": ["symbol_kind"] },
               { "required": ["confidence"] },
               { "required": ["reachability_class"] },
               { "required": ["liveness_relation"] },

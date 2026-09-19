@@ -1,5 +1,5 @@
 {
-  "contract_version": "1.4.0",
+  "contract_version": "1.5.0",
   "target": { "kind": "library" },
   "analysis": {
     "languages": ["go", "ts"],

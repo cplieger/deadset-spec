@@ -425,27 +425,41 @@ func TestVocabularyExpectationReportCodesNameALiveKind(t *testing.T) {
 	}
 }
 
-// relationOnALiveSubject lists the report codes of the rows that name a liveness
-// relation for a code whose finding carries none, so the expectation could never
-// be answered.
-func relationOnALiveSubject(rows []expectationRow) []string {
+// relationWhereTheSubjectCarriesNone lists the rows that name a liveness
+// relation for a subject whose finding carries none, so the expectation could
+// never be answered. The finding schema decides that in two halves and this
+// reads both: the code, for a subject the analysis holds live, and the subject
+// kind, for a subject that is not a declaration. A row is named by its report
+// code where the code decided it and by its symbol kind where the kind did, so a
+// failure names the half that fired.
+func relationWhereTheSubjectCarriesNone(rows []expectationRow) []string {
 	var refused []string
+	add := func(name string) {
+		if !slices.Contains(refused, name) {
+			refused = append(refused, name)
+		}
+	}
 	for _, row := range rows {
-		if row.LivenessRelation == "" || !slices.Contains(findingLiveSubjectCodes, row.Report) {
+		if row.LivenessRelation == "" {
 			continue
 		}
-		if !slices.Contains(refused, row.Report) {
-			refused = append(refused, row.Report)
+		if slices.Contains(findingLiveSubjectCodes, row.Report) {
+			add(row.Report)
+		}
+		if slices.Contains(findingNoRelationKinds, row.SymbolKind) {
+			add(row.SymbolKind)
 		}
 	}
 	return refused
 }
 
-// TestVocabularyExpectationsNameNoLivenessRelationForALiveSubject pins the
-// corpus against the finding schema's own rule: a finding whose subject the
-// analysis holds live carries no liveness relation, so an expectation naming one
-// for such a code asks for a field the answer cannot hold.
-func TestVocabularyExpectationsNameNoLivenessRelationForALiveSubject(t *testing.T) {
+// TestVocabularyExpectationsNameNoLivenessRelationWhereTheSubjectCarriesNone
+// pins the corpus against the finding schema's own rule: a finding whose subject
+// the analysis holds live, and a finding whose subject is not a declaration,
+// carry no liveness relation, so an expectation naming one for such a subject
+// asks for a field the answer cannot hold. The subject half is readable because
+// an expectation row names the subject's kind.
+func TestVocabularyExpectationsNameNoLivenessRelationWhereTheSubjectCarriesNone(t *testing.T) {
 	fixtures, err := fs.Glob(spec.Corpus, path.Join(fixturesDir, "*", expectFile))
 	if err != nil {
 		t.Fatalf("Setup: fs.Glob(Corpus, %s): %v", path.Join(fixturesDir, "*", expectFile), err)
@@ -460,8 +474,8 @@ func TestVocabularyExpectationsNameNoLivenessRelationForALiveSubject(t *testing.
 			if err := decodeStrict(data, &doc); err != nil {
 				t.Fatalf("Setup: decoding %s: %v", p, err)
 			}
-			if got := relationOnALiveSubject(doc.Expect); len(got) != 0 {
-				t.Errorf("relationOnALiveSubject(%q) = %v, want no liveness relation under a code whose subject %s holds live", p, got, findingSchemaPath)
+			if got := relationWhereTheSubjectCarriesNone(doc.Expect); len(got) != 0 {
+				t.Errorf("relationWhereTheSubjectCarriesNone(%q) = %v, want no liveness relation under a subject %s states carries none", p, got, findingSchemaPath)
 			}
 		})
 	}
@@ -472,8 +486,8 @@ func TestVocabularyExpectationsNameNoLivenessRelationForALiveSubject(t *testing.
 		want []string
 	}{
 		{
-			name: "a_relation_on_a_dead_subject",
-			rows: []expectationRow{{Symbol: "DeadExport", Report: "DS1001", LivenessRelation: "reference-counting"}},
+			name: "a_relation_on_a_dead_declaration",
+			rows: []expectationRow{{Symbol: "DeadExport", Report: "DS1001", SymbolKind: "function", LivenessRelation: "reference-counting"}},
 		},
 		{
 			name: "no_relation_on_a_live_subject",
@@ -489,11 +503,25 @@ func TestVocabularyExpectationsNameNoLivenessRelationForALiveSubject(t *testing.
 			rows: []expectationRow{{Symbol: "Normalize", Report: "DS1101", LivenessRelation: "reachability"}},
 			want: []string{"DS1101"},
 		},
+		{
+			name: "no_relation_on_a_part_subject",
+			rows: []expectationRow{{Symbol: "UnusedOption", Report: "DS1801", SymbolKind: "parameter", Confidence: "certain"}},
+		},
+		{
+			name: "a_relation_on_a_part_subject",
+			rows: []expectationRow{{Symbol: "UnusedOption", Report: "DS1801", SymbolKind: "parameter", LivenessRelation: "reference-counting"}},
+			want: []string{"parameter"},
+		},
+		{
+			name: "a_relation_on_an_artifact_subject",
+			rows: []expectationRow{{Symbol: "UnusedRequirement", Report: "DS1601", SymbolKind: "dependency", LivenessRelation: "reference-counting"}},
+			want: []string{"dependency"},
+		},
 	}
 	for _, tc := range planted {
 		t.Run("planted_"+tc.name, func(t *testing.T) {
-			if got := relationOnALiveSubject(tc.rows); !slices.Equal(got, tc.want) {
-				t.Errorf("relationOnALiveSubject(%+v) = %v, want %v", tc.rows, got, tc.want)
+			if got := relationWhereTheSubjectCarriesNone(tc.rows); !slices.Equal(got, tc.want) {
+				t.Errorf("relationWhereTheSubjectCarriesNone(%+v) = %v, want %v", tc.rows, got, tc.want)
 			}
 		})
 	}

@@ -67,6 +67,7 @@ type answer struct {
 	Configurations    []string `json:"configurations"`
 	RetainedBy        []string `json:"retained_by"`
 	Report            string   `json:"report"`
+	SymbolKind        string   `json:"symbol_kind"`
 	Confidence        string   `json:"confidence"`
 	ReachabilityClass string   `json:"reachability_class"`
 	LivenessRelation  string   `json:"liveness_relation"`
@@ -304,7 +305,7 @@ func TestConformanceSchemaProperties(t *testing.T) {
 		{name: "results_totals", schema: resultsSchemaPath, at: "properties/totals", want: []string{"fail", "fixtures", "gap", "pass"}},
 		{name: "fixture_row", schema: resultsSchemaPath, at: fixtureRowPath, want: []string{"expectations", "fixture", "message", "result", "unexpected"}},
 		{name: "expectation_row", schema: resultsSchemaPath, at: expectationRowPath, want: []string{"actual", "capability", "message", "result", "suppression", "symbol"}},
-		{name: "answer", schema: resultsSchemaPath, at: answerPath, want: []string{"confidence", "configurations", "liveness_relation", "reachability_class", "report", "retained_by"}},
+		{name: "answer", schema: resultsSchemaPath, at: answerPath, want: []string{"confidence", "configurations", "liveness_relation", "reachability_class", "report", "retained_by", "symbol_kind"}},
 		{name: "suppression", schema: resultsSchemaPath, at: expectationRowPath + "/properties/suppression", want: []string{"stale", "suppressed"}},
 		{name: "unexpected_finding", schema: resultsSchemaPath, at: fixtureRowPath + "/properties/unexpected/items", want: []string{"file", "line", "report"}},
 	}

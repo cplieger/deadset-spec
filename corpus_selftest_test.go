@@ -61,17 +61,19 @@ type declaredGap struct {
 // expectationVocabularies are the closed value sets an expectation file draws
 // from, each read from the document that declares it: the reachability classes
 // and the languages from contract/kinds.json, which is where corpus.json's
-// vocabularies block sends a reader for them, and the target kinds and the
-// liveness relations from the expectation schema, the only document that
-// declares those two.
+// vocabularies block sends a reader for them, the symbol kinds from
+// contract/finding.schema.json, which owns that vocabulary, and the target
+// kinds and the liveness relations from the expectation schema, the only
+// document that declares those two.
 type expectationVocabularies struct {
 	ReachabilityClasses []string
 	Languages           []string
+	SymbolKinds         []string
 	TargetKinds         []string
 	LivenessRelations   []string
 }
 
-// loadExpectationVocabularies reads the four value sets, failing the test when
+// loadExpectationVocabularies reads the five value sets, failing the test when
 // one is empty, because an empty set lets every value through.
 func loadExpectationVocabularies(t *testing.T) expectationVocabularies {
 	t.Helper()
@@ -80,18 +82,20 @@ func loadExpectationVocabularies(t *testing.T) expectationVocabularies {
 	v := expectationVocabularies{
 		ReachabilityClasses: kinds.ReachabilityClasses,
 		Languages:           kinds.Languages,
+		SymbolKinds:         enumAt(loadFindingSchema(t), "properties/symbol/properties/kind"),
 		TargetKinds:         enumAt(schema, "properties/target_kind"),
 		LivenessRelations:   enumAt(schema, expectSchemaRowPath+"/properties/liveness_relation"),
 	}
 	sets := map[string][]string{
 		"reachability_classes": v.ReachabilityClasses,
 		"languages":            v.Languages,
+		"symbol_kind":          v.SymbolKinds,
 		"target_kind":          v.TargetKinds,
 		"liveness_relation":    v.LivenessRelations,
 	}
 	for _, name := range slices.Sorted(maps.Keys(sets)) {
 		if len(sets[name]) == 0 {
-			t.Fatalf("Setup: vocabulary %q is empty, want the values %s and %s declare", name, kindsPath, expectSchemaPath)
+			t.Fatalf("Setup: vocabulary %q is empty, want the values %s, %s and %s declare", name, kindsPath, findingSchemaPath, expectSchemaPath)
 		}
 	}
 	return v
@@ -101,8 +105,11 @@ func loadExpectationVocabularies(t *testing.T) expectationVocabularies {
 // outside the closed vocabulary of its field. It covers the fields nothing
 // else resolves: a report code resolves against contract/kinds.json in
 // vocabulary_test.go and a retained_by class against contract/exemptions.json
-// in exemptions_test.go, over these same fixtures. An absent optional value is
-// not a violation; target_kind has no default, so an absent one is.
+// in exemptions_test.go, over these same fixtures. A symbol_kind resolves here
+// against the vocabulary contract/finding.schema.json owns, and the same file's
+// rule on the liveness relation is read from it in vocabulary_test.go. An
+// absent optional value is not a violation; target_kind has no default, so an
+// absent one is.
 func checkExpectationVocabularies(doc *expectationDocument, v expectationVocabularies) []error {
 	var errs []error
 	value := func(subject, field, got string, want []string) {
@@ -120,6 +127,7 @@ func checkExpectationVocabularies(doc *expectationDocument, v expectationVocabul
 		value("fixture", "languages", language, v.Languages)
 	}
 	for _, row := range doc.Expect {
+		optional(row.Symbol, "symbol_kind", row.SymbolKind, v.SymbolKinds)
 		optional(row.Symbol, "confidence", row.Confidence, v.ReachabilityClasses)
 		optional(row.Symbol, "reachability_class", row.ReachabilityClass, v.ReachabilityClasses)
 		optional(row.Symbol, "liveness_relation", row.LivenessRelation, v.LivenessRelations)
@@ -285,6 +293,7 @@ func answeredResults(t *testing.T, fixtures []expectationDocument, language stri
 				Result: "pass",
 				Actual: answer{
 					Report:            want.Report,
+					SymbolKind:        want.SymbolKind,
 					Confidence:        want.Confidence,
 					ReachabilityClass: want.ReachabilityClass,
 					LivenessRelation:  want.LivenessRelation,
@@ -450,6 +459,15 @@ func TestCorpusExpectationValuesDrawFromClosedVocabularies(t *testing.T) {
 			name:    "language_outside_the_contract",
 			mutate:  func(d *expectationDocument) { d.Languages = []string{"go", "rust"} },
 			wantMsg: []string{"languages", `"rust"`},
+		},
+		{
+			name:   "symbol_kind_inside_the_finding_schema_vocabulary",
+			mutate: func(d *expectationDocument) { d.Expect[0].SymbolKind = "function" },
+		},
+		{
+			name:    "symbol_kind_outside_the_finding_schema_vocabulary",
+			mutate:  func(d *expectationDocument) { d.Expect[0].SymbolKind = "subroutine" },
+			wantMsg: []string{"DeadExport", "symbol_kind", `"subroutine"`},
 		},
 		{
 			name:    "confidence_outside_the_reachability_classes",
