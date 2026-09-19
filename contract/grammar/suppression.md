@@ -6,7 +6,9 @@ Nothing here is applied by the merge. An analyzer reads the three documents and 
 
 ## Vocabulary
 
-A **suppression record** is one code bound to one site: an inline directive naming two codes is two records with one reason. A record is **bound** when the site it names resolves to a symbol; **in effect** when the symbol would otherwise have produced a finding under the record's code; **stale** when it is bound to nothing or in effect for nothing; and **refused** when it fails a rule below, in which case it binds nothing and the rule's outcome applies. A refused string has one of three outcomes: it is not a directive at all and nothing happens; the run ends with exit code 2 before any finding exists; or the run continues and the string is reported under a `DS17xx` code.
+A **suppression record** is one code bound to one site: an inline directive naming two codes is two records with one reason. A record is **bound** when the site it names resolves to a symbol; **in effect** when the symbol would otherwise have produced a finding under the record's code; **dormant** when it is bound and the configuration sets the severity of the code it names to `allow`; **stale** when it is bound to nothing or in effect for nothing; and **refused** when it fails a rule below, in which case it binds nothing and the rule's outcome applies. A refused string has one of three outcomes: it is not a directive at all and nothing happens; the run ends with exit code 2 before any finding exists; or the run continues and the string is reported under a `DS17xx` code.
+
+A dormant record is neither in effect nor stale: it produces no finding, and `totals.suppressions_in_effect` does not count it. It is counted under `totals.reasons_recorded` like every record that carries a reason, because that total counts the records that carry one and not the records that hold a finding back. Dormancy is what makes the severity dial safe to turn: setting a kind to `allow` never fails a run over the adjudications that setting it back would need.
 
 ## The namespace
 
@@ -58,7 +60,7 @@ The decision procedure, over the text of each `//` comment from its first slash 
 
 1. The comment does not match the first expression. It is not a directive. Nothing happens, whatever else it says.
 2. The comment matches the second expression. It is a directive: one record per code in `codes`, all carrying `reason`.
-3. The comment matches the third expression. It is a directive with no reason: refused, reported as `DS1701` (`suppression-without-reason`) at the comment's position, and it binds nothing.
+3. The comment matches the third expression. It is a directive with no reason: one record per code in `codes`, each refused, each reported as `DS1701` (`suppression-without-reason`) at the comment's position, and each binding nothing. A reasonless directive naming two codes is therefore two refusals.
 4. Otherwise the comment is in the namespace and malformed: the run ends with exit code 2, naming the file, the line and the expected form.
 
 Step 4 covers a directive name other than `ignore`, a missing or misspelled code, whitespace inside the code list, a code outside the `DS` shape, and text after the code list that does not begin with the separator. The malformed case ends the run rather than becoming a finding because it is a maintainer's instruction the analyzer cannot carry out: read as prose the instruction would do nothing, and if the finding it was meant to cover has already gone, nothing would say so.
@@ -139,6 +141,8 @@ The four keys are the whole key list. An entry with a key outside it, `line` inc
 - An entry whose `reason` is absent, empty or whitespace only is refused and reported as `DS1701` (`suppression-without-reason`) at the entry's position.
 - An entry whose `path` is absent or empty is refused and reported as `DS1702` (`unscoped-ignore-entry`) at the entry's position rather than matched, so a bare name cannot mask a match anywhere else in the project.
 
+The two are separate checks and both run. An entry lacking both its `reason` and its `path` is two findings at one position, `DS1701` and `DS1702`, so a maintainer who supplies the missing reason still sees the missing path.
+
 A `code` outside the `DS` shape, a `symbol` that does not parse under `symbol-ref.md`, and a `path` outside the form above are malformed values: the run ends with exit code 2 and names the entry and the expected form. A `code` in the right shape that names no live kind in [`kinds.json`](../kinds.json), a retired code for example, is well formed and can match nothing; it is reported as `DS1703`.
 
 An entry's position, for the findings above, is the line and column of the `{` that opens the entry object in `deadset-ignore.json`.
@@ -200,7 +204,7 @@ A record is stale when:
 - its symbol is used, so no kind reports it; this is the stale directive left behind after the code changed, and it is the case that fails the run;
 - its symbol is held back by an exemption class, so no suppression was needed; this is the expected fate of most existing adjudications, because the exemption model resolves the type-dependent classes (interface satisfaction, encoding and reflection, the `String` and `io.Writer` contracts, iota groups) without a suppression;
 - its symbol would produce a finding, but under a code the record does not name; a directive for `DS1001` on a symbol that reports `DS1002` is stale. The mark still keeps the symbol live, so a liveness kind's finding for it is withheld and the `DS1703` is what the run reports; its message names the code the symbol would have produced, so the maintainer corrects the code rather than hunting for it. A kind the mark does not touch (`DS1301`, `DS1801`) is reported beside the stale record;
-- its code is not reported under the resolved configuration, because the kind is disabled or the finding sits below the confidence floor; a record for a kind nobody runs is a claim nobody checks. This contract reads "matches no current finding" literally, so disabling a kind means deleting its directives;
+- the finding its code would produce falls below the minimum confidence the resolved configuration sets, so nothing reports it; a record for a finding nobody sees is a claim nobody checks. A record whose code the configuration sets to `allow` is dormant rather than stale;
 - its code names one of the self-check kinds `DS1701` to `DS1705`: those findings report a directive, an entry, a root or an edge and no declaration, so nothing exists for a record to bind to;
 - another record already matched the same finding. A finding is matched by at most one record. Records are resolved in the order inline directives, ignore entries, baseline rows, and within a document in document order, and the first record to bind a given symbol and code is the one in effect; a later one is stale. Two identical entries are one entry written twice, and the second is reported.
 
@@ -216,16 +220,19 @@ The report's `totals.suppressions_in_effect` counts records in effect and `total
 | --- | --- | --- |
 | Comment in another namespace, a near miss of this one, `deadset:ignore` not the first token, or a block comment | inline | Not a directive. Nothing happens; the finding stays reported. |
 | Directive name other than `ignore`; no code; whitespace inside the code list; a code outside `DS` and four digits; text after the codes without the `--` separator | inline | Exit code 2, the file and line named, before any finding is produced. |
-| Separator absent and no reason, or separator present and the reason empty or whitespace | inline | `DS1701` at the directive's line. Binds nothing. |
+| Separator absent and no reason, or separator present and the reason empty or whitespace | inline | One `DS1701` per code the directive names, at the directive's line. Binds nothing. |
 | Directive on any line other than the one immediately above a declaration | inline | Well formed, bound to nothing: `DS1703` at the directive's line. |
 | Document not strict JSON; a key outside the closed list; a value of the wrong type; `code` or `symbol` absent; a `code`, `symbol` or `path` value outside its form | ignore entry, baseline row | Exit code 2, the document and the entry named. |
 | `reason` absent, empty or whitespace | ignore entry, baseline row | `DS1701` at the entry's position. Binds nothing. |
 | `path` absent or empty | ignore entry, baseline row | `DS1702` at the entry's position. Binds nothing. |
+| `reason` and `path` both absent or empty | ignore entry, baseline row | `DS1701` and `DS1702` at the entry's position. Binds nothing. |
 | Well formed, bound to nothing or in effect for nothing | all three | `DS1703` at the record's position. |
 
 ## The token corpus
 
-[`suppression-corpus.json`](suppression-corpus.json) is an array of cases. Each case is `{ "input", "kind", "accepted", "rule", "reason" }`: `kind` is `inline`, `ignore-entry` or `baseline-row`; `accepted` says whether the input is a well-formed, bound suppression under this page; `rule` names the rule the case exercises from the vocabulary below; `reason` says why, and for a refused case names the outcome. For an `inline` case the input is `{ "comment", "line_offset" }`, where `comment` is the text of the comment from its first `/` to the end of the line, with no leading indentation, and `line_offset` is the comment's line number minus the first line of the declaration it targets: `-1` is the line immediately above and the only accepted value. For an entry or a row the input is the JSON object itself. Every refused case has exactly one defect.
+[`suppression-corpus.json`](suppression-corpus.json) is an array of cases. Each case is `{ "input", "kind", "accepted", "rule", "reason" }` and may carry a sixth member, `reports`: `kind` is `inline`, `ignore-entry` or `baseline-row`; `accepted` says whether the input is a well-formed, bound suppression under this page; `rule` names the rule the case exercises from the vocabulary below; `reason` says why, and for a refused case names the outcome. For an `inline` case the input is `{ "comment", "line_offset" }`, where `comment` is the text of the comment from its first `/` to the end of the line, with no leading indentation, and `line_offset` is the comment's line number minus the first line of the declaration it targets: `-1` is the line immediately above and the only accepted value. For an entry or a row the input is the JSON object itself.
+
+A refused case has exactly one defect unless it carries `reports`, an array naming one code per finding the input produces, in the order the rules below apply. Such a case names under `rule` the rule of its first defect, and `reports` is what says how many findings the input is. The two inputs that carry it are the two the count is not otherwise readable from: a reasonless directive naming two codes, which is one refusal per code, and an entry lacking both its `reason` and its `path`, which fails two separate checks.
 
 The rule vocabulary, with the outcome a refused case under it has:
 
@@ -265,6 +272,7 @@ Inline, at `line_offset` `-1` unless stated:
 //deadset:ignore DS1001
 //deadset:ignore DS1001 --
 //deadset:ignore DS1001 --    
+//deadset:ignore DS1001,DS1101
 //deadset:ignore DS1001 -- Reached only through the generated client.        (line_offset 0)
 //deadset:ignore DS1001 -- Reached only through the generated client.        (line_offset -2)
 //deadset:ignore DS1001 -- Reached only through the generated client.        (line_offset 1)
@@ -288,9 +296,9 @@ Inline, at `line_offset` `-1` unless stated:
 //deadset:ignore DS1001 --- Reached only through the generated client.
 ```
 
-In order: three with no reason (`DS1701`); three on the wrong line (`DS1703`); six in another namespace or a near miss of this one, one with the token not first, and two block comments (not directives); two with a directive name the contract does not define; four with a malformed code list; three with a malformed separator (each exit code 2).
+In order: four with no reason (`DS1701`), the fourth naming two codes and so reported twice; three on the wrong line (`DS1703`); six in another namespace or a near miss of this one, one with the token not first, and two block comments (not directives); two with a directive name the contract does not define; four with a malformed code list; three with a malformed separator (each exit code 2).
 
-The refused entries and rows are in the corpus under `reason-required` (no `reason`, an empty one, a whitespace one; `DS1701`), `path-required` (no `path`, an empty one; `DS1702`), `path-form` (absolute, `./`-prefixed, backslash separators), `symbol-form` (a bare name, a glob), `code-form` (`EU1002`, `ds1001`), `closed-keys` (a `line` key) and `value-type` (an array for `code`, a number for `reason`), the last five exit code 2.
+The refused entries and rows are in the corpus under `reason-required` (no `reason`, an empty one, a whitespace one, and one lacking both its `reason` and its `path` and so reported under `DS1701` and `DS1702` both), `path-required` (no `path`, an empty one; `DS1702`), `path-form` (absolute, `./`-prefixed, backslash separators), `symbol-form` (a bare name, a glob), `code-form` (`EU1002`, `ds1001`), `closed-keys` (a `line` key) and `value-type` (an array for `code`, a number for `reason`), the last five exit code 2.
 
 ## What other documents fix
 

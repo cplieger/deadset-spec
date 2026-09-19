@@ -199,6 +199,59 @@ func TestConfigSchema_OptionalLeavesCarryDefaults(t *testing.T) {
 	}
 }
 
+// TestConfigSchema_EveryObjectIsASectionOrASetting pins the rule the schema's
+// description states, so the presence of a default never again decides which of
+// the two an object is. A setting carries x-setting true, the default a run uses
+// when no source names it, and members that are all required and carry no
+// default of their own. A section carries no mark: a section of declared keys
+// carries no default, because each of its keys carries one, and a section keyed
+// by a pattern carries the default a run uses when no source names a key. The
+// provenance object is neither, and states so with x-ignored-by-resolution.
+func TestConfigSchema_EveryObjectIsASectionOrASetting(t *testing.T) {
+	for _, key := range walkSchema(loadConfigSchema(t)) {
+		if !key.property || key.node["type"] != "object" {
+			continue
+		}
+		if ignored, _ := key.node["x-ignored-by-resolution"].(bool); ignored {
+			continue
+		}
+		t.Run(key.path, func(t *testing.T) {
+			props, hasProps := key.node["properties"].(map[string]any)
+			_, hasPatterns := key.node["patternProperties"].(map[string]any)
+			_, hasDefault := key.node["default"]
+			marked, _ := key.node["x-setting"].(bool)
+
+			if !marked {
+				if present, ok := key.node["x-setting"]; ok {
+					t.Errorf("schema[%s].x-setting = %v, want true or the keyword absent", key.path, present)
+				}
+				if want := hasPatterns && !hasProps; hasDefault != want {
+					t.Errorf("schema[%s] carries no x-setting and has default = %t, want %t: a section of declared keys carries none and a section keyed by a pattern carries one", key.path, hasDefault, want)
+				}
+				return
+			}
+			if !hasDefault {
+				t.Errorf("schema[%s].default = absent, want the value a run uses when no source names the setting", key.path)
+			}
+			if hasPatterns {
+				t.Errorf("schema[%s].patternProperties = declared, want a setting to declare its members under properties", key.path)
+			}
+			if !hasProps {
+				t.Fatalf("schema[%s].properties = absent, want a setting to declare the members it is replaced with", key.path)
+			}
+			if got, want := stringSlice(key.node["required"]), slices.Sorted(maps.Keys(props)); !slices.Equal(slices.Sorted(slices.Values(got)), want) {
+				t.Errorf("schema[%s].required = %v, want every member %v: a setting is replaced whole", key.path, got, want)
+			}
+			for _, name := range slices.Sorted(maps.Keys(props)) {
+				member, _ := props[name].(schemaNode)
+				if _, ok := member["default"]; ok {
+					t.Errorf("schema[%s].%s.default = %v, want absent: a member of a setting is never resolved on its own", key.path, name, member["default"])
+				}
+			}
+		})
+	}
+}
+
 func TestConfigSchema_RequiredNamesDeclaredKeys(t *testing.T) {
 	for _, key := range walkSchema(loadConfigSchema(t)) {
 		required := stringSlice(key.node["required"])

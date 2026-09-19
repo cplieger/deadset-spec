@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "deadset configuration",
-  "description": "The closed key list every deadset product reads. A repository configuration (deadset.json at the target root) and a central configuration (the file the invocation names) are both instances of this schema; a command-line flag outranks the repository configuration, which outranks the central configuration, which outranks the default each key declares here. Each source is optional and neither has to be complete on its own, so no key is required at the root; the resolved configuration is what must name a target kind, and a run whose sources all omit it exits with the usage code. A key this list does not declare fails the decode and exits with the usage code, so no product implements a parser or a validator for it. Every key carries its JSON type, its default where it has one, the product that reads it under x-owner (product: every product; analyzer: every analyzer; orchestrator, go-analyzer, ts-analyzer: that one), and whether it is required through the enclosing object's required array. No key admits arbitrary nesting: every object closes with additionalProperties false. The one key resolution ignores is provenance, marked x-ignored-by-resolution.",
+  "description": "The closed key list every deadset product reads. A repository configuration (deadset.json at the target root) and a central configuration (the file the invocation names) are both instances of this schema; a command-line flag outranks the repository configuration, which outranks the central configuration, which outranks the default each key declares here. Each source is optional and neither has to be complete on its own, so no key is required at the root; the resolved configuration is what must name a target kind, and a run whose sources all omit it exits with the usage code. A key this list does not declare fails the decode and exits with the usage code, so no product implements a parser or a validator for it. Every key carries its JSON type, its default where it has one, the product that reads it under x-owner (product: every product; analyzer: every analyzer; orchestrator, go-analyzer, ts-analyzer: that one), and whether it is required through the enclosing object's required array. No key admits arbitrary nesting: every object closes with additionalProperties false. An object marked x-setting is one setting: a higher-ranked source replaces it whole, it carries the default a run uses when no source names it, it carries one provenance entry under its own dotted path, and every member it declares is required and carries no default of its own. An object without the mark is a section, whose keys a higher-ranked source replaces one by one and which carries one provenance entry per key; a section of declared keys carries no default, because each of its keys carries its own, and a section keyed by a pattern carries the default a run uses when no source names a key. The one key resolution ignores is provenance, marked x-ignored-by-resolution.",
   "type": "object",
   "additionalProperties": false,
   "properties": {
@@ -73,7 +73,7 @@
             "required": ["id", "os", "arch"],
             "properties": {
               "id": {
-                "description": "The name the report uses for this configuration.",
+                "description": "The name the report uses for this configuration. An identifier written here is the maintainer's and may take any spelling this key admits, so no pattern constrains it; an identifier the analysis derives instead, because this array is empty, is the configuration's operating system and architecture joined by a hyphen, with each of its tags appended after a further hyphen in the order the configuration lists them: linux-amd64, linux-amd64-integration. Both analyzers spell a derived identifier that way, so a document naming one names the same configuration to each of them.",
                 "type": "string",
                 "minLength": 1,
                 "x-owner": "analyzer"
@@ -137,6 +137,7 @@
           "additionalProperties": false,
           "required": ["left", "right"],
           "x-owner": "analyzer",
+          "x-setting": true,
           "properties": {
             "left": {
               "description": "The text that opens an action.",

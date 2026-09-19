@@ -1,0 +1,30 @@
+{
+  "name": "configuration-matrix-intersection",
+  "description": "A target whose two architecture files give a run a matrix of two configurations. A helper one architecture file alone calls is live in that configuration and dead in the other, so it is not reported; a helper one architecture file alone declares and nothing calls is reported for that configuration; a helper nothing calls is reported for both.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "shared",
+      "report": "none"
+    },
+    {
+      "symbol": "wide",
+      "report": "none"
+    },
+    {
+      "symbol": "unusedEverywhere",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "configurations": ["linux-amd64", "linux-arm64"]
+    },
+    {
+      "symbol": "unusedOnArm64",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "configurations": ["linux-arm64"]
+    }
+  ]
+}

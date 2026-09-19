@@ -3,6 +3,7 @@ package spec_test
 import (
 	"encoding/json"
 	"io/fs"
+	"maps"
 	"regexp"
 	"slices"
 	"strconv"
@@ -514,6 +515,7 @@ type suppressionCase struct {
 	Accepted bool            `json:"accepted"`
 	Rule     string          `json:"rule"`
 	Reason   string          `json:"reason"`
+	Reports  []string        `json:"reports"`
 }
 
 type inlineInput struct {
@@ -546,6 +548,22 @@ func decodeInlineInput(t *testing.T, raw json.RawMessage) inlineInput {
 }
 
 var directiveCodePattern = regexp.MustCompile(`^DS[0-9]{4}$`)
+
+// reasonlessCodes are the codes a directive that lacks only its reason names.
+// The directive is one record per code, so the count is the number of refusals
+// the comment is.
+func reasonlessCodes(t *testing.T, exprs inlineExpressions, comment string) []string {
+	t.Helper()
+	at := exprs.reasonless.SubexpIndex("codes")
+	if at < 0 {
+		t.Fatalf("the reasonless expression captures %v, want a group codes", exprs.reasonless.SubexpNames())
+	}
+	groups := exprs.reasonless.FindStringSubmatch(comment)
+	if groups == nil {
+		t.Fatalf("the reasonless expression does not match %q, want the codes the comment names", comment)
+	}
+	return strings.Split(groups[at], ",")
+}
 
 func TestSuppressionInlineCorpusFollowsTheDecisionProcedure(t *testing.T) {
 	exprs := compileInlineExpressions(t)
@@ -595,6 +613,16 @@ func TestSuppressionInlineCorpusFollowsTheDecisionProcedure(t *testing.T) {
 			}
 			if boundHere := *in.LineOffset == boundLineOffset; boundHere == (c.Rule == "line-above") {
 				t.Errorf("refused case %d under %q has line_offset = %d, want the placement rule to be the one defect it exercises", i, c.Rule, *in.LineOffset)
+			}
+			if got == reasonMissing {
+				codes := reasonlessCodes(t, exprs, in.Comment)
+				wantReports := []string(nil)
+				if len(codes) > 1 {
+					wantReports = slices.Repeat([]string{"DS1701"}, len(codes))
+				}
+				if !slices.Equal(c.Reports, wantReports) {
+					t.Errorf("reasonless case %d names the codes %v and reports %v, want %v: one refusal per code", i, codes, c.Reports, wantReports)
+				}
 			}
 		})
 	}
@@ -675,6 +703,20 @@ func failedEntryChecks(t *testing.T, raw json.RawMessage, forms map[symbolFormKe
 	return failed
 }
 
+// rulesReporting are the rules whose refusal the page states as one of the codes
+// given, in name order. It is the set of checks a case that names more than one
+// finding must fail, read from the same table the single-defect cases are read
+// through, so the two directions cannot disagree.
+func rulesReporting(codes []string) []string {
+	var rules []string
+	for _, rule := range slices.Sorted(maps.Keys(statedEntryOutcome)) {
+		if slices.Contains(codes, statedEntryOutcome[rule]) {
+			rules = append(rules, rule)
+		}
+	}
+	return rules
+}
+
 // statedEntryOutcome is the outcome the page states for a refused ignore entry or
 // baseline row under each rule.
 var statedEntryOutcome = map[string]string{
@@ -702,11 +744,20 @@ func TestSuppressionDocumentCorpusFailsExactlyTheCheckItsRuleNames(t *testing.T)
 				}
 				return
 			}
-			if want := []string{c.Rule}; !slices.Equal(failed, want) {
+			want := []string{c.Rule}
+			if len(c.Reports) != 0 {
+				want = rulesReporting(c.Reports)
+			}
+			if !slices.Equal(failed, want) {
 				t.Fatalf("refused case %d fails %v, want exactly %v", i, failed, want)
 			}
-			if outcome := vocabulary[c.Rule].onRefusal; !strings.Contains(outcome, statedEntryOutcome[c.Rule]) {
-				t.Errorf("the page states %q on refusal under rule %q, want it to name %q", outcome, c.Rule, statedEntryOutcome[c.Rule])
+			if !slices.Contains(want, c.Rule) {
+				t.Errorf("refused case %d names the rule %q and reports %v, want the rule of one of its findings", i, c.Rule, c.Reports)
+			}
+			for _, rule := range want {
+				if outcome := vocabulary[rule].onRefusal; !strings.Contains(outcome, statedEntryOutcome[rule]) {
+					t.Errorf("the page states %q on refusal under rule %q, want it to name %q", outcome, rule, statedEntryOutcome[rule])
+				}
 			}
 		})
 	}
@@ -776,6 +827,43 @@ func TestSuppressionCorpusRulesAreThePageVocabulary(t *testing.T) {
 		if !exercised[rule] {
 			t.Errorf("the corpus carries no case under the rule %q, want at least one", rule)
 		}
+	}
+}
+
+func TestSuppressionCorpusStatesEveryMultiDefectCount(t *testing.T) {
+	live := make(map[string]bool)
+	for _, k := range loadKinds(t).Kinds {
+		live[k.Code] = true
+	}
+	byKind := make(map[string]int)
+	for i, c := range loadSuppressionCorpus(t) {
+		if len(c.Reports) == 0 {
+			continue
+		}
+		byKind[c.Kind]++
+		t.Run(caseName("reports", strconv.Itoa(i), c.Kind), func(t *testing.T) {
+			if c.Accepted {
+				t.Errorf("case %d is accepted and reports %v, want reports on a refused case alone", i, c.Reports)
+			}
+			if len(c.Reports) < 2 {
+				t.Errorf("case %d reports %v, want two or more: a case with one finding takes its outcome from its rule", i, c.Reports)
+			}
+			for _, code := range c.Reports {
+				if !directiveCodePattern.MatchString(code) {
+					t.Errorf("case %d reports %q, want DS and four digits", i, code)
+					continue
+				}
+				if !live[code] {
+					t.Errorf("case %d reports %q, want a code %s carries as a live kind", i, code, kindsPath)
+				}
+			}
+		})
+	}
+	if byKind["inline"] == 0 {
+		t.Errorf("the corpus carries %d inline case(s) stating a count, want the reasonless directive naming two codes", byKind["inline"])
+	}
+	if documents := byKind["ignore-entry"] + byKind["baseline-row"]; documents == 0 {
+		t.Errorf("the corpus carries %d entry or row stating a count, want the entry lacking both its reason and its path", documents)
 	}
 }
 

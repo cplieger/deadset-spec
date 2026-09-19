@@ -1,11 +1,21 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "deadset conformance rendering manifest",
-  "description": "The manifest of one language rendering of a conformance fixture, fixture.json: a section of the Go rendering's txtar archive, a file at the root of the TypeScript rendering's directory, one schema for both. Its only job is the binding the expectation file cannot make: it maps every fixture-local logical name the expectation file uses to the file and the line where this rendering declares that subject, in whatever spelling this language uses. Every name the expectation file uses must appear here, and no other name may, so a manifest never carries a subject the corpus does not test. The manifest does not restate the fixture's name or description; those live once, in the expectation file.",
+  "description": "The manifest of one language rendering of a conformance fixture, fixture.json: a section of the Go rendering's txtar archive, a file at the root of the TypeScript rendering's directory, one schema for both. Its first job is the binding the expectation file cannot make: it maps every fixture-local logical name the expectation file uses to the file and the line where this rendering declares that subject, in whatever spelling this language uses. Every name the expectation file uses must appear here, and no other name may, so a manifest never carries a subject the corpus does not test. Its second job is the build matrix, which is a property of one rendering and not of the fixture: a rendering whose files carry build constraints declares the identifiers a run derives from them, and an expectation names configurations from that list. The manifest does not restate the fixture's name or description; those live once, in the expectation file.",
   "type": "object",
   "additionalProperties": false,
   "required": ["symbols"],
   "properties": {
+    "configurations": {
+      "description": "The build matrix a run derives from this rendering, one identifier per configuration, ordered bytewise. It is what an expectation's configurations list is drawn from, so it is present exactly when an expectation of the fixture names configurations, and a language whose analysis has no build matrix declares none. Two entries is the fewest that carry meaning, because a finding under a single-configuration matrix names nothing an expectation cannot state by leaving the list out.",
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
     "symbols": {
       "description": "The binding table, keyed by logical name exactly as the expectation file spells it. Each value is the position of that subject in this rendering.",
       "type": "object",

@@ -10,6 +10,7 @@ import (
 	"path"
 	"regexp"
 	"slices"
+	"strconv"
 	"strings"
 	"testing"
 	"testing/fstest"
@@ -87,13 +88,15 @@ type expectationRow struct {
 	Confidence        string   `json:"confidence"`
 	ReachabilityClass string   `json:"reachability_class"`
 	LivenessRelation  string   `json:"liveness_relation"`
+	Configurations    []string `json:"configurations"`
 	RetainedBy        []string `json:"retained_by"`
 }
 
 // manifestDocument mirrors a rendering's fixture.json. Line is a pointer so
 // an absent line is distinguishable from line zero.
 type manifestDocument struct {
-	Symbols map[string]manifestPosition `json:"symbols"`
+	Symbols        map[string]manifestPosition `json:"symbols"`
+	Configurations []string                    `json:"configurations"`
 }
 
 type manifestPosition struct {
@@ -114,6 +117,12 @@ var (
 	errNoFile          = errors.New("manifest entry has no file")
 	errNoLine          = errors.New("manifest entry has no line")
 	errDuplicateTxtar  = errors.New("txtar section declared twice")
+
+	errNoMatrix        = errors.New("expectation names a configuration and the rendering declares no build matrix")
+	errUnknownConfig   = errors.New("expectation names a configuration outside the rendering's build matrix")
+	errConfigsOutOrder = errors.New("expectation names its configurations outside the matrix order")
+	errMatrixUnordered = errors.New("rendering declares its build matrix out of order")
+	errMatrixUnused    = errors.New("rendering declares a build matrix no expectation names")
 
 	semverPattern = regexp.MustCompile(`^([0-9]+)\.[0-9]+\.[0-9]+$`)
 
@@ -343,6 +352,46 @@ func resolveExpectations(expect *expectationDocument, manifest manifestDocument)
 	return positions, nil
 }
 
+// checkConfigurations resolves every expectation's configuration list against
+// the build matrix one rendering declares. A rendering declares the matrix a
+// run derives from it and an expectation names configurations from that list,
+// in the matrix's own order, so the two documents cannot drift into naming
+// different configurations for one finding; a rendering that declares no matrix
+// answers no expectation that names one, and a matrix no expectation names is a
+// declaration with no reader.
+func checkConfigurations(expect *expectationDocument, language string, matrix []string) []error {
+	var errs []error
+	if len(matrix) > 0 && !slices.IsSorted(matrix) {
+		errs = append(errs, fmt.Errorf("%w: rendering %q declares %v", errMatrixUnordered, language, matrix))
+	}
+	named := 0
+	for _, row := range expect.Expect {
+		if len(row.Configurations) == 0 {
+			continue
+		}
+		named++
+		if len(matrix) == 0 {
+			errs = append(errs, fmt.Errorf("%w: rendering %q symbol %q names %v", errNoMatrix, language, row.Symbol, row.Configurations))
+			continue
+		}
+		at := -1
+		for _, id := range row.Configurations {
+			switch i := slices.Index(matrix, id); {
+			case i < 0:
+				errs = append(errs, fmt.Errorf("%w: rendering %q symbol %q names %q, and the matrix is %v", errUnknownConfig, language, row.Symbol, id, matrix))
+			case i <= at:
+				errs = append(errs, fmt.Errorf("%w: rendering %q symbol %q names %v, want the matrix order %v", errConfigsOutOrder, language, row.Symbol, row.Configurations, matrix))
+			default:
+				at = i
+			}
+		}
+	}
+	if len(matrix) > 0 && named == 0 {
+		errs = append(errs, fmt.Errorf("%w: rendering %q declares %v", errMatrixUnused, language, matrix))
+	}
+	return errs
+}
+
 // parseTxtar reads a txtar archive into its sections by name, dropping the
 // leading comment. The format: a marker line "-- NAME --" opens each section,
 // surrounding white space in NAME is stripped, content runs to the next
@@ -478,7 +527,7 @@ func checkRendering(expect *expectationDocument, language string, files map[stri
 	if err != nil {
 		return fmt.Errorf("rendering %q: %w", language, err)
 	}
-	var errs []error
+	errs := checkConfigurations(expect, language, manifest.Configurations)
 	for _, name := range slices.Sorted(maps.Keys(positions)) {
 		pos := positions[name]
 		content, ok := files[pos.File]
@@ -808,6 +857,94 @@ func TestResolveExpectationsRefuses(t *testing.T) {
 			}
 			if got != nil {
 				t.Errorf("resolveExpectations(%s) = %v, want nil positions beside the error", tc.name, got)
+			}
+		})
+	}
+}
+
+func TestCheckConfigurations(t *testing.T) {
+	matrix := []string{"linux-amd64", "linux-arm64"}
+	rows := func(configurations ...[]string) expectationDocument {
+		doc := expectationDocument{}
+		for i, ids := range configurations {
+			doc.Expect = append(doc.Expect, expectationRow{
+				Symbol:         "Subject" + strconv.Itoa(i),
+				Report:         "DS1002",
+				Configurations: ids,
+			})
+		}
+		return doc
+	}
+	cases := []struct {
+		wantErr error
+		name    string
+		expect  expectationDocument
+		matrix  []string
+	}{
+		{
+			name:   "every_configuration_of_the_matrix",
+			expect: rows([]string{"linux-amd64", "linux-arm64"}),
+			matrix: matrix,
+		},
+		{
+			name:   "one_configuration_of_the_matrix",
+			expect: rows([]string{"linux-arm64"}),
+			matrix: matrix,
+		},
+		{
+			name:   "no_matrix_and_no_expectation_names_one",
+			expect: rows(nil),
+		},
+		{
+			name:    "configuration_outside_the_matrix",
+			expect:  rows([]string{"windows-amd64"}),
+			matrix:  matrix,
+			wantErr: errUnknownConfig,
+		},
+		{
+			name:    "configurations_out_of_the_matrix_order",
+			expect:  rows([]string{"linux-arm64", "linux-amd64"}),
+			matrix:  matrix,
+			wantErr: errConfigsOutOrder,
+		},
+		{
+			name:    "one_configuration_named_twice",
+			expect:  rows([]string{"linux-amd64", "linux-amd64"}),
+			matrix:  matrix,
+			wantErr: errConfigsOutOrder,
+		},
+		{
+			name:    "no_matrix_declared",
+			expect:  rows([]string{"linux-amd64"}),
+			wantErr: errNoMatrix,
+		},
+		{
+			name:    "matrix_declared_out_of_order",
+			expect:  rows([]string{"linux-arm64"}),
+			matrix:  []string{"linux-arm64", "linux-amd64"},
+			wantErr: errMatrixUnordered,
+		},
+		{
+			name:    "matrix_no_expectation_names",
+			expect:  rows(nil),
+			matrix:  matrix,
+			wantErr: errMatrixUnused,
+		},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			got := checkConfigurations(&tc.expect, "go", tc.matrix)
+			if tc.wantErr == nil {
+				if len(got) != 0 {
+					t.Errorf("checkConfigurations(%s) = %v, want nil", tc.name, got)
+				}
+				return
+			}
+			if len(got) != 1 {
+				t.Fatalf("checkConfigurations(%s) = %v, want one error wrapping %v", tc.name, got, tc.wantErr)
+			}
+			if !errors.Is(got[0], tc.wantErr) {
+				t.Errorf("checkConfigurations(%s) = %v, want it to wrap %v", tc.name, got[0], tc.wantErr)
 			}
 		})
 	}
