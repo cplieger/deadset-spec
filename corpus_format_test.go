@@ -28,6 +28,7 @@ const (
 	goRendering       = "go.txtar"
 	tsRendering       = "ts"
 	targetDir         = "target"
+	goModFile         = "go.mod"
 )
 
 // corpusDocument mirrors corpus/corpus.json closely enough that an unknown
@@ -117,6 +118,10 @@ var (
 	errNoFile          = errors.New("manifest entry has no file")
 	errNoLine          = errors.New("manifest entry has no line")
 	errDuplicateTxtar  = errors.New("txtar section declared twice")
+
+	errNoModule  = errors.New("go rendering module file declares no module path")
+	errNoRequire = errors.New("go rendering consumer requires no target module")
+	errNoReplace = errors.New("go rendering consumer replaces the target module with no relative path")
 
 	errNoMatrix        = errors.New("expectation names a configuration and the rendering declares no build matrix")
 	errUnknownConfig   = errors.New("expectation names a configuration outside the rendering's build matrix")
@@ -543,7 +548,75 @@ func checkRendering(expect *expectationDocument, language string, files map[stri
 			errs = append(errs, fmt.Errorf("rendering %q has no %s/ directory", language, d))
 		}
 	}
+	if language == "go" && len(expect.Consumers) > 0 {
+		errs = append(errs, checkGoConsumerModules(expect.Consumers, files)...)
+	}
 	return errors.Join(errs...)
+}
+
+// checkGoConsumerModules pins the rule corpus/corpus.json states for a Go
+// rendering: each consumer module requires the target module and replaces it
+// with the target's path relative to the consumer directory, so the rendering
+// loads with no network access.
+func checkGoConsumerModules(consumers []string, files map[string][]byte) []error {
+	targetMod := path.Join(targetDir, goModFile)
+	module, _, _ := goModDirectives(files[targetMod])
+	if module == "" {
+		return []error{fmt.Errorf("%w: %s", errNoModule, targetMod)}
+	}
+	var errs []error
+	for _, consumer := range consumers {
+		file := path.Join(consumer, goModFile)
+		data, held := files[file]
+		if !held {
+			errs = append(errs, fmt.Errorf("%w: %s", errNoModule, file))
+			continue
+		}
+		_, requires, replaces := goModDirectives(data)
+		if !slices.Contains(requires, module) {
+			errs = append(errs, fmt.Errorf("%w: %s names no require of %q", errNoRequire, file, module))
+		}
+		want := "../" + targetDir
+		if got := replaces[module]; got != want {
+			errs = append(errs, fmt.Errorf("%w: %s replaces %q with %q, want %q", errNoReplace, file, module, got, want))
+		}
+	}
+	return errs
+}
+
+// goModDirectives reads a module file's own module path, the module paths it
+// requires and the path each replace directive names, in either the one-line or
+// the parenthesised block form.
+func goModDirectives(data []byte) (module string, requires []string, replaces map[string]string) {
+	replaces = map[string]string{}
+	block := ""
+	for line := range strings.SplitSeq(string(data), "\n") {
+		fields := strings.Fields(strings.TrimSpace(line))
+		if len(fields) == 0 {
+			continue
+		}
+		if fields[0] == ")" {
+			block = ""
+			continue
+		}
+		verb := block
+		if fields[0] == "module" || fields[0] == "require" || fields[0] == "replace" {
+			verb, fields = fields[0], fields[1:]
+			if len(fields) == 1 && fields[0] == "(" {
+				block = verb
+				continue
+			}
+		}
+		switch {
+		case verb == "module" && len(fields) > 0:
+			module = fields[0]
+		case verb == "require" && len(fields) > 0:
+			requires = append(requires, fields[0])
+		case verb == "replace" && len(fields) > 2 && fields[1] == "=>":
+			replaces[fields[0]] = fields[2]
+		}
+	}
+	return module, requires, replaces
 }
 
 func hasDirectory(files map[string][]byte, dir string) bool {
@@ -1009,7 +1082,7 @@ func plantedFixture() fstest.MapFS {
 	goArchive := "-- fixture.json --\n{\"symbols\":{\"DeadExport\":{\"file\":\"target/lib.go\",\"line\":3},\"UsedByConsumer\":{\"file\":\"target/lib.go\",\"line\":5}}}\n" +
 		"-- target/go.mod --\nmodule example.test/target\n" +
 		"-- target/lib.go --\npackage target\n\nfunc DeadExport() {}\n\nfunc UsedByConsumer() {}\n" +
-		"-- consumer/go.mod --\nmodule example.test/consumer\n" +
+		"-- consumer/go.mod --\nmodule example.test/consumer\n\nrequire example.test/target v0.0.0\n\nreplace example.test/target => ../target\n" +
 		"-- consumer/main.go --\npackage main\n"
 	return fstest.MapFS{
 		"corpus/fixtures/planted/expect.json":              {Data: []byte(expect)},
@@ -1075,6 +1148,22 @@ func TestCheckFixtureRefuses(t *testing.T) {
 			name:    "consumer_directory_missing",
 			mutate:  func(m fstest.MapFS) { delete(m, "corpus/fixtures/planted/ts/consumer/package.json") },
 			wantMsg: `rendering "ts" has no consumer/ directory`,
+		},
+		{
+			name: "go_consumer_does_not_replace_the_target",
+			mutate: func(m fstest.MapFS) {
+				m["corpus/fixtures/planted/go.txtar"].Data = bytes.Replace(m["corpus/fixtures/planted/go.txtar"].Data,
+					[]byte("\nreplace example.test/target => ../target\n"), []byte("\n"), 1)
+			},
+			wantMsg: errNoReplace.Error() + `: consumer/go.mod replaces "example.test/target" with ""`,
+		},
+		{
+			name: "go_consumer_does_not_require_the_target",
+			mutate: func(m fstest.MapFS) {
+				m["corpus/fixtures/planted/go.txtar"].Data = bytes.Replace(m["corpus/fixtures/planted/go.txtar"].Data,
+					[]byte("\nrequire example.test/target v0.0.0\n"), []byte("\n"), 1)
+			},
+			wantMsg: errNoRequire.Error() + `: consumer/go.mod names no require of "example.test/target"`,
 		},
 		{
 			name: "expectation_carries_an_undeclared_field",

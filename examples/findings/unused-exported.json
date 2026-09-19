@@ -25,14 +25,17 @@
     "members": [
       {
         "ref": "go://example.com/app#Catalog.ResolveAlias",
+        "name": "(*Catalog).ResolveAlias",
         "position": { "path": "catalog.go", "line": 214, "column": 6, "end_line": 231 }
       },
       {
         "ref": "go://example.com/app#Catalog.aliasIndex",
+        "name": "(*Catalog).aliasIndex",
         "position": { "path": "catalog.go", "line": 233, "column": 6, "end_line": 244 }
       },
       {
         "ref": "go://example.com/app#foldAlias",
+        "name": "foldAlias",
         "position": { "path": "fold.go", "line": 61, "column": 6, "end_line": 72 }
       }
     ]
@@ -43,5 +46,7 @@
   "fixability": "deletable",
   "severity": "deny",
   "message": "exported method has no reference in the target and none from any loaded consumer",
-  "details": {}
+  "details": {
+    "removes_last_use_of": ["example.com/fold", "example.com/normalize"]
+  }
 }
