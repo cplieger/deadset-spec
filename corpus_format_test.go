@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io/fs"
 	"maps"
+	"os"
 	"path"
 	"regexp"
 	"slices"
@@ -25,31 +26,48 @@ const (
 	fixturesDir       = "corpus/fixtures"
 	expectFile        = "expect.json"
 	manifestFile      = "fixture.json"
-	goRendering       = "go.txtar"
-	tsRendering       = "ts"
-	targetDir         = "target"
-	goModFile         = "go.mod"
+
+	// corpusBaselinePath is the committed record of the fixture set and the
+	// expectation-row members at the published corpus version, which is what
+	// makes the version's own rule enforceable.
+	corpusBaselinePath = "testdata/corpus-baseline.json"
+
+	goRendering = "go.txtar"
+	tsRendering = "ts"
+	targetDir   = "target"
+	goModFile   = "go.mod"
 )
 
 // corpusDocument mirrors corpus/corpus.json closely enough that an unknown
 // key fails the decode.
 type corpusDocument struct {
-	Runner        map[string]string  `json:"runner"`
-	Description   string             `json:"description"`
-	CorpusVersion string             `json:"corpus_version"`
-	Layout        corpusLayout       `json:"layout"`
-	Schemas       corpusSchemas      `json:"schemas"`
-	Vocabularies  corpusVocabularies `json:"vocabularies"`
+	Runner        map[string]string   `json:"runner"`
+	Description   string              `json:"description"`
+	CorpusVersion string              `json:"corpus_version"`
+	Layout        corpusLayout        `json:"layout"`
+	Schemas       corpusSchemas       `json:"schemas"`
+	Vocabularies  corpusVocabularies  `json:"vocabularies"`
+	SubjectShapes corpusSubjectShapes `json:"subject_shapes"`
+}
+
+// corpusSubjectShapes mirrors the subject_shapes block: the two shapes a subject
+// is named under, with every other kind of the finding schema's vocabulary a
+// declaration by omission.
+type corpusSubjectShapes struct {
+	Description string   `json:"description"`
+	Part        []string `json:"part"`
+	Row         []string `json:"row"`
 }
 
 type corpusLayout struct {
-	Renderings        map[string]string `json:"renderings"`
-	Description       string            `json:"description"`
-	FixtureDirectory  string            `json:"fixture_directory"`
-	ExpectationFile   string            `json:"expectation_file"`
-	ManifestFile      string            `json:"manifest_file"`
-	TargetDirectory   string            `json:"target_directory"`
-	ConsumerDirectory string            `json:"consumer_directory"`
+	Renderings          map[string]string `json:"renderings"`
+	Description         string            `json:"description"`
+	FixtureDirectory    string            `json:"fixture_directory"`
+	ExpectationFile     string            `json:"expectation_file"`
+	ManifestFile        string            `json:"manifest_file"`
+	TargetDirectory     string            `json:"target_directory"`
+	ConsumerDirectory   string            `json:"consumer_directory"`
+	DependencyDirectory string            `json:"dependency_directory"`
 }
 
 type corpusSchemas struct {
@@ -123,6 +141,9 @@ var (
 	errNoModule  = errors.New("go rendering module file declares no module path")
 	errNoRequire = errors.New("go rendering consumer requires no target module")
 	errNoReplace = errors.New("go rendering consumer replaces the target module with no relative path")
+
+	errNoDependencyRequire = errors.New("go rendering target requires no dependency module")
+	errNoDependencyReplace = errors.New("go rendering target replaces the dependency module with no relative path")
 
 	errNoMatrix        = errors.New("expectation names a configuration and the rendering declares no build matrix")
 	errUnknownConfig   = errors.New("expectation names a configuration outside the rendering's build matrix")
@@ -549,10 +570,59 @@ func checkRendering(expect *expectationDocument, language string, files map[stri
 			errs = append(errs, fmt.Errorf("rendering %q has no %s/ directory", language, d))
 		}
 	}
-	if language == "go" && len(expect.Consumers) > 0 {
-		errs = append(errs, checkGoConsumerModules(expect.Consumers, files)...)
+	if language == "go" {
+		if len(expect.Consumers) > 0 {
+			errs = append(errs, checkGoConsumerModules(expect.Consumers, files)...)
+		}
+		errs = append(errs, checkGoDependencyModules(expect.Consumers, files)...)
 	}
 	return errors.Join(errs...)
+}
+
+// topLevelDirectories is every directory at the rendering root, sorted, which is
+// the target, the consumers the expectation file names and the dependencies it
+// names by leaving them out.
+func topLevelDirectories(files map[string][]byte) []string {
+	held := map[string]bool{}
+	for p := range files {
+		if dir, _, nested := strings.Cut(p, "/"); nested {
+			held[dir] = true
+		}
+	}
+	return slices.Sorted(maps.Keys(held))
+}
+
+// checkGoDependencyModules pins the rule corpus/corpus.json states for a Go
+// rendering's dependency directories: a directory at the rendering root that is
+// neither the target nor a consumer holds a module the target's own module file
+// requires and replaces with that directory's path relative to the target, so the
+// target resolves the requirement from the rendering rather than from a network.
+func checkGoDependencyModules(consumers []string, files map[string][]byte) []error {
+	dependencies := slices.DeleteFunc(topLevelDirectories(files), func(dir string) bool {
+		return dir == targetDir || slices.Contains(consumers, dir)
+	})
+	if len(dependencies) == 0 {
+		return nil
+	}
+	targetMod := path.Join(targetDir, goModFile)
+	_, requires, replaces := goModDirectives(files[targetMod])
+	var errs []error
+	for _, dependency := range dependencies {
+		file := path.Join(dependency, goModFile)
+		module, _, _ := goModDirectives(files[file])
+		if module == "" {
+			errs = append(errs, fmt.Errorf("%w: %s", errNoModule, file))
+			continue
+		}
+		if !slices.Contains(requires, module) {
+			errs = append(errs, fmt.Errorf("%w: %s names no require of %q", errNoDependencyRequire, targetMod, module))
+		}
+		want := "../" + dependency
+		if got := replaces[module]; got != want {
+			errs = append(errs, fmt.Errorf("%w: %s replaces %q with %q, want %q", errNoDependencyReplace, targetMod, module, got, want))
+		}
+	}
+	return errs
 }
 
 // checkGoConsumerModules pins the rule corpus/corpus.json states for a Go
@@ -613,8 +683,12 @@ func goModDirectives(data []byte) (module string, requires []string, replaces ma
 			module = fields[0]
 		case verb == "require" && len(fields) > 0:
 			requires = append(requires, fields[0])
-		case verb == "replace" && len(fields) > 2 && fields[1] == "=>":
-			replaces[fields[0]] = fields[2]
+		case verb == "replace":
+			// The old module may carry a version, so the arrow is found
+			// rather than assumed to be the second field.
+			if at := slices.Index(fields, "=>"); at > 0 && at+1 < len(fields) {
+				replaces[fields[0]] = fields[at+1]
+			}
 		}
 	}
 	return module, requires, replaces
@@ -651,8 +725,8 @@ func TestCorpusDocument(t *testing.T) {
 		if got := slices.Sorted(maps.Keys(doc.Layout.Renderings)); !slices.Equal(got, kinds.Languages) {
 			t.Errorf("layout.renderings languages = %v, want %s languages %v", got, kindsPath, kinds.Languages)
 		}
-		gotPaths := []string{doc.Layout.FixtureDirectory, doc.Layout.ExpectationFile, doc.Layout.ManifestFile, doc.Layout.TargetDirectory, doc.Layout.ConsumerDirectory}
-		wantPaths := []string{fixturesDir + "/<name>/", expectFile, manifestFile, targetDir + "/", "<consumer>/"}
+		gotPaths := []string{doc.Layout.FixtureDirectory, doc.Layout.ExpectationFile, doc.Layout.ManifestFile, doc.Layout.TargetDirectory, doc.Layout.ConsumerDirectory, doc.Layout.DependencyDirectory}
+		wantPaths := []string{fixturesDir + "/<name>/", expectFile, manifestFile, targetDir + "/", "<consumer>/", "<dependency>/"}
 		if !slices.Equal(gotPaths, wantPaths) {
 			t.Errorf("layout paths = %q, want %q", gotPaths, wantPaths)
 		}
@@ -692,6 +766,43 @@ func TestCorpusDocument(t *testing.T) {
 		}
 	})
 
+	t.Run("subject_shapes", func(t *testing.T) {
+		shapes := doc.SubjectShapes
+		if shapes.Description == "" {
+			t.Errorf("subject_shapes.description = %q, want the three shapes stated", shapes.Description)
+		}
+		vocabulary := enumAt(loadFindingSchema(t), "properties/symbol/properties/kind")
+		if len(vocabulary) == 0 {
+			t.Fatalf("Setup: %s declares no symbol.kind vocabulary", findingSchemaPath)
+		}
+		named := map[string]string{}
+		for shape, kinds := range map[string][]string{"part": shapes.Part, "row": shapes.Row} {
+			if len(kinds) == 0 {
+				t.Errorf("subject_shapes.%s = %v, want the kinds of that shape", shape, kinds)
+			}
+			if !slices.IsSorted(kinds) {
+				t.Errorf("subject_shapes.%s = %v, want the kinds in order", shape, kinds)
+			}
+			for _, kind := range kinds {
+				if !slices.Contains(vocabulary, kind) {
+					t.Errorf("subject_shapes.%s names %q, want a kind of the %s vocabulary %v", shape, kind, findingSchemaPath, vocabulary)
+				}
+				if other, twice := named[kind]; twice {
+					t.Errorf("subject_shapes names %q under %s and under %s, want one shape per kind", kind, other, shape)
+				}
+				named[kind] = shape
+			}
+		}
+		// The block's own claim: every kind the finding schema judges by no
+		// liveness relation is a part or a row here, so a kind that list gains
+		// is classified rather than silently read as a declaration.
+		for _, kind := range findingRelationAbsentKinds(t) {
+			if named[kind] == "" {
+				t.Errorf("%s lists %q as carrying no liveness relation and subject_shapes names it under neither part nor row", findingSchemaPath, kind)
+			}
+		}
+	})
+
 	t.Run("runner", func(t *testing.T) {
 		for _, step := range []string{"select", "load", "resolve", "report_phase", "closed_world", "suppression_phase", "capabilities", "results"} {
 			if doc.Runner[step] == "" {
@@ -699,6 +810,93 @@ func TestCorpusDocument(t *testing.T) {
 			}
 		}
 	})
+}
+
+// corpusBaselineDocument mirrors testdata/corpus-baseline.json; an unknown key
+// fails the decode.
+type corpusBaselineDocument struct {
+	Description        string   `json:"description"`
+	CorpusVersion      string   `json:"corpus_version"`
+	Fixtures           []string `json:"fixtures"`
+	ExpectationMembers []string `json:"expectation_members"`
+}
+
+// loadCorpusBaseline decodes the committed baseline, failing the test on any
+// setup error and on an empty set, because an empty set pins nothing.
+func loadCorpusBaseline(t *testing.T) corpusBaselineDocument {
+	t.Helper()
+	data, err := os.ReadFile(corpusBaselinePath)
+	if err != nil {
+		t.Fatalf("Setup: os.ReadFile(%q): %v", corpusBaselinePath, err)
+	}
+	var doc corpusBaselineDocument
+	if err = decodeStrict(data, &doc); err != nil {
+		t.Fatalf("Setup: decoding %s: %v", corpusBaselinePath, err)
+	}
+	if len(doc.Fixtures) == 0 || len(doc.ExpectationMembers) == 0 {
+		t.Fatalf("Setup: %s records %d fixture(s) and %d expectation member(s), want the published sets", corpusBaselinePath, len(doc.Fixtures), len(doc.ExpectationMembers))
+	}
+	return doc
+}
+
+// findingRelationAbsentKinds is the subject kinds contract/finding.schema.json
+// judges by no liveness relation, which is the list corpus.json's subject_shapes
+// block partitions into parts and rows.
+func findingRelationAbsentKinds(t *testing.T) []string {
+	t.Helper()
+	_, kinds := findingLivenessCondition(t, findingLivenessArm(t, loadFindingSchema(t)))
+	if len(kinds) == 0 {
+		t.Fatalf("Setup: %s names no subject kind that carries no liveness relation", findingSchemaPath)
+	}
+	return kinds
+}
+
+// corpusFixtureNames is the name of every fixture the corpus holds, sorted, which
+// is the order fs.ReadDir returns.
+func corpusFixtureNames(t *testing.T) []string {
+	t.Helper()
+	entries, err := fs.ReadDir(spec.Corpus, fixturesDir)
+	if err != nil {
+		t.Fatalf("Setup: fs.ReadDir(Corpus, %q): %v", fixturesDir, err)
+	}
+	names := make([]string, 0, len(entries))
+	for _, e := range entries {
+		names = append(names, e.Name())
+	}
+	return names
+}
+
+// TestCorpusVersionMovesWithTheFixtureSetAndTheExpectationMembers enforces the
+// rule corpus.json states for itself and could not check: the minor number moves
+// when a fixture or a field is added. The baseline records the two sets at the
+// version it names, so a fixture directory or an expectation-row member added
+// while the published version stays where the baseline left it fails here, and
+// moving the version and rewriting the baseline in one change is the green path.
+//
+// The two sets are the ones a version bump is decidable from. A change to a
+// description or to a runner rule moves the version too and leaves this document
+// alone, which is why the check is an equality over sets rather than a digest of
+// the corpus.
+func TestCorpusVersionMovesWithTheFixtureSetAndTheExpectationMembers(t *testing.T) {
+	doc := loadCorpus(t)
+	baseline := loadCorpusBaseline(t)
+
+	if baseline.CorpusVersion != doc.CorpusVersion {
+		t.Fatalf("%s records corpus_version %q and %s publishes %q: the two move in one change, so rewrite %s for the published version",
+			corpusBaselinePath, baseline.CorpusVersion, corpusPath, doc.CorpusVersion, corpusBaselinePath)
+	}
+	if got := corpusFixtureNames(t); !slices.Equal(got, baseline.Fixtures) {
+		t.Errorf("%s holds the fixtures %v and %s records %v at corpus_version %q: a fixture added or removed moves the version, so move it in %s and rewrite %s in one change",
+			fixturesDir, got, corpusBaselinePath, baseline.Fixtures, doc.CorpusVersion, corpusPath, corpusBaselinePath)
+	}
+	members := objectAt(loadSchema(t, spec.Corpus, expectSchemaPath), expectSchemaRowPath+"/properties")
+	if members == nil {
+		t.Fatalf("Setup: %s %s/properties is not an object", expectSchemaPath, expectSchemaRowPath)
+	}
+	if got := slices.Sorted(maps.Keys(members)); !slices.Equal(got, baseline.ExpectationMembers) {
+		t.Errorf("%s declares the expectation members %v and %s records %v at corpus_version %q: a member added or removed moves the version, so move it in %s and rewrite %s in one change",
+			expectSchemaPath, got, corpusBaselinePath, baseline.ExpectationMembers, doc.CorpusVersion, corpusPath, corpusBaselinePath)
+	}
 }
 
 func TestExpectSchemaNamesNoLanguage(t *testing.T) {
@@ -1217,6 +1415,25 @@ func TestCheckFixtureRefuses(t *testing.T) {
 					[]byte("\nrequire example.test/target v0.0.0\n"), []byte("\n"), 1)
 			},
 			wantMsg: errNoRequire.Error() + `: consumer/go.mod names no require of "example.test/target"`,
+		},
+		{
+			name: "go_dependency_the_target_does_not_replace",
+			mutate: func(m fstest.MapFS) {
+				m["corpus/fixtures/planted/go.txtar"].Data = append(m["corpus/fixtures/planted/go.txtar"].Data,
+					"-- dep/go.mod --\nmodule example.test/dep\n"...)
+			},
+			wantMsg: errNoDependencyReplace.Error() + `: target/go.mod replaces "example.test/dep" with ""`,
+		},
+		{
+			name: "go_dependency_the_target_does_not_require",
+			mutate: func(m fstest.MapFS) {
+				m["corpus/fixtures/planted/go.txtar"].Data = bytes.Replace(m["corpus/fixtures/planted/go.txtar"].Data,
+					[]byte("-- target/go.mod --\nmodule example.test/target\n"),
+					[]byte("-- target/go.mod --\nmodule example.test/target\n\nreplace example.test/dep v0.0.0 => ../dep\n"), 1)
+				m["corpus/fixtures/planted/go.txtar"].Data = append(m["corpus/fixtures/planted/go.txtar"].Data,
+					"-- dep/go.mod --\nmodule example.test/dep\n"...)
+			},
+			wantMsg: errNoDependencyRequire.Error() + `: target/go.mod names no require of "example.test/dep"`,
 		},
 		{
 			name: "expectation_carries_an_undeclared_field",

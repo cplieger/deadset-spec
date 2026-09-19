@@ -1,0 +1,12 @@
+{
+  "symbols": {
+    "Counter.Live": { "file": "target/catalog.ts", "line": 33 },
+    "Counter.Total": { "file": "target/catalog.ts", "line": 41 },
+    "Counter.stale": { "file": "target/catalog.ts", "line": 35 },
+    "Recurse": { "file": "target/catalog.ts", "line": 26 },
+    "Resolve": { "file": "target/catalog.ts", "line": 10 },
+    "Used": { "file": "target/catalog.ts", "line": 5 },
+    "helper": { "file": "target/catalog.ts", "line": 20 },
+    "usedHelper": { "file": "target/catalog.ts", "line": 15 }
+  }
+}

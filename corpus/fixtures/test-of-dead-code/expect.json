@@ -1,0 +1,35 @@
+{
+  "name": "test-of-dead-code",
+  "description": "A test whose every referenced declaration of the target is dead is reported, and the test beside it that also references a live declaration is reported under no code. The two declarations the first test references carry the test-only code, and the helper both tests share is reported under no code because a declaration of a test file whose only references are from test files is not a candidate of the unused kinds.",
+  "languages": ["go", "ts"],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "DeadOne",
+      "report": "DS1004",
+      "symbol_kind": "function",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "DeadTwo",
+      "report": "DS1004",
+      "symbol_kind": "function",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "TestDeadOnly",
+      "report": "DS1005",
+      "symbol_kind": "function",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    { "symbol": "Live", "report": "none" },
+    { "symbol": "TestMixed", "report": "none" },
+    { "symbol": "assertSum", "report": "none" }
+  ]
+}

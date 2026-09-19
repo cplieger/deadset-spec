@@ -1,0 +1,11 @@
+{
+  "symbols": {
+    "Counter.Live": { "file": "target/catalog.ts", "line": 39 },
+    "Counter.Old": { "file": "target/catalog.ts", "line": 42 },
+    "Fresh": { "file": "target/catalog.ts", "line": 32 },
+    "Kept": { "file": "target/catalog.ts", "line": 19 },
+    "Old": { "file": "target/catalog.ts", "line": 10 },
+    "Stale": { "file": "target/catalog.ts", "line": 28 },
+    "StaleToo": { "file": "target/catalog.ts", "line": 29 }
+  }
+}

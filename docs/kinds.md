@@ -310,7 +310,7 @@ Dead code inside a function body. The six kinds form one issue group with one en
 
 A parameter with no reference inside its function body, on a function whose signature is free to change.
 
-Precondition: The signature must be free, defined as follows: the function is not exported from a target whose consumer set is not declared complete, is not a method retained by interface satisfaction, is not used as a value, is not a go:linkname or cgo target, and is not a stub whose body is empty or only panics. A parameter is part of the function's type, and a caller the analysis cannot see may pass it.
+Precondition: The signature must be free, defined as follows: the function is not a method retained by interface satisfaction, is not used as a value, is not a go:linkname or cgo target, and is not a stub whose body is empty or only panics. A parameter its body never names is dead whatever the callers, so a published declaration of a library is reported too, with the fixability the vocabulary gives the kind: the signature change is a breaking change.
 
 Overlap: in Go `revive unused-parameter`, `gopls unusedparams`, `unparam`; in TypeScript `tsc --noUnusedParameters`, `@typescript-eslint/no-unused-vars`.
 

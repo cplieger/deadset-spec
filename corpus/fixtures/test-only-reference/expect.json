@@ -1,0 +1,17 @@
+{
+  "name": "test-only-reference",
+  "description": "A declaration whose every reference comes from a test file is reported under the test-only code rather than under an unused code, and the declaration beside it that a production file also references is reported under no code. The two differ only in where their references are written.",
+  "languages": ["go", "ts"],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "OnlyTested",
+      "report": "DS1004",
+      "symbol_kind": "function",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    { "symbol": "Production", "report": "none" }
+  ]
+}
