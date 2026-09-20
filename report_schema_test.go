@@ -6,7 +6,7 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/cplieger/deadset-spec"
+	"github.com/cplieger/deadset-spec/v2"
 )
 
 const (

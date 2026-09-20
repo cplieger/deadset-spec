@@ -11,7 +11,7 @@ This repository holds what those three programs agree on: data and documentation
 ## Install
 
 ```sh
-go get github.com/cplieger/deadset-spec@latest
+go get github.com/cplieger/deadset-spec/v2@latest
 ```
 
 The module is a test dependency for a Go analyzer that runs the corpus. A TypeScript analyzer clones the repository at a tag instead; no npm package is published.
@@ -23,7 +23,7 @@ import (
     "io/fs"
     "testing"
 
-    "github.com/cplieger/deadset-spec"
+    "github.com/cplieger/deadset-spec/v2"
 )
 
 func TestKindsAreCurrent(t *testing.T) {
