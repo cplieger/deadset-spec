@@ -1,0 +1,28 @@
+One main package and two configured root patterns: one matches a declaration
+nothing references and keeps it live, the other matches no symbol at all. A third
+declaration nothing references and no pattern names is reported beside them.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Rooted": { "file": "target/main.go", "line": 9 },
+    "PlainDead": { "file": "target/main.go", "line": 12 }
+  }
+}
+-- target/go.mod --
+module example.com/app
+
+go 1.27.0
+-- target/main.go --
+package main
+
+func main() { println(kept()) }
+
+// kept is called from main.
+func kept() string { return "k" }
+
+// rooted is reached by nothing and a configured root pattern names it.
+func rooted() string { return "r" }
+
+// plainDead is reached by nothing and no configured root names it.
+func plainDead() string { return "d" }

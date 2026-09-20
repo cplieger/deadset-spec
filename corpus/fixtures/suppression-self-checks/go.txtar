@@ -1,7 +1,7 @@
-One main package whose inline directives and ignore file hold both outcomes of
+One main package whose inline directives and ignore file hold every outcome of
 each mechanism: a directive that states no reason and an entry scoped to no file,
-each refused and each leaving the declaration it named reported, beside one
-directive and one entry that are in effect.
+each refused and each leaving the declaration it named reported, an entry naming a
+declaration nothing reports, and one directive and one entry that are in effect.
 
 -- fixture.json --
 {
@@ -11,7 +11,8 @@ directive and one entry that are in effect.
     "DirectiveInEffect": { "file": "target/main.go", "line": 12 },
     "UnsuppressedByUnscoped": { "file": "target/main.go", "line": 15 },
     "EntryInEffect": { "file": "target/deadset-ignore.json", "line": 4 },
-    "UnscopedEntry": { "file": "target/deadset-ignore.json", "line": 10 }
+    "UnscopedEntry": { "file": "target/deadset-ignore.json", "line": 10 },
+    "StaleEntry": { "file": "target/deadset-ignore.json", "line": 15 }
   }
 }
 -- target/go.mod --
@@ -39,7 +40,7 @@ func unscoped() string { return "u" }
 func dropped() string { return "d" }
 -- target/deadset-ignore.json --
 {
-  "description": "One entry in effect and one scoped to no file.",
+  "description": "One entry in effect, one scoped to no file and one that matches nothing.",
   "ignore": [
     {
       "code": "DS1002",
@@ -51,6 +52,12 @@ func dropped() string { return "d" }
       "code": "DS1002",
       "symbol": "go://example.com/app#unscoped",
       "reason": "the entry names no file"
+    },
+    {
+      "code": "DS1002",
+      "symbol": "go://example.com/app#kept",
+      "path": "main.go",
+      "reason": "stale: main calls kept, so nothing is reported there"
     }
   ]
 }
