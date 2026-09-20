@@ -1,6 +1,6 @@
 {
   "name": "suppression-self-checks",
-  "description": "A suppression record that states no reason and one scoped to no file are each reported, and each is refused, so the declaration it named is reported beside it. The directive and the entry that are in effect are not reported, and neither is the declaration either of them holds back, so the fixture pins both outcomes of both mechanisms.",
+  "description": "A suppression record that states no reason and one scoped to no file are each reported, and each is refused, so the declaration it named is reported beside it. An entry naming a declaration nothing reports is reported as a stale record of the report rather than as a finding. The directive and the entry that are in effect are not reported, and neither is the declaration either of them holds back, so the fixture pins every outcome of both mechanisms.",
   "languages": ["go"],
   "target_kind": "application",
   "expect": [
@@ -47,6 +47,15 @@
     {
       "symbol": "EntryInEffect",
       "report": "none"
+    },
+    {
+      "symbol": "StaleEntry",
+      "report": "DS1703",
+      "confidence": "certain",
+      "symbol_kind": "suppression",
+      "details": {
+        "mechanism": "ignore"
+      }
     }
   ]
 }

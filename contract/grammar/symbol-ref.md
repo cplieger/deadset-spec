@@ -177,15 +177,16 @@ As in Go, a spelling can parse and match nothing: `#Green` for an enum member wr
 
 ## Patterns
 
-A configured root may be a pattern (`roots.patterns` in [`config.schema.json`](../config.schema.json)). A pattern is a reference in which `*` stands for zero or more characters inside one element of the scope, where it never crosses `/` or `#`, or inside one component of the fragment, where it never crosses `.`, `:` or `#`; it never stands inside a quoted or computed component and never replaces any part of the language prefix. Everything else in the pattern is compared bytewise. A pattern that matches no symbol is a `DS1704`.
+A configured root may be a pattern (`roots.patterns` in [`config.schema.json`](../config.schema.json)). Each entry is matched against the reference of every symbol the analysis enumerates: `*` matches any run of characters including the solidus, `?` matches exactly one character counted as a Unicode code point, no other character is special, and an entry holding neither wildcard matches only the symbol whose reference it spells exactly. A pattern that matches no symbol is a `DS1704`.
 
 ```text
 go://example.com/app#Catalog.*
 go://example.com/app/internal/*#*
 ts://@example/app/src/generated/*.ts#*
+ts://@example/app/src/route-v?.ts#*
 ```
 
-`*` is the only wildcard: no character class, because `[` and `<` are literal in a type-parameter form, and no `**`, so a pattern names one directory level. Patterns are accepted for roots only. An ignore entry, a baseline row and an edge name exact references, because an adjudication broader than one symbol masks findings nobody adjudicated.
+Patterns are accepted for roots only. An ignore entry, a baseline row and an edge name exact references, because an adjudication broader than one symbol masks findings nobody adjudicated.
 
 ## The grammar
 

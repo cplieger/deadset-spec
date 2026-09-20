@@ -1,6 +1,6 @@
 {
   "description": "The fixture set, the fixture-level members, the expectation-row members, the details members a row may pin and the rendering-manifest members of the corpus at the version this document records. The suite compares it with corpus/corpus.json, corpus/fixtures/, corpus/expect.schema.json and corpus/fixture.schema.json on disk, so a fixture or a member of any of those kinds added while corpus_version still names the version recorded here fails, and moving the version and rewriting this document in one change is the green path. The rule corpus.json states for itself is what this document enforces: the minor number moves when a fixture or an optional field is added. Nothing outside this repository reads it, and no analyzer implements anything on account of it.",
-  "corpus_version": "1.4.0",
+  "corpus_version": "1.5.0",
   "fixtures": [
     "applied-replace-local-dependency",
     "configuration-matrix-intersection",
@@ -16,6 +16,7 @@
     "suppression-self-checks",
     "test-of-dead-code",
     "test-only-reference",
+    "unmatched-configured-root",
     "unreachable-export",
     "unused-declaration-visibility",
     "unused-exported-consumer",
@@ -23,6 +24,7 @@
   ],
   "fixture_members": [
     "closed_world",
+    "configured_roots",
     "consumers",
     "description",
     "expect",

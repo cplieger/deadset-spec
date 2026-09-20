@@ -1,0 +1,35 @@
+{
+  "name": "unmatched-configured-root",
+  "description": "A configured root pattern that matches no symbol is reported, once, and the pattern beside it that matches a declaration roots that declaration, so the declaration is not reported while an identical one no pattern names is. The fixture pins both outcomes of a configured root and both outcomes of rooting a declaration through one.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "configured_roots": {
+    "RootedPattern": "go://example.com/app#root*",
+    "AbsentPattern": "go://example.com/app#absent*"
+  },
+  "expect": [
+    {
+      "symbol": "AbsentPattern",
+      "report": "DS1704",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "root"
+    },
+    {
+      "symbol": "RootedPattern",
+      "report": "none"
+    },
+    {
+      "symbol": "Rooted",
+      "report": "none"
+    },
+    {
+      "symbol": "PlainDead",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}
