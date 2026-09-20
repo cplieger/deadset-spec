@@ -1,0 +1,52 @@
+{
+  "name": "suppression-self-checks",
+  "description": "A suppression record that states no reason and one scoped to no file are each reported, and each is refused, so the declaration it named is reported beside it. The directive and the entry that are in effect are not reported, and neither is the declaration either of them holds back, so the fixture pins both outcomes of both mechanisms.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "ReasonlessDirective",
+      "report": "DS1701",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "suppression",
+      "details": {
+        "mechanism": "inline"
+      }
+    },
+    {
+      "symbol": "UnsuppressedByReasonless",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "DirectiveInEffect",
+      "report": "none"
+    },
+    {
+      "symbol": "UnscopedEntry",
+      "report": "DS1702",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "suppression",
+      "details": {
+        "mechanism": "ignore"
+      }
+    },
+    {
+      "symbol": "UnsuppressedByUnscoped",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "EntryInEffect",
+      "report": "none"
+    }
+  ]
+}

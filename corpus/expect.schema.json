@@ -108,6 +108,55 @@
               "type": "string",
               "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$"
             }
+          },
+          "details": {
+            "description": "The members of the reported finding's details the row pins, each named and shaped as the details object of contract/finding.schema.json declares it for the row's report code. Every member is optional and the row pins exactly the members it names, so a runner compares those and states nothing about the ones it omits; the object is never empty, because a details naming no member pins nothing. The member set is what a language-neutral expectation can state: a details member whose value is a position or a stable symbol reference spells one language's own names, which no field of an expectation does, so implementations, write_positions, entry and sides have no form here and the arms below carry the rest under the codes whose details arm names each. A member named under a code whose arm does not carry it is refused rather than ignored, and details is forbidden altogether when report is none, because no finding is reported there whose details a row could pin. A member whose value one language alone spells, a build constraint or a dependency section, is named only by a fixture that lists that one language, for the reason symbol_kind states: every expectation applies to every rendering the fixture lists.",
+            "type": "object",
+            "additionalProperties": false,
+            "minProperties": 1,
+            "properties": {
+              "narrower_visibility": {
+                "description": "The widest scope that contains every reference to the symbol, so the visibility the references support: file, package or module. It is what distinguishes two narrowing findings whose subjects differ in nothing else.",
+                "type": "string",
+                "enum": ["file", "package", "module"]
+              },
+              "excluded_by": {
+                "description": "The build constraint that excluded the file, as the file spells it.",
+                "type": "string",
+                "minLength": 1
+              },
+              "dependency_class": {
+                "description": "The section that declares the dependency, which is the selector a stable symbol reference spells for the same subject.",
+                "type": "string",
+                "enum": ["require", "dependency", "dev-dependency", "peer-dependency"]
+              },
+              "replacement": {
+                "description": "The right-hand side of the replace directive the finding names, as the module file spells it.",
+                "type": "string",
+                "minLength": 1
+              },
+              "mechanism": {
+                "description": "Where the suppression record the finding reports lives: inline, ignore or baseline.",
+                "type": "string",
+                "enum": ["inline", "ignore", "baseline"]
+              },
+              "edge": {
+                "description": "The identifier of the declared cross-language edge the finding reports, as the edges document at the target root spells it.",
+                "type": "string",
+                "pattern": "^[A-Za-z0-9_.-]+(/[A-Za-z0-9_.-]+)*$"
+              },
+              "overlap": {
+                "description": "The external linters or rules that report the same kind in the rendering's language, as the overlap field of the kind's row in contract/kinds.json lists them for that language.",
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "description": "One linter or rule of the kind's overlap list for this language.",
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
           }
         },
         "if": {
@@ -122,14 +171,108 @@
               { "required": ["confidence"] },
               { "required": ["reachability_class"] },
               { "required": ["liveness_relation"] },
-              { "required": ["configurations"] }
+              { "required": ["configurations"] },
+              { "required": ["details"] }
             ]
           }
         },
         "else": {
           "required": ["confidence"],
           "not": { "required": ["retained_by"] }
-        }
+        },
+        "allOf": [
+          {
+            "if": {
+              "required": ["report"],
+              "properties": {
+                "report": { "enum": ["DS1101", "DS1102", "DS1104"] }
+              }
+            },
+            "else": {
+              "properties": {
+                "details": { "not": { "required": ["narrower_visibility"] } }
+              }
+            }
+          },
+          {
+            "if": {
+              "required": ["report"],
+              "properties": {
+                "report": { "const": "DS1501" }
+              }
+            },
+            "else": {
+              "properties": {
+                "details": { "not": { "required": ["excluded_by"] } }
+              }
+            }
+          },
+          {
+            "if": {
+              "required": ["report"],
+              "properties": {
+                "report": { "const": "DS1601" }
+              }
+            },
+            "else": {
+              "properties": {
+                "details": { "not": { "required": ["dependency_class"] } }
+              }
+            }
+          },
+          {
+            "if": {
+              "required": ["report"],
+              "properties": {
+                "report": { "const": "DS1605" }
+              }
+            },
+            "else": {
+              "properties": {
+                "details": { "not": { "required": ["replacement"] } }
+              }
+            }
+          },
+          {
+            "if": {
+              "required": ["report"],
+              "properties": {
+                "report": { "enum": ["DS1701", "DS1702", "DS1703"] }
+              }
+            },
+            "else": {
+              "properties": {
+                "details": { "not": { "required": ["mechanism"] } }
+              }
+            }
+          },
+          {
+            "if": {
+              "required": ["report"],
+              "properties": {
+                "report": { "const": "DS1705" }
+              }
+            },
+            "else": {
+              "properties": {
+                "details": { "not": { "required": ["edge"] } }
+              }
+            }
+          },
+          {
+            "if": {
+              "required": ["report"],
+              "properties": {
+                "report": { "enum": ["DS1801", "DS1802", "DS1803", "DS1805", "DS1807", "DS1809"] }
+              }
+            },
+            "else": {
+              "properties": {
+                "details": { "not": { "required": ["overlap"] } }
+              }
+            }
+          }
+        ]
       }
     }
   }

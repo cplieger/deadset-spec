@@ -1,0 +1,28 @@
+{
+  "name": "redundant-export-keyword",
+  "description": "A package whose consumer set the fixture declares complete. An export the consumer references is not reported. An export every reference of which is inside the module that declares it is reported as a keyword that can go, and the module's own reference to it is what keeps the declaration live, so the finding is about the visibility and not about the declaration.",
+  "languages": ["ts"],
+  "target_kind": "library",
+  "consumers": ["consumer"],
+  "closed_world": ["consumers"],
+  "expect": [
+    {
+      "symbol": "Published",
+      "report": "none"
+    },
+    {
+      "symbol": "LocalOnly",
+      "report": "DS1104",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "details": {
+        "narrower_visibility": "file"
+      }
+    },
+    {
+      "symbol": "Caller",
+      "report": "none"
+    }
+  ]
+}

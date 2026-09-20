@@ -9,6 +9,7 @@ import (
 	"maps"
 	"os"
 	"path"
+	"reflect"
 	"regexp"
 	"slices"
 	"strconv"
@@ -103,14 +104,58 @@ type expectationDocument struct {
 }
 
 type expectationRow struct {
-	Symbol            string   `json:"symbol"`
-	Report            string   `json:"report"`
-	SymbolKind        string   `json:"symbol_kind"`
-	Confidence        string   `json:"confidence"`
-	ReachabilityClass string   `json:"reachability_class"`
-	LivenessRelation  string   `json:"liveness_relation"`
-	Configurations    []string `json:"configurations"`
-	RetainedBy        []string `json:"retained_by"`
+	Details           *expectationDetails `json:"details"`
+	Symbol            string              `json:"symbol"`
+	Report            string              `json:"report"`
+	SymbolKind        string              `json:"symbol_kind"`
+	Confidence        string              `json:"confidence"`
+	ReachabilityClass string              `json:"reachability_class"`
+	LivenessRelation  string              `json:"liveness_relation"`
+	Configurations    []string            `json:"configurations"`
+	RetainedBy        []string            `json:"retained_by"`
+}
+
+// expectationDetails mirrors the details a row pins, one field per member the
+// expectation schema admits, so a member the schema does not declare fails the
+// decode as well as the validation.
+type expectationDetails struct {
+	Overlap            []string `json:"overlap"`
+	NarrowerVisibility string   `json:"narrower_visibility"`
+	ExcludedBy         string   `json:"excluded_by"`
+	DependencyClass    string   `json:"dependency_class"`
+	Replacement        string   `json:"replacement"`
+	Mechanism          string   `json:"mechanism"`
+	Edge               string   `json:"edge"`
+}
+
+// perLanguageDetails are the details members whose value one language alone
+// spells: a build constraint, a dependency section, a replace directive's
+// right-hand side and a linter list are each written in one language's own terms,
+// so a fixture that lists more than one rendering cannot pin them.
+var perLanguageDetails = []string{"dependency_class", "excluded_by", "overlap", "replacement"}
+
+// namedDetails lists the details members one row pins, sorted.
+func (row expectationRow) namedDetails() []string {
+	if row.Details == nil {
+		return nil
+	}
+	named := map[string]bool{
+		"dependency_class":    row.Details.DependencyClass != "",
+		"edge":                row.Details.Edge != "",
+		"excluded_by":         row.Details.ExcludedBy != "",
+		"mechanism":           row.Details.Mechanism != "",
+		"narrower_visibility": row.Details.NarrowerVisibility != "",
+		"overlap":             len(row.Details.Overlap) > 0,
+		"replacement":         row.Details.Replacement != "",
+	}
+	var out []string
+	for member, present := range named {
+		if present {
+			out = append(out, member)
+		}
+	}
+	slices.Sort(out)
+	return out
 }
 
 // manifestDocument mirrors a rendering's fixture.json. Line is a pointer so
@@ -161,7 +206,7 @@ var (
 
 	// vocabularyFields are the expectation-file fields corpus.json must name
 	// a closed vocabulary for.
-	vocabularyFields = []string{"confidence", "languages", "reachability_class", "report", "retained_by", "symbol_kind"}
+	vocabularyFields = []string{"confidence", "details", "languages", "reachability_class", "report", "retained_by", "symbol_kind"}
 )
 
 // decodeStrict decodes one JSON object, failing on any key the target type
@@ -831,6 +876,8 @@ type corpusBaselineDocument struct {
 	Fixtures           []string `json:"fixtures"`
 	FixtureMembers     []string `json:"fixture_members"`
 	ExpectationMembers []string `json:"expectation_members"`
+	DetailsMembers     []string `json:"details_members"`
+	ManifestMembers    []string `json:"manifest_members"`
 }
 
 // loadCorpusBaseline decodes the committed baseline, failing the test on any
@@ -845,9 +892,9 @@ func loadCorpusBaseline(t *testing.T) corpusBaselineDocument {
 	if err = decodeStrict(data, &doc); err != nil {
 		t.Fatalf("Setup: decoding %s: %v", corpusBaselinePath, err)
 	}
-	if len(doc.Fixtures) == 0 || len(doc.FixtureMembers) == 0 || len(doc.ExpectationMembers) == 0 {
-		t.Fatalf("Setup: %s records %d fixture(s), %d fixture member(s) and %d expectation member(s), want the published sets",
-			corpusBaselinePath, len(doc.Fixtures), len(doc.FixtureMembers), len(doc.ExpectationMembers))
+	if len(doc.Fixtures) == 0 || len(doc.FixtureMembers) == 0 || len(doc.ExpectationMembers) == 0 || len(doc.DetailsMembers) == 0 || len(doc.ManifestMembers) == 0 {
+		t.Fatalf("Setup: %s records %d fixture(s), %d fixture member(s), %d expectation member(s), %d details member(s) and %d manifest member(s), want the published sets",
+			corpusBaselinePath, len(doc.Fixtures), len(doc.FixtureMembers), len(doc.ExpectationMembers), len(doc.DetailsMembers), len(doc.ManifestMembers))
 	}
 	return doc
 }
@@ -919,6 +966,22 @@ func TestCorpusVersionMovesWithTheFixtureSetAndTheExpectationMembers(t *testing.
 	if got := slices.Sorted(maps.Keys(members)); !slices.Equal(got, baseline.ExpectationMembers) {
 		t.Errorf("%s declares the expectation members %v and %s records %v at corpus_version %q: a member added or removed moves the version, so move it in %s and rewrite %s in one change",
 			expectSchemaPath, got, corpusBaselinePath, baseline.ExpectationMembers, doc.CorpusVersion, corpusPath, corpusBaselinePath)
+	}
+	details := objectAt(schema, expectSchemaDetailsPath+"/properties")
+	if details == nil {
+		t.Fatalf("Setup: %s %s/properties is not an object", expectSchemaPath, expectSchemaDetailsPath)
+	}
+	if got := slices.Sorted(maps.Keys(details)); !slices.Equal(got, baseline.DetailsMembers) {
+		t.Errorf("%s declares the details members %v and %s records %v at corpus_version %q: a member added or removed moves the version, so move it in %s and rewrite %s in one change",
+			expectSchemaPath, got, corpusBaselinePath, baseline.DetailsMembers, doc.CorpusVersion, corpusPath, corpusBaselinePath)
+	}
+	manifest := objectAt(loadSchema(t, spec.Corpus, fixtureSchemaPath), "properties")
+	if manifest == nil {
+		t.Fatalf("Setup: %s properties is not an object", fixtureSchemaPath)
+	}
+	if got := slices.Sorted(maps.Keys(manifest)); !slices.Equal(got, baseline.ManifestMembers) {
+		t.Errorf("%s declares the manifest members %v and %s records %v at corpus_version %q: a member added or removed moves the version, so move it in %s and rewrite %s in one change",
+			fixtureSchemaPath, got, corpusBaselinePath, baseline.ManifestMembers, doc.CorpusVersion, corpusPath, corpusBaselinePath)
 	}
 }
 
@@ -1546,6 +1609,568 @@ func TestExpectSchemaClosedWorldNamesItsTwoFacts(t *testing.T) {
 			document := `{"name":"planted","description":"One planted fixture.","languages":["go"],` +
 				`"target_kind":"library","closed_world":` + tc.value +
 				`,"expect":[{"symbol":"Narrowable","report":"DS1101","confidence":"certain"}]}`
+			problems, err := validationProblems(expectSchemaPath, []byte(document))
+			if err != nil {
+				t.Fatalf("Setup: validationProblems(%q, %s): %v", expectSchemaPath, tc.name, err)
+			}
+			if tc.want == "" {
+				if len(problems) != 0 {
+					t.Errorf("validationProblems(%q, %s) = %v, want no violation", expectSchemaPath, tc.name, problems)
+				}
+				return
+			}
+			named := false
+			for _, problem := range problems {
+				if problem.InstanceLocation == tc.want {
+					named = true
+				}
+			}
+			if !named {
+				t.Errorf("validationProblems(%q, %s) = %v, want a violation at %q", expectSchemaPath, tc.name, problems, tc.want)
+			}
+		})
+	}
+}
+
+// findingDetailsRefs are the definitions of contract/finding.schema.json whose
+// value is a position or a stable symbol reference. A details member that reaches
+// one of them spells one language's own file names or symbol names, which no
+// field of a language-neutral expectation does, so such a member has no form on
+// an expectation row.
+var findingDetailsRefs = []string{"#/$defs/position", "#/$defs/positioned_symbol", "#/$defs/symbol_reference"}
+
+// refValues lists every $ref value the schema declares, at any depth.
+func refValues(node any) []string {
+	var out []string
+	switch n := node.(type) {
+	case map[string]any:
+		if ref, ok := n["$ref"].(string); ok {
+			out = append(out, ref)
+		}
+		for _, child := range n {
+			out = append(out, refValues(child)...)
+		}
+	case []any:
+		for _, child := range n {
+			out = append(out, refValues(child)...)
+		}
+	}
+	slices.Sort(out)
+	return slices.Compact(out)
+}
+
+// stringsAt reads a JSON array of strings out of a decoded schema node.
+func stringsAt(node any) []string {
+	values, ok := node.([]any)
+	if !ok {
+		return nil
+	}
+	out := make([]string, 0, len(values))
+	for _, v := range values {
+		if s, ok := v.(string); ok {
+			out = append(out, s)
+		}
+	}
+	return out
+}
+
+// conditionValues reads the values one discriminating field is conditioned on in
+// an if branch, whether the branch writes a const or an enum.
+func conditionValues(branch any, field string) []string {
+	condition := objectAt(map[string]any{"root": branch}, "root/properties/"+field)
+	if condition == nil {
+		return nil
+	}
+	if value, ok := condition["const"].(string); ok {
+		return []string{value}
+	}
+	return stringsAt(condition["enum"])
+}
+
+// detailsRequired collects every details member a branch of a schema requires,
+// skipping the negated and the alternative subtrees, so what it returns is what
+// the branch asserts a document carries rather than what it forbids.
+func detailsRequired(node any) []string {
+	var out []string
+	switch n := node.(type) {
+	case map[string]any:
+		if props, ok := n["properties"].(map[string]any); ok {
+			if details, ok := props["details"].(map[string]any); ok {
+				out = append(out, stringsAt(details["required"])...)
+			}
+		}
+		for key, child := range n {
+			if key == "not" || key == "else" {
+				continue
+			}
+			out = append(out, detailsRequired(child)...)
+		}
+	case []any:
+		for _, child := range n {
+			out = append(out, detailsRequired(child)...)
+		}
+	}
+	slices.Sort(out)
+	return slices.Compact(out)
+}
+
+// detailsForbidden collects every details member a branch of a schema forbids,
+// which is how an expectation row's arms state that a member belongs to another
+// code.
+func detailsForbidden(node any) []string {
+	var out []string
+	switch n := node.(type) {
+	case map[string]any:
+		if props, ok := n["properties"].(map[string]any); ok {
+			if details, ok := props["details"].(map[string]any); ok {
+				out = append(out, detailsRequired(details["not"])...)
+				out = append(out, stringsAt(objectAt(details, "not")["required"])...)
+			}
+		}
+		for _, child := range n {
+			out = append(out, detailsForbidden(child)...)
+		}
+	case []any:
+		for _, child := range n {
+			out = append(out, detailsForbidden(child)...)
+		}
+	}
+	slices.Sort(out)
+	return slices.Compact(out)
+}
+
+// detailsBinding is one branch of the finding schema's discrimination: the codes
+// it holds for, the languages it narrows to, and the details members a finding
+// under it carries. An empty language list is every language.
+type detailsBinding struct {
+	Codes     []string
+	Languages []string
+	Members   []string
+}
+
+// findingDetailsBindings reads every branch of the finding schema's allOf that
+// binds details members to issue-kind codes, keeping the language a nested branch
+// narrows to, so a caller knows both which codes carry a member and which
+// language's findings do.
+func findingDetailsBindings(schema map[string]any) []detailsBinding {
+	var out []detailsBinding
+	arms, ok := schema["allOf"].([]any)
+	if !ok {
+		return nil
+	}
+	for _, arm := range arms {
+		branch, ok := arm.(map[string]any)
+		if !ok {
+			continue
+		}
+		codes := conditionValues(branch["if"], "code")
+		if len(codes) == 0 {
+			continue
+		}
+		then, _ := branch["then"].(map[string]any)
+		if members := stringsAt(objectAt(then, "properties/details")["required"]); len(members) > 0 {
+			out = append(out, detailsBinding{Codes: codes, Members: members})
+		}
+		nested, _ := then["allOf"].([]any)
+		for _, inner := range nested {
+			language, ok := inner.(map[string]any)
+			if !ok {
+				continue
+			}
+			innerThen, _ := language["then"].(map[string]any)
+			if members := stringsAt(objectAt(innerThen, "properties/details")["required"]); len(members) > 0 {
+				out = append(out, detailsBinding{Codes: codes, Languages: conditionValues(language["if"], "language"), Members: members})
+			}
+		}
+	}
+	return out
+}
+
+// armCodes maps each details member to the issue-kind codes one schema's arms
+// bind it to. requiredSide reads the member out of the branch a code matches,
+// which is how the finding schema writes the binding; the other form reads it out
+// of the branch every other code matches, which is how an expectation row does,
+// because the member is optional there.
+func armCodes(arms any, field string, requiredSide bool) map[string][]string {
+	out := map[string][]string{}
+	list, ok := arms.([]any)
+	if !ok {
+		return out
+	}
+	for _, arm := range list {
+		branch, ok := arm.(map[string]any)
+		if !ok {
+			continue
+		}
+		codes := conditionValues(branch["if"], field)
+		if len(codes) == 0 {
+			continue
+		}
+		members := detailsForbidden(branch["else"])
+		if requiredSide {
+			members = detailsRequired(branch["then"])
+		}
+		for _, member := range members {
+			out[member] = append(out[member], codes...)
+		}
+	}
+	for member, codes := range out {
+		slices.Sort(codes)
+		out[member] = slices.Compact(codes)
+	}
+	return out
+}
+
+// withoutDescriptions is the schema with every description dropped, which is what
+// makes two documents comparable on shape alone: each states its own member in
+// its own words and the values they admit must be identical.
+func withoutDescriptions(node any) any {
+	switch n := node.(type) {
+	case map[string]any:
+		out := make(map[string]any, len(n))
+		for key, child := range n {
+			if key == "description" {
+				continue
+			}
+			out[key] = withoutDescriptions(child)
+		}
+		return out
+	case []any:
+		out := make([]any, len(n))
+		for i, child := range n {
+			out[i] = withoutDescriptions(child)
+		}
+		return out
+	default:
+		return node
+	}
+}
+
+// asJSON renders a decoded schema node for a failure message.
+func asJSON(t *testing.T, node any) string {
+	t.Helper()
+	data, err := json.MarshalIndent(node, "", " ")
+	if err != nil {
+		t.Fatalf("Setup: json.MarshalIndent: %v", err)
+	}
+	return string(data)
+}
+
+// admittedDetailsMembers is the details member set an expectation row may name:
+// every member the finding schema binds to an issue-kind code, less those whose
+// value is a position or a stable symbol reference. It returns the codes each
+// admitted member is bound to, so a caller compares the binding as well as the
+// set.
+func admittedDetailsMembers(t *testing.T, finding map[string]any) map[string][]string {
+	t.Helper()
+	bound := armCodes(finding["allOf"], "code", true)
+	if len(bound) == 0 {
+		t.Fatalf("Setup: %s binds no details member to a code", findingSchemaPath)
+	}
+	properties := objectAt(finding, "properties/details/properties")
+	if properties == nil {
+		t.Fatalf("Setup: %s properties/details/properties is not an object", findingSchemaPath)
+	}
+	admitted := map[string][]string{}
+	for member, codes := range bound {
+		shape, ok := properties[member]
+		if !ok {
+			t.Errorf("%s binds %q to %v and declares no property of that name", findingSchemaPath, member, codes)
+			continue
+		}
+		spelled := false
+		for _, ref := range refValues(shape) {
+			if slices.Contains(findingDetailsRefs, ref) {
+				spelled = true
+			}
+		}
+		if !spelled {
+			admitted[member] = codes
+		}
+	}
+	if len(admitted) == 0 {
+		t.Fatalf("Setup: no details member of %s is statable by a language-neutral expectation", findingSchemaPath)
+	}
+	return admitted
+}
+
+// TestExpectSchemaDetailsMirrorsTheFindingSchema pins the mirror the expectation
+// row carries. The corpus schemas declare every shape inline, which is what
+// TestCorpusSchemasAreClosedAndDescribed enforces, so the row cannot reference
+// the finding schema's details arms and states them again; this is the check that
+// makes the copy answer to the original. It compares three things: which members
+// the row admits, which codes each is bound to, and the values each admits.
+func TestExpectSchemaDetailsMirrorsTheFindingSchema(t *testing.T) {
+	finding := loadFindingSchema(t)
+	expect := loadSchema(t, spec.Corpus, expectSchemaPath)
+	admitted := admittedDetailsMembers(t, finding)
+
+	row := objectAt(expect, expectSchemaRowPath)
+	if row == nil {
+		t.Fatalf("Setup: %s %s is not an object", expectSchemaPath, expectSchemaRowPath)
+	}
+	mirrored := armCodes(row["allOf"], "report", false)
+
+	t.Run("members", func(t *testing.T) {
+		got, want := slices.Sorted(maps.Keys(mirrored)), slices.Sorted(maps.Keys(admitted))
+		if !slices.Equal(got, want) {
+			t.Errorf("%s binds the details members %v and %s binds %v to a code, less those whose value is a position or a stable symbol reference: want the same set",
+				expectSchemaPath, got, findingSchemaPath, want)
+		}
+	})
+
+	for _, member := range slices.Sorted(maps.Keys(admitted)) {
+		t.Run(subtestName(member), func(t *testing.T) {
+			if got, want := mirrored[member], admitted[member]; !slices.Equal(got, want) {
+				t.Errorf("%s binds details.%s to %v and %s binds it to %v, want the same codes",
+					expectSchemaPath, member, got, findingSchemaPath, want)
+			}
+			got := withoutDescriptions(objectAt(expect, expectSchemaDetailsPath+"/properties/"+member))
+			want := withoutDescriptions(objectAt(finding, "properties/details/properties/"+member))
+			if !reflect.DeepEqual(got, want) {
+				t.Errorf("%s declares details.%s as\n%s\nand %s declares it as\n%s\nwant the same shape",
+					expectSchemaPath, member, asJSON(t, got), findingSchemaPath, asJSON(t, want))
+			}
+		})
+	}
+}
+
+// TestResultsSchemaDetailsEchoTheExpectationRow pins the other half of the round
+// trip: a runner records the answer in the expectation's own vocabulary, so the
+// details members it may write are the members a row may pin, with the same
+// shapes.
+func TestResultsSchemaDetailsEchoTheExpectationRow(t *testing.T) {
+	expect := objectAt(loadSchema(t, spec.Corpus, expectSchemaPath), expectSchemaDetailsPath)
+	results := objectAt(loadSchema(t, spec.Corpus, resultsSchemaPath), resultsSchemaActualPath+"/properties/details")
+	if expect == nil || results == nil {
+		t.Fatalf("Setup: %s or %s declares no details object", expectSchemaPath, resultsSchemaPath)
+	}
+	got, want := withoutDescriptions(results), withoutDescriptions(expect)
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("%s declares the answer's details as\n%s\nand %s declares the row's as\n%s\nwant the same shape",
+			resultsSchemaPath, asJSON(t, got), expectSchemaPath, asJSON(t, want))
+	}
+}
+
+// checkDetailsLanguageScope reports every row that pins a details member one
+// language alone spells in a fixture that lists more than one rendering. Every
+// expectation applies to every rendering listed, so such a row asserts a value
+// the other rendering's finding cannot carry; the expectation schema states the
+// rule and JSON Schema cannot check it, because the fixture's language list and
+// the row's details sit in two places the arms cannot relate.
+func checkDetailsLanguageScope(doc *expectationDocument) []error {
+	if len(doc.Languages) < 2 {
+		return nil
+	}
+	var errs []error
+	for _, row := range doc.Expect {
+		for _, member := range row.namedDetails() {
+			if slices.Contains(perLanguageDetails, member) {
+				errs = append(errs, fmt.Errorf("%s %s pins details.%s and the fixture lists %v: a member one language alone spells is pinned only by a fixture that lists that one language",
+					doc.Name, row.Symbol, member, doc.Languages))
+			}
+		}
+	}
+	return errs
+}
+
+func TestCorpusDetailsPinNoValueAnotherRenderingCannotCarry(t *testing.T) {
+	for _, doc := range corpusExpectations(t) {
+		t.Run("fixture_"+doc.Name, func(t *testing.T) {
+			if got := checkDetailsLanguageScope(&doc); len(got) != 0 {
+				t.Errorf("checkDetailsLanguageScope(%s) = %v, want no row pinning a value one language alone spells", doc.Name, got)
+			}
+		})
+	}
+
+	// One planted document per per-language member, in a two-language fixture,
+	// so a member that stopped being scoped reports here.
+	for _, member := range perLanguageDetails {
+		t.Run("planted_"+member, func(t *testing.T) {
+			details := &expectationDetails{}
+			switch member {
+			case "dependency_class":
+				details.DependencyClass = "require"
+			case "excluded_by":
+				details.ExcludedBy = "handwritten"
+			case "overlap":
+				details.Overlap = []string{"staticcheck U1000"}
+			case "replacement":
+				details.Replacement = "../local"
+			}
+			doc := expectationDocument{
+				Name:       "planted",
+				TargetKind: "library",
+				Languages:  []string{"go", "ts"},
+				Expect: []expectationRow{
+					{Symbol: "Subject", Report: "DS1001", Confidence: "certain", Details: details},
+				},
+			}
+			got := checkDetailsLanguageScope(&doc)
+			if len(got) != 1 {
+				t.Fatalf("checkDetailsLanguageScope(planted %s) = %v, want one error", member, got)
+			}
+			if !strings.Contains(got[0].Error(), "details."+member) {
+				t.Errorf("checkDetailsLanguageScope(planted %s) = %q, want it to name details.%s", member, got[0], member)
+			}
+		})
+	}
+}
+
+// pinnableDetails is the details members a fixture listing languages must pin on
+// a row reporting code, which is what makes the promotion of a kind carry the
+// finding's own data rather than its position alone. A member is pinnable when
+// the finding schema binds it to the code for every language the fixture lists,
+// the expectation schema admits it, and its value is not one a single language
+// spells while the fixture lists several.
+func pinnableDetails(bindings []detailsBinding, admitted map[string][]string, code string, languages []string) []string {
+	var out []string
+	for _, binding := range bindings {
+		if !slices.Contains(binding.Codes, code) {
+			continue
+		}
+		if len(binding.Languages) > 0 {
+			covered := true
+			for _, language := range languages {
+				covered = covered && slices.Contains(binding.Languages, language)
+			}
+			if !covered {
+				continue
+			}
+		}
+		for _, member := range binding.Members {
+			if _, ok := admitted[member]; !ok {
+				continue
+			}
+			if len(languages) > 1 && slices.Contains(perLanguageDetails, member) {
+				continue
+			}
+			out = append(out, member)
+		}
+	}
+	slices.Sort(out)
+	return slices.Compact(out)
+}
+
+// TestCorpusRowsPinEveryDetailsMemberTheirCodeCarries is the completeness half of
+// the details member: a row whose code's finding carries a member the expectation
+// can state pins it, so a promoted kind is answered on its data and not on its
+// position alone. The finding schema is the source of what each code carries, so a
+// code that gains a member turns every fixture reporting it red here until the
+// fixture pins it.
+func TestCorpusRowsPinEveryDetailsMemberTheirCodeCarries(t *testing.T) {
+	finding := loadFindingSchema(t)
+	bindings := findingDetailsBindings(finding)
+	if len(bindings) == 0 {
+		t.Fatalf("Setup: %s binds no details member to a code", findingSchemaPath)
+	}
+	admitted := admittedDetailsMembers(t, finding)
+
+	for _, doc := range corpusExpectations(t) {
+		t.Run("fixture_"+doc.Name, func(t *testing.T) {
+			for _, row := range doc.Expect {
+				if row.Report == reportedNone {
+					continue
+				}
+				want := pinnableDetails(bindings, admitted, row.Report, doc.Languages)
+				if len(want) == 0 {
+					continue
+				}
+				got := row.namedDetails()
+				for _, member := range want {
+					if !slices.Contains(got, member) {
+						t.Errorf("%s %s reports %s and pins details %v, want it to pin %q as well: %s binds that member to the code and %s admits it",
+							doc.Name, row.Symbol, row.Report, got, member, findingSchemaPath, expectSchemaPath)
+					}
+				}
+			}
+		})
+	}
+}
+
+// TestPinnableDetailsFollowsTheFindingSchemaAndTheLanguageList pins the rule the
+// check above applies, on the two cases a fixture cannot state: a member the
+// finding schema binds to one language the fixture does not list, and a member
+// whose value one language spells in a fixture that lists several.
+func TestPinnableDetailsFollowsTheFindingSchemaAndTheLanguageList(t *testing.T) {
+	finding := loadFindingSchema(t)
+	bindings := findingDetailsBindings(finding)
+	admitted := admittedDetailsMembers(t, finding)
+	cases := []struct {
+		name      string
+		code      string
+		languages []string
+		want      []string
+	}{
+		{name: "a_go_only_never_built_row_pins_the_constraint", code: "DS1501", languages: []string{"go"}, want: []string{"excluded_by"}},
+		{name: "a_typescript_never_built_row_pins_nothing", code: "DS1501", languages: []string{"ts"}, want: nil},
+		{name: "a_two_language_never_built_row_pins_nothing", code: "DS1501", languages: []string{"go", "ts"}, want: nil},
+		{name: "a_narrowing_row_pins_its_visibility_in_either_language", code: "DS1101", languages: []string{"go", "ts"}, want: []string{"narrower_visibility"}},
+		{name: "a_two_language_dependency_row_pins_nothing", code: "DS1601", languages: []string{"go", "ts"}, want: nil},
+		{name: "a_go_only_dependency_row_pins_its_section", code: "DS1601", languages: []string{"go"}, want: []string{"dependency_class"}},
+		{name: "an_interface_row_pins_nothing_the_row_can_state", code: "DS1201", languages: []string{"go"}, want: nil},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := pinnableDetails(bindings, admitted, tc.code, tc.languages); !slices.Equal(got, tc.want) {
+				t.Errorf("pinnableDetails(%s, %v) = %v, want %v", tc.code, tc.languages, got, tc.want)
+			}
+		})
+	}
+}
+
+// TestExpectSchemaDetailsBindToTheCodesArm pins the arms the details member sits
+// under, in both directions: a row may name the members its code's arm carries,
+// may not name a member another code's arm carries, may not name a member the
+// schema does not declare, may not pin an empty object, and may not carry details
+// at all when it reports nothing.
+func TestExpectSchemaDetailsBindToTheCodesArm(t *testing.T) {
+	cases := []struct {
+		name string
+		row  string
+		want string
+	}{
+		{
+			name: "a_narrowing_row_names_its_visibility",
+			row:  `{"symbol":"InFile","report":"DS1101","confidence":"certain","details":{"narrower_visibility":"file"}}`,
+		},
+		{
+			name: "an_intra_function_row_names_its_overlap",
+			row:  `{"symbol":"UnusedOption","report":"DS1801","confidence":"certain","details":{"overlap":["unparam"]}}`,
+		},
+		{
+			name: "a_row_need_not_name_any_details",
+			row:  `{"symbol":"InFile","report":"DS1101","confidence":"certain"}`,
+		},
+		{
+			name: "a_narrowing_row_may_not_name_an_overlap",
+			row:  `{"symbol":"InFile","report":"DS1101","confidence":"certain","details":{"narrower_visibility":"file","overlap":["unparam"]}}`,
+			want: "/expect/0/details",
+		},
+		{
+			name: "an_intra_function_row_may_not_name_a_visibility",
+			row:  `{"symbol":"UnusedOption","report":"DS1801","confidence":"certain","details":{"narrower_visibility":"file"}}`,
+			want: "/expect/0/details",
+		},
+		{
+			name: "a_row_may_not_name_a_member_the_schema_does_not_declare",
+			row:  `{"symbol":"InFile","report":"DS1101","confidence":"certain","details":{"write_positions":[]}}`,
+			want: "/expect/0/details",
+		},
+		{
+			name: "a_row_may_not_pin_an_empty_details",
+			row:  `{"symbol":"InFile","report":"DS1101","confidence":"certain","details":{}}`,
+			want: "/expect/0/details",
+		},
+		{
+			name: "an_unreported_subject_may_not_pin_details",
+			row:  `{"symbol":"UsedByConsumer","report":"none","details":{"narrower_visibility":"file"}}`,
+			want: "/expect/0",
+		},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			document := `{"name":"planted","description":"One planted expectation.","languages":["go"],"target_kind":"application","expect":[` + tc.row + `]}`
 			problems, err := validationProblems(expectSchemaPath, []byte(document))
 			if err != nil {
 				t.Fatalf("Setup: validationProblems(%q, %s): %v", expectSchemaPath, tc.name, err)

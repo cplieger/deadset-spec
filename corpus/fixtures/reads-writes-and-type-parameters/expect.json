@@ -1,0 +1,43 @@
+{
+  "name": "reads-writes-and-type-parameters",
+  "description": "A package-level variable two statements store into and nothing reads is reported, and the variable beside it one statement reads is not. A member of an enumerated type nothing names is reported, and the member a function returns is not. A type parameter neither the signature nor the body of its function names is reported, and one the result type names is not.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "WriteOnly",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "variable"
+    },
+    {
+      "symbol": "Read",
+      "report": "none"
+    },
+    {
+      "symbol": "NamedMember",
+      "report": "none"
+    },
+    {
+      "symbol": "UnnamedMember",
+      "report": "DS1302",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "enum-member",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "UnusedTypeParameter",
+      "report": "DS1303",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-parameter",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "UsedTypeParameter",
+      "report": "none"
+    }
+  ]
+}

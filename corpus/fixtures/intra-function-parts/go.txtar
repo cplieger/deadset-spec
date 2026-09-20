@@ -1,0 +1,86 @@
+One declaration per part the intra-function group reports: a parameter its body
+never reads, a result every call drops, a statement after a return, a store
+nothing reads before the next one, and a case an earlier case of the same switch
+already answers. Beside each sits a part of the same shape the group does not
+report.
+
+-- fixture.json --
+{
+  "symbols": {
+    "UnreadParameter": { "file": "target/parts.go", "line": 4 },
+    "ReadParameter": { "file": "target/parts.go", "line": 9 },
+    "DroppedResult": { "file": "target/parts.go", "line": 14 },
+    "ReadResult": { "file": "target/parts.go", "line": 17 },
+    "UnreachableStatement": { "file": "target/parts.go", "line": 23 },
+    "DeadStore": { "file": "target/parts.go", "line": 28 },
+    "LiveStore": { "file": "target/parts.go", "line": 29 },
+    "ReachableCase": { "file": "target/parts.go", "line": 47 },
+    "UnreachableCase": { "file": "target/parts.go", "line": 49 }
+  }
+}
+-- target/go.mod --
+module example.com/app
+
+go 1.27.0
+-- target/parts.go --
+package main
+
+// scaled names a label its body never reads.
+func scaled(value int, label string) int {
+	return value * 2
+}
+
+// doubled names one parameter its body reads.
+func doubled(value int) int {
+	return value * 2
+}
+
+// tally returns a count every call drops.
+func tally() int { return 1 }
+
+// total returns a count one call reads.
+func total() int { return 2 }
+
+// halted holds a statement after its return.
+func halted() {
+	println("before the return")
+	return
+	println("after the return")
+}
+
+// overwritten stores twice before anything reads the local.
+func overwritten() int {
+	count := 1
+	count = 2
+	return count
+}
+
+// stringer spells a value as text, and its unexported method set fixes which
+// types implement it.
+type stringer interface {
+	str() string
+}
+
+// node implements the stringer interface.
+type node struct{}
+
+func (node) str() string { return "n" }
+
+// classify names the stringer interface ahead of a type that implements it.
+func classify(v any) string {
+	switch v.(type) {
+	case stringer:
+		return "stringer"
+	case node:
+		return "node"
+	}
+	return "other"
+}
+-- target/main.go --
+package main
+
+func main() {
+	tally()
+	halted()
+	println(scaled(1, "a"), doubled(2), total(), overwritten(), classify(node{}), node{}.str())
+}

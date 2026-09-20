@@ -1,0 +1,77 @@
+An interface no declaration names as a type, an interface one function takes as a
+parameter type and one of whose methods nothing calls through it, and a
+compile-time satisfaction assertion for an interface nothing else names. Every
+declaration whose visibility the narrowing kinds could report is unexported or
+satisfies a live interface, so the fixture pins the interface kinds alone.
+
+-- fixture.json --
+{
+  "symbols": {
+    "UnusedInterface": { "file": "target/reader.go", "line": 4 },
+    "UsedInterface": { "file": "target/store.go", "line": 4 },
+    "CalledMethod": { "file": "target/store.go", "line": 5 },
+    "UncalledMethod": { "file": "target/store.go", "line": 6 },
+    "Assertion": { "file": "target/encoder.go", "line": 12 },
+    "AssertedInterfaceMethod": { "file": "target/encoder.go", "line": 5 },
+    "AssertedMethod": { "file": "target/encoder.go", "line": 10 }
+  }
+}
+-- target/go.mod --
+module example.com/app
+
+go 1.27.0
+-- target/reader.go --
+package main
+
+// reader reads a line, and nothing names it as a type.
+type reader interface {
+	read() string
+}
+
+type file struct{ name string }
+
+func (f file) read() string { return f.name }
+-- target/store.go --
+package main
+
+// store holds one value.
+type store interface {
+	Put(v string) error
+	Load() string
+}
+
+type disk struct{ held string }
+
+func (d *disk) Put(v string) error {
+	d.held = v
+	return nil
+}
+
+func (d *disk) Load() string { return d.held }
+
+func write(s store) error { return s.Put("v") }
+-- target/encoder.go --
+package main
+
+// encoder renders a payload.
+type encoder interface {
+	Encode() string
+}
+
+type payload struct{ body string }
+
+func (p payload) Encode() string { return p.body }
+
+var _ encoder = payload{}
+-- target/main.go --
+package main
+
+func main() {
+	f := file{name: "a"}
+	d := &disk{}
+	p := payload{body: "b"}
+	if write(d) != nil {
+		return
+	}
+	println(f.read(), d.Load(), p.body)
+}

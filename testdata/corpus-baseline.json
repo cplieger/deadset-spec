@@ -1,14 +1,19 @@
 {
-  "description": "The fixture set, the fixture-level members and the expectation-row members of the corpus at the version this document records. The suite compares it with corpus/corpus.json, corpus/fixtures/ and corpus/expect.schema.json on disk, so a fixture or a member of either kind added while corpus_version still names the version recorded here fails, and moving the version and rewriting this document in one change is the green path. The rule corpus.json states for itself is what this document enforces: the minor number moves when a fixture or an optional field is added. Nothing outside this repository reads it, and no analyzer implements anything on account of it.",
-  "corpus_version": "1.3.0",
+  "description": "The fixture set, the fixture-level members, the expectation-row members, the details members a row may pin and the rendering-manifest members of the corpus at the version this document records. The suite compares it with corpus/corpus.json, corpus/fixtures/, corpus/expect.schema.json and corpus/fixture.schema.json on disk, so a fixture or a member of any of those kinds added while corpus_version still names the version recorded here fails, and moving the version and rewriting this document in one change is the green path. The rule corpus.json states for itself is what this document enforces: the minor number moves when a fixture or an optional field is added. Nothing outside this repository reads it, and no analyzer implements anything on account of it.",
+  "corpus_version": "1.4.0",
   "fixtures": [
     "applied-replace-local-dependency",
     "configuration-matrix-intersection",
     "deprecated-and-unused",
     "file-never-built-or-imported",
+    "interface-members-and-assertions",
     "interface-satisfaction-conversion",
+    "intra-function-parts",
     "narrowing-under-a-closed-world",
     "private-member-unread",
+    "reads-writes-and-type-parameters",
+    "redundant-export-keyword",
+    "suppression-self-checks",
     "test-of-dead-code",
     "test-only-reference",
     "unreachable-export",
@@ -28,11 +33,25 @@
   "expectation_members": [
     "confidence",
     "configurations",
+    "details",
     "liveness_relation",
     "reachability_class",
     "report",
     "retained_by",
     "symbol",
     "symbol_kind"
+  ],
+  "details_members": [
+    "dependency_class",
+    "edge",
+    "excluded_by",
+    "mechanism",
+    "narrower_visibility",
+    "overlap",
+    "replacement"
+  ],
+  "manifest_members": [
+    "configurations",
+    "symbols"
   ]
 }

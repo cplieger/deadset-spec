@@ -1,0 +1,56 @@
+One main package whose inline directives and ignore file hold both outcomes of
+each mechanism: a directive that states no reason and an entry scoped to no file,
+each refused and each leaving the declaration it named reported, beside one
+directive and one entry that are in effect.
+
+-- fixture.json --
+{
+  "symbols": {
+    "ReasonlessDirective": { "file": "target/main.go", "line": 8 },
+    "UnsuppressedByReasonless": { "file": "target/main.go", "line": 9 },
+    "DirectiveInEffect": { "file": "target/main.go", "line": 12 },
+    "UnsuppressedByUnscoped": { "file": "target/main.go", "line": 15 },
+    "EntryInEffect": { "file": "target/deadset-ignore.json", "line": 4 },
+    "UnscopedEntry": { "file": "target/deadset-ignore.json", "line": 10 }
+  }
+}
+-- target/go.mod --
+module example.com/app
+
+go 1.27.0
+-- target/main.go --
+package main
+
+func main() { println(kept()) }
+
+// kept is called from main.
+func kept() string { return "k" }
+
+//deadset:ignore DS1002
+func noReason() string { return "n" }
+
+//deadset:ignore DS1002 -- in effect: nothing reaches quiet
+func quiet() string { return "q" }
+
+// unscoped is reached by nothing, and the entry naming it is scoped to no file.
+func unscoped() string { return "u" }
+
+// dropped is reached by nothing, so the entry naming it holds a finding back.
+func dropped() string { return "d" }
+-- target/deadset-ignore.json --
+{
+  "description": "One entry in effect and one scoped to no file.",
+  "ignore": [
+    {
+      "code": "DS1002",
+      "symbol": "go://example.com/app#dropped",
+      "path": "main.go",
+      "reason": "in effect: nothing reaches dropped"
+    },
+    {
+      "code": "DS1002",
+      "symbol": "go://example.com/app#unscoped",
+      "reason": "the entry names no file"
+    }
+  ]
+}
