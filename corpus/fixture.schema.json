@@ -7,9 +7,9 @@
   "required": ["symbols"],
   "properties": {
     "configurations": {
-      "description": "The build matrix a run derives from this rendering, one identifier per configuration, ordered bytewise. It is what an expectation's configurations list is drawn from, so it is present exactly when an expectation of the fixture names configurations, and a language whose analysis has no build matrix declares none. Two entries is the fewest that carry meaning, because a finding under a single-configuration matrix names nothing an expectation cannot state by leaving the list out.",
+      "description": "The build matrix of this rendering, one identifier per configuration, ordered bytewise, each spelled as the operating system, the architecture and any tags joined by hyphens. It is what an expectation's configurations list is drawn from, and it is the matrix a runner configures where the expectation file declares the matrix complete; a language whose analysis has no build matrix declares none. It is present exactly when an expectation of the fixture names configurations or the expectation file declares the matrix complete, and one entry carries meaning under that declaration, because a file no configuration of a one-configuration matrix builds is what the never-built kind reports.",
       "type": "array",
-      "minItems": 2,
+      "minItems": 1,
       "uniqueItems": true,
       "items": {
         "type": "string",

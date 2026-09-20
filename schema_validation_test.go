@@ -38,6 +38,7 @@ const (
 // than of a vocabulary any document declares.
 var reportEnvelopeStates = []string{
 	"clean",
+	"configuration-not-built",
 	"declared-gaps",
 	"findings",
 	"merged",
@@ -280,6 +281,12 @@ type exampleReport struct {
 		Pending           int `json:"pending"`
 		Omitted           int `json:"omitted"`
 	} `json:"totals"`
+	Configurations []struct {
+		ID string `json:"id"`
+	} `json:"configurations"`
+	ConfigurationsNotBuilt []struct {
+		ID string `json:"id"`
+	} `json:"configurations_not_built"`
 }
 
 // negativeRow is one row of examples/negatives/index.json.
@@ -425,6 +432,28 @@ func TestReportExampleTotalsCountTheirOwnArrays(t *testing.T) {
 			consumers := report.Consumers
 			if got, want := consumers.Declared, len(consumers.Loaded)+len(consumers.Unavailable); got != want {
 				t.Errorf("%s consumers.declared = %d, want len(loaded) plus len(unavailable), %d", file, got, want)
+			}
+		})
+	}
+}
+
+// TestReportExampleConfigurationsNotBuiltNameNoBuiltConfiguration pins the one
+// rule the report schema states about the two configuration arrays and JSON
+// Schema cannot express: a configuration is either in the matrix the analysis
+// ran or dropped from it, so an identifier in one array is in neither the other
+// nor a finding's configuration list.
+func TestReportExampleConfigurationsNotBuiltNameNoBuiltConfiguration(t *testing.T) {
+	for _, file := range exampleFiles(t, "reports") {
+		t.Run(exampleName(file), func(t *testing.T) {
+			report := loadReportExample(t, file)
+			built := map[string]bool{}
+			for _, c := range report.Configurations {
+				built[c.ID] = true
+			}
+			for _, c := range report.ConfigurationsNotBuilt {
+				if built[c.ID] {
+					t.Errorf("%s names configuration %q as built and as not built, want the identifier in one array only", file, c.ID)
+				}
 			}
 		})
 	}

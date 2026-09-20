@@ -32,8 +32,10 @@ for TypeScript.
 One document per state a report envelope can be in: `clean.json` for a run with no findings,
 `findings.json` for a run that reports some, `pending.json` for a run holding an edge evaluation
 whose state is `dead`, `stale-suppressions.json` for a run whose suppressions no longer match,
-`declared-gaps.json` for a run that declines capabilities the corpus covers, and `merged.json` for
-the report a merge writes over two analyzers' reports.
+`declared-gaps.json` for a run that declines capabilities the corpus covers,
+`configuration-not-built.json` for a run that derived a configuration from the tree, could not
+build it and dropped it from the matrix, and `merged.json` for the report a merge writes over two
+analyzers' reports.
 
 Every finding inside a report here is also an instance of the finding schema on its own, and every
 count in `totals` is the count of the array it describes.

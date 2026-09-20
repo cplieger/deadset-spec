@@ -1,0 +1,51 @@
+The Go rendering: one module whose internal tree and whose importable package each
+hold one exported declaration nothing references, so the code each one is reported
+under turns on whether code outside the module could import the package that
+declares it. The main package calls one declaration of each, so every file of the
+module is reached by an import.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Used": { "file": "target/internal/api/api.go", "line": 4 },
+    "Forgotten": { "file": "target/internal/api/api.go", "line": 7 },
+    "Reached": { "file": "target/catalog/catalog.go", "line": 6 },
+    "Published": { "file": "target/catalog/catalog.go", "line": 9 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target calls one exported declaration of each package of its module.
+package main
+
+import (
+	"example.com/target/catalog"
+	"example.com/target/internal/api"
+)
+
+func main() {
+	if api.Used()+catalog.Reached() == 0 {
+		panic("the packages answered zero")
+	}
+}
+-- target/internal/api/api.go --
+package api
+
+// Used is called from the main package.
+func Used() int { return 1 }
+
+// Forgotten is referenced by nothing, under a tree nothing outside can import.
+func Forgotten() int { return 2 }
+-- target/catalog/catalog.go --
+// Package catalog is importable by code outside the module, and one of its two
+// exported declarations is referenced by nothing.
+package catalog
+
+// Reached is called from the main package.
+func Reached() int { return 3 }
+
+// Published is referenced by nothing.
+func Published() int { return 4 }

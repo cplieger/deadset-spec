@@ -875,6 +875,7 @@ const (
 	// one target per case and the same target in a merged report.
 	mergePlantedTarget = `"target": {"kind": "library", "root": ".", "identity": "example.com/app"}, ` +
 		`"configurations": [{"id": "linux-amd64", "os": "linux", "arch": "amd64", "tags": []}], ` +
+		`"configurations_not_built": [], ` +
 		`"consumers": {"declared": 0, "loaded": [], "unavailable": []}, `
 
 	// mergePlantedAlphaBody and mergePlantedBetaBody are two complete findings, one per language.

@@ -14,20 +14,35 @@
   },
   "target": { "kind": "application", "root": ".", "identity": "example.com/app" },
   "configurations": [{ "id": "linux-amd64", "os": "linux", "arch": "amd64", "tags": [] }],
-  "configurations_not_built": [],
+  "configurations_not_built": [
+    {
+      "id": "linux-amd64-integration",
+      "os": "linux",
+      "arch": "amd64",
+      "tags": ["integration"],
+      "error": "load linux-amd64-integration: 1 error"
+    },
+    {
+      "id": "windows-amd64",
+      "os": "windows",
+      "arch": "amd64",
+      "tags": [],
+      "error": "load windows-amd64: 7 errors"
+    }
+  ],
   "consumers": { "declared": 0, "loaded": [], "unavailable": [] },
   "findings": [],
   "edge_evaluations": [],
   "stale_suppressions": [],
   "declared_gaps": [],
   "excluded_by_cgo": [],
-  "test_file_rules": [{ "rule": "go-test-suffix", "matched": 61 }],
+  "test_file_rules": [{ "rule": "go-test-suffix", "matched": 4 }],
   "totals": {
     "findings": 0,
     "by_severity": { "allow": 0, "warn": 0, "deny": 0 },
     "deletable_lines": 0,
-    "suppressions_in_effect": 6,
-    "reasons_recorded": 6,
+    "suppressions_in_effect": 0,
+    "reasons_recorded": 0,
     "stale_suppressions": 0,
     "pending": 0,
     "omitted": 0

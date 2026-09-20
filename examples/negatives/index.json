@@ -72,6 +72,13 @@
       "violates": "a finding about a configured root carries a liveness relation, which only a finding about a declaration carries"
     },
     {
+      "file": "liveness-relation-on-a-stale-edge.json",
+      "schema": "contract/finding.schema.json",
+      "constraint": "not",
+      "instance_path": "",
+      "violates": "a finding about a declared cross-language edge carries a liveness relation, which only a finding about a declaration carries"
+    },
+    {
       "file": "liveness-relation-on-an-unused-parameter.json",
       "schema": "contract/finding.schema.json",
       "constraint": "not",
