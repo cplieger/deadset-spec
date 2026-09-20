@@ -13,7 +13,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/cplieger/deadset-spec"
+	"github.com/cplieger/deadset-spec/v2"
 	"github.com/santhosh-tekuri/jsonschema/v6"
 )
 
