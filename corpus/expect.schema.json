@@ -50,6 +50,19 @@
         "enum": ["consumers", "matrix"]
       }
     },
+    "configured_roots": {
+      "description": "The configured roots the runner sets before analysing this fixture, one member per root: the member name is the fixture-local logical name an expectation names that root by, and the value is the entry the runner writes into roots.patterns, a stable symbol reference or a pattern over one as contract/config.schema.json declares that key's entries. A runner sets roots.patterns to the values and leaves the key at its default where the member is absent, so a fixture that omits it is answered under the roots the analysis marks itself. No rendering's manifest binds a name this member declares, because a configured root is a row of the configuration rather than a declaration of the target, and a name both documents carry is a defect: an expectation naming one is answered by the subject of the finding rather than by a position, since a finding about a configured root is positioned in the configuration document the runner wrote. A value spells one language's own scope and names, which is what a logical name exists to avoid, so the member is named only by a fixture that lists one language and every value carries that language as its prefix. It is the fixture's declaration rather than any expectation's, for the reason closed_world states: the configuration is a property of the run the whole fixture is answered under. The member is optional and never empty, because a member naming no root configures nothing.",
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+      },
+      "additionalProperties": {
+        "description": "One roots.patterns entry, spelled as the configuration document spells it.",
+        "type": "string",
+        "minLength": 1
+      }
+    },
     "expect": {
       "description": "One expectation per subject, exhaustive for the target. Each names a subject by its logical name and states what an analyzer must report there.",
       "type": "array",
@@ -80,17 +93,17 @@
             "enum": ["certain", "probable", "possible"]
           },
           "reachability_class": {
-            "description": "The reachability class the reported finding must carry, drawn from the reachability_classes field of contract/kinds.json. Optional on a reported subject, forbidden when report is none.",
+            "description": "The reachability class the reported finding must carry, drawn from the reachability_classes field of contract/kinds.json. Optional on a reported subject, forbidden when report is none, and forbidden when report is DS1703, because that row is answered by a stale-suppression record and a record carries no reachability class.",
             "type": "string",
             "enum": ["certain", "probable", "possible"]
           },
           "liveness_relation": {
-            "description": "The liveness relation that must have produced the finding: reference-counting, where one reference from any declaration keeps a symbol live, or reachability, where only a path from a root does. Optional on a reported subject, forbidden when report is none.",
+            "description": "The liveness relation that must have produced the finding: reference-counting, where one reference from any declaration keeps a symbol live, or reachability, where only a path from a root does. Optional on a reported subject, forbidden when report is none, and forbidden when report is DS1703, because a stale-suppression record carries no liveness relation.",
             "type": "string",
             "enum": ["reference-counting", "reachability"]
           },
           "configurations": {
-            "description": "The configurations the reported finding must name, by identifier, drawn from the build matrix the rendering's manifest declares and ordered as that matrix orders them. A finding holds in exactly the configurations in which its subject is declared, so a subject one configuration alone declares names that one and a subject every configuration declares names them all. Optional on a reported subject and forbidden when report is none; a fixture whose renderings declare no build matrix names none.",
+            "description": "The configurations the reported finding must name, by identifier, drawn from the build matrix the rendering's manifest declares and ordered as that matrix orders them. A finding holds in exactly the configurations in which its subject is declared, so a subject one configuration alone declares names that one and a subject every configuration declares names them all. Optional on a reported subject and forbidden when report is none, and forbidden when report is DS1703, because a stale-suppression record names no configuration; a fixture whose renderings declare no build matrix names none.",
             "type": "array",
             "minItems": 1,
             "uniqueItems": true,
@@ -243,6 +256,23 @@
             "else": {
               "properties": {
                 "details": { "not": { "required": ["mechanism"] } }
+              }
+            }
+          },
+          {
+            "if": {
+              "required": ["report"],
+              "properties": {
+                "report": { "const": "DS1703" }
+              }
+            },
+            "then": {
+              "not": {
+                "anyOf": [
+                  { "required": ["reachability_class"] },
+                  { "required": ["liveness_relation"] },
+                  { "required": ["configurations"] }
+                ]
               }
             }
           },

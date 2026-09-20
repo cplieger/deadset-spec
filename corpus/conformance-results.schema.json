@@ -232,7 +232,7 @@
                   }
                 },
                 "suppression": {
-                  "description": "The outcome of the second analysis, after the runner wrote the reported finding into the rendering's ignore file. Present exactly when the expectation's report is a code and the first analysis reported a finding there, because only then is there a finding to suppress; absent otherwise. The expectation passes only when suppressed is true and stale is false, and both fields are compared between two products by the cross-language agreement check.",
+                  "description": "The outcome of the second analysis, after the runner wrote the reported finding into the rendering's ignore file. Present exactly when the suppression phase applies to the expectation and the first analysis reported a finding there, because only then is there a finding to suppress; absent otherwise, so a row about a subject corpus.json shapes as a record of a document carries none. The expectation passes only when suppressed is true and stale is false, and both fields are compared between two products by the cross-language agreement check.",
                   "type": "object",
                   "additionalProperties": false,
                   "required": ["suppressed", "stale"],

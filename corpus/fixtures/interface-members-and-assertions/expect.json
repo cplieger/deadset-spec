@@ -40,7 +40,8 @@
       "symbol": "Assertion",
       "report": "DS1204",
       "confidence": "certain",
-      "reachability_class": "certain"
+      "reachability_class": "certain",
+      "symbol_kind": "satisfaction-assertion"
     },
     {
       "symbol": "AssertedMethod",

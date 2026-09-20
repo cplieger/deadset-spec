@@ -94,13 +94,14 @@ type vocabulary struct {
 // expectationDocument mirrors a fixture's expect.json; an unknown key fails
 // the decode, so a fixture cannot carry a field the schema does not declare.
 type expectationDocument struct {
-	Name        string           `json:"name"`
-	Description string           `json:"description"`
-	TargetKind  string           `json:"target_kind"`
-	Languages   []string         `json:"languages"`
-	Consumers   []string         `json:"consumers"`
-	ClosedWorld []string         `json:"closed_world"`
-	Expect      []expectationRow `json:"expect"`
+	ConfiguredRoots map[string]string `json:"configured_roots"`
+	Name            string            `json:"name"`
+	Description     string            `json:"description"`
+	TargetKind      string            `json:"target_kind"`
+	Languages       []string          `json:"languages"`
+	Consumers       []string          `json:"consumers"`
+	ClosedWorld     []string          `json:"closed_world"`
+	Expect          []expectationRow  `json:"expect"`
 }
 
 type expectationRow struct {
@@ -180,6 +181,8 @@ var (
 	errDuplicateSymbol = errors.New("logical name expected twice")
 	errUnboundSymbol   = errors.New("logical name absent from the manifest")
 	errOrphanSymbol    = errors.New("manifest name no expectation uses")
+	errOrphanRoot      = errors.New("configured root no expectation uses")
+	errRootAlsoBound   = errors.New("configured root a manifest binds as well")
 	errNoFile          = errors.New("manifest entry has no file")
 	errNoLine          = errors.New("manifest entry has no line")
 	errDuplicateTxtar  = errors.New("txtar section declared twice")
@@ -390,9 +393,15 @@ func enumAt(schema map[string]any, p string) []string {
 }
 
 // resolveExpectations maps every logical name the expectation file uses
-// through the manifest to a file and a line. It fails on a name used twice,
-// a name the manifest lacks, an entry without a file or a line, and a
-// manifest name no expectation uses; every error names the logical name.
+// through the manifest to a file and a line, and returns one entry per name that
+// resolves to a position. A name the expectation file's configured_roots member
+// declares resolves to the configured entry instead and so to no position, which
+// is what the runner rule states: a finding about a configured root is positioned
+// in the configuration document the runner wrote and is answered by its subject.
+// It fails on a name used twice, a name neither document carries, an entry
+// without a file or a line, a manifest name no expectation uses, a configured
+// root no expectation uses, and a name both documents carry; every error names
+// the logical name.
 func resolveExpectations(expect *expectationDocument, manifest manifestDocument) (map[string]symbolPosition, error) {
 	positions := make(map[string]symbolPosition, len(expect.Expect))
 	expected := make(map[string]bool, len(expect.Expect))
@@ -404,6 +413,12 @@ func resolveExpectations(expect *expectationDocument, manifest manifestDocument)
 		}
 		expected[row.Symbol] = true
 		entry, ok := manifest.Symbols[row.Symbol]
+		if _, configured := expect.ConfiguredRoots[row.Symbol]; configured {
+			if ok {
+				errs = append(errs, fmt.Errorf("%w: %q", errRootAlsoBound, row.Symbol))
+			}
+			continue
+		}
 		switch {
 		case !ok:
 			errs = append(errs, fmt.Errorf("%w: %q", errUnboundSymbol, row.Symbol))
@@ -418,6 +433,11 @@ func resolveExpectations(expect *expectationDocument, manifest manifestDocument)
 	for _, name := range slices.Sorted(maps.Keys(manifest.Symbols)) {
 		if !expected[name] {
 			errs = append(errs, fmt.Errorf("%w: %q", errOrphanSymbol, name))
+		}
+	}
+	for _, name := range slices.Sorted(maps.Keys(expect.ConfiguredRoots)) {
+		if !expected[name] {
+			errs = append(errs, fmt.Errorf("%w: %q", errOrphanRoot, name))
 		}
 	}
 	if err := errors.Join(errs...); err != nil {
@@ -1170,6 +1190,21 @@ func TestResolveExpectationsBinds(t *testing.T) {
 			manifest: manifestDocument{Symbols: map[string]manifestPosition{"Sink.Write": {File: "target/sink.ts", Line: line(3)}}},
 			want:     map[string]symbolPosition{"Sink.Write": {File: "target/sink.ts", Line: 3}},
 		},
+		{
+			// A configured root resolves to the entry the fixture configures and
+			// so to no position, because the finding about it is positioned in
+			// the configuration document the runner wrote.
+			name: "a_configured_root_beside_a_declaration",
+			expect: expectationDocument{
+				ConfiguredRoots: map[string]string{"AbsentPattern": "go://example.com/app#absent*"},
+				Expect: []expectationRow{
+					{Symbol: "AbsentPattern", Report: "DS1704", Confidence: "certain"},
+					{Symbol: "PlainDead", Report: "DS1002", Confidence: "certain"},
+				},
+			},
+			manifest: manifestDocument{Symbols: map[string]manifestPosition{"PlainDead": {File: "target/main.go", Line: line(12)}}},
+			want:     map[string]symbolPosition{"PlainDead": {File: "target/main.go", Line: 12}},
+		},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -1244,6 +1279,26 @@ func TestResolveExpectationsRefuses(t *testing.T) {
 			}},
 			wantErr:    errOrphanSymbol,
 			wantSymbol: "Forgotten",
+		},
+		{
+			name: "configured_root_no_expectation_uses",
+			expect: expectationDocument{
+				ConfiguredRoots: map[string]string{"Forgotten": "go://example.com/app#forgotten*"},
+				Expect:          []expectationRow{{Symbol: "DeadExport", Report: "DS1001", Confidence: "certain"}},
+			},
+			manifest:   manifestDocument{Symbols: map[string]manifestPosition{"DeadExport": {File: "target/dead.go", Line: line(5)}}},
+			wantErr:    errOrphanRoot,
+			wantSymbol: "Forgotten",
+		},
+		{
+			name: "configured_root_the_manifest_binds_as_well",
+			expect: expectationDocument{
+				ConfiguredRoots: map[string]string{"AbsentPattern": "go://example.com/app#absent*"},
+				Expect:          []expectationRow{{Symbol: "AbsentPattern", Report: "DS1704", Confidence: "certain"}},
+			},
+			manifest:   manifestDocument{Symbols: map[string]manifestPosition{"AbsentPattern": {File: "target/main.go", Line: line(3)}}},
+			wantErr:    errRootAlsoBound,
+			wantSymbol: "AbsentPattern",
 		},
 		{
 			name: "logical_name_expected_twice",
@@ -1627,6 +1682,202 @@ func TestExpectSchemaClosedWorldNamesItsTwoFacts(t *testing.T) {
 			}
 			if !named {
 				t.Errorf("validationProblems(%q, %s) = %v, want a violation at %q", expectSchemaPath, tc.name, problems, tc.want)
+			}
+		})
+	}
+}
+
+// TestExpectSchemaConfiguredRootsBindALogicalNameToAnEntry pins the fixture-level
+// member a DS1704 row rests on: a member binds one fixture-local logical name to
+// one configured-root entry, and a member naming no root, a name no expectation
+// row could carry, or a value that is not a non-empty string is refused, so the
+// member cannot declare a root the runner has no entry for.
+func TestExpectSchemaConfiguredRootsBindALogicalNameToAnEntry(t *testing.T) {
+	cases := []struct {
+		name    string
+		value   string
+		wantAt  string
+		refused bool
+	}{
+		{name: "one_root", value: `{"AbsentPattern":"go://example.com/app#absent*"}`},
+		{name: "a_root_and_a_pattern_that_matches", value: `{"AbsentPattern":"go://example.com/app#absent*","RootedPattern":"go://example.com/app#root*"}`},
+		{name: "no_root_at_all", value: `{}`, refused: true, wantAt: "/configured_roots"},
+		// A member name is not a value, so the violation is reported against the
+		// document rather than against a location inside it.
+		{name: "a_name_no_expectation_row_could_carry", value: `{"absent pattern":"go://example.com/app#absent*"}`, refused: true},
+		{name: "an_entry_that_is_not_a_string", value: `{"AbsentPattern":["go://example.com/app#absent*"]}`, refused: true, wantAt: "/configured_roots/AbsentPattern"},
+		{name: "an_entry_with_nothing_in_it", value: `{"AbsentPattern":""}`, refused: true, wantAt: "/configured_roots/AbsentPattern"},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			document := `{"name":"planted","description":"One planted fixture.","languages":["go"],` +
+				`"target_kind":"application","configured_roots":` + tc.value +
+				`,"expect":[{"symbol":"AbsentPattern","report":"DS1704","confidence":"certain"}]}`
+			problems, err := validationProblems(expectSchemaPath, []byte(document))
+			if err != nil {
+				t.Fatalf("Setup: validationProblems(%q, %s): %v", expectSchemaPath, tc.name, err)
+			}
+			if !tc.refused {
+				if len(problems) != 0 {
+					t.Errorf("validationProblems(%q, %s) = %v, want no violation", expectSchemaPath, tc.name, problems)
+				}
+				return
+			}
+			if len(problems) == 0 {
+				t.Fatalf("validationProblems(%q, %s) = no violation, want the member refused", expectSchemaPath, tc.name)
+			}
+			if tc.wantAt == "" {
+				return
+			}
+			named := false
+			for _, problem := range problems {
+				if strings.HasPrefix(problem.InstanceLocation, tc.wantAt) {
+					named = true
+				}
+			}
+			if !named {
+				t.Errorf("validationProblems(%q, %s) = %v, want a violation at %q", expectSchemaPath, tc.name, problems, tc.wantAt)
+			}
+		})
+	}
+}
+
+// TestExpectSchemaStaleSuppressionRowNamesNothingTheRecordLacks pins the arm the
+// stale-suppression row sits under: the row is answered by a record of the
+// report's stale-suppression array, and a record carries no reachability class, no
+// liveness relation and no configurations, so a row naming one of those three is
+// refused rather than left unanswerable. The mechanism the row pins and the
+// confidence every coded row carries stay admitted.
+func TestExpectSchemaStaleSuppressionRowNamesNothingTheRecordLacks(t *testing.T) {
+	cases := []struct {
+		name string
+		row  string
+		want string
+	}{
+		{
+			name: "a_record_row_pins_its_mechanism",
+			row:  `{"symbol":"StaleEntry","report":"DS1703","confidence":"certain","symbol_kind":"suppression","details":{"mechanism":"ignore"}}`,
+		},
+		{
+			name: "a_record_row_naming_a_reachability_class",
+			row:  `{"symbol":"StaleEntry","report":"DS1703","confidence":"certain","reachability_class":"certain","details":{"mechanism":"ignore"}}`,
+			want: "/expect/0",
+		},
+		{
+			name: "a_record_row_naming_a_liveness_relation",
+			row:  `{"symbol":"StaleEntry","report":"DS1703","confidence":"certain","liveness_relation":"reachability","details":{"mechanism":"ignore"}}`,
+			want: "/expect/0",
+		},
+		{
+			name: "a_record_row_naming_a_configuration",
+			row:  `{"symbol":"StaleEntry","report":"DS1703","confidence":"certain","configurations":["linux-amd64"],"details":{"mechanism":"ignore"}}`,
+			want: "/expect/0",
+		},
+		{
+			name: "another_self_check_row_names_all_three",
+			row:  `{"symbol":"UnscopedEntry","report":"DS1702","confidence":"certain","reachability_class":"certain","configurations":["linux-amd64"],"details":{"mechanism":"ignore"}}`,
+		},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			document := `{"name":"planted","description":"One planted fixture.","languages":["go"],` +
+				`"target_kind":"application","expect":[` + tc.row + `]}`
+			problems, err := validationProblems(expectSchemaPath, []byte(document))
+			if err != nil {
+				t.Fatalf("Setup: validationProblems(%q, %s): %v", expectSchemaPath, tc.name, err)
+			}
+			if tc.want == "" {
+				if len(problems) != 0 {
+					t.Errorf("validationProblems(%q, %s) = %v, want no violation", expectSchemaPath, tc.name, problems)
+				}
+				return
+			}
+			named := false
+			for _, problem := range problems {
+				if strings.HasPrefix(problem.InstanceLocation, tc.want) {
+					named = true
+				}
+			}
+			if !named {
+				t.Errorf("validationProblems(%q, %s) = %v, want a violation at %q", expectSchemaPath, tc.name, problems, tc.want)
+			}
+		})
+	}
+}
+
+// checkConfiguredRootsScope reports every fixture whose configured roots are not
+// answerable through every rendering it lists: a configured-root entry is a symbol
+// reference or a pattern over one, so it spells one language's own scope, and the
+// expectation schema states the rule JSON Schema cannot check, because the
+// fixture's language list and the member sit in two places no arm can relate.
+func checkConfiguredRootsScope(doc *expectationDocument) []error {
+	if len(doc.ConfiguredRoots) == 0 {
+		return nil
+	}
+	var errs []error
+	if len(doc.Languages) != 1 {
+		errs = append(errs, fmt.Errorf("%s names configured roots and lists %v: an entry spells one language's own scope, so the member is named by a fixture that lists one language",
+			doc.Name, doc.Languages))
+		return errs
+	}
+	prefix := doc.Languages[0] + "://"
+	for _, name := range slices.Sorted(maps.Keys(doc.ConfiguredRoots)) {
+		if entry := doc.ConfiguredRoots[name]; !strings.HasPrefix(entry, prefix) {
+			errs = append(errs, fmt.Errorf("%s configured root %s is %q, want it to carry the fixture's own language prefix %q",
+				doc.Name, name, entry, prefix))
+		}
+	}
+	return errs
+}
+
+func TestCorpusConfiguredRootsSpellTheFixturesOwnLanguage(t *testing.T) {
+	for _, doc := range corpusExpectations(t) {
+		t.Run("fixture_"+doc.Name, func(t *testing.T) {
+			if got := checkConfiguredRootsScope(&doc); len(got) != 0 {
+				t.Errorf("checkConfiguredRootsScope(%s) = %v, want every entry in the fixture's own language", doc.Name, got)
+			}
+		})
+	}
+
+	planted := []struct {
+		name      string
+		languages []string
+		roots     map[string]string
+		wantMsg   string
+	}{
+		{
+			name:      "one_language_and_its_own_prefix",
+			languages: []string{"go"},
+			roots:     map[string]string{"AbsentPattern": "go://example.com/app#absent*"},
+		},
+		{
+			name:      "two_languages",
+			languages: []string{"go", "ts"},
+			roots:     map[string]string{"AbsentPattern": "go://example.com/app#absent*"},
+			wantMsg:   "lists [go ts]",
+		},
+		{
+			name:      "the_other_languages_prefix",
+			languages: []string{"go"},
+			roots:     map[string]string{"AbsentPattern": "ts://@example/app/src/index.ts#absent*"},
+			wantMsg:   `want it to carry the fixture's own language prefix "go://"`,
+		},
+	}
+	for _, tc := range planted {
+		t.Run("planted_"+tc.name, func(t *testing.T) {
+			doc := expectationDocument{Name: "planted", TargetKind: "application", Languages: tc.languages, ConfiguredRoots: tc.roots}
+			got := checkConfiguredRootsScope(&doc)
+			if tc.wantMsg == "" {
+				if len(got) != 0 {
+					t.Errorf("checkConfiguredRootsScope(planted %s) = %v, want nil", tc.name, got)
+				}
+				return
+			}
+			if len(got) != 1 {
+				t.Fatalf("checkConfiguredRootsScope(planted %s) = %v, want one error", tc.name, got)
+			}
+			if !strings.Contains(got[0].Error(), tc.wantMsg) {
+				t.Errorf("checkConfiguredRootsScope(planted %s) = %q, want it to name %s", tc.name, got[0], tc.wantMsg)
 			}
 		})
 	}
