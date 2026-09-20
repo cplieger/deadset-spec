@@ -1,0 +1,7 @@
+{
+  "symbols": {
+    "Published": { "file": "target/lib.ts", "line": 3 },
+    "LocalOnly": { "file": "target/lib.ts", "line": 9 },
+    "Caller": { "file": "target/lib.ts", "line": 15 }
+  }
+}

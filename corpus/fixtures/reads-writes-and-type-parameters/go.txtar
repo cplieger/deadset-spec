@@ -1,0 +1,62 @@
+A package-level variable two statements store into and nothing reads, a variable
+one statement reads, an enumerated type one of whose members nothing names, and a
+function whose type parameter neither its signature nor its body names.
+
+-- fixture.json --
+{
+  "symbols": {
+    "WriteOnly": { "file": "target/counters.go", "line": 4 },
+    "Read": { "file": "target/counters.go", "line": 7 },
+    "NamedMember": { "file": "target/modes.go", "line": 7 },
+    "UnnamedMember": { "file": "target/modes.go", "line": 9 },
+    "UnusedTypeParameter": { "file": "target/convert.go", "line": 4 },
+    "UsedTypeParameter": { "file": "target/convert.go", "line": 7 }
+  }
+}
+-- target/go.mod --
+module example.com/app
+
+go 1.27.0
+-- target/counters.go --
+package main
+
+// tally is stored into twice and nothing reads it.
+var tally int
+
+// seen is read once, so nothing reports it.
+var seen int
+
+// record stores into the variable nothing reads.
+func record() {
+	tally = 1
+	tally = 2
+}
+-- target/modes.go --
+package main
+
+// mode is an enumerated type nothing converts into and which declares no
+// conversion method.
+type mode int
+
+const (
+	modeRead mode = iota
+	modeWrite
+)
+
+// readMode names one member of mode and leaves the other named by nothing.
+func readMode() mode { return modeRead }
+-- target/convert.go --
+package main
+
+// convert names its type parameter in neither the signature nor the body.
+func convert[T any](n int) int { return n }
+
+// resultOf names its type parameter in the result type.
+func resultOf[T any]() []T { return nil }
+-- target/main.go --
+package main
+
+func main() {
+	record()
+	println(seen, int(readMode()), convert[int](1), len(resultOf[int]()))
+}

@@ -9,14 +9,20 @@
       "report": "DS1601",
       "symbol_kind": "dependency",
       "confidence": "certain",
-      "reachability_class": "certain"
+      "reachability_class": "certain",
+      "details": {
+        "dependency_class": "require"
+      }
     },
     {
       "symbol": "NoopReplace",
       "report": "DS1605",
       "symbol_kind": "module-directive",
       "confidence": "certain",
-      "reachability_class": "certain"
+      "reachability_class": "certain",
+      "details": {
+        "replacement": "golang.org/x/sync v0.17.0"
+      }
     }
   ]
 }

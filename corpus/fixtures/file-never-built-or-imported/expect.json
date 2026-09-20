@@ -18,7 +18,10 @@
       "report": "DS1501",
       "confidence": "certain",
       "reachability_class": "certain",
-      "symbol_kind": "file"
+      "symbol_kind": "file",
+      "details": {
+        "excluded_by": "handwritten"
+      }
     },
     {
       "symbol": "Orphan",

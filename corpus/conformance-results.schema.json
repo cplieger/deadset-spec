@@ -158,6 +158,55 @@
                         "type": "string",
                         "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$"
                       }
+                    },
+                    "details": {
+                      "description": "The details members the reported finding carried, named and shaped as the details member of an expectation row declares them, so the runner echoes what the row pinned and the two are compared member by member. A runner writes the members the expectation named and omits the rest, because the row pins what it names; a runner answering a fixture whose expectations pin no details omits the object. Forbidden when report is none.",
+                      "type": "object",
+                      "additionalProperties": false,
+                      "minProperties": 1,
+                      "properties": {
+                        "narrower_visibility": {
+                          "description": "The narrower visibility the reported finding carried.",
+                          "type": "string",
+                          "enum": ["file", "package", "module"]
+                        },
+                        "excluded_by": {
+                          "description": "The build constraint the reported finding named.",
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "dependency_class": {
+                          "description": "The dependency section the reported finding named.",
+                          "type": "string",
+                          "enum": ["require", "dependency", "dev-dependency", "peer-dependency"]
+                        },
+                        "replacement": {
+                          "description": "The replacement the reported finding named.",
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "mechanism": {
+                          "description": "The suppression mechanism the reported finding named.",
+                          "type": "string",
+                          "enum": ["inline", "ignore", "baseline"]
+                        },
+                        "edge": {
+                          "description": "The declared cross-language edge the reported finding named.",
+                          "type": "string",
+                          "pattern": "^[A-Za-z0-9_.-]+(/[A-Za-z0-9_.-]+)*$"
+                        },
+                        "overlap": {
+                          "description": "The external linters or rules the reported finding named.",
+                          "type": "array",
+                          "minItems": 1,
+                          "uniqueItems": true,
+                          "items": {
+                            "description": "One linter or rule the reported finding named.",
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        }
+                      }
                     }
                   },
                   "if": {
@@ -172,7 +221,8 @@
                         { "required": ["confidence"] },
                         { "required": ["reachability_class"] },
                         { "required": ["liveness_relation"] },
-                        { "required": ["configurations"] }
+                        { "required": ["configurations"] },
+                        { "required": ["details"] }
                       ]
                     }
                   },

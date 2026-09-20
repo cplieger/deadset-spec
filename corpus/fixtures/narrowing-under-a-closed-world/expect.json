@@ -19,21 +19,30 @@
       "report": "DS1101",
       "confidence": "certain",
       "reachability_class": "certain",
-      "symbol_kind": "function"
+      "symbol_kind": "function",
+      "details": {
+        "narrower_visibility": "file"
+      }
     },
     {
       "symbol": "InPackage",
       "report": "DS1101",
       "confidence": "certain",
       "reachability_class": "certain",
-      "symbol_kind": "function"
+      "symbol_kind": "function",
+      "details": {
+        "narrower_visibility": "package"
+      }
     },
     {
       "symbol": "InModule",
       "report": "DS1102",
       "confidence": "certain",
       "reachability_class": "certain",
-      "symbol_kind": "function"
+      "symbol_kind": "function",
+      "details": {
+        "narrower_visibility": "module"
+      }
     }
   ]
 }

@@ -18,6 +18,15 @@ const (
 	// expectation row, which declares two of the closed vocabularies below.
 	expectSchemaRowPath = "properties/expect/items"
 
+	// expectSchemaDetailsPath is the path into the expectation schema of the
+	// details object a row pins, whose members mirror the details members
+	// contract/finding.schema.json declares.
+	expectSchemaDetailsPath = expectSchemaRowPath + "/properties/details"
+
+	// resultsSchemaActualPath is the path into the results schema of the answer
+	// a runner records for one expectation, which echoes the row's own members.
+	resultsSchemaActualPath = "properties/fixtures/items/properties/expectations/items/properties/actual"
+
 	// gapResult is the result value that stands for a declared gap, and
 	// reportedNone the report value for a subject an analyzer must not report.
 	gapResult    = "gap"

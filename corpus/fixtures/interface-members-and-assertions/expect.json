@@ -1,0 +1,50 @@
+{
+  "name": "interface-members-and-assertions",
+  "description": "An interface no declaration names as a type is reported, and the concrete type that satisfies it stays live through its own method. An interface a function takes as a parameter type is not reported, the method a call site invokes through it is not reported, and the method nothing invokes through it is. A compile-time assertion whose interface nothing else names as a type is reported, the interface's own method is reported beside it because the assertion is not a call, and the concrete method that satisfies the interface is not reported.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "UnusedInterface",
+      "report": "DS1201",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "interface",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "UsedInterface",
+      "report": "none"
+    },
+    {
+      "symbol": "CalledMethod",
+      "report": "none"
+    },
+    {
+      "symbol": "UncalledMethod",
+      "report": "DS1203",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "interface-method",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "AssertedInterfaceMethod",
+      "report": "DS1203",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "interface-method",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Assertion",
+      "report": "DS1204",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    },
+    {
+      "symbol": "AssertedMethod",
+      "report": "none"
+    }
+  ]
+}

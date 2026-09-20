@@ -563,6 +563,14 @@
     "example": "export type Layout = { gap: number; width: number };"
   },
   {
+    "input": "ts://@example/app/src/layout.ts#Frame.inset",
+    "language": "ts",
+    "form": "type-member",
+    "accepted": true,
+    "reason": "Parentheses are syntax rather than a constituent, so a member of a parenthesized literal under a union is a member of the alias.",
+    "example": "export type Frame = ({ inset: number }) | { outset: number };"
+  },
+  {
     "input": "ts://@example/app/src/wire.ts#Kind.Resize",
     "language": "ts",
     "form": "enum-member",
