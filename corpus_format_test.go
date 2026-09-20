@@ -98,6 +98,7 @@ type expectationDocument struct {
 	TargetKind  string           `json:"target_kind"`
 	Languages   []string         `json:"languages"`
 	Consumers   []string         `json:"consumers"`
+	ClosedWorld []string         `json:"closed_world"`
 	Expect      []expectationRow `json:"expect"`
 }
 
@@ -145,11 +146,12 @@ var (
 	errNoDependencyRequire = errors.New("go rendering target requires no dependency module")
 	errNoDependencyReplace = errors.New("go rendering target replaces the dependency module with no relative path")
 
-	errNoMatrix        = errors.New("expectation names a configuration and the rendering declares no build matrix")
-	errUnknownConfig   = errors.New("expectation names a configuration outside the rendering's build matrix")
-	errConfigsOutOrder = errors.New("expectation names its configurations outside the matrix order")
-	errMatrixUnordered = errors.New("rendering declares its build matrix out of order")
-	errMatrixUnused    = errors.New("rendering declares a build matrix no expectation names")
+	errNoMatrix         = errors.New("expectation names a configuration and the rendering declares no build matrix")
+	errUnknownConfig    = errors.New("expectation names a configuration outside the rendering's build matrix")
+	errConfigsOutOrder  = errors.New("expectation names its configurations outside the matrix order")
+	errMatrixUnordered  = errors.New("rendering declares its build matrix out of order")
+	errMatrixUnused     = errors.New("rendering declares a build matrix no expectation names and no closed-world declaration configures")
+	errMatrixUndeclared = errors.New("expectation file declares the build matrix complete and the rendering declares no build matrix")
 
 	semverPattern = regexp.MustCompile(`^([0-9]+)\.[0-9]+\.[0-9]+$`)
 
@@ -386,6 +388,11 @@ func resolveExpectations(expect *expectationDocument, manifest manifestDocument)
 // different configurations for one finding; a rendering that declares no matrix
 // answers no expectation that names one, and a matrix no expectation names is a
 // declaration with no reader.
+// closedWorldMatrix is the fact an expectation file names to have the runner
+// configure the rendering's own matrix and declare it complete, which is the one
+// declaration under which a file no configuration builds is a finding.
+const closedWorldMatrix = "matrix"
+
 func checkConfigurations(expect *expectationDocument, language string, matrix []string) []error {
 	var errs []error
 	if len(matrix) > 0 && !slices.IsSorted(matrix) {
@@ -413,8 +420,12 @@ func checkConfigurations(expect *expectationDocument, language string, matrix []
 			}
 		}
 	}
-	if len(matrix) > 0 && named == 0 {
+	configured := slices.Contains(expect.ClosedWorld, closedWorldMatrix)
+	if len(matrix) > 0 && named == 0 && !configured {
 		errs = append(errs, fmt.Errorf("%w: rendering %q declares %v", errMatrixUnused, language, matrix))
+	}
+	if len(matrix) == 0 && configured {
+		errs = append(errs, fmt.Errorf("%w: rendering %q", errMatrixUndeclared, language))
 	}
 	return errs
 }
@@ -818,6 +829,7 @@ type corpusBaselineDocument struct {
 	Description        string   `json:"description"`
 	CorpusVersion      string   `json:"corpus_version"`
 	Fixtures           []string `json:"fixtures"`
+	FixtureMembers     []string `json:"fixture_members"`
 	ExpectationMembers []string `json:"expectation_members"`
 }
 
@@ -833,8 +845,9 @@ func loadCorpusBaseline(t *testing.T) corpusBaselineDocument {
 	if err = decodeStrict(data, &doc); err != nil {
 		t.Fatalf("Setup: decoding %s: %v", corpusBaselinePath, err)
 	}
-	if len(doc.Fixtures) == 0 || len(doc.ExpectationMembers) == 0 {
-		t.Fatalf("Setup: %s records %d fixture(s) and %d expectation member(s), want the published sets", corpusBaselinePath, len(doc.Fixtures), len(doc.ExpectationMembers))
+	if len(doc.Fixtures) == 0 || len(doc.FixtureMembers) == 0 || len(doc.ExpectationMembers) == 0 {
+		t.Fatalf("Setup: %s records %d fixture(s), %d fixture member(s) and %d expectation member(s), want the published sets",
+			corpusBaselinePath, len(doc.Fixtures), len(doc.FixtureMembers), len(doc.ExpectationMembers))
 	}
 	return doc
 }
@@ -868,12 +881,13 @@ func corpusFixtureNames(t *testing.T) []string {
 
 // TestCorpusVersionMovesWithTheFixtureSetAndTheExpectationMembers enforces the
 // rule corpus.json states for itself and could not check: the minor number moves
-// when a fixture or a field is added. The baseline records the two sets at the
-// version it names, so a fixture directory or an expectation-row member added
-// while the published version stays where the baseline left it fails here, and
-// moving the version and rewriting the baseline in one change is the green path.
+// when a fixture or a field is added. The baseline records the three sets at the
+// version it names, so a fixture directory, a fixture-level member or an
+// expectation-row member added while the published version stays where the
+// baseline left it fails here, and moving the version and rewriting the baseline
+// in one change is the green path.
 //
-// The two sets are the ones a version bump is decidable from. A change to a
+// The three sets are the ones a version bump is decidable from. A change to a
 // description or to a runner rule moves the version too and leaves this document
 // alone, which is why the check is an equality over sets rather than a digest of
 // the corpus.
@@ -889,7 +903,16 @@ func TestCorpusVersionMovesWithTheFixtureSetAndTheExpectationMembers(t *testing.
 		t.Errorf("%s holds the fixtures %v and %s records %v at corpus_version %q: a fixture added or removed moves the version, so move it in %s and rewrite %s in one change",
 			fixturesDir, got, corpusBaselinePath, baseline.Fixtures, doc.CorpusVersion, corpusPath, corpusBaselinePath)
 	}
-	members := objectAt(loadSchema(t, spec.Corpus, expectSchemaPath), expectSchemaRowPath+"/properties")
+	schema := loadSchema(t, spec.Corpus, expectSchemaPath)
+	fixtureMembers := objectAt(schema, "properties")
+	if fixtureMembers == nil {
+		t.Fatalf("Setup: %s properties is not an object", expectSchemaPath)
+	}
+	if got := slices.Sorted(maps.Keys(fixtureMembers)); !slices.Equal(got, baseline.FixtureMembers) {
+		t.Errorf("%s declares the fixture members %v and %s records %v at corpus_version %q: a member added or removed moves the version, so move it in %s and rewrite %s in one change",
+			expectSchemaPath, got, corpusBaselinePath, baseline.FixtureMembers, doc.CorpusVersion, corpusPath, corpusBaselinePath)
+	}
+	members := objectAt(schema, expectSchemaRowPath+"/properties")
 	if members == nil {
 		t.Fatalf("Setup: %s %s/properties is not an object", expectSchemaPath, expectSchemaRowPath)
 	}
@@ -1254,6 +1277,24 @@ func TestCheckConfigurations(t *testing.T) {
 			matrix:  matrix,
 			wantErr: errMatrixUnused,
 		},
+		{
+			name: "matrix_the_closed_world_declaration_configures",
+			expect: func() expectationDocument {
+				doc := rows(nil)
+				doc.ClosedWorld = []string{closedWorldMatrix}
+				return doc
+			}(),
+			matrix: matrix,
+		},
+		{
+			name: "the_matrix_declared_complete_and_none_rendered",
+			expect: func() expectationDocument {
+				doc := rows(nil)
+				doc.ClosedWorld = []string{closedWorldMatrix}
+				return doc
+			}(),
+			wantErr: errMatrixUndeclared,
+		},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -1477,6 +1518,52 @@ func TestFixturesOnDiskResolveThroughEveryRendering(t *testing.T) {
 			dir := path.Join(fixturesDir, e.Name())
 			if err := checkFixture(spec.Corpus, dir); err != nil {
 				t.Errorf("checkFixture(%q) = %v, want every expectation to resolve through every rendering", dir, err)
+			}
+		})
+	}
+}
+
+// TestExpectSchemaClosedWorldNamesItsTwoFacts pins both directions of the
+// fixture-level declaration a narrowing or a never-built fixture rests on: a
+// fixture may name either fact or both, and a value outside the two, a repeated
+// value or an empty array is refused, so the member cannot declare a world the
+// runner has no configuration key for.
+func TestExpectSchemaClosedWorldNamesItsTwoFacts(t *testing.T) {
+	cases := []struct {
+		name  string
+		value string
+		want  string
+	}{
+		{name: "the_consumer_set_alone", value: `["consumers"]`},
+		{name: "the_matrix_alone", value: `["matrix"]`},
+		{name: "both_facts", value: `["consumers","matrix"]`},
+		{name: "a_fact_the_runner_cannot_declare", value: `["roots"]`, want: "/closed_world/0"},
+		{name: "one_fact_named_twice", value: `["matrix","matrix"]`, want: "/closed_world"},
+		{name: "no_fact_at_all", value: `[]`, want: "/closed_world"},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			document := `{"name":"planted","description":"One planted fixture.","languages":["go"],` +
+				`"target_kind":"library","closed_world":` + tc.value +
+				`,"expect":[{"symbol":"Narrowable","report":"DS1101","confidence":"certain"}]}`
+			problems, err := validationProblems(expectSchemaPath, []byte(document))
+			if err != nil {
+				t.Fatalf("Setup: validationProblems(%q, %s): %v", expectSchemaPath, tc.name, err)
+			}
+			if tc.want == "" {
+				if len(problems) != 0 {
+					t.Errorf("validationProblems(%q, %s) = %v, want no violation", expectSchemaPath, tc.name, problems)
+				}
+				return
+			}
+			named := false
+			for _, problem := range problems {
+				if problem.InstanceLocation == tc.want {
+					named = true
+				}
+			}
+			if !named {
+				t.Errorf("validationProblems(%q, %s) = %v, want a violation at %q", expectSchemaPath, tc.name, problems, tc.want)
 			}
 		})
 	}

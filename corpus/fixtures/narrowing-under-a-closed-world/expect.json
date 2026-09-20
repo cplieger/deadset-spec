@@ -1,0 +1,39 @@
+{
+  "name": "narrowing-under-a-closed-world",
+  "description": "A library whose consumer set the fixture declares complete, so its published package is a closed world and the narrowing kinds report there. An exported function the consumer calls is not reported; one every reference reaches from inside its own file and one from inside its own package are reported as candidates for unexporting; one only another package of the module reaches is reported as a candidate for moving behind an internal boundary.",
+  "languages": ["go"],
+  "target_kind": "library",
+  "consumers": ["consumer"],
+  "closed_world": ["consumers"],
+  "expect": [
+    {
+      "symbol": "Published",
+      "report": "none"
+    },
+    {
+      "symbol": "Reached",
+      "report": "none"
+    },
+    {
+      "symbol": "InFile",
+      "report": "DS1101",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "InPackage",
+      "report": "DS1101",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "InModule",
+      "report": "DS1102",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    }
+  ]
+}

@@ -1,11 +1,11 @@
 {
-  "schema_version": "4.0.0",
-  "contract_version": "1.6.0",
+  "schema_version": "5.0.0",
+  "contract_version": "1.7.0",
   "analyzer": {
     "name": "deadset-go",
     "version": "1.0.0",
     "languages": ["go"],
-    "schema_versions_accepted": ["4.0.0"],
+    "schema_versions_accepted": ["5.0.0"],
     "conformance": {
       "corpus_version": "1.0.0",
       "result": "pass",
@@ -14,6 +14,7 @@
   },
   "target": { "kind": "library", "root": "src/app", "identity": "example.com/app" },
   "configurations": [{ "id": "linux-amd64", "os": "linux", "arch": "amd64", "tags": [] }],
+  "configurations_not_built": [],
   "consumers": { "declared": 0, "loaded": [], "unavailable": [] },
   "findings": [],
   "edge_evaluations": [

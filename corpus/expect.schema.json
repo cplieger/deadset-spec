@@ -40,6 +40,16 @@
         "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$"
       }
     },
+    "closed_world": {
+      "description": "The facts about the world the runner declares to the analyzer before analysing this fixture, drawn from the closed set of two below. consumers declares that every consumer of the target's published API is named by the consumers member above; matrix declares that the build matrix the rendering's manifest holds is every configuration the target builds. A runner sets the configuration key each named fact carries, consumers.complete for consumers and analysis.matrix.complete for matrix as contract/config.schema.json declares them, and leaves the key at its default for a fact the member does not name. Naming matrix also sets analysis.configurations from the identifiers the rendering's manifest declares, because a matrix a run derived is never a complete one. The member is optional and never empty, so a fixture that omits it is analyzed under the open world, where a kind whose precondition is a complete world reports nothing at any position. It is the fixture's declaration rather than any expectation's, because the world is a property of the run the whole fixture is answered under.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": ["consumers", "matrix"]
+      }
+    },
     "expect": {
       "description": "One expectation per subject, exhaustive for the target. Each names a subject by its logical name and states what an analyzer must report there.",
       "type": "array",

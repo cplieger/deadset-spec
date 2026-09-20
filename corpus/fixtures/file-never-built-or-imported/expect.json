@@ -1,0 +1,39 @@
+{
+  "name": "file-never-built-or-imported",
+  "description": "A target whose build matrix the fixture declares complete at one configuration. A file a custom tag excludes is built by no configuration of that matrix and is reported; a file the ignore tag excludes is never reported, because that tag is the toolchain's convention for a file built by hand. Beside them a package no import reaches is reported per file, and the declaration inside it is reported as well.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "closed_world": ["matrix"],
+  "expect": [
+    {
+      "symbol": "Live",
+      "report": "none"
+    },
+    {
+      "symbol": "Generated",
+      "report": "none"
+    },
+    {
+      "symbol": "Handwritten",
+      "report": "DS1501",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "Orphan",
+      "report": "DS1502",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "width",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting",
+      "symbol_kind": "function"
+    }
+  ]
+}

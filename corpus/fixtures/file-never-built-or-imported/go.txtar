@@ -1,0 +1,55 @@
+The Go rendering: one module of three packages under a matrix of one
+configuration. Two files carry a build constraint no configuration of that matrix
+satisfies, one a custom tag and one the ignore tag, and the two are answered
+differently; a third package is reached by no import of the module.
+
+-- fixture.json --
+{
+  "configurations": ["linux-amd64"],
+  "symbols": {
+    "Live": { "file": "target/internal/live/live.go", "line": 4 },
+    "Generated": { "file": "target/generate.go", "line": 1 },
+    "Handwritten": { "file": "target/tool.go", "line": 1 },
+    "Orphan": { "file": "target/internal/orphan/orphan.go", "line": 1 },
+    "width": { "file": "target/internal/orphan/orphan.go", "line": 4 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target calls one package of its module and leaves a second unreached.
+package main
+
+import "example.com/target/internal/live"
+
+func main() {
+	if live.Count() == 0 {
+		panic("the package answered zero")
+	}
+}
+-- target/generate.go --
+//go:build ignore
+
+package main
+
+// main is run by hand rather than built, which is what the ignore tag declares.
+func main() { println("generated") }
+-- target/tool.go --
+//go:build handwritten
+
+package main
+
+// handwritten is compiled under a tag no configuration of the matrix names.
+func handwritten() int { return 4 }
+-- target/internal/live/live.go --
+package live
+
+// Count is called from the main package.
+func Count() int { return 1 }
+-- target/internal/orphan/orphan.go --
+package orphan
+
+// width is reached by no import of the module and by no root.
+func width() int { return 2 }

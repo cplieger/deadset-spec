@@ -10,6 +10,7 @@
     "analyzer",
     "target",
     "configurations",
+    "configurations_not_built",
     "consumers",
     "findings",
     "edge_evaluations",
@@ -142,7 +143,7 @@
       }
     },
     "configurations": {
-      "description": "The build matrix the analysis ran, one entry per configuration, ordered by id compared bytewise. A symbol is reported only when it is dead in every entry, and each finding names the configurations in which it holds.",
+      "description": "The build matrix the analysis ran, one entry per configuration, ordered by id compared bytewise. A symbol is reported only when it is dead in every entry, and each finding names the configurations in which it holds. A configuration the analysis derived and could not build is named by configurations_not_built rather than here, so this array is the matrix the analysis ran.",
       "type": "array",
       "minItems": 1,
       "uniqueItems": true,
@@ -174,6 +175,48 @@
               "type": "string",
               "minLength": 1
             }
+          }
+        }
+      }
+    },
+    "configurations_not_built": {
+      "description": "Every configuration the analysis derived from the target tree, could not build, and dropped from the matrix, one entry per configuration, ordered by id compared bytewise. An identifier here names no entry of configurations, because a configuration is either in the matrix the analysis ran or dropped from it, so a finding's configurations list never names one. The array holds only derived configurations: a configuration the configuration document declared is the maintainer's assertion, and a run that cannot build one ends with the configuration exit code rather than analysing the rest. Empty for a run that built every configuration it derived, and for a language whose analysis has no build matrix.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "os", "arch", "tags", "error"],
+        "properties": {
+          "id": {
+            "description": "The name this report uses for the configuration, spelled as the identifier of a derived configuration is spelled: the operating system and the architecture joined by a hyphen, with each tag appended after a further hyphen in the order the configuration lists them.",
+            "type": "string",
+            "minLength": 1
+          },
+          "os": {
+            "description": "The target operating system, as the toolchain names it.",
+            "type": "string",
+            "minLength": 1
+          },
+          "arch": {
+            "description": "The target architecture, as the toolchain names it.",
+            "type": "string",
+            "minLength": 1
+          },
+          "tags": {
+            "description": "The build tags in effect for the configuration, ordered bytewise. Empty when the configuration sets none.",
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "error": {
+            "description": "The first line of the error the load reported for this configuration, on one line and never empty, so a reader sees why the guess was dropped without running the load again. It names no absolute path and no other host detail, because two runs over the same tree on two machines write the same bytes.",
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[^\\r\\n]+$"
           }
         }
       }

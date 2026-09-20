@@ -1,7 +1,7 @@
 {
   "description": "The closed vocabularies of the contract at the version this document records: the report shapes it admits, the live and retired issue-kind codes, the exemption classes, the subject kinds a finding may name and the exit codes. The suite compares it with the documents under contract/ on disk, so a code, a class, a subject kind, an exit code or a report shape added or retired while contract_version still names the version recorded here fails, and moving the version and rewriting this document in one change is the green path. The rule contract.json states for itself is what this document enforces over the part of a contract change that is a set: contract_version moves when a document under contract/ changes in a way an implementation can observe. A change no set here holds, a mechanism sentence for example, still moves the version and leaves this document alone. Nothing outside this repository reads it, and no analyzer implements anything on account of it.",
-  "contract_version": "1.6.0",
-  "schema_versions": ["4.0.0"],
+  "contract_version": "1.7.0",
+  "schema_versions": ["5.0.0"],
   "kind_codes": [
     "DS1001",
     "DS1002",

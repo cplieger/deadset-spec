@@ -51,8 +51,8 @@ var findingOptionalFields = []string{"analyzer", "liveness_relation"}
 // evaluations and it carries a relation, which the example and the first merge
 // vector pin.
 var findingNoRelationKinds = []string{
-	"case", "dependency", "file", "module-directive", "parameter", "receiver",
-	"result", "root", "statement", "store", "suppression",
+	"case", "dependency", "edge", "file", "module-directive", "parameter",
+	"receiver", "result", "root", "statement", "store", "suppression",
 }
 
 // findingLiveSubjectCodes are the codes whose subject the analysis holds live,

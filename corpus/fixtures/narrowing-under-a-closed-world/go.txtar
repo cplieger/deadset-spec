@@ -1,0 +1,73 @@
+The Go rendering: a target module of two packages and the consumer module that
+references one exported function of each. Every reference to the three narrowing
+subjects is inside the module, and the widest scope holding all of them is what
+decides the code and the visibility each finding names: the declaring file, the
+declaring package, the module.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Published": { "file": "target/catalog/catalog.go", "line": 7 },
+    "InFile": { "file": "target/catalog/catalog.go", "line": 12 },
+    "InModule": { "file": "target/catalog/catalog.go", "line": 15 },
+    "InPackage": { "file": "target/catalog/grouped.go", "line": 4 },
+    "Reached": { "file": "target/svc/svc.go", "line": 6 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/catalog/catalog.go --
+// Package catalog is the target's published package: one exported function a
+// consumer calls, and three the module alone reaches.
+package catalog
+
+// Published is called from the consumer module, so no scope inside the target
+// holds every reference to it.
+func Published() int {
+	return InFile() + InPackage() + InModule()
+}
+
+// InFile is called from the file that declares it and from nowhere else.
+func InFile() int { return 1 }
+
+// InModule is called from another package of the target module.
+func InModule() int { return 2 }
+-- target/catalog/grouped.go --
+package catalog
+
+// InPackage is called from another file of the package that declares it.
+func InPackage() int { return 3 }
+-- target/svc/svc.go --
+// Package svc is a second published package of the target, which calls one
+// exported function of the first.
+package svc
+
+import "example.com/target/catalog"
+
+// Reached is called from the consumer module.
+func Reached() int { return catalog.InModule() }
+-- consumer/go.mod --
+module example.com/consumer
+
+go 1.27.0
+
+require example.com/target v0.0.0
+
+replace example.com/target => ../target
+-- consumer/main.go --
+// Command consumer references one exported function of each package of the
+// target module.
+package main
+
+import (
+	"example.com/target/catalog"
+	"example.com/target/svc"
+)
+
+func main() {
+	if catalog.Published()+svc.Reached() == 0 {
+		panic("the target answered zero")
+	}
+}

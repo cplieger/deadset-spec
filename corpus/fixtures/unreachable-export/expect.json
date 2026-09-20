@@ -1,0 +1,32 @@
+{
+  "name": "unreachable-export",
+  "description": "An application whose two packages each hold one exported declaration nothing references. The one under the internal tree is reported as an unreachable export, because no code outside the module can import the package that declares it; the one in a package an importer could name is reported as an unused export. A declaration the main package calls is reported at neither position.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Used",
+      "report": "none"
+    },
+    {
+      "symbol": "Reached",
+      "report": "none"
+    },
+    {
+      "symbol": "Forgotten",
+      "report": "DS1103",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "Published",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting",
+      "symbol_kind": "function"
+    }
+  ]
+}
