@@ -1,0 +1,9 @@
+{
+  "contract_version": "2.2.0",
+  "target": { "kind": "application" },
+  "analysis": {
+    "configurations": [
+      { "id": "tsconfig.json", "os": "linux", "arch": "amd64", "project": "tsconfig.json" }
+    ]
+  }
+}

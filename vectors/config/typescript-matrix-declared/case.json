@@ -1,0 +1,5 @@
+{
+  "name": "typescript-matrix-declared",
+  "description": "A repository configuration declaring a build matrix of compiler configurations, complete, each entry naming one configuration file relative to the target root. The resolved configuration carries the entries the repository names, in the order it names them, under one provenance entry for the array, so a target whose configuration files are not all analyzable states which ones the analysis builds.",
+  "covers": ["typescript-matrix-declared"]
+}

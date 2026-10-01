@@ -24,6 +24,15 @@ const (
 	reportStaleCode         = "DS1703"
 	reportSchemaDialect     = "https://json-schema.org/draft/2020-12/schema"
 	reportFindingRefKeyword = "$ref"
+
+	// The two arrays a report names its configurations in, and the two shapes
+	// an entry of either takes, in the order each oneOf states them.
+	reportConfigurationItemsPath    = "properties/configurations/items"
+	reportNotBuiltItemsPath         = "properties/configurations_not_built/items"
+	reportConfigurationPlatformPath = reportConfigurationItemsPath + "/oneOf/0"
+	reportConfigurationProjectPath  = reportConfigurationItemsPath + "/oneOf/1"
+	reportNotBuiltPlatformPath      = reportNotBuiltItemsPath + "/oneOf/0"
+	reportNotBuiltProjectPath       = reportNotBuiltItemsPath + "/oneOf/1"
 )
 
 // reportFindingRefPaths are the two places a report carries a finding, as
@@ -117,8 +126,10 @@ func TestReportSchemaProperties(t *testing.T) {
 		{name: "conformance", at: reportConformancePath, want: []string{"corpus_version", "digest", "result"}},
 		{name: "merged_from_entry", at: "properties/merged_from/items", want: []string{"digest", "name", "version"}},
 		{name: "target", at: "properties/target", want: []string{"identity", "kind", "root"}},
-		{name: "configuration", at: "properties/configurations/items", want: []string{"arch", "id", "os", "tags"}},
-		{name: "configuration_not_built", at: "properties/configurations_not_built/items", want: []string{"arch", "error", "id", "os", "tags"}},
+		{name: "configuration_platform", at: reportConfigurationPlatformPath, want: []string{"arch", "id", "os", "tags"}},
+		{name: "configuration_project", at: reportConfigurationProjectPath, want: []string{"id", "project"}},
+		{name: "configuration_not_built_platform", at: reportNotBuiltPlatformPath, want: []string{"arch", "error", "id", "os", "tags"}},
+		{name: "configuration_not_built_project", at: reportNotBuiltProjectPath, want: []string{"error", "id", "project"}},
 		{name: "consumers", at: "properties/consumers", want: []string{"declared", "loaded", "unavailable"}},
 		{name: "consumer_loaded", at: "properties/consumers/properties/loaded/items", want: []string{"id", "path", "role"}},
 		{name: "consumer_unavailable", at: "properties/consumers/properties/unavailable/items", want: []string{"id", "reason", "role"}},
@@ -147,6 +158,38 @@ func TestReportSchemaProperties(t *testing.T) {
 	}
 }
 
+// TestEveryProjectMemberIsSpelledInThePathForm pins that a compiler
+// configuration file is spelled the way every path of the contract is spelled,
+// in the configuration document that declares it and in both report arrays
+// that carry it, so a project the configuration admits is one a report can
+// carry and an identifier derived from it names the same file in both. The
+// copies exist because neither schema references the other's definitions.
+func TestEveryProjectMemberIsSpelledInThePathForm(t *testing.T) {
+	want, _ := objectAt(loadFindingSchema(t), findingPathDefPath)["pattern"].(string)
+	if want == "" {
+		t.Fatalf("Setup: %s declares no pattern at %s, want the path form", findingSchemaPath, findingPathDefPath)
+	}
+	report := loadReportSchema(t)
+	config := loadSchema(t, spec.Contract, configSchemaPath)
+	cases := []struct {
+		schema map[string]any
+		name   string
+		source string
+		at     string
+	}{
+		{name: "declared", schema: config, source: configSchemaPath, at: "properties/analysis/properties/configurations/items/oneOf/1/properties/project"},
+		{name: "built", schema: report, source: reportSchemaPath, at: reportConfigurationProjectPath + "/properties/project"},
+		{name: "not_built", schema: report, source: reportSchemaPath, at: reportNotBuiltProjectPath + "/properties/project"},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			if got, _ := objectAt(tc.schema, tc.at)["pattern"].(string); got != want {
+				t.Errorf("schema[%s %s].pattern = %q, want %q, the path form %s declares at %s", tc.source, tc.at, got, want, findingSchemaPath, findingPathDefPath)
+			}
+		})
+	}
+}
+
 // TestReportSchemaRequiredMembers pins what a report must state rather than
 // leave to a reader's default: a report is machine output, so every member of
 // the envelope and of every record is present.
@@ -169,8 +212,10 @@ func TestReportSchemaRequiredMembers(t *testing.T) {
 		{name: "analyzer", at: "properties/analyzer", want: []string{"name", "version", "languages", "schema_versions_accepted", "conformance"}},
 		{name: "conformance", at: reportConformancePath, want: []string{"corpus_version", "result", "digest"}},
 		{name: "target", at: "properties/target", want: []string{"kind", "root", "identity"}},
-		{name: "configuration", at: "properties/configurations/items", want: []string{"id", "os", "arch", "tags"}},
-		{name: "configuration_not_built", at: "properties/configurations_not_built/items", want: []string{"id", "os", "arch", "tags", "error"}},
+		{name: "configuration_platform", at: reportConfigurationPlatformPath, want: []string{"id", "os", "arch", "tags"}},
+		{name: "configuration_project", at: reportConfigurationProjectPath, want: []string{"id", "project"}},
+		{name: "configuration_not_built_platform", at: reportNotBuiltPlatformPath, want: []string{"id", "os", "arch", "tags", "error"}},
+		{name: "configuration_not_built_project", at: reportNotBuiltProjectPath, want: []string{"id", "project", "error"}},
 		{name: "consumers", at: "properties/consumers", want: []string{"declared", "loaded", "unavailable"}},
 		{name: "edge_evaluation", at: reportEdgeItemPath, want: []string{"edge", "side", "symbol", "state"}},
 		{name: "stale_suppression", at: reportStaleItemPath, want: []string{"code", "mechanism", "entry", "position", "symbol", "message"}},

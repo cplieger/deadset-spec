@@ -65,43 +65,70 @@
           "x-owner": "analyzer"
         },
         "configurations": {
-          "description": "The build matrix. Each entry names one configuration the target builds under; a symbol is reported only when it is dead in every entry. An empty array, the default, derives the matrix from the build constraints present in the target tree plus the host platform, and a derived matrix is never complete.",
+          "description": "The build matrix. Each entry names one configuration the target builds under; a symbol is reported only when it is dead in every entry. An entry takes one of two shapes, the shape of the thing that decides what a language builds: a platform, which is an operating system and an architecture with the build tags in effect, or a project, which is one compiler configuration file. An entry carries one shape or the other and never a member of both, because a platform configuration has no configuration file and a compiler configuration has no operating system to name. An analysis reads the entries of the shape its language is built from and leaves the entries of the other shape to the analysis that reads them, so on a target holding both kinds of language the array holds one matrix per language. The entries of one shape are the matrix that language's analysis runs: they replace its derivation, so a configuration the target holds and the array does not name is not analyzed and a configuration the array names and the analysis cannot build ends the run. A language the array holds no entry for derives its matrix from the target tree, which for a language built under build constraints is the constraints present in the tree plus the host platform and for a language built from compiler configuration files is the configuration files under the target root; an empty array, the default, derives every language's matrix, and a derived matrix is never complete.",
           "type": "array",
           "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["id", "os", "arch"],
-            "properties": {
-              "id": {
-                "description": "The name the report uses for this configuration. An identifier written here is the maintainer's and may take any spelling this key admits, so no pattern constrains it; an identifier the analysis derives instead, because this array is empty, is the configuration's operating system and architecture joined by a hyphen, with each of its tags appended after a further hyphen in the order the configuration lists them: linux-amd64, linux-amd64-integration. Both analyzers spell a derived identifier that way, so a document naming one names the same configuration to each of them.",
-                "type": "string",
-                "minLength": 1,
-                "x-owner": "analyzer"
+            "description": "One configuration of the matrix, in exactly one of the two shapes the array admits.",
+            "oneOf": [
+              {
+                "description": "A platform configuration: an operating system, an architecture and the build tags in effect.",
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["id", "os", "arch"],
+                "properties": {
+                  "id": {
+                    "description": "The name the report uses for this configuration. An identifier written here is the maintainer's and may take any spelling this key admits, so no pattern constrains it; an identifier the analysis derives instead, because the array holds no entry of this shape, is the configuration's operating system and architecture joined by a hyphen, with each of its tags appended after a further hyphen in the order the configuration lists them: linux-amd64, linux-amd64-integration. Every analyzer spells a derived identifier that way, so a document naming one names the same configuration to each of them.",
+                    "type": "string",
+                    "minLength": 1,
+                    "x-owner": "analyzer"
+                  },
+                  "os": {
+                    "description": "The target operating system, as the toolchain names it.",
+                    "type": "string",
+                    "minLength": 1,
+                    "x-owner": "analyzer"
+                  },
+                  "arch": {
+                    "description": "The target architecture, as the toolchain names it.",
+                    "type": "string",
+                    "minLength": 1,
+                    "x-owner": "analyzer"
+                  },
+                  "tags": {
+                    "description": "The build tags in effect for this configuration.",
+                    "type": "array",
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "default": [],
+                    "x-owner": "analyzer"
+                  }
+                }
               },
-              "os": {
-                "description": "The target operating system, as the toolchain names it.",
-                "type": "string",
-                "minLength": 1,
-                "x-owner": "analyzer"
-              },
-              "arch": {
-                "description": "The target architecture, as the toolchain names it.",
-                "type": "string",
-                "minLength": 1,
-                "x-owner": "analyzer"
-              },
-              "tags": {
-                "description": "The build tags in effect for this configuration.",
-                "type": "array",
-                "uniqueItems": true,
-                "items": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "default": [],
-                "x-owner": "analyzer"
+              {
+                "description": "A project configuration: one compiler configuration file the target is built from.",
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["id", "project"],
+                "properties": {
+                  "id": {
+                    "description": "The name the report uses for this configuration. An identifier written here is the maintainer's and may take any spelling this key admits, so no pattern constrains it; an identifier the analysis derives instead, because the array holds no entry of this shape, is the compiler configuration file's path relative to the target root, as project spells it: tsconfig.json, packages/app/tsconfig.json. Every analyzer spells a derived identifier that way, so a document naming one names the same configuration to each of them.",
+                    "type": "string",
+                    "minLength": 1,
+                    "x-owner": "analyzer"
+                  },
+                  "project": {
+                    "description": "The compiler configuration file this configuration is built from, as a path relative to the target root, with / as the separator on every platform, no leading ./ and no trailing /. It names a file rather than a directory, and never an absolute path or a path leading out of the target root, so that the identifier derived from it is the same on every machine that analyzes the target.",
+                    "type": "string",
+                    "minLength": 1,
+                    "pattern": "^(?:[^/\\\\.\\r\\n][^/\\\\\\r\\n]*|\\.[^/\\\\.\\r\\n][^/\\\\\\r\\n]*|\\.\\.[^/\\\\\\r\\n]+)(?:/(?:[^/\\\\.\\r\\n][^/\\\\\\r\\n]*|\\.[^/\\\\.\\r\\n][^/\\\\\\r\\n]*|\\.\\.[^/\\\\\\r\\n]+))*$",
+                    "x-owner": "analyzer"
+                  }
+                }
               }
-            }
+            ]
           },
           "default": [],
           "x-owner": "analyzer"
@@ -113,7 +140,7 @@
           "x-owner": "analyzer",
           "properties": {
             "complete": {
-              "description": "Declares that configurations lists every configuration the target builds. Only under a complete matrix is a source file no configuration builds reported (DS1501). The default is false, because a matrix derived from the constraints in the tree cannot see a Boolean build constraint or a configuration no file names.",
+              "description": "Declares that configurations lists every configuration the target builds. Only under a complete matrix is a source file no configuration builds reported (DS1501). The default is false, because a matrix the analysis derived cannot see every configuration a target has: a Boolean build constraint, and a platform no file of the tree names, are invisible to a derivation over build constraints, and a compiler configuration file outside the target root is invisible to a derivation over the files under it.",
               "type": "boolean",
               "default": false,
               "x-owner": "analyzer"

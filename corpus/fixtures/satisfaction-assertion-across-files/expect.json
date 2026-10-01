@@ -1,0 +1,27 @@
+{
+  "name": "satisfaction-assertion-across-files",
+  "description": "A compile-time satisfaction assertion and the interface it names are declared in different files. The assertion is reported at its own site while the finding's subject is the interface, so a record written against that finding names the interface's reference beside the file the assertion is in; the interface's own method is reported beside it because the assertion is not a call, and the concrete method that satisfies the interface is not reported.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "AssertedInterfaceMethod",
+      "report": "DS1203",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "interface-method",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Assertion",
+      "report": "DS1204",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "satisfaction-assertion"
+    },
+    {
+      "symbol": "AssertedMethod",
+      "report": "none"
+    }
+  ]
+}

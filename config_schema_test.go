@@ -2,6 +2,7 @@ package spec_test
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/fs"
 	"maps"
 	"slices"
@@ -44,8 +45,8 @@ func loadConfigSchema(t *testing.T) schemaNode {
 }
 
 // walkSchema lists every subschema under root, the root first, following properties,
-// patternProperties and items. A child that is not a JSON object is listed with a nil node so
-// the structural test reports it instead of skipping it.
+// patternProperties, items and the branches of a oneOf. A child that is not a JSON object is
+// listed with a nil node so the structural test reports it instead of skipping it.
 func walkSchema(root schemaNode) []declaredKey {
 	var keys []declaredKey
 	var visit func(node schemaNode, path string, property, required bool)
@@ -67,9 +68,25 @@ func walkSchema(root schemaNode) []declaredKey {
 		if items, ok := node["items"].(schemaNode); ok {
 			visit(items, joinPath(path, "<items>"), false, false)
 		}
+		for i, branch := range branchesOf(node) {
+			child, _ := branch.(schemaNode)
+			visit(child, branchPath(path, i), false, false)
+		}
 	}
 	visit(root, "root", false, false)
 	return keys
+}
+
+// branchesOf returns the subschemas of a node's oneOf, and nil for a node that states one
+// shape.
+func branchesOf(node schemaNode) []any {
+	branches, _ := node["oneOf"].([]any)
+	return branches
+}
+
+// branchPath is the path walkSchema gives the i-th branch of a node's oneOf.
+func branchPath(parent string, i int) string {
+	return joinPath(parent, fmt.Sprintf("<oneOf.%d>", i))
 }
 
 func joinPath(parent, name string) string {
@@ -111,6 +128,21 @@ func TestConfigSchema_NoKeyAdmitsArbitraryNesting(t *testing.T) {
 			}
 			if ref, ok := key.node["$ref"]; ok {
 				t.Errorf("schema[%s].$ref = %v, want no reference: every key is declared inline", key.path, ref)
+			}
+			if branches := branchesOf(key.node); len(branches) != 0 {
+				// A key whose value takes one of several shapes states each
+				// shape in a branch and nothing of its own, so the branches
+				// carry the type and the closed key list and this node carries
+				// neither: a type here would admit a value no branch describes.
+				if len(branches) < 2 {
+					t.Errorf("schema[%s].oneOf holds %d branch(es), want the shapes the key admits", key.path, len(branches))
+				}
+				for _, keyword := range []string{"type", "properties", "patternProperties", "items", "enum", "pattern"} {
+					if value, ok := key.node[keyword]; ok {
+						t.Errorf("schema[%s].%s = %v, want it declared in every branch of the oneOf instead", key.path, keyword, value)
+					}
+				}
+				return
 			}
 			typ, _ := key.node["type"].(string)
 			if !slices.Contains(schemaTypes, typ) {
@@ -264,6 +296,43 @@ func TestConfigSchema_RequiredNamesDeclaredKeys(t *testing.T) {
 				if _, ok := props[name]; !ok {
 					t.Errorf("schema[%s].required names %q, want every required name declared under properties %v", key.path, name, slices.Sorted(maps.Keys(props)))
 				}
+			}
+		})
+	}
+}
+
+// configurationsItemsPath is the path walkSchema gives one entry of the declared build
+// matrix, whose two branches are the two shapes a configuration takes.
+const configurationsItemsPath = "analysis.configurations.<items>"
+
+// TestConfigSchema_AConfigurationEntryIsOnePlatformOrOneProject pins the two shapes the
+// build matrix admits and the members that tell them apart: a platform names an operating
+// system, an architecture and its build tags, a project names one compiler configuration
+// file, and each closes its key set over its own members, so an entry carrying members of
+// both is refused rather than read as the shape a reader assumed.
+func TestConfigSchema_AConfigurationEntryIsOnePlatformOrOneProject(t *testing.T) {
+	keys := walkSchema(loadConfigSchema(t))
+	if got := len(branchesOf(lookupKey(t, keys, configurationsItemsPath).node)); got != 2 {
+		t.Fatalf("schema[%s].oneOf holds %d branch(es), want the two shapes a configuration takes", configurationsItemsPath, got)
+	}
+	for _, tc := range []struct {
+		name       string
+		properties []string
+		required   []string
+		branch     int
+	}{
+		{name: "platform", branch: 0, properties: []string{"arch", "id", "os", "tags"}, required: []string{"id", "os", "arch"}},
+		{name: "project", branch: 1, properties: []string{"id", "project"}, required: []string{"id", "project"}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			at := branchPath(configurationsItemsPath, tc.branch)
+			node := lookupKey(t, keys, at).node
+			props, _ := node["properties"].(map[string]any)
+			if got := slices.Sorted(maps.Keys(props)); !slices.Equal(got, tc.properties) {
+				t.Errorf("schema[%s].properties = %v, want %v", at, got, tc.properties)
+			}
+			if got := stringSlice(node["required"]); !slices.Equal(got, tc.required) {
+				t.Errorf("schema[%s].required = %v, want %v", at, got, tc.required)
 			}
 		})
 	}

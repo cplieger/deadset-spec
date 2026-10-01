@@ -1,11 +1,11 @@
 {
-  "schema_version": "5.0.0",
-  "contract_version": "2.1.0",
+  "schema_version": "6.0.0",
+  "contract_version": "2.2.0",
   "analyzer": {
     "name": "deadset",
     "version": "1.0.0",
     "languages": ["go", "ts"],
-    "schema_versions_accepted": ["5.0.0"],
+    "schema_versions_accepted": ["6.0.0"],
     "conformance": {
       "corpus_version": "1.0.0",
       "result": "pass",
@@ -25,7 +25,10 @@
     }
   ],
   "target": { "kind": "library", "root": "src/app", "identity": "example.com/app" },
-  "configurations": [{ "id": "linux-amd64", "os": "linux", "arch": "amd64", "tags": [] }],
+  "configurations": [
+    { "id": "linux-amd64", "os": "linux", "arch": "amd64", "tags": [] },
+    { "id": "tsconfig.json", "project": "tsconfig.json" }
+  ],
   "configurations_not_built": [],
   "consumers": { "declared": 0, "loaded": [], "unavailable": [] },
   "findings": [
@@ -108,7 +111,7 @@
       "generated": false,
       "component": { "id": "deadset-ts/c-0004", "root": true, "symbol_count": 1, "deletable_lines": 6 },
       "retained_by": [],
-      "configurations": ["linux-amd64"],
+      "configurations": ["tsconfig.json"],
       "consumers_loaded": [],
       "fixability": "deletable",
       "severity": "deny",
