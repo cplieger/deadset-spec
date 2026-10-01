@@ -1,0 +1,60 @@
+The Go rendering: an application declaring one iota group whose type a
+conversion from an integer produces and one whose type nothing converts to,
+naming the first member of each and no other.
+
+-- fixture.json --
+{
+  "symbols": {
+    "ModeWrite": { "file": "target/mode.go", "line": 8 },
+    "TierHigh": { "file": "target/tier.go", "line": 10 },
+    "TierMid": { "file": "target/tier.go", "line": 9 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target converts the argument count to a tier and spells one mode.
+package main
+
+import "os"
+
+func main() {
+	if tierOf(len(os.Args)) == tierLow && describe(modeRead) == "" {
+		panic("the levels returned nothing")
+	}
+}
+-- target/tier.go --
+package main
+
+// tier is produced by a conversion from an integer, so a value of it can arrive
+// by value rather than by name.
+type tier int
+
+const (
+	tierLow tier = iota
+	tierMid
+	tierHigh
+)
+
+// tierOf converts an integer to a tier.
+func tierOf(n int) tier { return tier(n) }
+-- target/mode.go --
+package main
+
+// mode is produced by no conversion.
+type mode int
+
+const (
+	modeRead mode = iota
+	modeWrite
+)
+
+// describe spells one mode.
+func describe(m mode) string {
+	if m == modeRead {
+		return "read"
+	}
+	return "other"
+}

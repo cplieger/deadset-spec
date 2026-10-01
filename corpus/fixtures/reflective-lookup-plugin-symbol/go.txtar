@@ -1,0 +1,59 @@
+The Go rendering: a target module looking one symbol up by a string literal in a
+plugin its caller opens, beside two exported functions, one of which the literal
+names, and the consumer module that opens the plugin.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Handler": { "file": "target/handlers.go", "line": 7 },
+    "Other": { "file": "target/handlers.go", "line": 10 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/handlers.go --
+// Package target looks one of its own functions up by name in a plugin.
+package target
+
+import "plugin"
+
+// Handler is named by the lookup's string literal.
+func Handler() {}
+
+// Other is named by no lookup.
+func Other() {}
+
+// Load looks Handler up by name.
+func Load(p *plugin.Plugin) error {
+	_, err := p.Lookup("Handler")
+	return err
+}
+-- consumer/go.mod --
+module example.com/consumer
+
+go 1.27.0
+
+require example.com/target v0.0.0
+
+replace example.com/target => ../target
+-- consumer/main.go --
+// Command consumer opens a plugin and hands it to the target.
+package main
+
+import (
+	"plugin"
+
+	"example.com/target"
+)
+
+func main() {
+	p, err := plugin.Open("handlers.so")
+	if err != nil {
+		panic(err)
+	}
+	if err := target.Load(p); err != nil {
+		panic(err)
+	}
+}

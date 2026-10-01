@@ -1,0 +1,32 @@
+The Go rendering: an application module whose root package is a main package
+with no main function, and a command beside it whose main package declares one.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Greet": { "file": "target/plugin.go", "line": 6 },
+    "Unused": { "file": "target/cmd/app/main.go", "line": 7 },
+    "greeting": { "file": "target/plugin.go", "line": 8 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/plugin.go --
+// Package main is built as a plugin: it declares no main function, and its host
+// resolves its exported functions and variables by name.
+package main
+
+// Greet is a function a host resolves by name. No source names it.
+func Greet() string { return "hello" }
+
+func greeting() string { return "hello" }
+-- target/cmd/app/main.go --
+// Command app is a program, so a host resolves nothing of it by name.
+package main
+
+func main() {}
+
+// Unused is exported, and nothing names it.
+func Unused() {}

@@ -1,5 +1,5 @@
 {
-  "contract_version": "3.0.0",
+  "contract_version": "3.1.0",
   "target": { "kind": "library" },
   "analysis": {
     "languages": ["go", "ts"],
@@ -28,7 +28,25 @@
   "go": {},
   "ts": {
     "test_files": ["**/*.test.ts"],
-    "entry_files": ["src/cli.ts"]
+    "entry_files": ["src/cli.ts"],
+    "injection_registrations": [
+      { "module": "@example/container", "name": "Container.bind" },
+      { "module": "@example/container", "name": "Module" }
+    ],
+    "lifecycle_contracts": [
+      {
+        "components": [
+          { "module": "@example/ui/decorators.js", "name": "element" },
+          { "global": "CustomElementRegistry.define" }
+        ],
+        "bases": [{ "global": "HTMLElement" }],
+        "members": ["connectedCallback", "disconnectedCallback", "observedAttributes:static"]
+      }
+    ],
+    "serializers": [
+      { "symbol": "ts://@example/app/src/wire.ts#encode" },
+      { "global": "structuredClone" }
+    ]
   },
   "provenance": {
     "contract_version": "repository: repository.json",
@@ -52,6 +70,9 @@
     "reporters.max_findings": "repository: repository.json",
     "reporters.fail_on": "repository: repository.json",
     "ts.test_files": "repository: repository.json",
-    "ts.entry_files": "repository: repository.json"
+    "ts.entry_files": "repository: repository.json",
+    "ts.injection_registrations": "repository: repository.json",
+    "ts.lifecycle_contracts": "repository: repository.json",
+    "ts.serializers": "repository: repository.json"
   }
 }

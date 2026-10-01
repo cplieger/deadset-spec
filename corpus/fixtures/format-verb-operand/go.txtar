@@ -1,0 +1,67 @@
+The Go rendering: a target module formatting a value of one string type under the
+default verb and returning a value of another, declared the same way, that it
+never formats, and the consumer module that calls both.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Label.String": { "file": "target/label.go", "line": 11 },
+    "Tag.String": { "file": "target/tag.go", "line": 7 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/label.go --
+// Package target formats a value of one string type and returns a value of
+// another.
+package target
+
+import "fmt"
+
+// Label is formatted under a verb that calls its String method.
+type Label string
+
+// String spells the label. No call site names it.
+func (l Label) String() string { return "label " + string(l) }
+
+// Render formats a Label under the default verb.
+func Render() string { return fmt.Sprintf("%v", Label("one")) }
+-- target/tag.go --
+package target
+
+// Tag is declared as Label is and is never formatted.
+type Tag string
+
+// String spells the tag, and nothing formats a Tag.
+func (t Tag) String() string { return "tag " + string(t) }
+
+// NewTag returns a Tag to its caller.
+func NewTag() Tag { return Tag("one") }
+-- consumer/go.mod --
+module example.com/consumer
+
+go 1.27.0
+
+require example.com/target v0.0.0
+
+replace example.com/target => ../target
+-- consumer/main.go --
+// Command consumer writes the rendered label and checks for a tag.
+package main
+
+import (
+	"os"
+
+	"example.com/target"
+)
+
+func main() {
+	if _, err := os.Stdout.WriteString(target.Render()); err != nil {
+		panic(err)
+	}
+	if target.NewTag() == "" {
+		panic("no tag")
+	}
+}

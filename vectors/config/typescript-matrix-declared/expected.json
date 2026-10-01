@@ -1,5 +1,5 @@
 {
-  "contract_version": "3.0.0",
+  "contract_version": "3.1.0",
   "target": { "kind": "application" },
   "analysis": {
     "languages": ["ts"],
@@ -28,7 +28,10 @@
   "go": {},
   "ts": {
     "test_files": ["**/*.test.{ts,tsx,mts,cts}"],
-    "entry_files": []
+    "entry_files": [],
+    "injection_registrations": [],
+    "lifecycle_contracts": [],
+    "serializers": []
   },
   "provenance": {
     "contract_version": "default",
@@ -51,6 +54,9 @@
     "reporters.max_findings": "default",
     "reporters.fail_on": "default",
     "ts.test_files": "default",
-    "ts.entry_files": "default"
+    "ts.entry_files": "default",
+    "ts.injection_registrations": "default",
+    "ts.lifecycle_contracts": "default",
+    "ts.serializers": "default"
   }
 }

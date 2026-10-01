@@ -1,0 +1,9 @@
+{
+  "contract_version": "3.1.0",
+  "target": { "kind": "application" },
+  "ts": {
+    "injection_registrations": [
+      { "module": "@example/container", "name": "Container.bind", "argument": 0 }
+    ]
+  }
+}

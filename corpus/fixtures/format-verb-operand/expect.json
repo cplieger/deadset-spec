@@ -1,0 +1,17 @@
+{
+  "name": "format-verb-operand",
+  "description": "A String method no call site names is retained by the format-verb-contract class when a value of its receiver's type is an operand of a formatting function under a verb that calls it. The same method on a type whose values are never formatted is reported.",
+  "languages": ["go"],
+  "target_kind": "library",
+  "consumers": ["consumer"],
+  "expect": [
+    { "symbol": "Label.String", "report": "none", "retained_by": ["format-verb-contract"] },
+    {
+      "symbol": "Tag.String",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

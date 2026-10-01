@@ -1,0 +1,17 @@
+{
+  "name": "enum-group-conversion",
+  "description": "A member of an enumerated type that no source names is retained by the enum-group class when a value of the type is produced by a conversion from a number, because a member can then arrive by value rather than by name. A member of an enumerated type no conversion produces, that no source names, is reported as an unused enum member.",
+  "languages": ["go", "ts"],
+  "target_kind": "application",
+  "expect": [
+    { "symbol": "TierMid", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "TierHigh", "report": "none", "retained_by": ["enum-group"] },
+    {
+      "symbol": "ModeWrite",
+      "report": "DS1302",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

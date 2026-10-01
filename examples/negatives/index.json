@@ -133,6 +133,34 @@
       "constraint": "pattern",
       "instance_path": "/target/root",
       "violates": "the target root is an absolute path, which two machines would not write alike"
+    },
+    {
+      "file": "ts-injection-registration-unknown-member.json",
+      "schema": "contract/config.schema.json",
+      "constraint": "oneOf",
+      "instance_path": "/ts/injection_registrations/0",
+      "violates": "a registration entry carries a member none of the three declaration shapes declares, so it names no declaration"
+    },
+    {
+      "file": "ts-lifecycle-contract-framework-name.json",
+      "schema": "contract/config.schema.json",
+      "constraint": "additionalProperties",
+      "instance_path": "/ts/lifecycle_contracts/0",
+      "violates": "a lifecycle contract names its framework by a name, and a contract states its framework by the declarations that make a class a component"
+    },
+    {
+      "file": "ts-lifecycle-contract-no-component-route.json",
+      "schema": "contract/config.schema.json",
+      "constraint": "anyOf",
+      "instance_path": "/ts/lifecycle_contracts/0",
+      "violates": "a lifecycle contract names no declaration and no base class that makes a class a component, so it retains nothing"
+    },
+    {
+      "file": "ts-serializer-unknown-member.json",
+      "schema": "contract/config.schema.json",
+      "constraint": "oneOf",
+      "instance_path": "/ts/serializers/0",
+      "violates": "a serializer entry carries a member none of the three declaration shapes declares, so it names no declaration"
     }
   ]
 }

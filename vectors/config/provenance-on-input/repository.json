@@ -1,5 +1,5 @@
 {
-  "contract_version": "3.0.0",
+  "contract_version": "3.1.0",
   "target": { "kind": "library" },
   "analysis": {
     "languages": ["go", "ts"],
@@ -28,7 +28,25 @@
   "go": {},
   "ts": {
     "test_files": ["**/*.test.ts"],
-    "entry_files": ["src/cli.ts"]
+    "entry_files": ["src/cli.ts"],
+    "injection_registrations": [
+      { "module": "@example/container", "name": "Container.bind" },
+      { "module": "@example/container", "name": "Module" }
+    ],
+    "lifecycle_contracts": [
+      {
+        "components": [
+          { "module": "@example/ui/decorators.js", "name": "element" },
+          { "global": "CustomElementRegistry.define" }
+        ],
+        "bases": [{ "global": "HTMLElement" }],
+        "members": ["connectedCallback", "disconnectedCallback", "observedAttributes:static"]
+      }
+    ],
+    "serializers": [
+      { "symbol": "ts://@example/app/src/wire.ts#encode" },
+      { "global": "structuredClone" }
+    ]
   },
   "provenance": {
     "target.kind": "flag: --target-kind",
