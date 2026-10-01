@@ -1,0 +1,5 @@
+{
+  "contract_version": "3.1.0",
+  "target": { "kind": "application" },
+  "ts": { "lifecycle_contracts": [{ "members": ["connectedCallback"] }] }
+}

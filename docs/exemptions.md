@@ -191,7 +191,7 @@ Where the project configures a dependency-injection container, a class registere
 
 Retains: The class's constructor and every injected member.
 
-Mechanism in TypeScript: The class is passed to a registration call of a configured container, or a constructor parameter or a property carries an injection decorator; retain the constructor and each parameter or property the container injects.
+Mechanism in TypeScript: The class is passed to a registration call `ts.injection_registrations` names, or a constructor parameter or a property carries an injection decorator; retain the constructor and each parameter or property the container injects.
 
 TypeScript visibility: retains a member declared `private`, yes; retains a member declared with a `#private` name, no.
 
@@ -203,7 +203,7 @@ Where the project declares a framework, a member whose name matches that framewo
 
 Retains: The lifecycle member.
 
-Mechanism in TypeScript: The project declares a framework and the analyzer holds that framework's lifecycle member names as configuration; a member whose name is in that list is retained when its class is reachable as a component of that framework, by registration, by a decorator or by export as one.
+Mechanism in TypeScript: The project declares a framework and that framework's lifecycle member names as an entry of `ts.lifecycle_contracts`; a member whose name is in that entry's list is retained when its class is reachable as a component of that framework, by registration, by a decorator or by extending a declaration the entry's `bases` names.
 
 TypeScript visibility: retains a member declared `private`, yes; retains a member declared with a `#private` name, no.
 
@@ -215,7 +215,7 @@ A class whose instances flow into a serializer or a schema validator has its dat
 
 Retains: The class's properties, and the `toJSON` and `toString` methods as well for a destination outside the analyzed program; never any other method or accessor.
 
-Mechanism in TypeScript: An instance of the class is an argument of `JSON.stringify`, of a configured serializer, or of a schema validator's parse or validate call; retain the class's properties and, for those destinations, neither its methods nor its accessors. A value passed to a parameter typed `unknown` or `any` of a function or method of a module outside the analyzed program, being neither the project nor a declared consumer, is a destination too, recorded at the call with the detail naming the callee: retain the class's properties and its `toJSON` and `toString` methods, which a serializer and a formatter resolve by the value's own shape, and no other member. A parameter typed as an interface or as an object type is not this crossing, because the callee's own declaration names the members it reads. Any function of the project whose `unknown`-typed or `any`-typed parameter it passes to such a call, or to any other destination of this class, is itself a destination, applied until no further function joins.
+Mechanism in TypeScript: An instance of the class is an argument of `JSON.stringify` or of a declaration `ts.serializers` names; retain the class's properties and, for those destinations, neither its methods nor its accessors. A value passed to a parameter typed `unknown` or `any` of a function or method of a module outside the analyzed program, being neither the project nor a declared consumer, is a destination too, recorded at the call with the detail naming the callee: retain the class's properties and its `toJSON` and `toString` methods, which a serializer and a formatter resolve by the value's own shape, and no other member. A parameter typed as an interface or as an object type is not this crossing, because the callee's own declaration names the members it reads. Any function of the project whose `unknown`-typed or `any`-typed parameter it passes to such a call, or to any other destination of this class, is itself a destination, applied until no further function joins.
 
 TypeScript visibility: retains a member declared `private`, yes; retains a member declared with a `#private` name, no.
 

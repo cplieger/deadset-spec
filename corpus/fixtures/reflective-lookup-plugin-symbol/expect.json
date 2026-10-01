@@ -1,0 +1,17 @@
+{
+  "name": "reflective-lookup-plugin-symbol",
+  "description": "A function no source names is retained by the reflective-lookup class when a string literal equal to its name is the argument of a lookup that resolves a name at runtime. A function beside it that no lookup names is reported.",
+  "languages": ["go"],
+  "target_kind": "library",
+  "consumers": ["consumer"],
+  "expect": [
+    { "symbol": "Handler", "report": "none", "retained_by": ["reflective-lookup"] },
+    {
+      "symbol": "Other",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "generated-file-header",
+  "description": "A declaration no source names is retained by the generated-file class when its file carries the generated-code header before the package clause, under the default that excludes generated files. The same declaration in a file that writes the header after the package clause, where it is an ordinary comment, is reported.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "expect": [
+    { "symbol": "tableSize", "report": "none", "retained_by": ["generated-file"] },
+    {
+      "symbol": "lateSize",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

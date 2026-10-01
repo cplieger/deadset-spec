@@ -1,0 +1,69 @@
+The Go rendering: a target module returning a value of one error type into a
+result typed as error and a value of another, declared the same way, as its
+concrete type, and the consumer module that calls both.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Fault.Unwrap": { "file": "target/fault.go", "line": 10 },
+    "Slip.Unwrap": { "file": "target/slip.go", "line": 10 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/fault.go --
+// Package target returns one error type as an error and another as itself.
+package target
+
+// Fault reaches a position typed as error.
+type Fault struct{}
+
+func (*Fault) Error() string { return "fault" }
+
+// Unwrap reports no wrapped error. No call site names it.
+func (*Fault) Unwrap() error { return nil }
+
+// Fail returns a Fault into a result typed as error.
+func Fail() error { return &Fault{} }
+-- target/slip.go --
+package target
+
+// Slip is declared as Fault is, and no value of it reaches a position typed as
+// error.
+type Slip struct{}
+
+func (*Slip) Error() string { return "slip" }
+
+// Unwrap reports no wrapped error, and nothing calls it.
+func (*Slip) Unwrap() error { return nil }
+
+// NewSlip returns the concrete type.
+func NewSlip() *Slip { return &Slip{} }
+-- consumer/go.mod --
+module example.com/consumer
+
+go 1.27.0
+
+require example.com/target v0.0.0
+
+replace example.com/target => ../target
+-- consumer/main.go --
+// Command consumer writes the messages of both failures.
+package main
+
+import (
+	"os"
+
+	"example.com/target"
+)
+
+func main() {
+	if _, err := os.Stdout.WriteString(target.Fail().Error()); err != nil {
+		panic(err)
+	}
+	if _, err := os.Stdout.WriteString(target.NewSlip().Error()); err != nil {
+		panic(err)
+	}
+}

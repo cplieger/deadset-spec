@@ -1,0 +1,23 @@
+{
+  "name": "plugin-package-exports",
+  "description": "An exported function no source names is retained by the linkname-cgo-asm-plugin class when its package is a main package that declares no main function, which is the shape of a plugin whose host resolves the function by name. An unexported function of that package is reported, and so is an exported function of a main package that declares a main function, which is a program.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "expect": [
+    { "symbol": "Greet", "report": "none", "retained_by": ["linkname-cgo-asm-plugin"] },
+    {
+      "symbol": "greeting",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Unused",
+      "report": "DS1103",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

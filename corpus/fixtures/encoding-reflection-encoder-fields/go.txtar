@@ -1,0 +1,70 @@
+The Go rendering: a target module encoding a value of one struct type and
+returning a value of another, declared the same way, that reaches no encoder,
+and the consumer module that calls both. Neither type's field is named by any
+source.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Draft.Name": { "file": "target/draft.go", "line": 5 },
+    "Record.Name": { "file": "target/record.go", "line": 9 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/record.go --
+// Package target encodes a value of one struct type and returns a value of
+// another.
+package target
+
+import "encoding/json"
+
+// Record is encoded, and the encoder reads its field by name.
+type Record struct {
+	Name string `json:"name"`
+}
+
+// Encode hands a Record to the encoder.
+func Encode() ([]byte, error) { return json.Marshal(Record{}) }
+-- target/draft.go --
+package target
+
+// Draft is declared as Record is and reaches no encoder.
+type Draft struct {
+	Name string `json:"name"`
+}
+
+// NewDraft returns a Draft to its caller.
+func NewDraft() *Draft { return &Draft{} }
+-- consumer/go.mod --
+module example.com/consumer
+
+go 1.27.0
+
+require example.com/target v0.0.0
+
+replace example.com/target => ../target
+-- consumer/main.go --
+// Command consumer writes the encoded record and checks for a draft.
+package main
+
+import (
+	"os"
+
+	"example.com/target"
+)
+
+func main() {
+	data, err := target.Encode()
+	if err != nil {
+		panic(err)
+	}
+	if _, err := os.Stdout.Write(data); err != nil {
+		panic(err)
+	}
+	if target.NewDraft() == nil {
+		panic("no draft")
+	}
+}

@@ -304,7 +304,7 @@
       "properties": {}
     },
     "ts": {
-      "description": "The section the TypeScript analyzer owns; the orchestrator passes it through unread.",
+      "description": "The section the TypeScript analyzer owns; the orchestrator passes it through unread. Three of its keys name declarations, and each entry of those names one declaration in one of three shapes: symbol names a declaration of the analyzed program by its stable symbol reference; module and name name a declaration a module exports, by the bare specifier an import declaration of the target writes for the module and the declaration's path from that module's exports; global names a declaration of the global scope, the compiler's library declarations and any ambient global declaration included, by its path from that scope. A path is spelled as the fragment of a stable symbol reference in contract/grammar/symbol-ref.md: the name, then each member, joined by dots, with :static after a static member. An entry names the declaration itself rather than an expression that reaches it: a call matches the entry when the declaration its callee resolves to, through every import, re-export and alias, is the declaration the entry names, so a method declared on an interface is named on the interface, CustomElementRegistry.define for a call written customElements.define. Where a key matches a class passed to a call, the class is passed when it is an argument of the call or an element of an array literal or a property value of an object literal written as an argument, at any depth, and a decorator written as a call is a call.",
       "type": "object",
       "additionalProperties": false,
       "x-owner": "ts-analyzer",
@@ -328,6 +328,271 @@
           "items": {
             "type": "string",
             "minLength": 1
+          },
+          "default": [],
+          "x-owner": "ts-analyzer"
+        },
+        "injection_registrations": {
+          "description": "The declarations whose call registers a class with a dependency-injection container, read by the injection-container exemption: a registration function or method, and a decorator whose call lists the classes a container provides. Every class passed to a call of one of them is registered, so its constructor and the members the container injects are retained. An empty array, the default, registers no class through a call; the exemption's other half, a constructor parameter or a property that carries an injection decorator, needs no key and applies whatever this key holds.",
+          "type": "array",
+          "items": {
+            "description": "One declaration, in exactly one of the three shapes the ts section states.",
+            "oneOf": [
+              {
+                "description": "A declaration of the analyzed program, by its stable symbol reference.",
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["symbol"],
+                "properties": {
+                  "symbol": {
+                    "description": "The declaration's stable symbol reference in the TypeScript form contract/grammar/symbol-ref.md states, which matches only the declaration whose reference it spells exactly.",
+                    "type": "string",
+                    "pattern": "^ts://",
+                    "x-owner": "ts-analyzer"
+                  }
+                }
+              },
+              {
+                "description": "A declaration a module exports, by the module's specifier and the declaration's path from the module's exports.",
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["module", "name"],
+                "properties": {
+                  "module": {
+                    "description": "The bare specifier an import declaration of the target writes for the module, resolved as that import resolves it: a package name, a path inside a package, or a runtime built-in module (@example/container, @example/ui/decorators.js, node:v8). A relative or absolute specifier, and a specifier the package's own imports field maps, name a file of the analyzed program, which the symbol shape names instead.",
+                    "type": "string",
+                    "pattern": "^[^./#]",
+                    "x-owner": "ts-analyzer"
+                  },
+                  "name": {
+                    "description": "The declaration's path from the module's exports: the name the module exports it under, or the name of the export that contains it followed by each member, with :static after a static member (Container.bind, Testing.createModule:static, default).",
+                    "type": "string",
+                    "minLength": 1,
+                    "x-owner": "ts-analyzer"
+                  }
+                }
+              },
+              {
+                "description": "A declaration of the global scope, by its path from that scope.",
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["global"],
+                "properties": {
+                  "global": {
+                    "description": "The declaration's path from the global scope, with :static after a static member (JSON.stringify, structuredClone, CustomElementRegistry.define).",
+                    "type": "string",
+                    "minLength": 1,
+                    "x-owner": "ts-analyzer"
+                  }
+                }
+              }
+            ]
+          },
+          "default": [],
+          "x-owner": "ts-analyzer"
+        },
+        "lifecycle_contracts": {
+          "description": "The lifecycle contracts of the frameworks the project declares, read by the framework-lifecycle exemption, one entry per framework: the declarations that make a class one of the framework's components, the classes whose subclasses are its components, and the names of the members the framework calls on a component. An entry names at least one of the first two. A member of a component whose name an entry lists is retained. An empty array, the default, declares no framework, so the exemption retains nothing.",
+          "type": "array",
+          "items": {
+            "description": "One framework's lifecycle contract.",
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["members"],
+            "anyOf": [
+              { "required": ["components"], "properties": { "components": { "minItems": 1 } } },
+              { "required": ["bases"], "properties": { "bases": { "minItems": 1 } } }
+            ],
+            "properties": {
+              "components": {
+                "description": "The declarations whose use makes a class a component of the framework: a decorator, which makes the class it is applied to a component when the decorator expression is the declaration or a call to it, and a registration function or method, which makes every class passed to a call of it a component.",
+                "type": "array",
+                "default": [],
+                "items": {
+                  "description": "One declaration, in exactly one of the three shapes the ts section states.",
+                  "oneOf": [
+                    {
+                      "description": "A declaration of the analyzed program, by its stable symbol reference.",
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["symbol"],
+                      "properties": {
+                        "symbol": {
+                          "description": "The declaration's stable symbol reference in the TypeScript form contract/grammar/symbol-ref.md states, which matches only the declaration whose reference it spells exactly.",
+                          "type": "string",
+                          "pattern": "^ts://",
+                          "x-owner": "ts-analyzer"
+                        }
+                      }
+                    },
+                    {
+                      "description": "A declaration a module exports, by the module's specifier and the declaration's path from the module's exports.",
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["module", "name"],
+                      "properties": {
+                        "module": {
+                          "description": "The bare specifier an import declaration of the target writes for the module, resolved as that import resolves it: a package name, a path inside a package, or a runtime built-in module (@example/container, @example/ui/decorators.js, node:v8). A relative or absolute specifier, and a specifier the package's own imports field maps, name a file of the analyzed program, which the symbol shape names instead.",
+                          "type": "string",
+                          "pattern": "^[^./#]",
+                          "x-owner": "ts-analyzer"
+                        },
+                        "name": {
+                          "description": "The declaration's path from the module's exports: the name the module exports it under, or the name of the export that contains it followed by each member, with :static after a static member (Container.bind, Testing.createModule:static, default).",
+                          "type": "string",
+                          "minLength": 1,
+                          "x-owner": "ts-analyzer"
+                        }
+                      }
+                    },
+                    {
+                      "description": "A declaration of the global scope, by its path from that scope.",
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["global"],
+                      "properties": {
+                        "global": {
+                          "description": "The declaration's path from the global scope, with :static after a static member (JSON.stringify, structuredClone, CustomElementRegistry.define).",
+                          "type": "string",
+                          "minLength": 1,
+                          "x-owner": "ts-analyzer"
+                        }
+                      }
+                    }
+                  ]
+                },
+                "x-owner": "ts-analyzer"
+              },
+              "bases": {
+                "description": "The classes whose subclasses are components of the framework: a class that extends one of them, directly or through a chain of classes, is a component (HTMLElement for custom elements).",
+                "type": "array",
+                "default": [],
+                "items": {
+                  "description": "One class declaration, in exactly one of the three shapes the ts section states.",
+                  "oneOf": [
+                    {
+                      "description": "A declaration of the analyzed program, by its stable symbol reference.",
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["symbol"],
+                      "properties": {
+                        "symbol": {
+                          "description": "The declaration's stable symbol reference in the TypeScript form contract/grammar/symbol-ref.md states, which matches only the declaration whose reference it spells exactly.",
+                          "type": "string",
+                          "pattern": "^ts://",
+                          "x-owner": "ts-analyzer"
+                        }
+                      }
+                    },
+                    {
+                      "description": "A declaration a module exports, by the module's specifier and the declaration's path from the module's exports.",
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["module", "name"],
+                      "properties": {
+                        "module": {
+                          "description": "The bare specifier an import declaration of the target writes for the module, resolved as that import resolves it: a package name, a path inside a package, or a runtime built-in module (@example/container, @example/ui/decorators.js, node:v8). A relative or absolute specifier, and a specifier the package's own imports field maps, name a file of the analyzed program, which the symbol shape names instead.",
+                          "type": "string",
+                          "pattern": "^[^./#]",
+                          "x-owner": "ts-analyzer"
+                        },
+                        "name": {
+                          "description": "The declaration's path from the module's exports: the name the module exports it under, or the name of the export that contains it followed by each member, with :static after a static member (Container.bind, Testing.createModule:static, default).",
+                          "type": "string",
+                          "minLength": 1,
+                          "x-owner": "ts-analyzer"
+                        }
+                      }
+                    },
+                    {
+                      "description": "A declaration of the global scope, by its path from that scope.",
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["global"],
+                      "properties": {
+                        "global": {
+                          "description": "The declaration's path from the global scope, with :static after a static member (JSON.stringify, structuredClone, CustomElementRegistry.define).",
+                          "type": "string",
+                          "minLength": 1,
+                          "x-owner": "ts-analyzer"
+                        }
+                      }
+                    }
+                  ]
+                },
+                "x-owner": "ts-analyzer"
+              },
+              "members": {
+                "description": "The names of the members the framework calls on a component, each spelled as the last component of a member's stable symbol reference: an identifier name, a quoted string for a name that is not one, and :static after a static member (connectedCallback, attributeChangedCallback, observedAttributes:static).",
+                "type": "array",
+                "uniqueItems": true,
+                "minItems": 1,
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "x-owner": "ts-analyzer"
+              }
+            }
+          },
+          "default": [],
+          "x-owner": "ts-analyzer"
+        },
+        "serializers": {
+          "description": "The declarations whose call reads its arguments' data members by name, a serializer or a schema validator's parse or validate method, read by the serialization-contract exemption beside JSON.stringify, which every run reads as one: an argument of a call to one of them is a destination of the exemption exactly as an argument of JSON.stringify is. An empty array, the default, adds none.",
+          "type": "array",
+          "items": {
+            "description": "One declaration, in exactly one of the three shapes the ts section states.",
+            "oneOf": [
+              {
+                "description": "A declaration of the analyzed program, by its stable symbol reference.",
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["symbol"],
+                "properties": {
+                  "symbol": {
+                    "description": "The declaration's stable symbol reference in the TypeScript form contract/grammar/symbol-ref.md states, which matches only the declaration whose reference it spells exactly.",
+                    "type": "string",
+                    "pattern": "^ts://",
+                    "x-owner": "ts-analyzer"
+                  }
+                }
+              },
+              {
+                "description": "A declaration a module exports, by the module's specifier and the declaration's path from the module's exports.",
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["module", "name"],
+                "properties": {
+                  "module": {
+                    "description": "The bare specifier an import declaration of the target writes for the module, resolved as that import resolves it: a package name, a path inside a package, or a runtime built-in module (@example/container, @example/ui/decorators.js, node:v8). A relative or absolute specifier, and a specifier the package's own imports field maps, name a file of the analyzed program, which the symbol shape names instead.",
+                    "type": "string",
+                    "pattern": "^[^./#]",
+                    "x-owner": "ts-analyzer"
+                  },
+                  "name": {
+                    "description": "The declaration's path from the module's exports: the name the module exports it under, or the name of the export that contains it followed by each member, with :static after a static member (Container.bind, Testing.createModule:static, default).",
+                    "type": "string",
+                    "minLength": 1,
+                    "x-owner": "ts-analyzer"
+                  }
+                }
+              },
+              {
+                "description": "A declaration of the global scope, by its path from that scope.",
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["global"],
+                "properties": {
+                  "global": {
+                    "description": "The declaration's path from the global scope, with :static after a static member (JSON.stringify, structuredClone, CustomElementRegistry.define).",
+                    "type": "string",
+                    "minLength": 1,
+                    "x-owner": "ts-analyzer"
+                  }
+                }
+              }
+            ]
           },
           "default": [],
           "x-owner": "ts-analyzer"

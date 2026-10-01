@@ -1,0 +1,17 @@
+{
+  "name": "encoding-reflection-encoder-fields",
+  "description": "A struct field no source names is retained by the encoding-reflection class when a value of its struct type is an argument of an encoder, because the encoder reads the field by name at runtime. The same field on a struct type whose values reach no encoder is reported as an unused member, so the fixture pins the exemption without pinning silence.",
+  "languages": ["go"],
+  "target_kind": "library",
+  "consumers": ["consumer"],
+  "expect": [
+    { "symbol": "Record.Name", "report": "none", "retained_by": ["encoding-reflection"] },
+    {
+      "symbol": "Draft.Name",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "errors-duck-typing-unwrap",
+  "description": "An Unwrap method no call site names is retained by the errors-duck-typing class when a value of its receiver's type reaches a position typed as error, because the standard error helpers call it by its shape. The same method on an error type no value of which reaches such a position is reported.",
+  "languages": ["go"],
+  "target_kind": "library",
+  "consumers": ["consumer"],
+  "expect": [
+    { "symbol": "Fault.Unwrap", "report": "none", "retained_by": ["errors-duck-typing"] },
+    {
+      "symbol": "Slip.Unwrap",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}
