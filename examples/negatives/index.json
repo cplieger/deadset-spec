@@ -16,6 +16,13 @@
       "violates": "the component identifier omits the prefix that keeps two analyzers from colliding"
     },
     {
+      "file": "configuration-mixed-shape.json",
+      "schema": "contract/config.schema.json",
+      "constraint": "oneOf",
+      "instance_path": "/analysis/configurations/0",
+      "violates": "a declared configuration carries the members of both shapes, a platform and a project, and an entry is one shape or the other"
+    },
+    {
       "file": "configurations-empty.json",
       "schema": "contract/report.schema.json",
       "constraint": "minItems",
@@ -98,6 +105,13 @@
       "constraint": "minimum",
       "instance_path": "/findings/0/position/column",
       "violates": "a position column is zero, and a column is counted from one"
+    },
+    {
+      "file": "report-configuration-mixed-shape.json",
+      "schema": "contract/report.schema.json",
+      "constraint": "oneOf",
+      "instance_path": "/configurations/0",
+      "violates": "a configuration the analysis ran carries the members of both shapes, a platform and a project, and an entry is one shape or the other"
     },
     {
       "file": "report-unknown-member.json",

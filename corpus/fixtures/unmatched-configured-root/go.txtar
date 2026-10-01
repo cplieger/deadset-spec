@@ -1,12 +1,15 @@
-One main package and two configured root patterns: one matches a declaration
-nothing references and keeps it live, the other matches no symbol at all. A third
-declaration nothing references and no pattern names is reported beside them.
+One main package and four configured root entries: two hold a wildcard, one
+matching a declaration nothing references and one matching no symbol at all, and
+two hold neither wildcard, one spelling the reference of a declaration nothing
+references and one spelling a reference the target does not declare. A third
+declaration nothing references and no entry names is reported beside them.
 
 -- fixture.json --
 {
   "symbols": {
     "Rooted": { "file": "target/main.go", "line": 9 },
-    "PlainDead": { "file": "target/main.go", "line": 12 }
+    "ExactRooted": { "file": "target/main.go", "line": 12 },
+    "PlainDead": { "file": "target/main.go", "line": 15 }
   }
 }
 -- target/go.mod --
@@ -23,6 +26,9 @@ func kept() string { return "k" }
 
 // rooted is reached by nothing and a configured root pattern names it.
 func rooted() string { return "r" }
+
+// exactRooted is reached by nothing and a configured root spells its reference.
+func exactRooted() string { return "e" }
 
 // plainDead is reached by nothing and no configured root names it.
 func plainDead() string { return "d" }

@@ -1,0 +1,40 @@
+A compile-time satisfaction assertion in one file for an interface declared in
+another, with the concrete type that satisfies it in the file the assertion is in.
+Every declaration whose visibility the narrowing kinds could report is unexported,
+so the fixture pins the assertion and the interface's own method alone.
+
+-- fixture.json --
+{
+  "symbols": {
+    "AssertedInterfaceMethod": { "file": "target/encoder.go", "line": 5 },
+    "Assertion": { "file": "target/payload.go", "line": 8 },
+    "AssertedMethod": { "file": "target/payload.go", "line": 6 }
+  }
+}
+-- target/go.mod --
+module example.com/app
+
+go 1.27.0
+-- target/encoder.go --
+package main
+
+// encoder renders a payload.
+type encoder interface {
+	Encode() string
+}
+-- target/payload.go --
+package main
+
+// payload is the value the assertion binds to the interface.
+type payload struct{ body string }
+
+func (p payload) Encode() string { return p.body }
+
+var _ encoder = payload{}
+-- target/main.go --
+package main
+
+func main() {
+	p := payload{body: "b"}
+	println(p.body)
+}

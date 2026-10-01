@@ -44,6 +44,7 @@ var reportEnvelopeStates = []string{
 	"merged",
 	"pending",
 	"stale-suppressions",
+	"typescript-configurations",
 }
 
 // compiledSchema is one entry of the schema cache: the schema compiled from an

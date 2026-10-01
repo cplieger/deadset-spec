@@ -2,9 +2,9 @@
   "schema_version": "6.0.0",
   "contract_version": "2.2.0",
   "analyzer": {
-    "name": "deadset-go",
+    "name": "deadset-ts",
     "version": "1.0.0",
-    "languages": ["go"],
+    "languages": ["ts"],
     "schema_versions_accepted": ["6.0.0"],
     "conformance": {
       "corpus_version": "1.0.0",
@@ -12,31 +12,19 @@
       "digest": "sha256:38e1d6dd6a720d1e0ac5e25106ae8473a3e99d09c9dc1c170f567147833da193"
     }
   },
-  "target": { "kind": "application", "root": ".", "identity": "example.com/app" },
-  "configurations": [{ "id": "linux-amd64", "os": "linux", "arch": "amd64", "tags": [] }],
-  "configurations_not_built": [
-    {
-      "id": "linux-amd64-integration",
-      "os": "linux",
-      "arch": "amd64",
-      "tags": ["integration"],
-      "error": "load linux-amd64-integration: 1 error"
-    },
-    {
-      "id": "windows-amd64",
-      "os": "windows",
-      "arch": "amd64",
-      "tags": [],
-      "error": "load windows-amd64: 7 errors"
-    }
+  "target": { "kind": "application", "root": ".", "identity": "@example/app" },
+  "configurations": [
+    { "id": "packages/app/tsconfig.json", "project": "packages/app/tsconfig.json" },
+    { "id": "tsconfig.json", "project": "tsconfig.json" }
   ],
+  "configurations_not_built": [],
   "consumers": { "declared": 0, "loaded": [], "unavailable": [] },
   "findings": [],
   "edge_evaluations": [],
   "stale_suppressions": [],
   "declared_gaps": [],
   "excluded_by_cgo": [],
-  "test_file_rules": [{ "rule": "go-test-suffix", "matched": 4 }],
+  "test_file_rules": [{ "rule": "test-file-pattern-1", "matched": 12 }],
   "totals": {
     "findings": 0,
     "by_severity": { "allow": 0, "warn": 0, "deny": 0 },

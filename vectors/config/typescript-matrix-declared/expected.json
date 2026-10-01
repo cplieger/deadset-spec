@@ -1,15 +1,18 @@
 {
   "contract_version": "2.2.0",
-  "target": { "kind": "library" },
+  "target": { "kind": "application" },
   "analysis": {
-    "languages": [],
+    "languages": ["ts"],
     "min_confidence": "possible",
     "generated_files": "exclude",
     "consumer_tests": "test",
-    "configurations": [],
-    "matrix": { "complete": false },
-    "template_dirs": ["templates"],
-    "template_delimiters": { "left": "[[", "right": "]]" }
+    "configurations": [
+      { "id": "tsconfig.json", "project": "tsconfig.json" },
+      { "id": "packages/app/tsconfig.json", "project": "packages/app/tsconfig.json" }
+    ],
+    "matrix": { "complete": true },
+    "template_dirs": [],
+    "template_delimiters": { "left": "{{", "right": "}}" }
   },
   "consumers": { "complete": false },
   "roots": { "patterns": [] },
@@ -30,14 +33,14 @@
   "provenance": {
     "contract_version": "default",
     "target.kind": "repository: repository.json",
-    "analysis.languages": "default",
+    "analysis.languages": "repository: repository.json",
     "analysis.min_confidence": "default",
     "analysis.generated_files": "default",
     "analysis.consumer_tests": "default",
-    "analysis.configurations": "default",
-    "analysis.matrix.complete": "default",
-    "analysis.template_dirs": "repository: repository.json",
-    "analysis.template_delimiters": "repository: repository.json",
+    "analysis.configurations": "repository: repository.json",
+    "analysis.matrix.complete": "repository: repository.json",
+    "analysis.template_dirs": "default",
+    "analysis.template_delimiters": "default",
     "consumers.complete": "default",
     "roots.patterns": "default",
     "severity": "default",
