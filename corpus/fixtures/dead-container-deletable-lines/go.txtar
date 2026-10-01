@@ -1,0 +1,33 @@
+The Go rendering: one command module declaring a struct type nothing uses, with
+two fields and one method nothing else uses either. The type spans four lines and
+holds its fields' two; the method spans three lines of its own. Nothing in the
+module imports anything, so the rendering loads with no network access.
+
+-- fixture.json --
+{
+  "symbols": {
+    "ledger": { "file": "target/main.go", "line": 6 },
+    "ledger.entries": { "file": "target/main.go", "line": 7 },
+    "ledger.total": { "file": "target/main.go", "line": 8 },
+    "ledger.count": { "file": "target/main.go", "line": 12 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+package main
+
+func main() {}
+
+// ledger is declared and never used, and neither are its fields or its method.
+type ledger struct {
+	entries []string
+	total   int
+}
+
+// count is a method of the dead type that nothing calls.
+func (l *ledger) count() int {
+	return len(l.entries) + l.total
+}

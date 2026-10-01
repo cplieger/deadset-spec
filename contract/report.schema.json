@@ -606,7 +606,7 @@
           }
         },
         "deletable_lines": {
-          "description": "The total source lines a reader deletes by acting on every finding in findings, summed over the component of each component root so no line is counted twice.",
+          "description": "The number of distinct source lines a reader deletes by acting on every finding in findings: the lines the fall sets of the reported component roots span, a line two of them share counted once.",
           "type": "integer",
           "minimum": 0
         },

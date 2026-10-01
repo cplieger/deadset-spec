@@ -8,7 +8,7 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/cplieger/deadset-spec/v2"
+	"github.com/cplieger/deadset-spec/v3"
 )
 
 const configSchemaPath = "contract/config.schema.json"

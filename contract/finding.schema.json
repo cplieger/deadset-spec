@@ -157,7 +157,7 @@
           "minimum": 1
         },
         "deletable_lines": {
-          "description": "The number of source lines the deletion of the component removes, summed over the symbols symbol_count counts.",
+          "description": "The number of source lines the deletion of the component removes: the number of distinct source lines the declarations symbol_count counts span, each from its first line to its last, so a line two of them share, such as a field's line inside its struct, counts once.",
           "type": "integer",
           "minimum": 0
         },

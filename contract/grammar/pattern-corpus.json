@@ -1,0 +1,146 @@
+[
+  {
+    "pattern": "go://example.com/app/internal/*#*",
+    "reference": "go://example.com/app/internal/store/sqlite#Open",
+    "matches": true,
+    "reason": "The first star runs across two solidi, so the entry reaches a package at any depth below internal."
+  },
+  {
+    "pattern": "go://example.com/app/internal/*#*",
+    "reference": "go://example.com/app/internal#Open",
+    "matches": false,
+    "reason": "The entry spells a solidus after internal, and the package at internal itself has none there."
+  },
+  {
+    "pattern": "go://example.com/app/**#Open",
+    "reference": "go://example.com/app/internal/store#Open",
+    "matches": true,
+    "reason": "A doubled star is two runs, which together are any run, so it means what one star means."
+  },
+  {
+    "pattern": "go://example.com/app*Resolve",
+    "reference": "go://example.com/app#Catalog.Resolve",
+    "matches": true,
+    "reason": "One star runs across the scope separator and a member separator: the # and the dot are ordinary characters to a pattern."
+  },
+  {
+    "pattern": "ts://@example/app/src/features/tabs/index.ts#TabStrip.*",
+    "reference": "ts://@example/app/src/features/tabs/index.ts#TabStrip.#frame",
+    "matches": true,
+    "reason": "The star stands for a private name, the # that opens it included."
+  },
+  {
+    "pattern": "go://example.com/app#Catalog.*",
+    "reference": "go://example.com/app#Catalog.ResolveAlias",
+    "matches": true,
+    "reason": "Every member of Catalog: the star stands for the member's name."
+  },
+  {
+    "pattern": "go://example.com/app#Catalog.*",
+    "reference": "go://example.com/app#Catalog",
+    "matches": false,
+    "reason": "The dot is literal, and the type's own reference has no dot after its name."
+  },
+  {
+    "pattern": "go://example.com/app#Catalog*",
+    "reference": "go://example.com/app#Catalog",
+    "matches": true,
+    "reason": "A star may stand for no character at all."
+  },
+  {
+    "pattern": "ts://@example/app/src/generated/*.ts#*",
+    "reference": "ts://@example/app/src/generated/wire/events.ts#ServerEvent",
+    "matches": true,
+    "reason": "The first star stands for a directory and a file name together, wire/events."
+  },
+  {
+    "pattern": "ts://@example/app/src/generated/*.ts#*",
+    "reference": "ts://@example/app/src/generated/wire/events.mts#ServerEvent",
+    "matches": false,
+    "reason": "The entry spells .ts with its dot, and the file's extension is .mts."
+  },
+  {
+    "pattern": "ts://@example/app/src/route-v?.ts#*",
+    "reference": "ts://@example/app/src/route-v2.ts#handler",
+    "matches": true,
+    "reason": "The question mark stands for exactly one character, here the 2."
+  },
+  {
+    "pattern": "ts://@example/app/src/route-v?.ts#*",
+    "reference": "ts://@example/app/src/route-v10.ts#handler",
+    "matches": false,
+    "reason": "The question mark stands for one character, and 10 is two."
+  },
+  {
+    "pattern": "ts://@example/app/src/route-v?.ts#*",
+    "reference": "ts://@example/app/src/route-v.ts#handler",
+    "matches": false,
+    "reason": "The question mark never stands for no character."
+  },
+  {
+    "pattern": "go://example.com/app#Size?",
+    "reference": "go://example.com/app#Size𝐀",
+    "matches": true,
+    "reason": "U+1D400 is one code point and two UTF-16 code units, and the question mark stands for one code point."
+  },
+  {
+    "pattern": "go://example.com/app#Size??",
+    "reference": "go://example.com/app#Size𝐀",
+    "matches": false,
+    "reason": "Two question marks stand for two code points, and the reference ends in one, U+1D400, however many code units it takes."
+  },
+  {
+    "pattern": "ts://@example/app/src/icons.ts#Glyphs.'?'",
+    "reference": "ts://@example/app/src/icons.ts#Glyphs.'😀'",
+    "matches": true,
+    "reason": "The quoted component holds U+1F600, one code point outside the Basic Multilingual Plane, which one question mark stands for."
+  },
+  {
+    "pattern": "go://example.com/app#Catalog.Resolve",
+    "reference": "go://example.com/app#Catalog.Resolve",
+    "matches": true,
+    "reason": "An entry holding neither wildcard matches the reference it spells."
+  },
+  {
+    "pattern": "go://example.com/app#Catalog.Resolve",
+    "reference": "go://example.com/app#Catalog.ResolveAlias",
+    "matches": false,
+    "reason": "An entry holding neither wildcard matches only the reference it spells, never one it begins."
+  },
+  {
+    "pattern": "Catalog.*",
+    "reference": "go://example.com/app#Catalog.Resolve",
+    "matches": false,
+    "reason": "An entry is matched against the whole reference, so an entry that spells no scope matches no reference."
+  },
+  {
+    "pattern": "go://example.com/app#catalog*",
+    "reference": "go://example.com/app#Catalog.Resolve",
+    "matches": false,
+    "reason": "Case is significant: catalog and Catalog are two names."
+  },
+  {
+    "pattern": "go://example.com/app#a.b",
+    "reference": "go://example.com/app#aXb",
+    "matches": false,
+    "reason": "A dot is itself and stands for no other character."
+  },
+  {
+    "pattern": "go://example.com/app#Best[?]",
+    "reference": "go://example.com/app#Best[T]",
+    "matches": true,
+    "reason": "Square brackets are themselves, so the entry is a bracket, any one character and a bracket: the type parameter T of Best."
+  },
+  {
+    "pattern": "go://example.com/app#Best[TU]",
+    "reference": "go://example.com/app#BestT",
+    "matches": false,
+    "reason": "Square brackets are themselves and enclose no set of characters, so the entry matches only the reference that spells them."
+  },
+  {
+    "pattern": "ts://@example/app/src/quirks.ts#Quirks.'it\\*'",
+    "reference": "ts://@example/app/src/quirks.ts#Quirks.'it\\'s'",
+    "matches": true,
+    "reason": "A backslash is itself and escapes nothing, so the star after it is a wildcard and stands for the quote and the s."
+  }
+]

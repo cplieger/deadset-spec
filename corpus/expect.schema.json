@@ -170,6 +170,28 @@
                 }
               }
             }
+          },
+          "component": {
+            "description": "The members of the reported finding's component the row pins, each named and shaped as the component object of contract/finding.schema.json declares it: whether the subject is a root member, how many symbols fall with the component and how many source lines its deletion removes. Every member is optional and the row pins exactly the members it names, so a runner compares those and states nothing about the ones it omits; the object is never empty, because a component naming no member pins nothing. The component's id is minted by the analyzer that reports it and its members list is a list of positioned symbols, so neither has a form here. symbol_count and deletable_lines count one rendering's own declarations and lines, which two renderings need not share, so a fixture that lists more than one language names neither, for the reason symbol_kind states: every expectation applies to every rendering the fixture lists. Forbidden when report is none, because no finding is reported there, and when report is DS1703, because a stale-suppression record carries no component.",
+            "type": "object",
+            "additionalProperties": false,
+            "minProperties": 1,
+            "properties": {
+              "root": {
+                "description": "Whether the subject is a root member of its component.",
+                "type": "boolean"
+              },
+              "symbol_count": {
+                "description": "The number of symbols that fall with the component.",
+                "type": "integer",
+                "minimum": 1
+              },
+              "deletable_lines": {
+                "description": "The number of source lines the deletion of the component removes.",
+                "type": "integer",
+                "minimum": 0
+              }
+            }
           }
         },
         "if": {
@@ -185,7 +207,8 @@
               { "required": ["reachability_class"] },
               { "required": ["liveness_relation"] },
               { "required": ["configurations"] },
-              { "required": ["details"] }
+              { "required": ["details"] },
+              { "required": ["component"] }
             ]
           }
         },
@@ -271,7 +294,8 @@
                 "anyOf": [
                   { "required": ["reachability_class"] },
                   { "required": ["liveness_relation"] },
-                  { "required": ["configurations"] }
+                  { "required": ["configurations"] },
+                  { "required": ["component"] }
                 ]
               }
             }

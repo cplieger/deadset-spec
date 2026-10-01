@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/cplieger/deadset-spec/v2"
+	"github.com/cplieger/deadset-spec/v3"
 )
 
 // jsonFiles lists every *.json path under fsys, in walk order.

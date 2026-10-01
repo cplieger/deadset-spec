@@ -1,0 +1,20 @@
+{
+  "name": "dead-container-deletable-lines",
+  "description": "A dead type, its two dead fields and its dead method fall as one component reported at the type, and the component's deletable lines count every source line once: the fields' lines lie inside the type's and add nothing, while the method's lie outside it and add their own. The members fall with their container and are reported under no code of their own.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "ledger",
+      "report": "DS1002",
+      "symbol_kind": "type",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reachability",
+      "component": { "root": true, "symbol_count": 4, "deletable_lines": 7 }
+    },
+    { "symbol": "ledger.entries", "report": "none" },
+    { "symbol": "ledger.total", "report": "none" },
+    { "symbol": "ledger.count", "report": "none" }
+  ]
+}
