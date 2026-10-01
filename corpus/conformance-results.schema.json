@@ -207,6 +207,28 @@
                           }
                         }
                       }
+                    },
+                    "component": {
+                      "description": "The component members the reported finding carried, named and shaped as the component member of an expectation row declares them, so the runner echoes what the row pinned and the two are compared member by member. A runner writes the members the expectation named and omits the rest, because the row pins what it names; a runner answering an expectation that pins no component member omits the object. Forbidden when report is none.",
+                      "type": "object",
+                      "additionalProperties": false,
+                      "minProperties": 1,
+                      "properties": {
+                        "root": {
+                          "description": "Whether the subject is a root member of the component the reported finding named.",
+                          "type": "boolean"
+                        },
+                        "symbol_count": {
+                          "description": "The number of symbols the reported finding's component named as falling with it.",
+                          "type": "integer",
+                          "minimum": 1
+                        },
+                        "deletable_lines": {
+                          "description": "The number of source lines the reported finding's component named its deletion as removing.",
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
                     }
                   },
                   "if": {
@@ -222,7 +244,8 @@
                         { "required": ["reachability_class"] },
                         { "required": ["liveness_relation"] },
                         { "required": ["configurations"] },
-                        { "required": ["details"] }
+                        { "required": ["details"] },
+                        { "required": ["component"] }
                       ]
                     }
                   },
