@@ -34,8 +34,9 @@ One document per state a report envelope can be in: `clean.json` for a run with 
 whose state is `dead`, `stale-suppressions.json` for a run whose suppressions no longer match,
 `declared-gaps.json` for a run that declines capabilities the corpus covers,
 `configuration-not-built.json` for a run that derived a configuration from the tree, could not
-build it and dropped it from the matrix, and `merged.json` for the report a merge writes over two
-analyzers' reports.
+build it and dropped it from the matrix, `typescript-configurations.json` for a run whose matrix is
+a set of compiler configurations rather than a set of platforms, and `merged.json` for the report a
+merge writes over two analyzers' reports.
 
 Every finding inside a report here is also an instance of the finding schema on its own, and every
 count in `totals` is the count of the array it describes.

@@ -1,0 +1,11 @@
+{
+  "target": { "kind": "application" },
+  "analysis": {
+    "languages": ["ts"],
+    "configurations": [
+      { "id": "tsconfig.json", "project": "tsconfig.json" },
+      { "id": "packages/app/tsconfig.json", "project": "packages/app/tsconfig.json" }
+    ],
+    "matrix": { "complete": true }
+  }
+}

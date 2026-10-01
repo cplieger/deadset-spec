@@ -362,15 +362,24 @@ func patterns(node any, at string) map[string]string {
 }
 
 // objectAt returns the object at a slash-separated path into schema, or nil
-// when the path leaves the tree or ends on a non-object.
+// when the path leaves the tree or ends on a non-object. A component that is a
+// decimal number indexes an array, which is how a path reaches one branch of a
+// schema stating two shapes under oneOf.
 func objectAt(schema map[string]any, p string) map[string]any {
 	var node any = schema
 	for key := range strings.SplitSeq(p, "/") {
-		m, ok := node.(map[string]any)
-		if !ok {
+		switch container := node.(type) {
+		case map[string]any:
+			node = container[key]
+		case []any:
+			i, err := strconv.Atoi(key)
+			if err != nil || i < 0 || i >= len(container) {
+				return nil
+			}
+			node = container[i]
+		default:
 			return nil
 		}
-		node = m[key]
 	}
 	m, _ := node.(map[string]any)
 	return m

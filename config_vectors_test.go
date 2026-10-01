@@ -37,6 +37,7 @@ var configVectorAspects = []string{
 	"resolved-configuration-round-trip",
 	"template-delimiters-configured",
 	"template-delimiters-half",
+	"typescript-matrix-declared",
 	"unimplemented-key",
 }
 
@@ -224,15 +225,19 @@ func vectorCheckAgainstSchema(t *testing.T, index vectorSchemaIndex, where, at, 
 
 // vectorSchemaProblems walks one document value against the subschema walkSchema indexed at
 // schemaPath, listing every key config.schema.json does not declare, every required key the
-// document omits and every string a declared pattern or enumeration refuses. at is the path of
-// value inside the document and where names the document. It returns the problems rather than
-// reporting them, so a planted document drives the same walk the published vectors are checked
-// with; a schema whose pattern does not compile is a setup failure of this suite instead.
+// document omits and every string a declared pattern or enumeration refuses. A subschema that
+// states its shapes under oneOf admits the value when exactly one of its branches does. at is the
+// path of value inside the document and where names the document. It returns the problems rather
+// than reporting them, so a planted document drives the same walk the published vectors are
+// checked with; a schema whose pattern does not compile is a setup failure of this suite instead.
 func vectorSchemaProblems(t *testing.T, index vectorSchemaIndex, where, at, schemaPath string, value any) []string {
 	t.Helper()
 	entry, declared := index[schemaPath]
 	if !declared || entry.node == nil {
 		return []string{fmt.Sprintf("%s: %s reaches %s, which %s does not declare", where, at, schemaPath, configSchemaPath)}
+	}
+	if branches := len(branchesOf(entry.node)); branches > 0 {
+		return vectorBranchProblems(t, index, where, at, schemaPath, branches, value)
 	}
 	var out []string
 	if text, isText := value.(string); isText {
@@ -271,6 +276,36 @@ func vectorSchemaProblems(t *testing.T, index vectorSchemaIndex, where, at, sche
 		}
 	}
 	return out
+}
+
+// vectorBranchProblems walks one value against each branch of the oneOf at schemaPath and
+// reports one problem unless exactly one branch admits it, which is what oneOf means: a value no
+// branch admits carries no declared shape, and a value two branches admit carries no single one.
+// The problem names what each refusing branch refused, so a planted value that misses its shape
+// by one member says which member.
+func vectorBranchProblems(t *testing.T, index vectorSchemaIndex, where, at, schemaPath string, branches int, value any) []string {
+	t.Helper()
+	admitted := 0
+	var refusals []string
+	for i := range branches {
+		problems := vectorSchemaProblems(t, index, where, at, branchPath(schemaPath, i), value)
+		if len(problems) == 0 {
+			admitted++
+			continue
+		}
+		for j, problem := range problems {
+			problems[j] = strings.TrimPrefix(problem, where+": ")
+		}
+		refusals = append(refusals, fmt.Sprintf("schema[%s] refuses it: %s", branchPath(schemaPath, i), strings.Join(problems, "; ")))
+	}
+	if admitted == 1 {
+		return nil
+	}
+	problem := fmt.Sprintf("%s: %s is admitted by %d of the %d shapes schema[%s].oneOf states, want exactly one", where, at, admitted, branches, schemaPath)
+	if len(refusals) > 0 {
+		problem += " (" + strings.Join(refusals, " | ") + ")"
+	}
+	return []string{problem}
 }
 
 // caseCovering returns the one case that names an aspect, failing the test when no case or more
@@ -571,8 +606,11 @@ func vectorValueOrAbsent(doc map[string]json.RawMessage, name string) string {
 // plantedVectorConfiguration is a resolved configuration in memory, valid under the closed key
 // list, so the walk over an expected resolved configuration is exercised in the accepting
 // direction on a document this file owns and in the refusing direction on a planted copy of it.
+// Its matrix holds one entry of each shape a configuration takes.
 const plantedVectorConfiguration = `{"contract_version": "1.0.0", "target": {"kind": "library"}, ` +
-	`"analysis": {"languages": ["go"], "min_confidence": "probable", "generated_files": "exclude"}, ` +
+	`"analysis": {"languages": ["go", "ts"], "min_confidence": "probable", "generated_files": "exclude", ` +
+	`"configurations": [{"id": "linux-amd64", "os": "linux", "arch": "amd64", "tags": []}, ` +
+	`{"id": "tsconfig.json", "project": "tsconfig.json"}]}, ` +
 	`"severity": {"DS1101": "warn", "DS18": "allow"}, ` +
 	`"reporters": {"formats": ["text"], "sort": "size", "fail_on": "deny"}}`
 
@@ -628,9 +666,27 @@ func TestVectorSchemaProblemsRefuses(t *testing.T) {
 		},
 		{
 			name:    "an_array_entry_the_enumeration_refuses",
-			old:     `"languages": ["go"]`,
-			planted: `"languages": ["gopher"]`,
-			wantMsg: `analysis.languages[0] = "gopher", want one of schema[analysis.languages.<items>].enum`,
+			old:     `"languages": ["go", "ts"]`,
+			planted: `"languages": ["go", "gopher"]`,
+			wantMsg: `analysis.languages[1] = "gopher", want one of schema[analysis.languages.<items>].enum`,
+		},
+		{
+			name:    "a_configuration_carrying_both_shapes",
+			old:     `{"id": "tsconfig.json", "project": "tsconfig.json"}`,
+			planted: `{"id": "tsconfig.json", "project": "tsconfig.json", "os": "linux", "arch": "amd64"}`,
+			wantMsg: `analysis.configurations[1] is admitted by 0 of the 2 shapes schema[analysis.configurations.<items>].oneOf states, want exactly one`,
+		},
+		{
+			name:    "a_configuration_misspelling_its_project",
+			old:     `{"id": "tsconfig.json", "project": "tsconfig.json"}`,
+			planted: `{"id": "tsconfig.json", "projet": "tsconfig.json"}`,
+			wantMsg: `schema[analysis.configurations.<items>.<oneOf.1>] refuses it: analysis.configurations[1] omits "project"`,
+		},
+		{
+			name:    "a_project_leading_out_of_the_target_root",
+			old:     `"project": "tsconfig.json"`,
+			planted: `"project": "../tsconfig.json"`,
+			wantMsg: `analysis.configurations[1].project = "../tsconfig.json", want a value matching schema[analysis.configurations.<items>.<oneOf.1>.project].pattern`,
 		},
 	}
 	index := newVectorSchemaIndex(t)
