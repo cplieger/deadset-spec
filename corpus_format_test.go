@@ -17,7 +17,7 @@ import (
 	"testing"
 	"testing/fstest"
 
-	"github.com/cplieger/deadset-spec/v2"
+	"github.com/cplieger/deadset-spec/v3"
 )
 
 const (
@@ -105,15 +105,16 @@ type expectationDocument struct {
 }
 
 type expectationRow struct {
-	Details           *expectationDetails `json:"details"`
-	Symbol            string              `json:"symbol"`
-	Report            string              `json:"report"`
-	SymbolKind        string              `json:"symbol_kind"`
-	Confidence        string              `json:"confidence"`
-	ReachabilityClass string              `json:"reachability_class"`
-	LivenessRelation  string              `json:"liveness_relation"`
-	Configurations    []string            `json:"configurations"`
-	RetainedBy        []string            `json:"retained_by"`
+	Details           *expectationDetails   `json:"details"`
+	Component         *expectationComponent `json:"component"`
+	Symbol            string                `json:"symbol"`
+	Report            string                `json:"report"`
+	SymbolKind        string                `json:"symbol_kind"`
+	Confidence        string                `json:"confidence"`
+	ReachabilityClass string                `json:"reachability_class"`
+	LivenessRelation  string                `json:"liveness_relation"`
+	Configurations    []string              `json:"configurations"`
+	RetainedBy        []string              `json:"retained_by"`
 }
 
 // expectationDetails mirrors the details a row pins, one field per member the
@@ -127,6 +128,15 @@ type expectationDetails struct {
 	Replacement        string   `json:"replacement"`
 	Mechanism          string   `json:"mechanism"`
 	Edge               string   `json:"edge"`
+}
+
+// expectationComponent mirrors the component members a row pins. Each member is a
+// pointer, so a member the row omits is told apart from a false root or a count
+// of zero deletable lines.
+type expectationComponent struct {
+	Root           *bool `json:"root"`
+	SymbolCount    *int  `json:"symbol_count"`
+	DeletableLines *int  `json:"deletable_lines"`
 }
 
 // perLanguageDetails are the details members whose value one language alone
@@ -1892,6 +1902,133 @@ func TestCorpusConfiguredRootsSpellTheFixturesOwnLanguage(t *testing.T) {
 	}
 }
 
+// languageNames are the words the symbol.kind description of
+// contract/finding.schema.json names a language by, each keyed to the code a
+// fixture's languages list spells it with.
+var languageNames = map[string]string{"Go": "go", "TypeScript": "ts"}
+
+var languageNamePattern = regexp.MustCompile(`\b(Go|TypeScript)\b`)
+
+// subjectKindLanguages reads, from the symbol.kind description of
+// contract/finding.schema.json, the language each subject kind belongs to when
+// only one language declares a subject of that kind. The description lists one
+// clause per value, the value and then the subject it names, and a clause naming
+// one language and not the other is that language's kind; a clause naming both,
+// or "either language", or no language at all, is a kind every language declares
+// and is absent from the result. The clauses must name every value of the
+// vocabulary exactly once, so a value the schema gains is read rather than
+// silently taken for a kind of every language.
+func subjectKindLanguages(t *testing.T) map[string]string {
+	t.Helper()
+	kind := objectAt(loadFindingSchema(t), "properties/symbol/properties/kind")
+	if kind == nil {
+		t.Fatalf("Setup: %s declares no symbol.kind", findingSchemaPath)
+	}
+	vocabulary := enumAt(loadFindingSchema(t), "properties/symbol/properties/kind")
+	description, _ := kind["description"].(string)
+	const lead = "The values, each with the subject it names: "
+	_, list, found := strings.Cut(description, lead)
+	if !found {
+		t.Fatalf("Setup: the %s symbol.kind description carries no %q, want the clause list this suite reads", findingSchemaPath, lead)
+	}
+	out := map[string]string{}
+	seen := map[string]bool{}
+	for clause := range strings.SplitSeq(strings.TrimSuffix(list, "."), "; ") {
+		value, subject, ok := strings.Cut(clause, ", ")
+		if !ok || !slices.Contains(vocabulary, value) {
+			t.Fatalf("Setup: the %s symbol.kind clause %q names no value of the vocabulary %v", findingSchemaPath, clause, vocabulary)
+		}
+		if seen[value] {
+			t.Fatalf("Setup: the %s symbol.kind description names %q twice, want one clause per value", findingSchemaPath, value)
+		}
+		seen[value] = true
+		named := map[string]bool{}
+		for _, word := range languageNamePattern.FindAllString(subject, -1) {
+			named[languageNames[word]] = true
+		}
+		if len(named) == 1 && !strings.Contains(subject, "either language") {
+			for language := range named {
+				out[value] = language
+			}
+		}
+	}
+	for _, value := range vocabulary {
+		if !seen[value] {
+			t.Fatalf("Setup: the %s symbol.kind description names no clause for %q, want one clause per value", findingSchemaPath, value)
+		}
+	}
+	return out
+}
+
+// checkSubjectKindLanguageScope reports every row naming a subject kind only one
+// language declares in a fixture that does not list that language alone. Every
+// expectation applies to every rendering the fixture lists, so such a row asserts
+// a subject the other rendering cannot hold; the expectation schema states the
+// rule and JSON Schema cannot check it, because the vocabulary's languages are
+// stated in the finding schema's prose and the fixture's list sits elsewhere.
+func checkSubjectKindLanguageScope(doc *expectationDocument, kindLanguages map[string]string) []error {
+	var errs []error
+	for _, row := range doc.Expect {
+		language, single := kindLanguages[row.SymbolKind]
+		if !single || slices.Equal(doc.Languages, []string{language}) {
+			continue
+		}
+		errs = append(errs, fmt.Errorf("%s %s names the symbol_kind %q, a subject only %s declares, and the fixture lists %v: a row naming such a kind belongs to a fixture that lists that one language",
+			doc.Name, row.Symbol, row.SymbolKind, language, doc.Languages))
+	}
+	return errs
+}
+
+func TestCorpusRowsNameASubjectKindEveryListedLanguageDeclares(t *testing.T) {
+	kindLanguages := subjectKindLanguages(t)
+	for _, doc := range corpusExpectations(t) {
+		t.Run("fixture_"+doc.Name, func(t *testing.T) {
+			if got := checkSubjectKindLanguageScope(&doc, kindLanguages); len(got) != 0 {
+				t.Errorf("checkSubjectKindLanguageScope(%s) = %v, want every subject kind declared by every listed language", doc.Name, got)
+			}
+		})
+	}
+
+	planted := []struct {
+		name      string
+		kind      string
+		wantMsg   string
+		languages []string
+	}{
+		{name: "a_go_subject_in_a_go_fixture", kind: "satisfaction-assertion", languages: []string{"go"}},
+		{name: "a_go_subject_in_a_two_language_fixture", kind: "satisfaction-assertion", languages: []string{"go", "ts"}, wantMsg: `"satisfaction-assertion", a subject only go declares, and the fixture lists [go ts]`},
+		{name: "a_go_subject_in_a_typescript_fixture", kind: "receiver", languages: []string{"ts"}, wantMsg: `"receiver", a subject only go declares`},
+		{name: "a_typescript_subject_in_a_two_language_fixture", kind: "class", languages: []string{"go", "ts"}, wantMsg: `"class", a subject only ts declares`},
+		{name: "a_subject_of_either_language_in_a_two_language_fixture", kind: "function", languages: []string{"go", "ts"}},
+		{name: "a_subject_both_languages_name_in_a_two_language_fixture", kind: "enum-member", languages: []string{"go", "ts"}},
+	}
+	for _, tc := range planted {
+		t.Run("planted_"+tc.name, func(t *testing.T) {
+			doc := expectationDocument{
+				Name:       "planted",
+				TargetKind: "application",
+				Languages:  tc.languages,
+				Expect: []expectationRow{
+					{Symbol: "Subject", Report: "DS1002", SymbolKind: tc.kind, Confidence: "certain"},
+				},
+			}
+			got := checkSubjectKindLanguageScope(&doc, kindLanguages)
+			if tc.wantMsg == "" {
+				if len(got) != 0 {
+					t.Errorf("checkSubjectKindLanguageScope(planted %s) = %v, want nil", tc.name, got)
+				}
+				return
+			}
+			if len(got) != 1 {
+				t.Fatalf("checkSubjectKindLanguageScope(planted %s) = %v, want one error", tc.name, got)
+			}
+			if !strings.Contains(got[0].Error(), tc.wantMsg) {
+				t.Errorf("checkSubjectKindLanguageScope(planted %s) = %q, want it to name %s", tc.name, got[0], tc.wantMsg)
+			}
+		})
+	}
+}
+
 // findingDetailsRefs are the definitions of contract/finding.schema.json whose
 // value is a position or a stable symbol reference. A details member that reaches
 // one of them spells one language's own file names or symbol names, which no
@@ -2449,6 +2586,221 @@ func TestExpectSchemaDetailsBindToTheCodesArm(t *testing.T) {
 			}
 			if !named {
 				t.Errorf("validationProblems(%q, %s) = %v, want a violation at %q", expectSchemaPath, tc.name, problems, tc.want)
+			}
+		})
+	}
+}
+
+// componentMembersNoRowStates are the component members of contract/finding.schema.json
+// no expectation row names besides those whose value is a positioned symbol: the
+// identifier, which the analyzer that reports the component mints and which carries
+// no meaning a fixture could pin.
+var componentMembersNoRowStates = []string{"id"}
+
+// admittedComponentMembers is the component member set an expectation row may name:
+// every member the finding schema's component declares, less the identifier and
+// every member whose value is a position or a stable symbol reference.
+func admittedComponentMembers(t *testing.T, finding map[string]any) []string {
+	t.Helper()
+	properties := objectAt(finding, "properties/component/properties")
+	if properties == nil {
+		t.Fatalf("Setup: %s properties/component/properties is not an object", findingSchemaPath)
+	}
+	var admitted []string
+	for member, shape := range properties {
+		spelled := slices.ContainsFunc(refValues(shape), func(ref string) bool { return slices.Contains(findingDetailsRefs, ref) })
+		if !spelled && !slices.Contains(componentMembersNoRowStates, member) {
+			admitted = append(admitted, member)
+		}
+	}
+	if len(admitted) == 0 {
+		t.Fatalf("Setup: no component member of %s is statable by an expectation row", findingSchemaPath)
+	}
+	slices.Sort(admitted)
+	return admitted
+}
+
+// TestExpectSchemaComponentMirrorsTheFindingSchema pins the mirror the row's
+// component member carries, as the details mirror is pinned: the members the row
+// admits and the values each admits are the finding schema's own.
+func TestExpectSchemaComponentMirrorsTheFindingSchema(t *testing.T) {
+	finding := loadFindingSchema(t)
+	expect := loadSchema(t, spec.Corpus, expectSchemaPath)
+	admitted := admittedComponentMembers(t, finding)
+	row := objectAt(expect, expectSchemaRowPath+"/properties/component/properties")
+	if row == nil {
+		t.Fatalf("Setup: %s %s/properties/component/properties is not an object", expectSchemaPath, expectSchemaRowPath)
+	}
+	if got := slices.Sorted(maps.Keys(row)); !slices.Equal(got, admitted) {
+		t.Errorf("%s admits the component members %v and %s declares %v, less the identifier and the positioned symbols: want the same set",
+			expectSchemaPath, got, findingSchemaPath, admitted)
+	}
+	for _, member := range admitted {
+		t.Run(subtestName(member), func(t *testing.T) {
+			got := withoutDescriptions(row[member])
+			want := withoutDescriptions(objectAt(finding, "properties/component/properties/"+member))
+			if !reflect.DeepEqual(got, want) {
+				t.Errorf("%s declares component.%s as\n%s\nand %s declares it as\n%s\nwant the same shape",
+					expectSchemaPath, member, asJSON(t, got), findingSchemaPath, asJSON(t, want))
+			}
+		})
+	}
+}
+
+// TestResultsSchemaComponentEchoesTheExpectationRow pins the round trip's other half:
+// the component members a runner may write are the members a row may pin, with the
+// same shapes.
+func TestResultsSchemaComponentEchoesTheExpectationRow(t *testing.T) {
+	expect := objectAt(loadSchema(t, spec.Corpus, expectSchemaPath), expectSchemaRowPath+"/properties/component")
+	results := objectAt(loadSchema(t, spec.Corpus, resultsSchemaPath), resultsSchemaActualPath+"/properties/component")
+	if expect == nil || results == nil {
+		t.Fatalf("Setup: %s or %s declares no component object", expectSchemaPath, resultsSchemaPath)
+	}
+	got, want := withoutDescriptions(results), withoutDescriptions(expect)
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("%s declares the answer's component as\n%s\nand %s declares the row's as\n%s\nwant the same shape",
+			resultsSchemaPath, asJSON(t, got), expectSchemaPath, asJSON(t, want))
+	}
+}
+
+// TestExpectSchemaComponentBindsToAReportedFinding pins the arms the component member
+// sits under: a reported row may pin any member, and a row that reports nothing or
+// is answered by a stale-suppression record may not, because neither has a
+// component to compare.
+func TestExpectSchemaComponentBindsToAReportedFinding(t *testing.T) {
+	cases := []struct {
+		name string
+		row  string
+		want string
+	}{
+		{
+			name: "a_reported_row_pins_its_component",
+			row:  `{"symbol":"Ledger","report":"DS1002","confidence":"certain","component":{"root":true,"symbol_count":4,"deletable_lines":7}}`,
+		},
+		{
+			name: "a_reported_row_pins_one_member",
+			row:  `{"symbol":"Ledger","report":"DS1002","confidence":"certain","component":{"deletable_lines":0}}`,
+		},
+		{
+			name: "a_row_may_not_pin_an_empty_component",
+			row:  `{"symbol":"Ledger","report":"DS1002","confidence":"certain","component":{}}`,
+			want: "/expect/0/component",
+		},
+		{
+			name: "a_row_may_not_pin_the_minted_identifier",
+			row:  `{"symbol":"Ledger","report":"DS1002","confidence":"certain","component":{"id":"deadset-go/c-1"}}`,
+			want: "/expect/0/component",
+		},
+		{
+			name: "an_unreported_subject_may_not_pin_a_component",
+			row:  `{"symbol":"Ledger.total","report":"none","component":{"root":false}}`,
+			want: "/expect/0",
+		},
+		{
+			name: "a_stale_suppression_row_may_not_pin_a_component",
+			row:  `{"symbol":"StaleEntry","report":"DS1703","confidence":"certain","details":{"mechanism":"ignore"},"component":{"root":true}}`,
+			want: "/expect/0",
+		},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			document := `{"name":"planted","description":"One planted expectation.","languages":["go"],"target_kind":"application","expect":[` + tc.row + `]}`
+			problems, err := validationProblems(expectSchemaPath, []byte(document))
+			if err != nil {
+				t.Fatalf("Setup: validationProblems(%q, %s): %v", expectSchemaPath, tc.name, err)
+			}
+			if tc.want == "" {
+				if len(problems) != 0 {
+					t.Errorf("validationProblems(%q, %s) = %v, want no violation", expectSchemaPath, tc.name, problems)
+				}
+				return
+			}
+			named := false
+			for _, problem := range problems {
+				if problem.InstanceLocation == tc.want {
+					named = true
+				}
+			}
+			if !named {
+				t.Errorf("validationProblems(%q, %s) = %v, want a violation at %q", expectSchemaPath, tc.name, problems, tc.want)
+			}
+		})
+	}
+}
+
+// checkComponentLanguageScope reports every row that pins a component count in a
+// fixture listing more than one rendering. A count is a fact of one rendering's own
+// declarations and lines, which two renderings need not share, and every expectation
+// applies to every rendering the fixture lists.
+func checkComponentLanguageScope(doc *expectationDocument) []error {
+	if len(doc.Languages) < 2 {
+		return nil
+	}
+	var errs []error
+	for _, row := range doc.Expect {
+		if row.Component == nil {
+			continue
+		}
+		counts := []struct {
+			member string
+			named  bool
+		}{
+			{"deletable_lines", row.Component.DeletableLines != nil},
+			{"symbol_count", row.Component.SymbolCount != nil},
+		}
+		for _, count := range counts {
+			if count.named {
+				errs = append(errs, fmt.Errorf("%s %s pins component.%s and the fixture lists %v: a count of one rendering's declarations or lines is pinned only by a fixture that lists that one language",
+					doc.Name, row.Symbol, count.member, doc.Languages))
+			}
+		}
+	}
+	return errs
+}
+
+func TestCorpusComponentCountsPinNoValueAnotherRenderingCannotCarry(t *testing.T) {
+	for _, doc := range corpusExpectations(t) {
+		t.Run("fixture_"+doc.Name, func(t *testing.T) {
+			if got := checkComponentLanguageScope(&doc); len(got) != 0 {
+				t.Errorf("checkComponentLanguageScope(%s) = %v, want no row pinning a count another rendering need not share", doc.Name, got)
+			}
+		})
+	}
+
+	root, count, lines := true, 4, 7
+	planted := []struct {
+		component expectationComponent
+		name      string
+		wantMsg   string
+		languages []string
+	}{
+		{name: "the_counts_in_a_one_language_fixture", component: expectationComponent{SymbolCount: &count, DeletableLines: &lines}, languages: []string{"go"}},
+		{name: "the_root_flag_in_a_two_language_fixture", component: expectationComponent{Root: &root}, languages: []string{"go", "ts"}},
+		{name: "deletable_lines_in_a_two_language_fixture", component: expectationComponent{DeletableLines: &lines}, languages: []string{"go", "ts"}, wantMsg: "component.deletable_lines"},
+		{name: "symbol_count_in_a_two_language_fixture", component: expectationComponent{SymbolCount: &count}, languages: []string{"go", "ts"}, wantMsg: "component.symbol_count"},
+	}
+	for _, tc := range planted {
+		t.Run("planted_"+tc.name, func(t *testing.T) {
+			doc := expectationDocument{
+				Name:       "planted",
+				TargetKind: "application",
+				Languages:  tc.languages,
+				Expect: []expectationRow{
+					{Symbol: "Ledger", Report: "DS1002", Confidence: "certain", Component: &tc.component},
+				},
+			}
+			got := checkComponentLanguageScope(&doc)
+			if tc.wantMsg == "" {
+				if len(got) != 0 {
+					t.Errorf("checkComponentLanguageScope(planted %s) = %v, want nil", tc.name, got)
+				}
+				return
+			}
+			if len(got) != 1 {
+				t.Fatalf("checkComponentLanguageScope(planted %s) = %v, want one error", tc.name, got)
+			}
+			if !strings.Contains(got[0].Error(), tc.wantMsg) {
+				t.Errorf("checkComponentLanguageScope(planted %s) = %q, want it to name %s", tc.name, got[0], tc.wantMsg)
 			}
 		})
 	}
