@@ -50,11 +50,11 @@
       "required": ["ref", "kind", "name", "size_lines"],
       "properties": {
         "ref": {
-          "description": "The stable symbol reference of the subject. A finding about a configured root carries the root as the configuration spells it, which may be a pattern.",
+          "description": "The stable symbol reference of the subject. A finding about a configured root carries the root as the configuration spells it, which may be a pattern. A finding about a configured declaration carries the entry as the configuration spells it: the reference a symbol entry holds, a module entry's module, a number sign and its name, and a global entry's path after a number sign, so @example/container#Container.bind and #JSON.stringify.",
           "$ref": "#/$defs/symbol_reference"
         },
         "kind": {
-          "description": "What the finding is about, from the closed vocabulary below: lowercase ASCII letters and hyphens, which a text line renders ahead of the symbol name. The value names the subject at the position, and where that subject has no reference of its own it is a part of the declaration symbol.ref names. The values, each with the subject it names: function, a function declaration in either language; method, a method of a Go type or of a TypeScript class; type, a Go defined type or type alias, or a TypeScript type alias; class, a TypeScript class declaration; interface, an interface declaration in either language; enum, a TypeScript enum declaration; namespace, a TypeScript namespace declaration; variable, a package-level Go variable or a module-level TypeScript variable; constant, a Go constant that is not a member of an enumerated type; export-alias, a TypeScript export specifier, a symbol of its own beside the declaration it names; field, a field of a Go struct; class-member, a property or accessor of a TypeScript class, a private name included; type-member, a member of a TypeScript interface, or of the object type a type alias declares; interface-method, a method an interface declares, in either language; enum-member, a member of a TypeScript enum, or a Go constant of an enumerated type; satisfaction-assertion, a Go compile-time assertion that a type satisfies an interface; type-parameter, a type parameter of a function or method in either language; parameter, a parameter of a function or method in either language; receiver, the named receiver of a Go method; result, a result of a function or method in either language; statement, a statement of a function body in either language; case, a case clause of a switch in either language; store, a write to a local variable in either language; file, a source file in either language; dependency, a Go module requirement, or a TypeScript manifest dependency, development dependency or peer dependency; module-directive, a directive of a Go module file; suppression, an inline directive, an entry of the ignore file or a row of the baseline; root, a configured root, whether a reference or a pattern; edge, a declared cross-language edge.",
+          "description": "What the finding is about, from the closed vocabulary below: lowercase ASCII letters and hyphens, which a text line renders ahead of the symbol name. The value names the subject at the position, and where that subject has no reference of its own it is a part of the declaration symbol.ref names. The values, each with the subject it names: function, a function declaration in either language; method, a method of a Go type or of a TypeScript class; type, a Go defined type or type alias, or a TypeScript type alias; class, a TypeScript class declaration; interface, an interface declaration in either language; enum, a TypeScript enum declaration; namespace, a TypeScript namespace declaration; variable, a package-level Go variable or a module-level TypeScript variable; constant, a Go constant that is not a member of an enumerated type; export-alias, a TypeScript export specifier, a symbol of its own beside the declaration it names; field, a field of a Go struct; class-member, a property or accessor of a TypeScript class, a private name included; type-member, a member of a TypeScript interface, or of the object type a type alias declares; interface-method, a method an interface declares, in either language; enum-member, a member of a TypeScript enum, or a Go constant of an enumerated type; satisfaction-assertion, a Go compile-time assertion that a type satisfies an interface; type-parameter, a type parameter of a function or method in either language; parameter, a parameter of a function or method in either language; receiver, the named receiver of a Go method; result, a result of a function or method in either language; statement, a statement of a function body in either language; case, a case clause of a switch in either language; store, a write to a local variable in either language; file, a source file in either language; dependency, a Go module requirement, or a TypeScript manifest dependency, development dependency or peer dependency; module-directive, a directive of a Go module file; suppression, an inline directive, an entry of the ignore file or a row of the baseline; root, a configured root, whether a reference or a pattern; configured-declaration, an entry of a configuration key that names a declaration; edge, a declared cross-language edge.",
           "type": "string",
           "enum": [
             "function",
@@ -85,6 +85,7 @@
             "module-directive",
             "suppression",
             "root",
+            "configured-declaration",
             "edge"
           ]
         },
@@ -98,7 +99,7 @@
           "$ref": "#/$defs/symbol_reference"
         },
         "exported": {
-          "description": "Whether the subject is visible outside the scope that declares it. Absent where the subject declares no visibility of its own, such as a file, a dependency, a module directive, a suppression, a configured root or a declared edge.",
+          "description": "Whether the subject is visible outside the scope that declares it. Absent where the subject declares no visibility of its own, such as a file, a dependency, a module directive, a suppression, a configured root, a configured declaration or a declared edge.",
           "type": "boolean"
         },
         "size_lines": {
@@ -124,7 +125,7 @@
       "enum": ["certain", "probable", "possible"]
     },
     "liveness_relation": {
-      "description": "The relation under which the subject was decided: reference-counting, where one reference from any declaration keeps a subject live, or reachability, where only a path from a root does. The field is absent where no relation decided the subject, which the subject decides in two ways. A subject that is not a declaration carries no relation, and such a subject is one of two things. It is an artifact the run read rather than a symbol it swept: the symbol.kind values file, dependency, module-directive, suppression, root and edge name a source file, a dependency, a module directive, a suppression record, a configured root and a declared cross-language edge. Or it is a part of the declaration symbol.ref names: the symbol.kind values parameter, receiver, result, statement, case and store name a part inside a declaration, and a part is decided inside the declaration that holds it rather than by a relation over the reference graph. A subject the analysis holds live carries no relation either, because the finding states what the subject's visibility or its writes are rather than whether it is live: the narrowing kinds DS1101, DS1102 and DS1104 report a symbol its own package references, DS1301 reports a symbol production code writes, and DS1204 reports an assertion the program declares. The field is present and required on every other finding. A consumer that orders or groups findings treats an absent value as its own group, ordered before every present value.",
+      "description": "The relation under which the subject was decided: reference-counting, where one reference from any declaration keeps a subject live, or reachability, where only a path from a root does. The field is absent where no relation decided the subject, which the subject decides in two ways. A subject that is not a declaration carries no relation, and such a subject is one of two things. It is an artifact the run read rather than a symbol it swept: the symbol.kind values file, dependency, module-directive, suppression, root, configured-declaration and edge name a source file, a dependency, a module directive, a suppression record, a configured root, a configured declaration and a declared cross-language edge. Or it is a part of the declaration symbol.ref names: the symbol.kind values parameter, receiver, result, statement, case and store name a part inside a declaration, and a part is decided inside the declaration that holds it rather than by a relation over the reference graph. A subject the analysis holds live carries no relation either, because the finding states what the subject's visibility or its writes are rather than whether it is live: the narrowing kinds DS1101, DS1102 and DS1104 report a symbol its own package references, DS1301 reports a symbol production code writes, and DS1204 reports an assertion the program declares. The field is present and required on every other finding. A consumer that orders or groups findings treats an absent value as its own group, ordered before every present value.",
       "type": "string",
       "enum": ["reference-counting", "reachability"]
     },
@@ -137,7 +138,7 @@
       "type": "boolean"
     },
     "component": {
-      "description": "The dead component the subject belongs to: its root members and every dead symbol that falls with them, a symbol falling with a root when it is dead only through it. A finding about a symbol that falls with a root names that root's component, so every finding one deletion removes carries one identifier, a report is worked from its roots, and one deletion removes a cluster.",
+      "description": "The dead component the subject belongs to: its root members and every dead symbol that falls with them, a symbol falling with a root when it is dead only through it. A component is a weakly connected part of the dead symbols: a dead symbol, every dead symbol it references and every dead symbol that references it belong to one component, so two roots whose deletions share a dead symbol are root members of one component. A declaration of a test file is a member only when it is reported under DS1005; no other test-file declaration belongs to a component, so its references join no two components and make no member a non-root, and a cluster only tests reach is rooted at a declaration outside the test files. A finding about a symbol that falls with a root names that root's component, so every finding one deletion removes carries one identifier, a report is worked from its roots, and one deletion removes a cluster. A finding whose subject belongs to no dead component, being a declaration the analysis holds live, a part of a declaration or a row of a document, names a component the analyzer mints for that subject alone: one root member, the subject, with symbol_count 1 and deletable_lines 0.",
       "type": "object",
       "additionalProperties": false,
       "required": ["id", "root", "symbol_count", "deletable_lines"],
@@ -148,7 +149,7 @@
           "pattern": "^[a-z][a-z0-9-]*/c-[0-9]+$"
         },
         "root": {
-          "description": "Whether the subject is a root member of its component. A dead member and its dead container count as referencing each other, so they share a strongly connected cycle, and a symbol on no cycle is a cycle of one. A root member is a member of a cycle that no dead symbol outside the cycle references through any of its members, whose own container is not itself dead, so a report is worked from it. Every such cycle holds at least one root member, because a member's dead container sits on the member's own cycle, so every component has at least one, and a symbol that falls with a root is never one.",
+          "description": "Whether the subject is a root member of its component. A dead member and its dead container count as referencing each other, so they share a strongly connected cycle, and so do a test reported under DS1005 and each declaration outside the test files it references; a symbol on no cycle is a cycle of one. A root member is a member of a cycle that no member of the component outside the cycle references through any of its members, whose own container is not itself dead, so a report is worked from it. Every such cycle holds at least one root member, because a member's dead container sits on the member's own cycle, so every component has at least one, and a symbol that falls with a root is never one.",
           "type": "boolean"
         },
         "symbol_count": {
@@ -157,7 +158,7 @@
           "minimum": 1
         },
         "deletable_lines": {
-          "description": "The number of source lines the deletion of the component removes: the number of distinct source lines the declarations symbol_count counts span, each from its first line to its last, so a line two of them share, such as a field's line inside its struct, counts once.",
+          "description": "The number of source lines the deletion of the component removes: the number of distinct source lines the declarations symbol_count counts span, each from its first line to its last, so a line two of them share, such as a field's line inside its struct, counts once. A component minted for a subject that belongs to no dead component removes no line, so its value is 0 whatever the subject spans.",
           "type": "integer",
           "minimum": 0
         },
@@ -232,7 +233,7 @@
           "enum": ["file", "package", "module"]
         },
         "implementations": {
-          "description": "The concrete implementations of the interface the finding names, each with its position, so a reader sees what satisfies an interface nothing uses through the interface. An interface no loaded type implements is still reported, and the finding carries an empty array. A SARIF result carries each as a related location.",
+          "description": "The concrete types implementing the interface the finding's subject is or belongs to, each with its position, so a reader sees what satisfies an interface nothing uses through the interface: for an interface finding the interface itself, for an interface-method finding the interface that declares the method. An interface no loaded type implements is still reported, and the finding carries an empty array. A SARIF result carries each as a related location.",
           "type": "array",
           "uniqueItems": true,
           "items": {
@@ -683,6 +684,7 @@
                   "kind": {
                     "enum": [
                       "case",
+                      "configured-declaration",
                       "dependency",
                       "edge",
                       "file",
@@ -742,7 +744,7 @@
           "minimum": 1
         },
         "end_line": {
-          "description": "The line of the subject's last character, counted from one; it equals line where the subject is on one line. A SARIF region carries it and no end column, so the region runs to the end of that line.",
+          "description": "The line of the subject's last character, counted from one; it equals line where the subject is on one line. A line feed belongs to the line it ends, so a file of N lines whose last character is a line feed ends on line N. A SARIF region carries it and no end column, so the region runs to the end of that line.",
           "type": "integer",
           "minimum": 1
         }

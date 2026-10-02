@@ -14,12 +14,12 @@
     {
       "code": 2,
       "name": "usage",
-      "meaning": "The invocation is malformed, no configuration source supplies the target kind, a configuration source names a key the product does not implement, an explanation request names a symbol that does not exist, or a flag asks the product to edit source. The usage text is printed and no analysis runs."
+      "meaning": "The invocation is malformed, no configuration source supplies the target kind, a configuration source names a key the product does not implement, an explanation request names a symbol that does not exist, a template the invocation names cannot be read or does not parse, or a flag asks the product to edit source. The usage text is printed and no analysis runs."
     },
     {
       "code": 3,
       "name": "failure",
-      "meaning": "The target, a declared consumer or a build configuration failed to load or type-check, a file's references could not be resolved, an analyzer could not be found, described or admitted, an acquired artifact's digest did not match, or a pending finding met no other side at the merge. The errors are printed and no finding list is, so a partial result is never read as a clean tree."
+      "meaning": "The target, a declared consumer or a build configuration failed to load or type-check, a file's references could not be resolved, an analyzer could not be found, described or admitted, an acquired artifact's digest did not match, a pending finding met no other side at the merge, or a requested rendering could not be produced, in which case the report is already written and the rendering is not. The errors are printed and no finding list is, so a partial result is never read as a clean tree."
     },
     {
       "code": 4,

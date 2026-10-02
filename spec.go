@@ -19,8 +19,8 @@ var Contract embed.FS
 //go:embed corpus
 var Corpus embed.FS
 
-// Vectors holds the vectors/ tree: the published merge and configuration
-// vectors an implementation is tested against.
+// Vectors holds the vectors/ tree: the published merge, configuration,
+// template, SARIF and baseline vectors an implementation is tested against.
 //
 //go:embed vectors
 var Vectors embed.FS

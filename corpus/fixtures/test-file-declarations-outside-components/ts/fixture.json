@@ -1,0 +1,14 @@
+{
+  "symbols": {
+    "Live": { "file": "target/codec.ts", "line": 2 },
+    "Encode": { "file": "target/codec.ts", "line": 7 },
+    "Decode": { "file": "target/codec.ts", "line": 12 },
+    "Parse": { "file": "target/codec.ts", "line": 17 },
+    "Format": { "file": "target/codec.ts", "line": 22 },
+    "encodeAll": { "file": "target/codec.test.ts", "line": 7 },
+    "TestDecode": { "file": "target/codec.test.ts", "line": 11 },
+    "mustParse": { "file": "target/codec.test.ts", "line": 18 },
+    "TestRoundTrip": { "file": "target/codec.test.ts", "line": 22 },
+    "formatBoth": { "file": "target/codec.test.ts", "line": 29 }
+  }
+}

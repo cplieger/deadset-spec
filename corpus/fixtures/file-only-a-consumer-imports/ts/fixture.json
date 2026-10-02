@@ -1,0 +1,8 @@
+{
+  "symbols": {
+    "Extra": { "file": "target/extra.ts", "line": 1 },
+    "Greet": { "file": "target/extra.ts", "line": 3 },
+    "Orphan": { "file": "target/orphan.ts", "line": 1 },
+    "width": { "file": "target/orphan.ts", "line": 3 }
+  }
+}

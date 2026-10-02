@@ -1,0 +1,440 @@
+{
+  "schema_version": "6.0.0",
+  "contract_version": "4.0.0",
+  "analyzer": {
+    "name": "deadset-go",
+    "version": "1.0.0",
+    "languages": [
+      "go"
+    ],
+    "schema_versions_accepted": [
+      "6.0.0",
+      "6.1.0"
+    ],
+    "conformance": {
+      "corpus_version": "1.0.0",
+      "result": "pass",
+      "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000001"
+    }
+  },
+  "target": {
+    "kind": "application",
+    "root": ".",
+    "identity": "example.com/app"
+  },
+  "configurations": [
+    {
+      "id": "linux-amd64",
+      "os": "linux",
+      "arch": "amd64",
+      "tags": []
+    }
+  ],
+  "configurations_not_built": [],
+  "consumers": {
+    "declared": 0,
+    "loaded": [],
+    "unavailable": []
+  },
+  "findings": [
+    {
+      "code": "DS1002",
+      "kind": "unused-unexported",
+      "language": "go",
+      "position": {
+        "path": "fixture.go",
+        "line": 3,
+        "column": 1,
+        "end_line": 3
+      },
+      "symbol": {
+        "ref": "go://example.com/app#Ünused",
+        "kind": "function",
+        "name": "Ünused",
+        "exported": false,
+        "size_lines": 1
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "test_only": false,
+      "generated": false,
+      "component": {
+        "id": "deadset-go/c-1",
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 1
+      },
+      "retained_by": [],
+      "configurations": [
+        "linux-amd64"
+      ],
+      "consumers_loaded": [],
+      "fixability": "deletable",
+      "severity": "deny",
+      "message": "unexported function has no reference",
+      "details": {},
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "code": "DS1002",
+      "kind": "unused-unexported",
+      "language": "go",
+      "position": {
+        "path": "fixture.go",
+        "line": 4,
+        "column": 1,
+        "end_line": 4
+      },
+      "symbol": {
+        "ref": "go://example.com/app#line4",
+        "kind": "function",
+        "name": "line4",
+        "exported": false,
+        "size_lines": 1
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "test_only": false,
+      "generated": false,
+      "component": {
+        "id": "deadset-go/c-2",
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 1
+      },
+      "retained_by": [],
+      "configurations": [
+        "linux-amd64"
+      ],
+      "consumers_loaded": [],
+      "fixability": "deletable",
+      "severity": "deny",
+      "message": "unexported function has no reference",
+      "details": {},
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "code": "DS1002",
+      "kind": "unused-unexported",
+      "language": "go",
+      "position": {
+        "path": "fixture.go",
+        "line": 5,
+        "column": 1,
+        "end_line": 5
+      },
+      "symbol": {
+        "ref": "go://example.com/app#line5",
+        "kind": "function",
+        "name": "line5",
+        "exported": false,
+        "size_lines": 1
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "test_only": false,
+      "generated": false,
+      "component": {
+        "id": "deadset-go/c-3",
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 1
+      },
+      "retained_by": [],
+      "configurations": [
+        "linux-amd64"
+      ],
+      "consumers_loaded": [],
+      "fixability": "deletable",
+      "severity": "deny",
+      "message": "unexported function has no reference",
+      "details": {},
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "code": "DS1002",
+      "kind": "unused-unexported",
+      "language": "go",
+      "position": {
+        "path": "ys.go",
+        "line": 1,
+        "column": 1,
+        "end_line": 1
+      },
+      "symbol": {
+        "ref": "go://example.com/app#y1",
+        "kind": "function",
+        "name": "y1",
+        "exported": false,
+        "size_lines": 1
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "test_only": false,
+      "generated": false,
+      "component": {
+        "id": "deadset-go/c-4",
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 1
+      },
+      "retained_by": [],
+      "configurations": [
+        "linux-amd64"
+      ],
+      "consumers_loaded": [],
+      "fixability": "deletable",
+      "severity": "deny",
+      "message": "unexported function has no reference",
+      "details": {},
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "code": "DS1002",
+      "kind": "unused-unexported",
+      "language": "go",
+      "position": {
+        "path": "ys.go",
+        "line": 2,
+        "column": 1,
+        "end_line": 2
+      },
+      "symbol": {
+        "ref": "go://example.com/app#y2",
+        "kind": "function",
+        "name": "y2",
+        "exported": false,
+        "size_lines": 1
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "test_only": false,
+      "generated": false,
+      "component": {
+        "id": "deadset-go/c-5",
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 1
+      },
+      "retained_by": [],
+      "configurations": [
+        "linux-amd64"
+      ],
+      "consumers_loaded": [],
+      "fixability": "deletable",
+      "severity": "deny",
+      "message": "unexported function has no reference",
+      "details": {},
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "code": "DS1002",
+      "kind": "unused-unexported",
+      "language": "go",
+      "position": {
+        "path": "ys.go",
+        "line": 151,
+        "column": 1,
+        "end_line": 151
+      },
+      "symbol": {
+        "ref": "go://example.com/app#y151",
+        "kind": "function",
+        "name": "y151",
+        "exported": false,
+        "size_lines": 1
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "test_only": false,
+      "generated": false,
+      "component": {
+        "id": "deadset-go/c-6",
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 1
+      },
+      "retained_by": [],
+      "configurations": [
+        "linux-amd64"
+      ],
+      "consumers_loaded": [],
+      "fixability": "deletable",
+      "severity": "deny",
+      "message": "unexported function has no reference",
+      "details": {},
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "code": "DS1002",
+      "kind": "unused-unexported",
+      "language": "go",
+      "position": {
+        "path": "ys.go",
+        "line": 200,
+        "column": 1,
+        "end_line": 200
+      },
+      "symbol": {
+        "ref": "go://example.com/app#y200",
+        "kind": "function",
+        "name": "y200",
+        "exported": false,
+        "size_lines": 1
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "test_only": false,
+      "generated": false,
+      "component": {
+        "id": "deadset-go/c-7",
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 1
+      },
+      "retained_by": [],
+      "configurations": [
+        "linux-amd64"
+      ],
+      "consumers_loaded": [],
+      "fixability": "deletable",
+      "severity": "deny",
+      "message": "unexported function has no reference",
+      "details": {},
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "code": "DS1002",
+      "kind": "unused-unexported",
+      "language": "go",
+      "position": {
+        "path": "crlf.go",
+        "line": 3,
+        "column": 1,
+        "end_line": 3
+      },
+      "symbol": {
+        "ref": "go://example.com/app#A",
+        "kind": "function",
+        "name": "A",
+        "exported": false,
+        "size_lines": 1
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "test_only": false,
+      "generated": false,
+      "component": {
+        "id": "deadset-go/c-8",
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 1
+      },
+      "retained_by": [],
+      "configurations": [
+        "linux-amd64"
+      ],
+      "consumers_loaded": [],
+      "fixability": "deletable",
+      "severity": "deny",
+      "message": "unexported function has no reference",
+      "details": {},
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "code": "DS1002",
+      "kind": "unused-unexported",
+      "language": "go",
+      "position": {
+        "path": "crlf.go",
+        "line": 4,
+        "column": 1,
+        "end_line": 4
+      },
+      "symbol": {
+        "ref": "go://example.com/app#B",
+        "kind": "function",
+        "name": "B",
+        "exported": false,
+        "size_lines": 1
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "test_only": false,
+      "generated": false,
+      "component": {
+        "id": "deadset-go/c-9",
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 1
+      },
+      "retained_by": [],
+      "configurations": [
+        "linux-amd64"
+      ],
+      "consumers_loaded": [],
+      "fixability": "deletable",
+      "severity": "deny",
+      "message": "unexported function has no reference",
+      "details": {},
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "code": "DS1002",
+      "kind": "unused-unexported",
+      "language": "go",
+      "position": {
+        "path": "crlf.go",
+        "line": 6,
+        "column": 1,
+        "end_line": 6
+      },
+      "symbol": {
+        "ref": "go://example.com/app#C",
+        "kind": "function",
+        "name": "C",
+        "exported": false,
+        "size_lines": 1
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "test_only": false,
+      "generated": false,
+      "component": {
+        "id": "deadset-go/c-10",
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 1
+      },
+      "retained_by": [],
+      "configurations": [
+        "linux-amd64"
+      ],
+      "consumers_loaded": [],
+      "fixability": "deletable",
+      "severity": "deny",
+      "message": "unexported function has no reference",
+      "details": {},
+      "liveness_relation": "reference-counting"
+    }
+  ],
+  "edge_evaluations": [],
+  "stale_suppressions": [],
+  "declared_gaps": [],
+  "excluded_by_cgo": [],
+  "test_file_rules": [],
+  "totals": {
+    "findings": 10,
+    "by_severity": {
+      "allow": 0,
+      "warn": 0,
+      "deny": 10
+    },
+    "deletable_lines": 10,
+    "suppressions_in_effect": 0,
+    "reasons_recorded": 0,
+    "stale_suppressions": 0,
+    "pending": 0,
+    "omitted": 0
+  }
+}

@@ -1,4 +1,4 @@
-module github.com/cplieger/deadset-spec/v3
+module github.com/cplieger/deadset-spec/v4
 
 go 1.27.1
 

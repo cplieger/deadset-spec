@@ -1,0 +1,6 @@
+{
+  "symbols": {
+    "Maker.build.T": { "file": "target/maker.ts", "line": 3 },
+    "shape.U": { "file": "target/maker.ts", "line": 12 }
+  }
+}

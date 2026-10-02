@@ -16,7 +16,7 @@
   "confidence": "certain",
   "test_only": false,
   "generated": false,
-  "component": { "id": "deadset-go/c-0019", "root": true, "symbol_count": 1, "deletable_lines": 1 },
+  "component": { "id": "deadset-go/c-0019", "root": true, "symbol_count": 1, "deletable_lines": 0 },
   "retained_by": [],
   "configurations": ["linux-amd64"],
   "consumers_loaded": [],

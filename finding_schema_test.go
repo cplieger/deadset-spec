@@ -11,7 +11,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/cplieger/deadset-spec/v3"
+	"github.com/cplieger/deadset-spec/v4"
 )
 
 const (
@@ -41,18 +41,16 @@ var findingFields = []string{
 var findingOptionalFields = []string{"analyzer", "liveness_relation"}
 
 // findingNoRelationKinds are the symbol kinds that are not declarations, so a
-// finding about one carries no liveness relation. Five are artifacts the run
+// finding about one carries no liveness relation. Seven are artifacts the run
 // read rather than symbols it swept: a source file, a dependency, a module
-// directive, a suppression record and a configured root. Six are parts of the
-// declaration the finding's symbol.ref names: a parameter, a receiver, a
-// result, a statement, a case and a store, each decided inside its declaration
-// rather than by a relation over the reference graph. The declared
-// cross-language edge is not here: a merge emits that finding from the edge's
-// evaluations and it carries a relation, which the example and the first merge
-// vector pin.
+// directive, a suppression record, a configured root, a configured declaration
+// and a declared cross-language edge. Six are parts of the declaration the
+// finding's symbol.ref names: a parameter, a receiver, a result, a statement, a
+// case and a store, each decided inside its declaration rather than by a
+// relation over the reference graph.
 var findingNoRelationKinds = []string{
-	"case", "dependency", "edge", "file", "module-directive", "parameter",
-	"receiver", "result", "root", "statement", "store", "suppression",
+	"case", "configured-declaration", "dependency", "edge", "file", "module-directive",
+	"parameter", "receiver", "result", "root", "statement", "store", "suppression",
 }
 
 // findingLiveSubjectCodes are the codes whose subject the analysis holds live,
@@ -106,7 +104,7 @@ const findingDeletableOnlyField = "removes_last_use_of"
 // object is empty.
 var findingEmptyDetailsCodes = []string{
 	"DS1001", "DS1002", "DS1003", "DS1004", "DS1005", "DS1006",
-	"DS1103", "DS1302", "DS1303", "DS1502", "DS1704",
+	"DS1103", "DS1302", "DS1303", "DS1502", "DS1704", "DS1706",
 }
 
 // findingFieldsForCode lists the details fields a code carries, sorted.
@@ -898,4 +896,24 @@ func findingSuppressionCodes(t *testing.T) []string {
 	}
 	slices.Sort(codes)
 	return codes
+}
+
+// TestFindingSchemaAdmitsAConfiguredDeclarationAsADocumentRow holds the subject kind
+// to the row shape from both sides: the refused document that carries a liveness
+// relation is admitted once the relation is gone, so the schema admits the kind and
+// refuses it only where it is written as a declaration.
+func TestFindingSchemaAdmitsAConfiguredDeclarationAsADocumentRow(t *testing.T) {
+	var finding map[string]any
+	if err := json.Unmarshal(readExample(t, "negatives", "liveness-relation-on-a-configured-declaration.json"), &finding); err != nil {
+		t.Fatalf("Setup: json.Unmarshal(the configured-declaration negative): %v", err)
+	}
+	if symbol, _ := finding["symbol"].(map[string]any); symbol["kind"] != "configured-declaration" {
+		t.Fatalf("Setup: the negative's symbol.kind = %v, want configured-declaration", symbol["kind"])
+	}
+	delete(finding, "liveness_relation")
+	data, err := json.Marshal(finding)
+	if err != nil {
+		t.Fatalf("Setup: json.Marshal: %v", err)
+	}
+	validateAgainst(t, findingSchemaPath, data)
 }

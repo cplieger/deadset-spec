@@ -136,7 +136,7 @@
           "pattern": "^(?:\\.|(?:[^/\\\\.\\r\\n][^/\\\\\\r\\n]*|\\.[^/\\\\.\\r\\n][^/\\\\\\r\\n]*|\\.\\.[^/\\\\\\r\\n]+)(?:/(?:[^/\\\\.\\r\\n][^/\\\\\\r\\n]*|\\.[^/\\\\.\\r\\n][^/\\\\\\r\\n]*|\\.\\.[^/\\\\\\r\\n]+))*)$"
         },
         "identity": {
-          "description": "The name the target publishes itself under: its module path where the language has one, its package name otherwise. A target holding more than one language has one identity, the one the invoking product resolved, and every analyzer report of that target carries it, so a merged report names the same target as every report it merged. It is the scope every symbol reference of the target carries.",
+          "description": "The name the target publishes itself under: its module path where the language has one, its package name otherwise. A target holding more than one language has one identity, the one the invoking product resolved, and every analyzer report of that target carries it, so a merged report names the same target as every report it merged. It names the target and is not a symbol scope: each symbol reference carries the scope grammar/symbol-ref.md gives its own language, so in a target holding Go and TypeScript a TypeScript reference keeps its package name.",
           "type": "string",
           "minLength": 1
         }
@@ -384,7 +384,7 @@
             "enum": ["live", "dead", "absent"]
           },
           "finding": {
-            "description": "The pending finding: the finding the product would have reported for the symbol, present exactly when the state is dead and absent for every other state. It appears nowhere else in the report. A merge resolves it by the paired side's state, and a report that holds one is a report with a pending finding.",
+            "description": "The pending finding: the finding the product would have reported about the symbol's declaration itself, present exactly when the state is dead and absent for every other state. A finding about a part of the declaration, a parameter, a receiver, a result, a statement, a case or a store, is decided inside the declaration whatever uses it, so no paired symbol can cancel it: it is never pending, and the product reports it in findings whatever the state. It appears nowhere else in the report. A merge resolves it by the paired side's state, and a report that holds one is a report with a pending finding.",
             "$ref": "finding.schema.json"
           },
           "analyzer": {
@@ -606,7 +606,7 @@
           }
         },
         "deletable_lines": {
-          "description": "The number of source lines a reader deletes by acting on every finding in findings: the sum of deletable_lines over the distinct components the root findings of findings name, each component counted once however many of its root members the array holds.",
+          "description": "The number of source lines a reader deletes by acting on every finding the run produced: the sum of deletable_lines over the distinct components the run's root findings name, each component counted once however many of its root members the run reports, the findings a configured maximum leaves out of findings included, as by_severity counts them. A component minted for a subject that belongs to no dead component contributes 0.",
           "type": "integer",
           "minimum": 0
         },

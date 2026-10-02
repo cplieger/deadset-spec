@@ -11,7 +11,7 @@ This repository holds what those three programs agree on: data and documentation
 ## Install
 
 ```sh
-go get github.com/cplieger/deadset-spec/v3@latest
+go get github.com/cplieger/deadset-spec/v4@latest
 ```
 
 The module is a test dependency for a Go analyzer that runs the corpus. A TypeScript analyzer clones the repository at a tag instead; no npm package is published.
@@ -23,7 +23,7 @@ import (
     "io/fs"
     "testing"
 
-    "github.com/cplieger/deadset-spec/v3"
+    "github.com/cplieger/deadset-spec/v4"
 )
 
 func TestKindsAreCurrent(t *testing.T) {
@@ -56,6 +56,8 @@ func TestKindsAreCurrent(t *testing.T) {
 - The merge of several reports into one, stated as an algorithm with a deterministic order, together with published input and output vectors so a merge implementation is tested against declared data rather than against another implementation.
 - The scope document, `contract/scope.schema.json`: the target an analysis reports on and the consumers whose references count against it, which the invoking product writes and an analyzer reads.
 - The configuration document, `contract/config.schema.json`: a closed key list, the precedence between the repository file, the central file and the invocation's flags, and the resolved configuration a run prints, with published vectors so a resolution is tested against declared data too.
+- The describe document, `contract/describe.schema.json`: what an analyzer states about itself before any analysis runs, which the invoking product reads to admit or refuse it.
+- The template rendering, `contract/grammar/template.md`: the template language and the data model a user's template renders a report through, with published vectors.
 
 Each of those formats is stated in full under [`contract/grammar/`](contract/grammar) or in the schema that carries it. The vocabularies also have reference pages, which is where a reader starts:
 

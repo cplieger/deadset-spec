@@ -1,0 +1,3071 @@
+{
+  "$schema": "https://docs.oasis-open.org/sarif/sarif/v2.1.0/errata01/os/schemas/sarif-schema-2.1.0.json",
+  "runs": [
+    {
+      "automationDetails": {
+        "id": "deadset/go/"
+      },
+      "columnKind": "utf16CodeUnits",
+      "originalUriBaseIds": {
+        "%SRCROOT%": {
+          "description": {
+            "text": "The target root."
+          }
+        }
+      },
+      "properties": {
+        "totals": {
+          "by_severity": {
+            "allow": 0,
+            "deny": 0,
+            "warn": 1
+          },
+          "deletable_lines": 0,
+          "findings": 1,
+          "omitted": 0,
+          "pending": 0,
+          "reasons_recorded": 0,
+          "stale_suppressions": 0,
+          "suppressions_in_effect": 0
+        }
+      },
+      "results": [
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 4,
+                  "startColumn": 2,
+                  "startLine": 4
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "field is written and never read (see [write counter.go:8:2](1), [write counter.go:9:2](2), [write counter.go:10:2](3), [write counter.go:11:2](4), [write counter.go:12:2](5), [write counter.go:13:2](6), [write counter.go:14:2](7), [write counter.go:15:2](8), [write counter.go:16:2](9), [write counter.go:17:2](10), [write counter.go:18:2](11), [write counter.go:19:2](12), [write counter.go:20:2](13), [write counter.go:21:2](14), [write counter.go:22:2](15), [write counter.go:23:2](16), [write counter.go:24:2](17), [write counter.go:25:2](18), [write counter.go:26:2](19), [write counter.go:27:2](20), [write counter.go:28:2](21), [write counter.go:29:2](22), [write counter.go:30:2](23), [write counter.go:31:2](24), [write counter.go:32:2](25), [write counter.go:33:2](26), [write counter.go:34:2](27), [write counter.go:35:2](28), [write counter.go:36:2](29), [write counter.go:37:2](30), [write counter.go:38:2](31), [write counter.go:39:2](32), [write counter.go:40:2](33), [write counter.go:41:2](34), [write counter.go:42:2](35), [write counter.go:43:2](36), [write counter.go:44:2](37), [write counter.go:45:2](38), [write counter.go:46:2](39), [write counter.go:47:2](40), [write counter.go:48:2](41), [write counter.go:49:2](42), [write counter.go:50:2](43), [write counter.go:51:2](44), [write counter.go:52:2](45), [write counter.go:53:2](46), [write counter.go:54:2](47), [write counter.go:55:2](48), [write counter.go:56:2](49), [write counter.go:57:2](50), [write counter.go:58:2](51), [write counter.go:59:2](52), [write counter.go:60:2](53), [write counter.go:61:2](54), [write counter.go:62:2](55), [write counter.go:63:2](56), [write counter.go:64:2](57), [write counter.go:65:2](58), [write counter.go:66:2](59), [write counter.go:67:2](60), [write counter.go:68:2](61), [write counter.go:69:2](62), [write counter.go:70:2](63), [write counter.go:71:2](64), [write counter.go:72:2](65), [write counter.go:73:2](66), [write counter.go:74:2](67), [write counter.go:75:2](68), [write counter.go:76:2](69), [write counter.go:77:2](70), [write counter.go:78:2](71), [write counter.go:79:2](72), [write counter.go:80:2](73), [write counter.go:81:2](74), [write counter.go:82:2](75), [write counter.go:83:2](76), [write counter.go:84:2](77), [write counter.go:85:2](78), [write counter.go:86:2](79), [write counter.go:87:2](80), [write counter.go:88:2](81), [write counter.go:89:2](82), [write counter.go:90:2](83), [write counter.go:91:2](84), [write counter.go:92:2](85), [write counter.go:93:2](86), [write counter.go:94:2](87), [write counter.go:95:2](88), [write counter.go:96:2](89), [write counter.go:97:2](90), [write counter.go:98:2](91), [write counter.go:99:2](92), [write counter.go:100:2](93), [write counter.go:101:2](94), [write counter.go:102:2](95), [write counter.go:103:2](96), [write counter.go:104:2](97), [write counter.go:105:2](98), [write counter.go:106:2](99), [write counter.go:107:2](100))"
+          },
+          "partialFingerprints": {
+            "deadsetSymbolRef/v1": "1abdc90aae088a3c59e486c16bbb57eb854bae5fdc4c8f482e36c0a885480195",
+            "primaryLocationLineHash": "6bf727e8591d24ed:1"
+          },
+          "properties": {
+            "component": {
+              "deletable_lines": 0,
+              "id": "deadset-go/c-1",
+              "root": true,
+              "symbol_count": 1
+            },
+            "confidence": "certain",
+            "configurations": [
+              "linux-amd64"
+            ],
+            "consumers_loaded": [],
+            "details": {
+              "write_positions": [
+                {
+                  "column": 2,
+                  "end_line": 8,
+                  "line": 8,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 9,
+                  "line": 9,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 10,
+                  "line": 10,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 11,
+                  "line": 11,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 12,
+                  "line": 12,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 13,
+                  "line": 13,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 14,
+                  "line": 14,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 15,
+                  "line": 15,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 16,
+                  "line": 16,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 17,
+                  "line": 17,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 18,
+                  "line": 18,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 19,
+                  "line": 19,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 20,
+                  "line": 20,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 21,
+                  "line": 21,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 22,
+                  "line": 22,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 23,
+                  "line": 23,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 24,
+                  "line": 24,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 25,
+                  "line": 25,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 26,
+                  "line": 26,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 27,
+                  "line": 27,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 28,
+                  "line": 28,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 29,
+                  "line": 29,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 30,
+                  "line": 30,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 31,
+                  "line": 31,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 32,
+                  "line": 32,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 33,
+                  "line": 33,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 34,
+                  "line": 34,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 35,
+                  "line": 35,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 36,
+                  "line": 36,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 37,
+                  "line": 37,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 38,
+                  "line": 38,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 39,
+                  "line": 39,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 40,
+                  "line": 40,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 41,
+                  "line": 41,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 42,
+                  "line": 42,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 43,
+                  "line": 43,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 44,
+                  "line": 44,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 45,
+                  "line": 45,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 46,
+                  "line": 46,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 47,
+                  "line": 47,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 48,
+                  "line": 48,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 49,
+                  "line": 49,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 50,
+                  "line": 50,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 51,
+                  "line": 51,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 52,
+                  "line": 52,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 53,
+                  "line": 53,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 54,
+                  "line": 54,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 55,
+                  "line": 55,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 56,
+                  "line": 56,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 57,
+                  "line": 57,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 58,
+                  "line": 58,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 59,
+                  "line": 59,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 60,
+                  "line": 60,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 61,
+                  "line": 61,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 62,
+                  "line": 62,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 63,
+                  "line": 63,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 64,
+                  "line": 64,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 65,
+                  "line": 65,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 66,
+                  "line": 66,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 67,
+                  "line": 67,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 68,
+                  "line": 68,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 69,
+                  "line": 69,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 70,
+                  "line": 70,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 71,
+                  "line": 71,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 72,
+                  "line": 72,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 73,
+                  "line": 73,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 74,
+                  "line": 74,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 75,
+                  "line": 75,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 76,
+                  "line": 76,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 77,
+                  "line": 77,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 78,
+                  "line": 78,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 79,
+                  "line": 79,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 80,
+                  "line": 80,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 81,
+                  "line": 81,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 82,
+                  "line": 82,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 83,
+                  "line": 83,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 84,
+                  "line": 84,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 85,
+                  "line": 85,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 86,
+                  "line": 86,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 87,
+                  "line": 87,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 88,
+                  "line": 88,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 89,
+                  "line": 89,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 90,
+                  "line": 90,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 91,
+                  "line": 91,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 92,
+                  "line": 92,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 93,
+                  "line": 93,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 94,
+                  "line": 94,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 95,
+                  "line": 95,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 96,
+                  "line": 96,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 97,
+                  "line": 97,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 98,
+                  "line": 98,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 99,
+                  "line": 99,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 100,
+                  "line": 100,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 101,
+                  "line": 101,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 102,
+                  "line": 102,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 103,
+                  "line": 103,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 104,
+                  "line": 104,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 105,
+                  "line": 105,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 106,
+                  "line": 106,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 107,
+                  "line": 107,
+                  "path": "counter.go"
+                },
+                {
+                  "column": 2,
+                  "end_line": 108,
+                  "line": 108,
+                  "path": "counter.go"
+                }
+              ]
+            },
+            "fixability": "manual",
+            "generated": false,
+            "language": "go",
+            "reachability_class": "certain",
+            "retained_by": [],
+            "symbol": {
+              "exported": false,
+              "kind": "field",
+              "name": "counter.n",
+              "ref": "go://example.com/app#counter.n",
+              "size_lines": 1
+            },
+            "test_only": false
+          },
+          "relatedLocations": [
+            {
+              "id": 1,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 8,
+                  "startColumn": 2,
+                  "startLine": 8
+                }
+              }
+            },
+            {
+              "id": 2,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 9,
+                  "startColumn": 2,
+                  "startLine": 9
+                }
+              }
+            },
+            {
+              "id": 3,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 10,
+                  "startColumn": 2,
+                  "startLine": 10
+                }
+              }
+            },
+            {
+              "id": 4,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 11,
+                  "startColumn": 2,
+                  "startLine": 11
+                }
+              }
+            },
+            {
+              "id": 5,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 12,
+                  "startColumn": 2,
+                  "startLine": 12
+                }
+              }
+            },
+            {
+              "id": 6,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 13,
+                  "startColumn": 2,
+                  "startLine": 13
+                }
+              }
+            },
+            {
+              "id": 7,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 14,
+                  "startColumn": 2,
+                  "startLine": 14
+                }
+              }
+            },
+            {
+              "id": 8,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 15,
+                  "startColumn": 2,
+                  "startLine": 15
+                }
+              }
+            },
+            {
+              "id": 9,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 16,
+                  "startColumn": 2,
+                  "startLine": 16
+                }
+              }
+            },
+            {
+              "id": 10,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 17,
+                  "startColumn": 2,
+                  "startLine": 17
+                }
+              }
+            },
+            {
+              "id": 11,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 18,
+                  "startColumn": 2,
+                  "startLine": 18
+                }
+              }
+            },
+            {
+              "id": 12,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 19,
+                  "startColumn": 2,
+                  "startLine": 19
+                }
+              }
+            },
+            {
+              "id": 13,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 20,
+                  "startColumn": 2,
+                  "startLine": 20
+                }
+              }
+            },
+            {
+              "id": 14,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 21,
+                  "startColumn": 2,
+                  "startLine": 21
+                }
+              }
+            },
+            {
+              "id": 15,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 22,
+                  "startColumn": 2,
+                  "startLine": 22
+                }
+              }
+            },
+            {
+              "id": 16,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 23,
+                  "startColumn": 2,
+                  "startLine": 23
+                }
+              }
+            },
+            {
+              "id": 17,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 24,
+                  "startColumn": 2,
+                  "startLine": 24
+                }
+              }
+            },
+            {
+              "id": 18,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 25,
+                  "startColumn": 2,
+                  "startLine": 25
+                }
+              }
+            },
+            {
+              "id": 19,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 26,
+                  "startColumn": 2,
+                  "startLine": 26
+                }
+              }
+            },
+            {
+              "id": 20,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 27,
+                  "startColumn": 2,
+                  "startLine": 27
+                }
+              }
+            },
+            {
+              "id": 21,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 28,
+                  "startColumn": 2,
+                  "startLine": 28
+                }
+              }
+            },
+            {
+              "id": 22,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 29,
+                  "startColumn": 2,
+                  "startLine": 29
+                }
+              }
+            },
+            {
+              "id": 23,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 30,
+                  "startColumn": 2,
+                  "startLine": 30
+                }
+              }
+            },
+            {
+              "id": 24,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 31,
+                  "startColumn": 2,
+                  "startLine": 31
+                }
+              }
+            },
+            {
+              "id": 25,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 32,
+                  "startColumn": 2,
+                  "startLine": 32
+                }
+              }
+            },
+            {
+              "id": 26,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 33,
+                  "startColumn": 2,
+                  "startLine": 33
+                }
+              }
+            },
+            {
+              "id": 27,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 34,
+                  "startColumn": 2,
+                  "startLine": 34
+                }
+              }
+            },
+            {
+              "id": 28,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 35,
+                  "startColumn": 2,
+                  "startLine": 35
+                }
+              }
+            },
+            {
+              "id": 29,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 36,
+                  "startColumn": 2,
+                  "startLine": 36
+                }
+              }
+            },
+            {
+              "id": 30,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 37,
+                  "startColumn": 2,
+                  "startLine": 37
+                }
+              }
+            },
+            {
+              "id": 31,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 38,
+                  "startColumn": 2,
+                  "startLine": 38
+                }
+              }
+            },
+            {
+              "id": 32,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 39,
+                  "startColumn": 2,
+                  "startLine": 39
+                }
+              }
+            },
+            {
+              "id": 33,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 40,
+                  "startColumn": 2,
+                  "startLine": 40
+                }
+              }
+            },
+            {
+              "id": 34,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 41,
+                  "startColumn": 2,
+                  "startLine": 41
+                }
+              }
+            },
+            {
+              "id": 35,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 42,
+                  "startColumn": 2,
+                  "startLine": 42
+                }
+              }
+            },
+            {
+              "id": 36,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 43,
+                  "startColumn": 2,
+                  "startLine": 43
+                }
+              }
+            },
+            {
+              "id": 37,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 44,
+                  "startColumn": 2,
+                  "startLine": 44
+                }
+              }
+            },
+            {
+              "id": 38,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 45,
+                  "startColumn": 2,
+                  "startLine": 45
+                }
+              }
+            },
+            {
+              "id": 39,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 46,
+                  "startColumn": 2,
+                  "startLine": 46
+                }
+              }
+            },
+            {
+              "id": 40,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 47,
+                  "startColumn": 2,
+                  "startLine": 47
+                }
+              }
+            },
+            {
+              "id": 41,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 48,
+                  "startColumn": 2,
+                  "startLine": 48
+                }
+              }
+            },
+            {
+              "id": 42,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 49,
+                  "startColumn": 2,
+                  "startLine": 49
+                }
+              }
+            },
+            {
+              "id": 43,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 50,
+                  "startColumn": 2,
+                  "startLine": 50
+                }
+              }
+            },
+            {
+              "id": 44,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 51,
+                  "startColumn": 2,
+                  "startLine": 51
+                }
+              }
+            },
+            {
+              "id": 45,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 52,
+                  "startColumn": 2,
+                  "startLine": 52
+                }
+              }
+            },
+            {
+              "id": 46,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 53,
+                  "startColumn": 2,
+                  "startLine": 53
+                }
+              }
+            },
+            {
+              "id": 47,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 54,
+                  "startColumn": 2,
+                  "startLine": 54
+                }
+              }
+            },
+            {
+              "id": 48,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 55,
+                  "startColumn": 2,
+                  "startLine": 55
+                }
+              }
+            },
+            {
+              "id": 49,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 56,
+                  "startColumn": 2,
+                  "startLine": 56
+                }
+              }
+            },
+            {
+              "id": 50,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 57,
+                  "startColumn": 2,
+                  "startLine": 57
+                }
+              }
+            },
+            {
+              "id": 51,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 58,
+                  "startColumn": 2,
+                  "startLine": 58
+                }
+              }
+            },
+            {
+              "id": 52,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 59,
+                  "startColumn": 2,
+                  "startLine": 59
+                }
+              }
+            },
+            {
+              "id": 53,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 60,
+                  "startColumn": 2,
+                  "startLine": 60
+                }
+              }
+            },
+            {
+              "id": 54,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 61,
+                  "startColumn": 2,
+                  "startLine": 61
+                }
+              }
+            },
+            {
+              "id": 55,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 62,
+                  "startColumn": 2,
+                  "startLine": 62
+                }
+              }
+            },
+            {
+              "id": 56,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 63,
+                  "startColumn": 2,
+                  "startLine": 63
+                }
+              }
+            },
+            {
+              "id": 57,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 64,
+                  "startColumn": 2,
+                  "startLine": 64
+                }
+              }
+            },
+            {
+              "id": 58,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 65,
+                  "startColumn": 2,
+                  "startLine": 65
+                }
+              }
+            },
+            {
+              "id": 59,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 66,
+                  "startColumn": 2,
+                  "startLine": 66
+                }
+              }
+            },
+            {
+              "id": 60,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 67,
+                  "startColumn": 2,
+                  "startLine": 67
+                }
+              }
+            },
+            {
+              "id": 61,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 68,
+                  "startColumn": 2,
+                  "startLine": 68
+                }
+              }
+            },
+            {
+              "id": 62,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 69,
+                  "startColumn": 2,
+                  "startLine": 69
+                }
+              }
+            },
+            {
+              "id": 63,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 70,
+                  "startColumn": 2,
+                  "startLine": 70
+                }
+              }
+            },
+            {
+              "id": 64,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 71,
+                  "startColumn": 2,
+                  "startLine": 71
+                }
+              }
+            },
+            {
+              "id": 65,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 72,
+                  "startColumn": 2,
+                  "startLine": 72
+                }
+              }
+            },
+            {
+              "id": 66,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 73,
+                  "startColumn": 2,
+                  "startLine": 73
+                }
+              }
+            },
+            {
+              "id": 67,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 74,
+                  "startColumn": 2,
+                  "startLine": 74
+                }
+              }
+            },
+            {
+              "id": 68,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 75,
+                  "startColumn": 2,
+                  "startLine": 75
+                }
+              }
+            },
+            {
+              "id": 69,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 76,
+                  "startColumn": 2,
+                  "startLine": 76
+                }
+              }
+            },
+            {
+              "id": 70,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 77,
+                  "startColumn": 2,
+                  "startLine": 77
+                }
+              }
+            },
+            {
+              "id": 71,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 78,
+                  "startColumn": 2,
+                  "startLine": 78
+                }
+              }
+            },
+            {
+              "id": 72,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 79,
+                  "startColumn": 2,
+                  "startLine": 79
+                }
+              }
+            },
+            {
+              "id": 73,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 80,
+                  "startColumn": 2,
+                  "startLine": 80
+                }
+              }
+            },
+            {
+              "id": 74,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 81,
+                  "startColumn": 2,
+                  "startLine": 81
+                }
+              }
+            },
+            {
+              "id": 75,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 82,
+                  "startColumn": 2,
+                  "startLine": 82
+                }
+              }
+            },
+            {
+              "id": 76,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 83,
+                  "startColumn": 2,
+                  "startLine": 83
+                }
+              }
+            },
+            {
+              "id": 77,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 84,
+                  "startColumn": 2,
+                  "startLine": 84
+                }
+              }
+            },
+            {
+              "id": 78,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 85,
+                  "startColumn": 2,
+                  "startLine": 85
+                }
+              }
+            },
+            {
+              "id": 79,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 86,
+                  "startColumn": 2,
+                  "startLine": 86
+                }
+              }
+            },
+            {
+              "id": 80,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 87,
+                  "startColumn": 2,
+                  "startLine": 87
+                }
+              }
+            },
+            {
+              "id": 81,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 88,
+                  "startColumn": 2,
+                  "startLine": 88
+                }
+              }
+            },
+            {
+              "id": 82,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 89,
+                  "startColumn": 2,
+                  "startLine": 89
+                }
+              }
+            },
+            {
+              "id": 83,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 90,
+                  "startColumn": 2,
+                  "startLine": 90
+                }
+              }
+            },
+            {
+              "id": 84,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 91,
+                  "startColumn": 2,
+                  "startLine": 91
+                }
+              }
+            },
+            {
+              "id": 85,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 92,
+                  "startColumn": 2,
+                  "startLine": 92
+                }
+              }
+            },
+            {
+              "id": 86,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 93,
+                  "startColumn": 2,
+                  "startLine": 93
+                }
+              }
+            },
+            {
+              "id": 87,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 94,
+                  "startColumn": 2,
+                  "startLine": 94
+                }
+              }
+            },
+            {
+              "id": 88,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 95,
+                  "startColumn": 2,
+                  "startLine": 95
+                }
+              }
+            },
+            {
+              "id": 89,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 96,
+                  "startColumn": 2,
+                  "startLine": 96
+                }
+              }
+            },
+            {
+              "id": 90,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 97,
+                  "startColumn": 2,
+                  "startLine": 97
+                }
+              }
+            },
+            {
+              "id": 91,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 98,
+                  "startColumn": 2,
+                  "startLine": 98
+                }
+              }
+            },
+            {
+              "id": 92,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 99,
+                  "startColumn": 2,
+                  "startLine": 99
+                }
+              }
+            },
+            {
+              "id": 93,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 100,
+                  "startColumn": 2,
+                  "startLine": 100
+                }
+              }
+            },
+            {
+              "id": 94,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 101,
+                  "startColumn": 2,
+                  "startLine": 101
+                }
+              }
+            },
+            {
+              "id": 95,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 102,
+                  "startColumn": 2,
+                  "startLine": 102
+                }
+              }
+            },
+            {
+              "id": 96,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 103,
+                  "startColumn": 2,
+                  "startLine": 103
+                }
+              }
+            },
+            {
+              "id": 97,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 104,
+                  "startColumn": 2,
+                  "startLine": 104
+                }
+              }
+            },
+            {
+              "id": 98,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 105,
+                  "startColumn": 2,
+                  "startLine": 105
+                }
+              }
+            },
+            {
+              "id": 99,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 106,
+                  "startColumn": 2,
+                  "startLine": 106
+                }
+              }
+            },
+            {
+              "id": 100,
+              "message": {
+                "text": "write"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "counter.go",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endLine": 107,
+                  "startColumn": 2,
+                  "startLine": 107
+                }
+              }
+            }
+          ],
+          "ruleId": "DS1301",
+          "ruleIndex": 12
+        }
+      ],
+      "tool": {
+        "driver": {
+          "name": "deadset-go",
+          "rules": [
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "An exported symbol with no reference in the target and no reference from any loaded consumer. A symbol referenced only from its own declaration site counts as unreferenced."
+              },
+              "help": {
+                "text": "An exported symbol with no reference in the target and no reference from any loaded consumer. A symbol referenced only from its own declaration site counts as unreferenced."
+              },
+              "id": "DS1001",
+              "name": "unused-exported",
+              "properties": {
+                "precision": "very-high",
+                "problem": {
+                  "severity": "error"
+                }
+              },
+              "shortDescription": {
+                "text": "An exported symbol with no reference in the target and no reference from any loaded consumer."
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "An unexported symbol with no reference in the target. A symbol referenced only from its own declaration site counts as unreferenced."
+              },
+              "help": {
+                "text": "An unexported symbol with no reference in the target. A symbol referenced only from its own declaration site counts as unreferenced."
+              },
+              "id": "DS1002",
+              "name": "unused-unexported",
+              "properties": {
+                "precision": "very-high",
+                "problem": {
+                  "severity": "error"
+                }
+              },
+              "shortDescription": {
+                "text": "An unexported symbol with no reference in the target."
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "A struct field, class member or type member with no reference, a private member included. A member referenced only from its own declaration site counts as unreferenced."
+              },
+              "help": {
+                "text": "A struct field, class member or type member with no reference, a private member included. A member referenced only from its own declaration site counts as unreferenced."
+              },
+              "id": "DS1003",
+              "name": "unused-member",
+              "properties": {
+                "precision": "very-high",
+                "problem": {
+                  "severity": "error"
+                }
+              },
+              "shortDescription": {
+                "text": "A struct field, class member or type member with no reference, a private member included."
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "A symbol with zero production references and at least one test reference: an unused-exported, unused-unexported or unused-member candidate whose test reference count is not zero, reported once under this code. A reference from a consumer's test files is a test reference unless the configuration counts consumer tests as production."
+              },
+              "help": {
+                "text": "A symbol with zero production references and at least one test reference: an unused-exported, unused-unexported or unused-member candidate whose test reference count is not zero, reported once under this code. A reference from a consumer's test files is a test reference unless the configuration counts consumer tests as production."
+              },
+              "id": "DS1004",
+              "name": "test-only-use",
+              "properties": {
+                "precision": "very-high",
+                "problem": {
+                  "severity": "error"
+                }
+              },
+              "shortDescription": {
+                "text": "A symbol with zero production references and at least one test reference: an unused-exported, unused-unexported or unused-member candidate whose test reference count is not zero, reported once under this code."
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "A test symbol whose set of referenced target symbols is non-empty and every member of that set is reported dead. A test that references at least one live target symbol is never reported, no notion of a test's subject and no name matching enters the rule, and the message states the rule. The test joins the dead component of the symbols it references, and it and each of them count as referencing each other, so the test is a member of their cycle and never a dead symbol outside it."
+              },
+              "help": {
+                "text": "A test symbol whose set of referenced target symbols is non-empty and every member of that set is reported dead. A test that references at least one live target symbol is never reported, no notion of a test's subject and no name matching enters the rule, and the message states the rule. The test joins the dead component of the symbols it references, and it and each of them count as referencing each other, so the test is a member of their cycle and never a dead symbol outside it."
+              },
+              "id": "DS1005",
+              "name": "test-of-dead-code",
+              "properties": {
+                "precision": "very-high",
+                "problem": {
+                  "severity": "error"
+                }
+              },
+              "shortDescription": {
+                "text": "A test symbol whose set of referenced target symbols is non-empty and every member of that set is reported dead."
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "A symbol carrying a deprecation marker and no production reference: an unused-exported, unused-unexported or unused-member candidate whose symbol is deprecated, reported once under this code. Go identifies the marker by the convention the standard tools recognize, TypeScript by the documentation tag its tools recognize."
+              },
+              "help": {
+                "text": "A symbol carrying a deprecation marker and no production reference: an unused-exported, unused-unexported or unused-member candidate whose symbol is deprecated, reported once under this code. Go identifies the marker by the convention the standard tools recognize, TypeScript by the documentation tag its tools recognize."
+              },
+              "id": "DS1006",
+              "name": "deprecated-unused",
+              "properties": {
+                "precision": "very-high",
+                "problem": {
+                  "severity": "error"
+                }
+              },
+              "shortDescription": {
+                "text": "A symbol carrying a deprecation marker and no production reference: an unused-exported, unused-unexported or unused-member candidate whose symbol is deprecated, reported once under this code."
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "An exported symbol whose every reference is inside the symbol's own package or module, reported as a candidate for unexporting. The subject is a package-level declaration or a method, and three subjects are excluded: an interface method, whose exportedness is the contract of the interface that declares it; a struct field, which an encoder reads by name; and a method that satisfies an interface some symbol uses as a type, which cannot be unexported without its type ceasing to satisfy that interface. The finding names the narrower visibility the references support. A declared cross-language edge counts as an out-of-package reference; where the edge's other side is unknown to the analyzer the finding is emitted pending."
+              },
+              "help": {
+                "text": "An exported symbol whose every reference is inside the symbol's own package or module, reported as a candidate for unexporting. The subject is a package-level declaration or a method, and three subjects are excluded: an interface method, whose exportedness is the contract of the interface that declares it; a struct field, which an encoder reads by name; and a method that satisfies an interface some symbol uses as a type, which cannot be unexported without its type ceasing to satisfy that interface. The finding names the narrower visibility the references support. A declared cross-language edge counts as an out-of-package reference; where the edge's other side is unknown to the analyzer the finding is emitted pending.\n\nClosed world only. Reported always for a main package and an internal/ directory tree, and for a published package only when the configuration declares the consumer set complete and every declared consumer loads. A library with no consumer loaded and no complete consumer set declared gets this finding on its internal/ tree and its main packages and never on its published API. A symbol the rule of DS1301 holds for is not reported under this code, whatever severity the configuration gives DS1301, because the write-only finding names the defect to fix first."
+              },
+              "id": "DS1101",
+              "name": "unnecessary-export",
+              "properties": {
+                "precision": "very-high",
+                "problem": {
+                  "severity": "warning"
+                }
+              },
+              "shortDescription": {
+                "text": "An exported symbol whose every reference is inside the symbol's own package or module, reported as a candidate for unexporting."
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "An exported symbol of a non-internal package whose every reference is inside the target module, reported as a candidate for relocation behind an internal boundary. The subject is a package-level declaration or a method, and three subjects are excluded: an interface method, whose exportedness is the contract of the interface that declares it; a struct field, which an encoder reads by name; and a method that satisfies an interface some symbol uses as a type, which cannot be unexported without its type ceasing to satisfy that interface. The finding names the narrower visibility the references support. A declared cross-language edge counts as an out-of-package reference; where the edge's other side is unknown to the analyzer the finding is emitted pending."
+              },
+              "help": {
+                "text": "An exported symbol of a non-internal package whose every reference is inside the target module, reported as a candidate for relocation behind an internal boundary. The subject is a package-level declaration or a method, and three subjects are excluded: an interface method, whose exportedness is the contract of the interface that declares it; a struct field, which an encoder reads by name; and a method that satisfies an interface some symbol uses as a type, which cannot be unexported without its type ceasing to satisfy that interface. The finding names the narrower visibility the references support. A declared cross-language edge counts as an out-of-package reference; where the edge's other side is unknown to the analyzer the finding is emitted pending.\n\nClosed world only. Reported always for a main package and an internal/ directory tree, and for a published package only when the configuration declares the consumer set complete and every declared consumer loads. A library with no consumer loaded and no complete consumer set declared gets this finding on its internal/ tree and its main packages and never on its published API. A symbol the rule of DS1301 holds for is not reported under this code, whatever severity the configuration gives DS1301, because the write-only finding names the defect to fix first."
+              },
+              "id": "DS1102",
+              "name": "unnecessary-exposure",
+              "properties": {
+                "precision": "very-high",
+                "problem": {
+                  "severity": "warning"
+                }
+              },
+              "shortDescription": {
+                "text": "An exported symbol of a non-internal package whose every reference is inside the target module, reported as a candidate for relocation behind an internal boundary."
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "An unused exported symbol in a package or file no external code can import: an unused-exported candidate whose enclosing package or file is unimportable from outside, reported once under this code at the certain class, because unimportability is a property of the package graph rather than of the consumer set."
+              },
+              "help": {
+                "text": "An unused exported symbol in a package or file no external code can import: an unused-exported candidate whose enclosing package or file is unimportable from outside, reported once under this code at the certain class, because unimportability is a property of the package graph rather than of the consumer set."
+              },
+              "id": "DS1103",
+              "name": "unreachable-export",
+              "properties": {
+                "precision": "very-high",
+                "problem": {
+                  "severity": "error"
+                }
+              },
+              "shortDescription": {
+                "text": "An unused exported symbol in a package or file no external code can import: an unused-exported candidate whose enclosing package or file is unimportable from outside, reported once under this code at the certain class, because unimportability is a property of the package graph rather than of the consumer set."
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "An interface no symbol uses as a type, counting uses from every loaded module. The finding names the concrete implementations and their positions, and the interface's members join its dead component rather than being reported as independent unused declarations."
+              },
+              "help": {
+                "text": "An interface no symbol uses as a type, counting uses from every loaded module. The finding names the concrete implementations and their positions, and the interface's members join its dead component rather than being reported as independent unused declarations."
+              },
+              "id": "DS1201",
+              "name": "unused-interface",
+              "properties": {
+                "precision": "very-high",
+                "problem": {
+                  "severity": "error"
+                }
+              },
+              "shortDescription": {
+                "text": "An interface no symbol uses as a type, counting uses from every loaded module."
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "An interface method that no call site invokes or selects through the interface, whatever the number of implementations. The finding names the concrete implementations and their positions."
+              },
+              "help": {
+                "text": "An interface method that no call site invokes or selects through the interface, whatever the number of implementations. The finding names the concrete implementations and their positions.\n\nExempt: in Go, every method of an interface that declares an unexported method, the sum-type shape whose method set exists to restrict the implementors, a shape a TypeScript interface cannot take because it declares no member less visible than itself; and, in both languages, every marker method, an interface method whose every implementation carries an empty body."
+              },
+              "id": "DS1203",
+              "name": "uncalled-interface-method",
+              "properties": {
+                "precision": "very-high",
+                "problem": {
+                  "severity": "warning"
+                }
+              },
+              "shortDescription": {
+                "text": "An interface method that no call site invokes or selects through the interface, whatever the number of implementations."
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "A compile-time satisfaction assertion whose interface no symbol uses as a type."
+              },
+              "help": {
+                "text": "A compile-time satisfaction assertion whose interface no symbol uses as a type."
+              },
+              "id": "DS1204",
+              "name": "unused-satisfaction-assertion",
+              "properties": {
+                "precision": "very-high",
+                "problem": {
+                  "severity": "error"
+                }
+              },
+              "shortDescription": {
+                "text": "A compile-time satisfaction assertion whose interface no symbol uses as a type."
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "A package-level or module-level variable, struct field, class member or collection that production code writes and never reads. In production mode a read from a test file counts as no read. A comparison of struct values reads every field of the type: in Go, a value of a struct type used as an operand of `==` or `!=`, as a map key, or as a `switch` tag or `case` expression is a read of every field of that type, transitively through the fields of every struct type it holds, recorded at the comparison, because equality reads every field and a field that decides equality carries information. In TypeScript a comparison of two object references reads no member, because `===` compares identity and never a member. The finding names each write position, so the deletion set is visible."
+              },
+              "help": {
+                "text": "A package-level or module-level variable, struct field, class member or collection that production code writes and never reads. In production mode a read from a test file counts as no read. A comparison of struct values reads every field of the type: in Go, a value of a struct type used as an operand of `==` or `!=`, as a map key, or as a `switch` tag or `case` expression is a read of every field of that type, transitively through the fields of every struct type it holds, recorded at the comparison, because equality reads every field and a field that decides equality carries information. In TypeScript a comparison of two object references reads no member, because `===` compares identity and never a member. The finding names each write position, so the deletion set is visible."
+              },
+              "id": "DS1301",
+              "name": "write-only-symbol",
+              "properties": {
+                "precision": "very-high",
+                "problem": {
+                  "severity": "error"
+                }
+              },
+              "shortDescription": {
+                "text": "A package-level or module-level variable, struct field, class member or collection that production code writes and never reads."
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "An enumerated member that no symbol names, at the reachability class derived for the member and with no confidence ceiling below it. Every member of a type that carries a string, text or binary conversion method, or that a conversion from an integer or a wire value produces, is retained by the enum-group exemption first, so a member reached only by value is never a candidate."
+              },
+              "help": {
+                "text": "An enumerated member that no symbol names, at the reachability class derived for the member and with no confidence ceiling below it. Every member of a type that carries a string, text or binary conversion method, or that a conversion from an integer or a wire value produces, is retained by the enum-group exemption first, so a member reached only by value is never a candidate."
+              },
+              "id": "DS1302",
+              "name": "unused-enum-member",
+              "properties": {
+                "precision": "very-high",
+                "problem": {
+                  "severity": "error"
+                }
+              },
+              "shortDescription": {
+                "text": "An enumerated member that no symbol names, at the reachability class derived for the member and with no confidence ceiling below it."
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "A type parameter of a function or method that no part of the declaration's signature and no part of the declaration's body names, at the certain class. The deletion is local to the declaration and the explicit instantiations the reference set already lists. A type parameter of a function or method that is itself dead falls with it and is reported under no code of its own."
+              },
+              "help": {
+                "text": "A type parameter of a function or method that no part of the declaration's signature and no part of the declaration's body names, at the certain class. The deletion is local to the declaration and the explicit instantiations the reference set already lists. A type parameter of a function or method that is itself dead falls with it and is reported under no code of its own.\n\nFunction and method type parameters only. A type parameter of a type declaration is never reported, because a phantom type parameter such as `type ID[T any] int` makes two instantiations distinct types while naming the parameter nowhere, so deleting it changes the program. A method signature an interface or an object type declares belongs to that type declaration, so its type parameters are never reported either."
+              },
+              "id": "DS1303",
+              "name": "unused-type-parameter",
+              "properties": {
+                "precision": "very-high",
+                "problem": {
+                  "severity": "error"
+                }
+              },
+              "shortDescription": {
+                "text": "A type parameter of a function or method that no part of the declaration's signature and no part of the declaration's body names, at the certain class."
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "A source file no configuration in the build matrix builds. On the Go side the finding names the build constraint that excluded the file. A file whose build constraint is the ignore tag is never reported: the toolchain applies no build constraint to a file named on its own command line, so that tag is the toolchain's convention for a file built by hand. A file any other custom tag excludes is reported under a matrix the configuration declares complete, because completeness is the maintainer's assertion that the listed configurations are every one the target builds, and a configuration the maintainer builds by hand belongs in that list."
+              },
+              "help": {
+                "text": "A source file no configuration in the build matrix builds. On the Go side the finding names the build constraint that excluded the file. A file whose build constraint is the ignore tag is never reported: the toolchain applies no build constraint to a file named on its own command line, so that tag is the toolchain's convention for a file built by hand. A file any other custom tag excludes is reported under a matrix the configuration declares complete, because completeness is the maintainer's assertion that the listed configurations are every one the target builds, and a configuration the maintainer builds by hand belongs in that list.\n\nReported only when the configuration declares the build matrix complete, and never for a file the toolchain ignored solely because it imports \"C\" under a build with cgo disabled; such a file is recorded as excluded by cgo rather than as never built."
+              },
+              "id": "DS1501",
+              "name": "file-never-built",
+              "properties": {
+                "precision": "very-high",
+                "problem": {
+                  "severity": "error"
+                }
+              },
+              "shortDescription": {
+                "text": "A source file no configuration in the build matrix builds."
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "A source file that no import reaches, that no root names, and in which no declared cross-language edge names a declaration. An import written in a loaded consumer reaches a file of the target as an import written in the target does. An edge's side names a declaration as a root names one, so a file holding a declaration an edge names is evaluated with the edge rather than reported: whether that declaration is dead is the edge evaluation's to say, and the merge resolves it against the paired side."
+              },
+              "help": {
+                "text": "A source file that no import reaches, that no root names, and in which no declared cross-language edge names a declaration. An import written in a loaded consumer reaches a file of the target as an import written in the target does. An edge's side names a declaration as a root names one, so a file holding a declaration an edge names is evaluated with the edge rather than reported: whether that declaration is dead is the edge evaluation's to say, and the merge resolves it against the paired side."
+              },
+              "id": "DS1502",
+              "name": "file-never-imported",
+              "properties": {
+                "precision": "very-high",
+                "problem": {
+                  "severity": "error"
+                }
+              },
+              "shortDescription": {
+                "text": "A source file that no import reaches, that no root names, and in which no declared cross-language edge names a declaration."
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "A directly declared dependency that no import in the target needs. On the Go side, a direct require whose module provides no package any target package or test variant imports. On the TypeScript side, a manifest dependency, development dependency or peer dependency the project's import closure does not need. A deletion finding whose fix would remove the last use of a dependency names that dependency."
+              },
+              "help": {
+                "text": "A directly declared dependency that no import in the target needs. On the Go side, a direct require whose module provides no package any target package or test variant imports. On the TypeScript side, a manifest dependency, development dependency or peer dependency the project's import closure does not need. A deletion finding whose fix would remove the last use of a dependency names that dependency.\n\nOn the Go side the rule is the semantics of `go mod tidy -diff` exactly: a requirement marked indirect is never reported, because it exists to pin a transitive version and removing it changes the build list. On the TypeScript side the import closure is the files of the run's projects, and three more dependencies are needed: one whose installed manifest declares a command, because a command is run by name rather than imported; one that the installed manifest of a needed dependency declares as a peer and does not mark optional; and, to a fixpoint, the required peers of every dependency so held. An installed manifest is the package's manifest in the nearest node_modules directory at or above the target, and a dependency with none is decided by the import closure alone."
+              },
+              "id": "DS1601",
+              "name": "unused-dependency",
+              "properties": {
+                "precision": "very-high",
+                "problem": {
+                  "severity": "error"
+                }
+              },
+              "shortDescription": {
+                "text": "A directly declared dependency that no import in the target needs."
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "A replace directive whose target module is absent from the build list, the one case in which the directive is exactly a no-op."
+              },
+              "help": {
+                "text": "A replace directive whose target module is absent from the build list, the one case in which the directive is exactly a no-op.\n\nOnly a replace whose target is absent from the build list. No other module-file directive is reported: not an exclude directive, because not selected is a counterfactual about a resolution that did not happen; not a workspace use entry and not a tool directive, because each is an external entry point whose invocation lives outside anything the analysis reads."
+              },
+              "id": "DS1605",
+              "name": "unused-module-directive",
+              "properties": {
+                "precision": "very-high",
+                "problem": {
+                  "severity": "warning"
+                }
+              },
+              "shortDescription": {
+                "text": "A replace directive whose target module is absent from the build list, the one case in which the directive is exactly a no-op."
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "A suppression that carries no reason, in any of the three documents: an inline directive, an ignore-file entry or a baseline row. For the ignore file and the baseline, an entry or a row whose reason field is absent, empty or whitespace only is refused and reported rather than matched."
+              },
+              "help": {
+                "text": "A suppression that carries no reason, in any of the three documents: an inline directive, an ignore-file entry or a baseline row. For the ignore file and the baseline, an entry or a row whose reason field is absent, empty or whitespace only is refused and reported rather than matched."
+              },
+              "id": "DS1701",
+              "name": "suppression-without-reason",
+              "properties": {
+                "precision": "very-high",
+                "problem": {
+                  "severity": "error"
+                }
+              },
+              "shortDescription": {
+                "text": "A suppression that carries no reason, in any of the three documents: an inline directive, an ignore-file entry or a baseline row."
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "An ignore-file entry or a baseline row that names a symbol and no file path. The entry is reported rather than matched, so a bare name cannot mask a match anywhere else in the project; the inline directive is scoped by its position and cannot be unscoped."
+              },
+              "help": {
+                "text": "An ignore-file entry or a baseline row that names a symbol and no file path. The entry is reported rather than matched, so a bare name cannot mask a match anywhere else in the project; the inline directive is scoped by its position and cannot be unscoped."
+              },
+              "id": "DS1702",
+              "name": "unscoped-ignore-entry",
+              "properties": {
+                "precision": "very-high",
+                "problem": {
+                  "severity": "error"
+                }
+              },
+              "shortDescription": {
+                "text": "An ignore-file entry or a baseline row that names a symbol and no file path."
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "A suppression that matches no current finding, at either mechanism and in the baseline alike. The run exits with the findings code when at least one is reported. The kind is fixed on at deny: no flag, no severity setting and no per-mechanism exception reduces it below a finding, and a configuration naming this code under a severity key is an unimplemented key."
+              },
+              "help": {
+                "text": "A suppression that matches no current finding, at either mechanism and in the baseline alike. The run exits with the findings code when at least one is reported. The kind is fixed on at deny: no flag, no severity setting and no per-mechanism exception reduces it below a finding, and a configuration naming this code under a severity key is an unimplemented key."
+              },
+              "id": "DS1703",
+              "name": "stale-suppression",
+              "properties": {
+                "precision": "very-high",
+                "problem": {
+                  "severity": "error"
+                }
+              },
+              "shortDescription": {
+                "text": "A suppression that matches no current finding, at either mechanism and in the baseline alike."
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "A configured root that matches no symbol, or a configured root pattern that matches no symbol. A root set nobody checks silently changes every result, so a stale one is a finding. The kind is fixed on at deny: no flag, no severity setting and no exception reduces it below a finding, and a configuration naming this code under a severity key is an unimplemented key."
+              },
+              "help": {
+                "text": "A configured root that matches no symbol, or a configured root pattern that matches no symbol. A root set nobody checks silently changes every result, so a stale one is a finding. The kind is fixed on at deny: no flag, no severity setting and no exception reduces it below a finding, and a configuration naming this code under a severity key is an unimplemented key."
+              },
+              "id": "DS1704",
+              "name": "unmatched-root",
+              "properties": {
+                "precision": "very-high",
+                "problem": {
+                  "severity": "error"
+                }
+              },
+              "shortDescription": {
+                "text": "A configured root that matches no symbol, or a configured root pattern that matches no symbol."
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "A declared cross-language edge with a side that at least one analyzer evaluated and every evaluation of that side reports absent, so no analyzer that ran enumerates that side's symbol. Emitted by the merge, once per edge, never by an analyzer, so a stale edge is visible rather than silently inert. A dead side paired with an absent side drops its pending finding, and the edge is the reported defect: a misspelled reference must not turn a live pairing into a deletion."
+              },
+              "help": {
+                "text": "A declared cross-language edge with a side that at least one analyzer evaluated and every evaluation of that side reports absent, so no analyzer that ran enumerates that side's symbol. Emitted by the merge, once per edge, never by an analyzer, so a stale edge is visible rather than silently inert. A dead side paired with an absent side drops its pending finding, and the edge is the reported defect: a misspelled reference must not turn a live pairing into a deletion."
+              },
+              "id": "DS1705",
+              "name": "stale-cross-language-edge",
+              "properties": {
+                "precision": "very-high",
+                "problem": {
+                  "severity": "error"
+                }
+              },
+              "shortDescription": {
+                "text": "A declared cross-language edge with a side that at least one analyzer evaluated and every evaluation of that side reports absent, so no analyzer that ran enumerates that side's symbol."
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "A parameter with no reference inside its function body, on a function whose signature is free to change."
+              },
+              "help": {
+                "text": "A parameter with no reference inside its function body, on a function whose signature is free to change.\n\nThe signature must be free, defined as follows: the function is not a method retained by interface satisfaction, is not used as a value, is not a go:linkname or cgo target, and is not a stub whose body is empty or only panics. A parameter its body never names is dead whatever the callers, so a published declaration of a library is reported too, with the fixability the vocabulary gives the kind: the signature change is a breaking change."
+              },
+              "id": "DS1801",
+              "name": "unused-parameter",
+              "properties": {
+                "precision": "very-high",
+                "problem": {
+                  "severity": "warning"
+                }
+              },
+              "shortDescription": {
+                "text": "A parameter with no reference inside its function body, on a function whose signature is free to change."
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "A named method receiver with no reference inside the method body, on a method whose signature is free to change. Go permits a method with no receiver name, so the fix deletes an identifier and changes no signature."
+              },
+              "help": {
+                "text": "A named method receiver with no reference inside the method body, on a method whose signature is free to change. Go permits a method with no receiver name, so the fix deletes an identifier and changes no signature.\n\nThe same free-signature rule as unused-parameter, applied to the receiver."
+              },
+              "id": "DS1802",
+              "name": "unused-receiver",
+              "properties": {
+                "precision": "very-high",
+                "problem": {
+                  "severity": "warning"
+                }
+              },
+              "shortDescription": {
+                "text": "A named method receiver with no reference inside the method body, on a method whose signature is free to change."
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "A result value that no call site of the function uses, on a function whose signature is free to change."
+              },
+              "help": {
+                "text": "A result value that no call site of the function uses, on a function whose signature is free to change.\n\nThe same free-signature rule as unused-parameter, plus a closed-world condition: every call site of the function must be in the loaded graph, because an unknown caller may consume the result, so the kind reports only for a function whose callers are all visible."
+              },
+              "id": "DS1803",
+              "name": "unused-result",
+              "properties": {
+                "precision": "very-high",
+                "problem": {
+                  "severity": "warning"
+                }
+              },
+              "shortDescription": {
+                "text": "A result value that no call site of the function uses, on a function whose signature is free to change."
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "A statement that control flow cannot reach, at the precision the language's compiler applies to the same construct."
+              },
+              "help": {
+                "text": "A statement that control flow cannot reach, at the precision the language's compiler applies to the same construct."
+              },
+              "id": "DS1805",
+              "name": "unreachable-statement",
+              "properties": {
+                "precision": "very-high",
+                "problem": {
+                  "severity": "error"
+                }
+              },
+              "shortDescription": {
+                "text": "A statement that control flow cannot reach, at the precision the language's compiler applies to the same construct."
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "A write to a local variable with no read before the next write to it or the end of its scope, computed on the same read-and-write classification the write-only-symbol kind uses. The finding names the write position."
+              },
+              "help": {
+                "text": "A write to a local variable with no read before the next write to it or the end of its scope, computed on the same read-and-write classification the write-only-symbol kind uses. The finding names the write position."
+              },
+              "id": "DS1807",
+              "name": "dead-store",
+              "properties": {
+                "precision": "very-high",
+                "problem": {
+                  "severity": "error"
+                }
+              },
+              "shortDescription": {
+                "text": "A write to a local variable with no read before the next write to it or the end of its scope, computed on the same read-and-write classification the write-only-symbol kind uses."
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "A switch case whose type or value an earlier case in the same switch already covers."
+              },
+              "help": {
+                "text": "A switch case whose type or value an earlier case in the same switch already covers."
+              },
+              "id": "DS1809",
+              "name": "unreachable-case",
+              "properties": {
+                "precision": "very-high",
+                "problem": {
+                  "severity": "error"
+                }
+              },
+              "shortDescription": {
+                "text": "A switch case whose type or value an earlier case in the same switch already covers."
+              }
+            }
+          ],
+          "semanticVersion": "1.0.0",
+          "version": "1.0.0"
+        }
+      }
+    }
+  ],
+  "version": "2.1.0"
+}

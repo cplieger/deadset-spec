@@ -1,0 +1,307 @@
+{
+  "schema_version": "6.0.0",
+  "contract_version": "4.0.0",
+  "analyzer": {
+    "name": "deadset-go",
+    "version": "1.20.2",
+    "languages": [
+      "go"
+    ],
+    "schema_versions_accepted": [
+      "6.0.0",
+      "6.1.0"
+    ],
+    "conformance": {
+      "corpus_version": "1.0.0",
+      "result": "pass",
+      "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000001"
+    }
+  },
+  "target": {
+    "kind": "application",
+    "root": ".",
+    "identity": "example.com/app"
+  },
+  "configurations": [
+    {
+      "id": "linux-amd64",
+      "os": "linux",
+      "arch": "amd64",
+      "tags": []
+    }
+  ],
+  "configurations_not_built": [],
+  "consumers": {
+    "declared": 0,
+    "loaded": [],
+    "unavailable": []
+  },
+  "findings": [
+    {
+      "code": "DS1001",
+      "kind": "unused-exported",
+      "language": "go",
+      "position": {
+        "path": "catalog.go",
+        "line": 3,
+        "column": 6,
+        "end_line": 5
+      },
+      "symbol": {
+        "ref": "go://example.com/app#Unused",
+        "kind": "function",
+        "name": "Unused",
+        "exported": true,
+        "size_lines": 3
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "test_only": false,
+      "generated": false,
+      "component": {
+        "id": "deadset-go/c-1",
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 3
+      },
+      "retained_by": [],
+      "configurations": [
+        "linux-amd64"
+      ],
+      "consumers_loaded": [],
+      "fixability": "deletable",
+      "severity": "deny",
+      "message": "exported function has no reference in the target",
+      "details": {},
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "code": "DS1003",
+      "kind": "unused-member",
+      "language": "go",
+      "position": {
+        "path": "catalog.go",
+        "line": 8,
+        "column": 2,
+        "end_line": 8
+      },
+      "symbol": {
+        "ref": "go://example.com/app#scanner.spare",
+        "kind": "field",
+        "name": "scanner.spare",
+        "exported": false,
+        "size_lines": 1
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "test_only": false,
+      "generated": false,
+      "component": {
+        "id": "deadset-go/c-2",
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 1
+      },
+      "retained_by": [],
+      "configurations": [
+        "linux-amd64"
+      ],
+      "consumers_loaded": [],
+      "fixability": "deletable",
+      "severity": "deny",
+      "message": "field has no reference in the target",
+      "details": {},
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "code": "DS1101",
+      "kind": "unnecessary-export",
+      "language": "go",
+      "position": {
+        "path": "catalog.go",
+        "line": 11,
+        "column": 6,
+        "end_line": 13
+      },
+      "symbol": {
+        "ref": "go://example.com/app#Normalize",
+        "kind": "function",
+        "name": "Normalize",
+        "exported": true,
+        "size_lines": 3
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "test_only": false,
+      "generated": false,
+      "component": {
+        "id": "deadset-go/c-3",
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 0
+      },
+      "retained_by": [],
+      "configurations": [
+        "linux-amd64"
+      ],
+      "consumers_loaded": [],
+      "fixability": "manual",
+      "severity": "warn",
+      "message": "exported function is referenced only inside its own package",
+      "details": {
+        "narrower_visibility": "package"
+      }
+    },
+    {
+      "code": "DS1301",
+      "kind": "write-only-symbol",
+      "language": "go",
+      "position": {
+        "path": "catalog.go",
+        "line": 9,
+        "column": 2,
+        "end_line": 9
+      },
+      "symbol": {
+        "ref": "go://example.com/app#scanner.last",
+        "kind": "field",
+        "name": "scanner.last",
+        "exported": false,
+        "size_lines": 1
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "test_only": false,
+      "generated": false,
+      "component": {
+        "id": "deadset-go/c-4",
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 0
+      },
+      "retained_by": [],
+      "configurations": [
+        "linux-amd64"
+      ],
+      "consumers_loaded": [],
+      "fixability": "manual",
+      "severity": "warn",
+      "message": "field is written and never read",
+      "details": {
+        "write_positions": [
+          {
+            "path": "catalog.go",
+            "line": 17,
+            "column": 2,
+            "end_line": 17
+          }
+        ]
+      }
+    },
+    {
+      "code": "DS1801",
+      "kind": "unused-parameter",
+      "language": "go",
+      "position": {
+        "path": "catalog.go",
+        "line": 15,
+        "column": 21,
+        "end_line": 15
+      },
+      "symbol": {
+        "ref": "go://example.com/app#scanner.feed",
+        "kind": "parameter",
+        "name": "chunk",
+        "exported": false,
+        "size_lines": 1
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "test_only": false,
+      "generated": false,
+      "component": {
+        "id": "deadset-go/c-5",
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 0
+      },
+      "retained_by": [],
+      "configurations": [
+        "linux-amd64"
+      ],
+      "consumers_loaded": [],
+      "fixability": "manual",
+      "severity": "warn",
+      "message": "parameter is never used",
+      "details": {
+        "overlap": [
+          "revive unused-parameter",
+          "gopls unusedparams",
+          "unparam"
+        ]
+      }
+    },
+    {
+      "code": "DS1801",
+      "kind": "unused-parameter",
+      "language": "go",
+      "position": {
+        "path": "catalog.go",
+        "line": 15,
+        "column": 34,
+        "end_line": 15
+      },
+      "symbol": {
+        "ref": "go://example.com/app#scanner.feed",
+        "kind": "parameter",
+        "name": "flush",
+        "exported": false,
+        "size_lines": 1
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "test_only": false,
+      "generated": false,
+      "component": {
+        "id": "deadset-go/c-6",
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 0
+      },
+      "retained_by": [],
+      "configurations": [
+        "linux-amd64"
+      ],
+      "consumers_loaded": [],
+      "fixability": "manual",
+      "severity": "warn",
+      "message": "parameter is never used",
+      "details": {
+        "overlap": [
+          "revive unused-parameter",
+          "gopls unusedparams",
+          "unparam"
+        ]
+      }
+    }
+  ],
+  "edge_evaluations": [],
+  "stale_suppressions": [],
+  "declared_gaps": [],
+  "excluded_by_cgo": [],
+  "test_file_rules": [],
+  "totals": {
+    "findings": 6,
+    "by_severity": {
+      "allow": 0,
+      "warn": 4,
+      "deny": 2
+    },
+    "deletable_lines": 4,
+    "suppressions_in_effect": 0,
+    "reasons_recorded": 0,
+    "stale_suppressions": 0,
+    "pending": 0,
+    "omitted": 0
+  }
+}

@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/cplieger/deadset-spec/v3"
+	"github.com/cplieger/deadset-spec/v4"
 )
 
 const exitCodesPath = "contract/exit-codes.json"

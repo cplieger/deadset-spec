@@ -1,0 +1,4 @@
+catalog.go:214:6: DS1001 (*Catalog).ResolveAlias [certain]
+normalize.go:12:6: DS1101 Normalize [certain]
+resolve.go:42:18: DS1801 opts [certain]
+3 findings, 41 deletable lines

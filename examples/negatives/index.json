@@ -30,6 +30,20 @@
       "violates": "the report names no configuration, so no finding could name one it holds in"
     },
     {
+      "file": "describe-conformance-null.json",
+      "schema": "contract/describe.schema.json",
+      "constraint": "type",
+      "instance_path": "/conformance",
+      "violates": "the describe document writes conformance as null, where an analyzer that records no conformance run omits the member"
+    },
+    {
+      "file": "describe-unknown-member.json",
+      "schema": "contract/describe.schema.json",
+      "constraint": "additionalProperties",
+      "instance_path": "",
+      "violates": "the describe document carries a target, a member the closed key list does not declare"
+    },
+    {
       "file": "edge-evaluation-dead-without-finding.json",
       "schema": "contract/report.schema.json",
       "constraint": "required",
@@ -70,6 +84,13 @@
       "constraint": "enum",
       "instance_path": "/symbol/kind",
       "violates": "the symbol kind is a word the closed vocabulary does not carry"
+    },
+    {
+      "file": "liveness-relation-on-a-configured-declaration.json",
+      "schema": "contract/finding.schema.json",
+      "constraint": "not",
+      "instance_path": "",
+      "violates": "a finding about a configured declaration carries a liveness relation, which only a finding about a declaration carries"
     },
     {
       "file": "liveness-relation-on-a-configured-root.json",

@@ -1,0 +1,35 @@
+{
+  "name": "unmatched-lifecycle-declaration",
+  "description": "A lifecycle contract's component declaration and base class that name no declaration are each reported, once, and the base class beside them that names a class of the program is not: the lifecycle member of the class that extends it is retained.",
+  "languages": ["ts"],
+  "target_kind": "application",
+  "configured_declarations": {
+    "AbsentBase": { "key": "ts.lifecycle_contracts.bases", "entry": { "module": "@example/absent", "name": "Element" }, "members": ["attach"] },
+    "AbsentComponent": { "key": "ts.lifecycle_contracts.components", "entry": { "symbol": "ts://@example/target/widgets.ts#neverDeclared" }, "members": ["attach"] },
+    "ProgramBase": { "key": "ts.lifecycle_contracts.bases", "entry": { "symbol": "ts://@example/target/widgets.ts#Base" }, "members": ["attach"] }
+  },
+  "expect": [
+    {
+      "symbol": "AbsentBase",
+      "report": "DS1706",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "configured-declaration"
+    },
+    {
+      "symbol": "AbsentComponent",
+      "report": "DS1706",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "configured-declaration"
+    },
+    { "symbol": "ProgramBase", "report": "none" },
+    {
+      "symbol": "Widget.attach",
+      "report": "none",
+      "retained_by": [
+        "framework-lifecycle"
+      ]
+    }
+  ]
+}

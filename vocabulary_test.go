@@ -13,7 +13,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/cplieger/deadset-spec/v3"
+	"github.com/cplieger/deadset-spec/v4"
 )
 
 // This suite proves the closed-vocabulary rules of contract/kinds.json,

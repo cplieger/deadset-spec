@@ -161,13 +161,13 @@ From `contract/exemptions.json`, class `template-field`.
 
 ### reflective-lookup
 
-A symbol whose name appears as a string literal that reaches a reflective lookup call is retained at the lowest confidence, and the exemption names the lookup site. The evidence is a string match beside a call, not a type relation, so this is a weak class.
+A symbol whose name appears as a string literal that reaches a reflective lookup call is retained at the lowest confidence, and the exemption names the lookup site. A lookup through a receiver whose type maps every string key to one value type reads that mapping rather than a member, so it retains nothing. The evidence is a string match beside a call, not a type relation, so this is a weak class.
 
 Retains: The method, field or member whose name matches the string literal.
 
 Mechanism in Go: A string literal equal to a method or field name is, or is a constant that flows into, an argument of `MethodByName` or `FieldByName` on a `reflect.Value` or `reflect.Type`, or of a `Lookup` method that resolves a name at runtime; retain the matching method or field, recording the call site.
 
-Mechanism in TypeScript: A string literal equal to a member name is the index of an element access (`obj["name"]`) or an argument of a `Reflect` call (`Reflect.get`, `Reflect.set`, `Reflect.has`); retain the matching member, recording the site.
+Mechanism in TypeScript: A string literal equal to a member name is the index of an element access (`obj["name"]`) whose receiver's type is `any` or declares no string index signature, or an argument of a `Reflect` call (`Reflect.get`, `Reflect.set`, `Reflect.has`); retain the matching member, recording the site. An element access whose receiver's type declares a string index signature, `Record<string, unknown>` among them, reads the signature and retains nothing.
 
 TypeScript visibility: retains a member declared `private`, yes; retains a member declared with a `#private` name, no.
 
@@ -187,11 +187,11 @@ From `contract/exemptions.json`, class `decorator`.
 
 ### injection-container
 
-Where the project configures a dependency-injection container, a class registered with it has its constructor and the members the container injects retained, because the container instantiates the class and populates those members with no reference in the program's own code.
+Where the project configures a dependency-injection container, a class the container constructs has its constructor and the members the container injects retained, because the container instantiates the class and populates those members with no reference in the program's own code. A class is constructed by the container when it is registered with it or when a parameter of its constructor carries a decorator; a property or an accessor carrying a decorator does not by itself make its class one the container constructs.
 
-Retains: The class's constructor and every injected member.
+Retains: The class's constructor and every injected member: each property and accessor of the class, or of a class it extends, that carries a decorator.
 
-Mechanism in TypeScript: The class is passed to a registration call `ts.injection_registrations` names, or a constructor parameter or a property carries an injection decorator; retain the constructor and each parameter or property the container injects.
+Mechanism in TypeScript: The class is passed to a call of a declaration `ts.injection_registrations` names, or a parameter of its constructor carries a decorator; a decorated property or accessor of a class that neither route reaches makes no class container-constructed. For a class either route reaches, retain the constructor and each property and accessor that carries a decorator, on the class and on every class it extends.
 
 TypeScript visibility: retains a member declared `private`, yes; retains a member declared with a `#private` name, no.
 
@@ -211,11 +211,11 @@ From `contract/exemptions.json`, class `framework-lifecycle`.
 
 ### serialization-contract
 
-A class whose instances flow into a serializer or a schema validator has its data members retained, because the serializer reads them by name at runtime; those destinations retain no method, because a serializer calls none. A destination outside the analyzed program retains more: a value passed to a parameter typed `unknown` or `any` of a function of a module that is neither the project nor a declared consumer has left the analysis, so its properties are retained together with the two conversion methods a serializer or a formatter resolves by name.
+A value that flows into a serializer or a schema validator has its data members retained, because the serializer reads them by name at runtime: the data members of every class, interface and object type its static type names, and of every such type reached from those members' types, because the serializer walks the value it is given whatever declared the value's type. Those destinations retain one method, `toJSON`, which a serializer calls on a value that carries one, and no other. A destination outside the analyzed program retains more: a value passed to a parameter typed `unknown` or `any`, a rest parameter whose element type is one of them included, of a function the analyzed program does not declare has left the analysis, so its data members are retained together with the two conversion methods a serializer or a formatter resolves by name.
 
-Retains: The class's properties, and the `toJSON` and `toString` methods as well for a destination outside the analyzed program; never any other method or accessor.
+Retains: The data members of every class, interface and object type the value's static type names and of every such type reached from their members' types, being a class's properties and an interface's or an object type's property signatures; the `toJSON` member of each of those types; and the `toString` member as well for a destination outside the analyzed program; never any other method or accessor.
 
-Mechanism in TypeScript: An instance of the class is an argument of `JSON.stringify` or of a declaration `ts.serializers` names; retain the class's properties and, for those destinations, neither its methods nor its accessors. A value passed to a parameter typed `unknown` or `any` of a function or method of a module outside the analyzed program, being neither the project nor a declared consumer, is a destination too, recorded at the call with the detail naming the callee: retain the class's properties and its `toJSON` and `toString` methods, which a serializer and a formatter resolve by the value's own shape, and no other member. A parameter typed as an interface or as an object type is not this crossing, because the callee's own declaration names the members it reads. Any function of the project whose `unknown`-typed or `any`-typed parameter it passes to such a call, or to any other destination of this class, is itself a destination, applied until no further function joins.
+Mechanism in TypeScript: A value is an argument of `JSON.stringify` or of a declaration `ts.serializers` names. Take the value's static type and walk it: a union or an intersection walks each constituent, an array or a tuple walks its element types, and a class, an interface or an object type literal, the object type a type alias declares included, retains its data members, being a class's properties and an interface's or an object type literal's property signatures, and its `toJSON` member, then walks each retained data member's type and each index signature's value type, applied until no further type joins; the walk stops at a type parameter, at `unknown` and at `any`, whose members the analysis does not see. Those destinations retain no other method and no accessor. A value passed to a parameter typed `unknown` or `any`, or to a rest parameter whose element type is `unknown` or `any`, such as `console.log(...data: any[])`, of a function or method none of whose declarations is in a file of the project or of a declared consumer, the compiler's library declarations included, is a destination too, recorded at the call with the detail naming the callee: retain by the same walk the same data members and each walked type's `toJSON` and `toString` members, which a serializer and a formatter resolve by the value's own shape, and no other member. A parameter typed as an interface or as an object type is not this crossing, because the callee's own declaration names the members it reads. Any function of the project whose `unknown`-typed or `any`-typed parameter, a rest parameter of either element type included, it passes to such a call, or to any other destination of this class, is itself a destination, applied until no further function joins.
 
 TypeScript visibility: retains a member declared `private`, yes; retains a member declared with a `#private` name, no.
 

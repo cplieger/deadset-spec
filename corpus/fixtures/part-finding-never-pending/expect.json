@@ -1,0 +1,25 @@
+{
+  "name": "part-finding-never-pending",
+  "description": "A finding about a declaration one side of a declared edge names is pending in that side's evaluation, and a finding about a part of that declaration is reported whatever the side's state: a function nothing calls carries its pending finding in the evaluation, and its parameter's finding is in the findings. Beside it, the side naming a called function is live and the side naming a function the program does not declare is absent.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "edge_evaluations": [
+    { "edge": "wire/decode", "side": "provides", "state": "dead", "symbol": "Uncalled", "report": "DS1002" },
+    { "edge": "wire/encode", "side": "provides", "state": "live" },
+    { "edge": "wire/missing", "side": "provides", "state": "absent" }
+  ],
+  "expect": [
+    { "symbol": "Called", "report": "none" },
+    { "symbol": "Uncalled", "report": "none" },
+    {
+      "symbol": "Uncalled.chunk",
+      "report": "DS1801",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "parameter",
+      "details": {
+        "overlap": ["revive unused-parameter", "gopls unusedparams", "unparam"]
+      }
+    }
+  ]
+}

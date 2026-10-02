@@ -1,0 +1,64 @@
+The Go rendering: a target whose edges document declares three edges with their
+provides side in Go. One names a function the program calls, one a function
+nothing calls, which never reads its parameter, and one a function the program
+does not declare.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Called": { "file": "target/wire.go", "line": 7 },
+    "Uncalled": { "file": "target/wire.go", "line": 12 },
+    "Uncalled.chunk": { "file": "target/wire.go", "line": 13 }
+  }
+}
+-- target/go.mod --
+module example.com/app
+
+go 1.27.0
+-- target/main.go --
+package main
+
+func main() {
+	println(encode(1))
+}
+-- target/wire.go --
+package main
+
+// The provides sides of the edges the target's edges document declares, and the
+// parameter the uncalled one never reads.
+
+// encode is called by main, so its side of the edge is live.
+func encode(n int) int {
+	return n * 2
+}
+
+// decode is called by nothing, and its body never reads chunk.
+func decode(
+	chunk []byte,
+) int {
+	return 1
+}
+-- target/deadset-edges.json --
+{
+  "description": "The edges whose provides sides the target declares, or does not.",
+  "edges": [
+    {
+      "id": "wire/encode",
+      "because": "generated",
+      "provides": "go://example.com/app#encode",
+      "used_by": "ts://@example/web/src/wire.ts#encode"
+    },
+    {
+      "id": "wire/decode",
+      "because": "generated",
+      "provides": "go://example.com/app#decode",
+      "used_by": "ts://@example/web/src/wire.ts#decode"
+    },
+    {
+      "id": "wire/missing",
+      "because": "generated",
+      "provides": "go://example.com/app#neverDeclared",
+      "used_by": "ts://@example/web/src/wire.ts#missing"
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+a  {{- /* note */ -}}  b
+{{- $n := 0}}
+{{- range .findings}}{{$n = .position.line}}{{end}}
+{{$n}} {{$.target.identity}} `{{`raw\n`}}`

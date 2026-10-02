@@ -1,0 +1,6 @@
+{
+  "symbols": {
+    "Hits": { "file": "target/lib.ts", "line": 2 },
+    "Bump": { "file": "target/lib.ts", "line": 5 }
+  }
+}

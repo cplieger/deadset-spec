@@ -12,7 +12,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/cplieger/deadset-spec/v3"
+	"github.com/cplieger/deadset-spec/v4"
 )
 
 const contractPath = "contract/contract.json"

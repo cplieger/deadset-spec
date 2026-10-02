@@ -1,0 +1,45 @@
+The Go rendering: one command module whose command calls one function of a
+package, beside two dead exported functions of that package that each call an
+unexported function nothing else calls. An inline directive withholds the first.
+Nothing in the module imports anything outside it, so the rendering loads with no
+network access.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Live": { "file": "target/ledger/ledger.go", "line": 4 },
+    "Withheld": { "file": "target/ledger/ledger.go", "line": 9 },
+    "balance": { "file": "target/ledger/ledger.go", "line": 12 },
+    "Reported": { "file": "target/ledger/ledger.go", "line": 15 },
+    "audit": { "file": "target/ledger/ledger.go", "line": 18 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+package main
+
+import "example.com/target/ledger"
+
+func main() { println(ledger.Live()) }
+-- target/ledger/ledger.go --
+package ledger
+
+// Live is called by the command.
+func Live() int { return 1 }
+
+// Withheld is exported and called by nothing; the directive withholds it.
+//
+//deadset:ignore DS1001 -- Kept for a caller outside the module.
+func Withheld() int { return balance() }
+
+// balance is called by Withheld alone, so it falls with it.
+func balance() int { return 2 }
+
+// Reported is exported and called by nothing.
+func Reported() int { return audit() }
+
+// audit is called by Reported alone, so it falls with it.
+func audit() int { return 3 }

@@ -13,7 +13,7 @@
   "confidence": "certain",
   "test_only": false,
   "generated": false,
-  "component": { "id": "deadset-ts/c-0031", "root": true, "symbol_count": 1, "deletable_lines": 1 },
+  "component": { "id": "deadset-ts/c-0031", "root": true, "symbol_count": 1, "deletable_lines": 0 },
   "retained_by": [],
   "configurations": ["default"],
   "consumers_loaded": [],

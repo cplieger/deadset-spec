@@ -1,0 +1,26 @@
+{
+  "name": "file-only-a-consumer-imports",
+  "description": "A file of the target that nothing in the target imports and a loaded consumer imports is reached by an import, so it is reported under no code and neither is the declaration the consumer calls, while a file that nothing imports at all is reported, with the declaration inside it.",
+  "languages": ["go", "ts"],
+  "target_kind": "application",
+  "consumers": ["consumer"],
+  "expect": [
+    { "symbol": "Extra", "report": "none" },
+    { "symbol": "Greet", "report": "none" },
+    {
+      "symbol": "Orphan",
+      "report": "DS1502",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "width",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

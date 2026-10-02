@@ -1,0 +1,1 @@
+{{and .findings .totals.omitted}}|{{or .totals.omitted "none"}}|{{not .stale_suppressions}}|{{if .declared_gaps}}gaps{{else if .findings}}findings{{end}}|{{with .totals}}{{.findings}}{{end}}|{{with .declared_gaps}}x{{else}}empty{{end}}

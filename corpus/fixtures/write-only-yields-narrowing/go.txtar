@@ -1,0 +1,44 @@
+The Go rendering: a target module of one package and the consumer module that
+calls its one exported function. The exported variable that function writes has
+every reference inside the file that declares it, which the narrowing kinds would
+report, and no read, which the write-only kind reports instead.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Hits": { "file": "target/counter.go", "line": 5 },
+    "Bump": { "file": "target/counter.go", "line": 8 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/counter.go --
+// Package counter is the target's published package.
+package counter
+
+// Hits is written by Bump and read by nothing.
+var Hits int
+
+// Bump records a hit, and the consumer calls it.
+func Bump() {
+	Hits = 1
+}
+-- consumer/go.mod --
+module example.com/consumer
+
+go 1.27.0
+
+require example.com/target v0.0.0
+
+replace example.com/target => ../target
+-- consumer/main.go --
+// Command consumer calls the target's exported function.
+package main
+
+import counter "example.com/target"
+
+func main() {
+	counter.Bump()
+}

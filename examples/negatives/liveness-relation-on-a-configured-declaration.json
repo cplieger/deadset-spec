@@ -1,0 +1,35 @@
+{
+  "code": "DS1706",
+  "kind": "unmatched-configured-declaration",
+  "language": "ts",
+  "position": {
+    "path": "deadset.json",
+    "line": 14,
+    "column": 9,
+    "end_line": 14
+  },
+  "symbol": {
+    "ref": "@example/container#Container.bind",
+    "kind": "configured-declaration",
+    "name": "@example/container#Container.bind",
+    "size_lines": 1
+  },
+  "reachability_class": "certain",
+  "confidence": "certain",
+  "liveness_relation": "reference-counting",
+  "test_only": false,
+  "generated": false,
+  "component": {
+    "id": "deadset-ts/c-0007",
+    "root": true,
+    "symbol_count": 1,
+    "deletable_lines": 0
+  },
+  "retained_by": [],
+  "configurations": ["tsconfig.json"],
+  "consumers_loaded": [],
+  "fixability": "none",
+  "severity": "deny",
+  "message": "the configured declaration names no declaration of the program",
+  "details": {}
+}

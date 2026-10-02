@@ -1,0 +1,45 @@
+{
+  "name": "unmatched-configured-declaration",
+  "description": "A configured declaration that names no declaration is reported, once, in each of the three shapes an entry takes, and the entries beside them that name a declaration are not: one names a function the analyzed program declares, whose argument's data members the serializer then retains, and one names a declaration of the global scope that no call reaches.",
+  "languages": ["ts"],
+  "target_kind": "application",
+  "configured_declarations": {
+    "AbsentGlobal": { "key": "ts.injection_registrations", "entry": { "global": "neverDeclaredContainer.register" } },
+    "AbsentModule": { "key": "ts.serializers", "entry": { "module": "@example/absent", "name": "encode" } },
+    "AbsentSymbol": { "key": "ts.serializers", "entry": { "symbol": "ts://@example/target/codec.ts#neverDeclared" } },
+    "Encoder": { "key": "ts.serializers", "entry": { "symbol": "ts://@example/target/codec.ts#encode" } },
+    "UncalledGlobal": { "key": "ts.serializers", "entry": { "global": "JSON.parse" } }
+  },
+  "expect": [
+    {
+      "symbol": "AbsentGlobal",
+      "report": "DS1706",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "configured-declaration"
+    },
+    {
+      "symbol": "AbsentModule",
+      "report": "DS1706",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "configured-declaration"
+    },
+    {
+      "symbol": "AbsentSymbol",
+      "report": "DS1706",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "configured-declaration"
+    },
+    { "symbol": "Encoder", "report": "none" },
+    { "symbol": "UncalledGlobal", "report": "none" },
+    {
+      "symbol": "Envelope.body",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    }
+  ]
+}

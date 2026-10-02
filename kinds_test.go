@@ -12,7 +12,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/cplieger/deadset-spec/v3"
+	"github.com/cplieger/deadset-spec/v4"
 )
 
 const kindsPath = "contract/kinds.json"
@@ -266,8 +266,8 @@ func TestKindsRetiredCodesAreNotReassigned(t *testing.T) {
 
 func TestKindsEveryLiveRowIsCompleteAndInVocabulary(t *testing.T) {
 	doc := loadKinds(t)
-	if got := len(doc.Kinds); got != 31 {
-		t.Errorf("len(Kinds(%s)) = %d, want 31", kindsPath, got)
+	if got := len(doc.Kinds); got != 32 {
+		t.Errorf("len(Kinds(%s)) = %d, want 32", kindsPath, got)
 	}
 	for _, k := range doc.Kinds {
 		t.Run(k.Code, func(t *testing.T) {
@@ -328,10 +328,10 @@ func missingKindFields(k kindRow) []string {
 	return missing
 }
 
-// fixedKinds are the two self-check kinds a configuration cannot move: a
-// suppression and a configured root that name something no longer present
-// mean the same thing and carry the same posture.
-var fixedKinds = []string{"DS1703", "DS1704"}
+// fixedKinds are the three self-check kinds a configuration cannot move: a
+// suppression, a configured root and a configured declaration that name
+// something no longer present mean the same thing and carry the same posture.
+var fixedKinds = []string{"DS1703", "DS1704", "DS1706"}
 
 func TestKindsOnlyTheStaleConfigurationKindsAreFixed(t *testing.T) {
 	doc := loadKinds(t)

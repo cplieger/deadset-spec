@@ -1,0 +1,18 @@
+{
+  "name": "write-only-yields-narrowing",
+  "description": "A library whose consumer set the fixture declares complete, so the narrowing kinds report on its published API. An exported variable the module that declares it writes and nothing reads is reported as write-only and under no narrowing code, although every reference to it is inside its own file; the exported function that writes it, which the consumer calls, is not reported.",
+  "languages": ["go", "ts"],
+  "target_kind": "library",
+  "consumers": ["consumer"],
+  "closed_world": ["consumers"],
+  "expect": [
+    {
+      "symbol": "Hits",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "variable"
+    },
+    { "symbol": "Bump", "report": "none" }
+  ]
+}

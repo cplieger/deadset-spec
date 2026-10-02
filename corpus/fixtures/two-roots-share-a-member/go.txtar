@@ -1,0 +1,43 @@
+The Go rendering: one command module whose command calls one function of a
+package, beside two dead exported functions of that package that call one
+unexported function, and a third dead exported function that calls nothing.
+Every function spans one line. Nothing in the module imports anything outside
+it, so the rendering loads with no network access.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Live": { "file": "target/pair/pair.go", "line": 4 },
+    "Left": { "file": "target/pair/pair.go", "line": 7 },
+    "Right": { "file": "target/pair/pair.go", "line": 10 },
+    "shared": { "file": "target/pair/pair.go", "line": 13 },
+    "Alone": { "file": "target/pair/pair.go", "line": 16 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+package main
+
+import "example.com/target/pair"
+
+func main() { println(pair.Live()) }
+-- target/pair/pair.go --
+package pair
+
+// Live is called by the command.
+func Live() int { return 1 }
+
+// Left is called by nothing.
+func Left() int { return shared() }
+
+// Right is called by nothing.
+func Right() int { return shared() + 1 }
+
+// shared is called by Left and Right alone.
+func shared() int { return 4 }
+
+// Alone is called by nothing and calls nothing.
+func Alone() int { return 5 }

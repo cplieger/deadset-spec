@@ -1,0 +1,1 @@
+6.0.0 3 true "a\"b\\c\tdé\x01\x7f" [map[matched:61 rule:go-test-suffix]] %
