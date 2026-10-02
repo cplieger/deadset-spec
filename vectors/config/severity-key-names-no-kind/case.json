@@ -1,0 +1,5 @@
+{
+  "name": "severity-key-names-no-kind",
+  "description": "A repository configuration giving a severity to a code in the DS shape that names no live kind. The run is refused naming that key, as it is for a key naming a kind whose severity the Contract fixes, so every severity key names something an analyzer reports.",
+  "covers": ["severity-key-names-no-kind"]
+}

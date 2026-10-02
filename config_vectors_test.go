@@ -31,10 +31,13 @@ const (
 var configVectorAspects = []string{
 	"array-spanning-lines",
 	"duplicated-key",
+	"integer-written-with-a-fraction",
 	"missing-target-kind",
 	"provenance-on-input",
+	"provider-name-duplicated",
 	"quoted-key-with-a-dot",
 	"resolved-configuration-round-trip",
+	"severity-key-names-no-kind",
 	"template-delimiters-configured",
 	"template-delimiters-half",
 	"typescript-matrix-declared",
@@ -415,6 +418,52 @@ func TestConfigVectorExpectationsNameOnlyDeclaredKeys(t *testing.T) {
 	}
 }
 
+// vectorMissingKeys names every key config.schema.json declares that a resolved configuration
+// omits: each key of the root and of every section of declared keys, a setting's value and the
+// provenance object read as values.
+func vectorMissingKeys(schema schemaNode, doc map[string]any, at string) []string {
+	props, _ := schema["properties"].(map[string]any)
+	var out []string
+	for _, name := range slices.Sorted(maps.Keys(props)) {
+		child, _ := props[name].(schemaNode)
+		path := joinPath(at, name)
+		value, present := doc[name]
+		if !present {
+			out = append(out, path)
+			continue
+		}
+		section, isObject := value.(map[string]any)
+		setting, _ := child["x-setting"].(bool)
+		ignored, _ := child["x-ignored-by-resolution"].(bool)
+		if isObject && !setting && !ignored {
+			out = append(out, vectorMissingKeys(child, section, path)...)
+		}
+	}
+	return out
+}
+
+// TestConfigVectorExpectationsNameEveryDeclaredKey pins the README's rule that a resolved
+// configuration names every key the closed key list declares, so a key added to the schema
+// without its resolved value in the published cases fails here.
+func TestConfigVectorExpectationsNameEveryDeclaredKey(t *testing.T) {
+	schema := loadConfigSchema(t)
+	for _, dir := range configVectorDirs(t) {
+		data, ok := readVectorFile(t, dir, vectorExpectedFile)
+		if !ok {
+			continue
+		}
+		t.Run(dir, func(t *testing.T) {
+			doc, err := vectorDecodeConfig(data)
+			if err != nil {
+				t.Fatalf("Setup: decoding %s/%s/%s: %v", configVectorsDir, dir, vectorExpectedFile, err)
+			}
+			for _, missing := range vectorMissingKeys(schema, doc, "root") {
+				t.Errorf("%s/%s/%s names no %s, want every key %s declares", configVectorsDir, dir, vectorExpectedFile, missing, configSchemaPath)
+			}
+		})
+	}
+}
+
 func TestConfigVectorRefusalsNameATableCode(t *testing.T) {
 	table := mustLoadExitCodes(t)
 	codes := make([]int, 0, len(table.ExitCodes))
@@ -498,6 +547,74 @@ func TestConfigVectorQuotedKeyCaseHoldsADottedKey(t *testing.T) {
 	}
 	if names := refusalNames(t, dir); dotted[0] != names {
 		t.Errorf("%s spells %q at the top level while the refusal names %q, want the refusal to name that key", where, dotted[0], names)
+	}
+}
+
+// TestConfigVectorIntegerCaseHoldsANonIntegerSpelling pins the input the case exists for: the
+// key its refusal names is an integer key of the schema, and the case writes it as a number with a
+// fraction or an exponent.
+func TestConfigVectorIntegerCaseHoldsANonIntegerSpelling(t *testing.T) {
+	dir := caseCovering(t, "integer-written-with-a-fraction")
+	names := refusalNames(t, dir)
+	section, key, ok := strings.Cut(names, ".")
+	if !ok {
+		t.Fatalf("Setup: the refusal names %q, want a dotted path to one key", names)
+	}
+	if typ := lookupKey(t, walkSchema(loadConfigSchema(t)), names).node["type"]; typ != "integer" {
+		t.Fatalf("schema[%s].type = %v, want an integer key", names, typ)
+	}
+	data, ok := readVectorFile(t, dir, vectorRepositoryFile)
+	if !ok {
+		t.Fatalf("Setup: %s/%s/%s is absent, want the spelling the refusal is about", configVectorsDir, dir, vectorRepositoryFile)
+	}
+	dec := json.NewDecoder(bytes.NewReader(data))
+	dec.UseNumber()
+	var doc map[string]map[string]any
+	if err := dec.Decode(&doc); err != nil {
+		t.Fatalf("Setup: decoding %s/%s/%s: %v", configVectorsDir, dir, vectorRepositoryFile, err)
+	}
+	spelled, _ := doc[section][key].(json.Number)
+	if !strings.ContainsAny(spelled.String(), ".eE") {
+		t.Errorf("%s/%s/%s writes %s as %q, want a number with a fraction or an exponent", configVectorsDir, dir, vectorRepositoryFile, names, spelled)
+	}
+}
+
+// TestConfigVectorProviderNameCaseHoldsOneNameTwice pins the input the case exists for: a
+// provider list the schema admits whose entries repeat one name, so only the unique-name rule
+// refuses it, and a refusal naming the entry that repeats the name.
+func TestConfigVectorProviderNameCaseHoldsOneNameTwice(t *testing.T) {
+	dir := caseCovering(t, "provider-name-duplicated")
+	where := fmt.Sprintf("%s/%s/%s", configVectorsDir, dir, vectorRepositoryFile)
+	data, ok := readVectorFile(t, dir, vectorRepositoryFile)
+	if !ok {
+		t.Fatalf("Setup: %s is absent, want the provider list in the repository configuration", where)
+	}
+	doc, err := vectorDecodeConfig(data)
+	if err != nil {
+		t.Fatalf("Setup: decoding %s: %v", where, err)
+	}
+	if problems := vectorSchemaProblems(t, newVectorSchemaIndex(t), where, "root", "root", doc); len(problems) != 0 {
+		t.Errorf("vectorSchemaProblems(%s) = %q, want a document the schema admits", where, problems)
+	}
+	providers, _ := doc["providers"].(map[string]any)
+	entries, _ := providers["analyzers"].([]any)
+	var listed []string
+	for _, entry := range entries {
+		fields, _ := entry.(map[string]any)
+		name, _ := fields["name"].(string)
+		listed = append(listed, name)
+	}
+	var repeats []int
+	for i, name := range listed {
+		if slices.Contains(listed[:i], name) {
+			repeats = append(repeats, i)
+		}
+	}
+	if len(repeats) != 1 {
+		t.Fatalf("%s lists the provider names %q, want exactly one entry repeating an earlier name", where, listed)
+	}
+	if got, want := refusalNames(t, dir), fmt.Sprintf("providers.analyzers[%d].name", repeats[0]); got != want {
+		t.Errorf("the refusal names %q, want %q, the entry that repeats a name", got, want)
 	}
 }
 

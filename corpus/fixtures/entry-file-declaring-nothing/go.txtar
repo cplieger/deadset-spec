@@ -1,0 +1,21 @@
+The Go rendering: one module whose main package spans two files. One file
+declares the main function; the other holds the package clause and its comment
+and declares nothing.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Entry": { "file": "target/doc.go", "line": 1 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/doc.go --
+// Command target exits as soon as it starts.
+package main
+-- target/main.go --
+package main
+
+func main() {}

@@ -6,7 +6,7 @@ Nothing here is applied by the merge. An analyzer reads the three documents and 
 
 ## Vocabulary
 
-A **suppression record** is one code bound to one site: an inline directive naming two codes is two records with one reason. A record binds to a declaration and to nothing else, so a part of a declaration — a parameter, a receiver, a result, a statement, a store or a case — is suppressed through the declaration its own reference names, and a finding whose subject is a record of a document rather than a declaration of the program — a requirement, a module-file directive, a file, a suppression record, a configured root or a cross-language edge — has no suppression at all, its remedy being the change the finding names or the severity the configuration gives its code. A record is **bound** when the site it names resolves to a symbol; **in effect** when the symbol would otherwise have produced a finding under the record's code; **dormant** when it is bound and the configuration withholds the finding its code would produce, by setting the severity of that code to `allow` or by setting a minimum confidence the finding does not reach; **stale** when it is bound to nothing or in effect for nothing; and **refused** when it fails a rule below, in which case it binds nothing and the rule's outcome applies. A refused string has one of three outcomes: it is not a directive at all and nothing happens; the run ends with exit code 2 before any finding exists; or the run continues and the string is reported under a `DS17xx` code.
+A **suppression record** is one code bound to one site: an inline directive naming two codes is two records with one reason. A record binds to a declaration and to nothing else, so a part of a declaration — a parameter, a receiver, a result, a statement, a store or a case — is suppressed through the declaration its own reference names, and a finding whose subject is a record of a document rather than a declaration of the program — a requirement, a module-file directive, a file, a suppression record, a configured root or a cross-language edge — has no suppression at all, its remedy being the change the finding names or the severity the configuration gives its code. A record is **bound** when the site it names resolves to a symbol; **in effect** when the symbol would otherwise have produced a finding under the record's code; **dormant** when it is bound and the configuration withholds the finding its code would produce, by setting the severity of that code to `allow`, by setting a minimum confidence the finding does not reach, or by withholding in either way a root finding of the component the finding's `component.id` names; **stale** when it is bound to nothing or in effect for nothing; and **refused** when it fails a rule below, in which case it binds nothing and the rule's outcome applies. A refused string has one of three outcomes: it is not a directive at all and nothing happens; the run ends with exit code 2 before any finding exists; or the run continues and the string is reported under a `DS17xx` code.
 
 A dormant record is neither in effect nor stale: it produces no finding, and `totals.suppressions_in_effect` does not count it. It is counted under `totals.reasons_recorded` like every record that carries a reason, because that total counts the records that carry one and not the records that hold a finding back. Dormancy is what makes the two configuration dials safe to turn: setting a kind to `allow`, and raising the minimum confidence above a finding's own, never fails a run over the adjudications that setting either back would need. The two dials are one rule, because a record for a finding the configuration withholds is a claim nobody can check either way.
 
@@ -39,6 +39,8 @@ ws         = " " | "\t" ;
 non-ws     = any character other than " ", "\t", CR and LF ;
 any        = any character other than CR and LF ;
 ```
+
+Whitespace, on this page and in every document field the contract requires to hold a character that is not whitespace, is exactly four characters: the space (U+0020), the tab (U+0009), the line feed (U+000A) and the carriage return (U+000D). `ws` names the two a single line can hold. Every other character is text, the no-break space (U+00A0) and every other Unicode space included, so a reason made of one of them is a reason. An expression tests for the four with the explicit class `[ \t\r\n]` or its complement `[^ \t\r\n]`, never with `\s` or `\S`, which name different sets in the two dialects below.
 
 A directive is one line. The code list is codes joined by a comma with no whitespace inside the list. The separator is exactly `--`, one token, with whitespace on both sides. The reason is everything after the separator up to the end of the line, with trailing whitespace trimmed, and it is not parsed: it may contain a colon, a code, a path or a further `--`.
 
@@ -196,7 +198,7 @@ The ordering of the run, then: resolve every directive, entry and row to a recor
 
 ### Staleness
 
-`matched` is the finding a record's symbol would have produced under the record's code had the mark not been there, computed by running that kind's candidate test on the marked symbol alone, with the kind evaluated under the run's resolved configuration. The severity the configuration gives the code and the minimum confidence it sets are outside that test: each decides whether the run reports a finding rather than whether one exists, so a record whose finding either of them withholds is dormant rather than stale. A record with a match is in effect. A record with none is stale and is reported as `DS1703` (`stale-suppression`) at the record's own position, whatever its mechanism: the directive's line for an inline directive, the entry's opening brace in `deadset-ignore.json`, the row's opening brace in `deadset-baseline.json`. The `details` object of a `DS1703` finding carries `mechanism` (`inline`, `ignore` or `baseline`) and the record's `entry`; `finding.schema.json` fixes their shape.
+`matched` is the finding a record's symbol would have produced under the record's code had the mark not been there, computed by running that kind's candidate test on the marked symbol alone, with the kind evaluated under the run's resolved configuration. The severity the configuration gives the code and the minimum confidence it sets are outside that test: each decides whether the run reports a finding rather than whether one exists, so a record whose finding either of them withholds is dormant rather than stale. Either dial that withholds a root finding withholds with it every finding whose `component.id` names the root's component, whatever severity and confidence those findings carry: every other root member of the component, the other root members of the root's own cycle among them, and every symbol that falls with a root, which is dead only through it. A record whose finding is withheld that way is dormant too. A record with a match is in effect. A record with none is stale and is reported as `DS1703` (`stale-suppression`) at the record's own position, whatever its mechanism: the directive's line for an inline directive, the entry's opening brace in `deadset-ignore.json`, the row's opening brace in `deadset-baseline.json`. The `details` object of a `DS1703` finding carries `mechanism` (`inline`, `ignore` or `baseline`) and the record's `entry`; `finding.schema.json` fixes their shape.
 
 A record is stale when:
 
@@ -237,7 +239,8 @@ The rule vocabulary, with the outcome a refused case under it has:
 
 | Rule | Applies to | On refusal |
 | --- | --- | --- |
-| `spelling-no-space`, `spelling-space`, `reason-text` | inline | accepted forms only |
+| `spelling-no-space`, `spelling-space` | inline | accepted forms only |
+| `reason-text` | all three | accepted forms only |
 | `code-list` | inline | accepted when two codes are comma-joined; exit code 2 when the list is absent, spaced or outside the `DS` shape |
 | `namespace`, `first-token`, `line-comment-only` | inline | not a directive |
 | `directive-name`, `reason-separator` | inline | exit code 2 |
@@ -259,9 +262,10 @@ Inline, each at `line_offset` `-1`:
 //deadset:ignore DS1801 -- kept -- the upstream callback signature fixes the arity.
 // deadset:ignore DS1301 -- see DS1301 in docs/adjudications.md: the binder writes it by reflection.
 //deadset:ignore DS1001 -- Kept for the plugin loader, which resolves it by name.   
+//deadset:ignore DS1001 -- <NBSP>
 ```
 
-The third has one tab character between `//` and the token, written `<TAB>` above because a rendered tab is invisible; the corpus file holds the real character. The fourth yields two records; the fifth has a `--` inside its reason, which is not parsed; the seventh has trailing whitespace, which is trimmed. The accepted entries are the three under `entry-shape` in the corpus (a Go method, a TypeScript class member, a symbol in a nested Go package) and the accepted rows are the two under `row-shape`.
+The third has one tab character between `//` and the token, written `<TAB>` above because a rendered tab is invisible; the corpus file holds the real character. The fourth yields two records; the fifth has a `--` inside its reason, which is not parsed; the seventh has trailing whitespace, which is trimmed; the eighth's reason is one no-break space, written `<NBSP>` above, which is text rather than whitespace. The accepted entries are the three under `entry-shape` in the corpus (a Go method, a TypeScript class member, a symbol in a nested Go package) and one under `reason-text` whose `reason` is one no-break space, and the accepted rows are the two under `row-shape`.
 
 ### Refused
 

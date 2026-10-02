@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io/fs"
 	"maps"
+	"reflect"
 	"regexp"
 	"slices"
 	"strconv"
@@ -41,7 +42,7 @@ const (
 )
 
 // mergeCaseEntries is every entry a case directory may hold.
-var mergeCaseEntries = []string{mergeInputsDir, mergeAcceptedFile, mergeExpectedFile, mergeExitFile}
+var mergeCaseEntries = []string{mergeInputsDir, mergeAcceptedFile, mergeCallerFile, mergeExpectedFile, mergeExitFile}
 
 // mergeVersion matches a schema version wherever it is written, which is how accepted.txt is read
 // for the version tokens it names without this file parsing the range syntax that page owns.
@@ -57,16 +58,34 @@ var (
 // arrays the canonical order and the totals cover, and the edge evaluations the merge resolves.
 // The whole envelope is checked against report.schema.json rather than mirrored here.
 type mergeReport struct {
-	SchemaVersion     string            `json:"schema_version"`
-	Analyzer          mergeAnalyzer     `json:"analyzer"`
-	Findings          []mergeFinding    `json:"findings"`
-	EdgeEvaluations   []mergeEvaluation `json:"edge_evaluations"`
-	StaleSuppressions []json.RawMessage `json:"stale_suppressions"`
-	Totals            mergeTotals       `json:"totals"`
+	Target                 json.RawMessage   `json:"target"`
+	SchemaVersion          string            `json:"schema_version"`
+	Analyzer               mergeAnalyzer     `json:"analyzer"`
+	Configurations         []json.RawMessage `json:"configurations"`
+	ConfigurationsNotBuilt []json.RawMessage `json:"configurations_not_built"`
+	Consumers              mergeConsumers    `json:"consumers"`
+	Findings               []mergeFinding    `json:"findings"`
+	EdgeEvaluations        []mergeEvaluation `json:"edge_evaluations"`
+	StaleSuppressions      []json.RawMessage `json:"stale_suppressions"`
+	TestFileRules          []mergeRule       `json:"test_file_rules"`
+	Totals                 mergeTotals       `json:"totals"`
+}
+
+// mergeRule is one test_file_rules entry, its fields in report.schema.json's order, so its JSON
+// encoding is the entry's compact encoding.
+type mergeRule struct {
+	Rule    string `json:"rule"`
+	Matched int    `json:"matched"`
+}
+
+type mergeConsumers struct {
+	Loaded      []json.RawMessage `json:"loaded"`
+	Unavailable []json.RawMessage `json:"unavailable"`
 }
 
 type mergeAnalyzer struct {
 	Name        string           `json:"name"`
+	Version     string           `json:"version"`
 	Languages   []string         `json:"languages"`
 	Conformance mergeConformance `json:"conformance"`
 }
@@ -76,11 +95,16 @@ type mergeConformance struct {
 }
 
 type mergeFinding struct {
-	Code     string        `json:"code"`
-	Severity string        `json:"severity"`
-	Analyzer string        `json:"analyzer"`
-	Position mergePosition `json:"position"`
-	Symbol   mergeSymbol   `json:"symbol"`
+	Code      string         `json:"code"`
+	Severity  string         `json:"severity"`
+	Analyzer  string         `json:"analyzer"`
+	Position  mergePosition  `json:"position"`
+	Symbol    mergeSymbol    `json:"symbol"`
+	Component mergeComponent `json:"component"`
+}
+
+type mergeComponent struct {
+	ID string `json:"id"`
 }
 
 type mergePosition struct {
@@ -115,24 +139,27 @@ type mergeDocument struct {
 	data []byte
 }
 
-// mergeCase is one decoded case directory of vectors/merge.
+// mergeCase is one decoded case directory of vectors/merge. digests[i] is the digest caller.json
+// gives inputs[i], or "" where it gives none.
 type mergeCase struct {
 	expected  *mergeReport
 	dir       string
 	accepted  string
 	inputs    []mergeReport
+	digests   []string
 	documents []mergeDocument
 	exit      int
 }
 
-// mergeShape is one of the shapes the design's case set covers, as a predicate over a decoded
-// case: the check turns on what a case holds rather than on what its directory is called.
+// mergeShape is one of the shapes the case set covers, as a predicate over a decoded case: the
+// check turns on what a case holds rather than on what its directory is called.
 type mergeShape struct {
 	holds func(mergeCase) bool
 	name  string
 }
 
-// mergeShapes are the ten shapes "Merge test vectors" names, in the order it names them.
+// mergeShapes are the shapes the case set covers. Each predicate holds what makes its case a pin,
+// so a case stripped of it fails the coverage check even where its expected bytes stay the same.
 var mergeShapes = []mergeShape{
 	{
 		name:  "one report only",
@@ -143,20 +170,12 @@ var mergeShapes = []mergeShape{
 		holds: func(c mergeCase) bool { return len(c.inputs) >= 2 && len(c.evaluations()) == 0 },
 	},
 	{
-		name: "a pending finding whose pair is live",
-		holds: func(c mergeCase) bool {
-			return c.anyEdge(func(sides []mergeEvaluation) bool {
-				return mergePairedState(sides, mergeStateLive)
-			})
-		},
+		name:  "a pending finding whose pair is live and a finding that falls with it",
+		holds: func(c mergeCase) bool { return c.carriesFallenMember(mergeStateLive) },
 	},
 	{
-		name: "a pending finding whose pair is dead",
-		holds: func(c mergeCase) bool {
-			return c.anyEdge(func(sides []mergeEvaluation) bool {
-				return mergePairedState(sides, mergeStateDead)
-			})
-		},
+		name:  "a pending finding whose pair is dead promoted into the merged report",
+		holds: mergeCase.promotesPairedDead,
 	},
 	{
 		name: "a pending finding whose edge appears in no other report",
@@ -202,7 +221,94 @@ var mergeShapes = []mergeShape{
 			return slices.ContainsFunc(c.inputs, func(r mergeReport) bool { return len(r.StaleSuppressions) > 0 })
 		},
 	},
+	{
+		name:  "a pending finding whose pair is absent and a finding that falls with it",
+		holds: func(c mergeCase) bool { return c.carriesFallenMember(mergeStateAbsent) },
+	},
+	{
+		name:  "a component pending on one edge whose pair is live and on another whose pair is dead",
+		holds: func(c mergeCase) bool { return c.pendsBesideADeadPair(mergeStateLive) },
+	},
+	{
+		name:  "a component pending on one edge whose pair is absent and on another whose pair is dead",
+		holds: func(c mergeCase) bool { return c.pendsBesideADeadPair(mergeStateAbsent) },
+	},
+	{
+		name:  "two reports naming different targets",
+		holds: mergeCase.refusedOnTargets,
+	},
+	{
+		name:  "a report that omitted a finding",
+		holds: mergeCase.refusedOnOmitted,
+	},
+	{
+		name:  "two configurations entries under one id whose identity members differ",
+		holds: func(c mergeCase) bool { return c.refusedOnIdentity(mergeConfigurations) },
+	},
+	{
+		name:  "two configurations_not_built entries under one id whose errors alone differ, merged with the first report's error",
+		holds: func(c mergeCase) bool { return c.mergesFreeText(mergeNotBuilt) },
+	},
+	{
+		name:  "a configuration one report built and another could not build",
+		holds: func(c mergeCase) bool { return c.refusedAcross(mergeConfigurations, mergeNotBuilt) },
+	},
+	{
+		name:  "two consumers.loaded entries under one id whose identity members differ",
+		holds: func(c mergeCase) bool { return c.refusedOnIdentity(mergeLoaded) },
+	},
+	{
+		name:  "two consumers.unavailable entries under one id whose reasons alone differ, merged with the first report's reason",
+		holds: func(c mergeCase) bool { return c.mergesFreeText(mergeUnavailable) },
+	},
+	{
+		name:  "a consumer one report loaded and another lists as unavailable",
+		holds: func(c mergeCase) bool { return c.refusedAcross(mergeLoaded, mergeUnavailable) },
+	},
+	{
+		name:  "two reports one analyzer artifact wrote",
+		holds: mergeCase.refusedOnOneArtifact,
+	},
+	{
+		name:  mergeOneNameShape,
+		holds: mergeCase.refusedOnOneNameTwice,
+	},
+	{
+		name:  mergeOneRuleShape,
+		holds: mergeCase.mergesOneRuleCountedTwoWays,
+	},
 }
+
+const (
+	mergeOneNameShape = "two reports one analyzer name wrote at two versions from two artifacts"
+	mergeOneRuleShape = "two reports counting one test-file rule two ways, merged with both entries, " +
+		"the first holding the lesser count, whose encoding sorts second"
+)
+
+// mergeEntryArray is one id-keyed array of a report, with the member of its entries that is free
+// text rather than identity, where its entries carry one.
+type mergeEntryArray struct {
+	entries func(mergeReport) []json.RawMessage
+	free    string
+}
+
+// identity decodes an entry without its free-text member, which is what two entries under one id
+// must agree on. An entry that does not decode reads as nil.
+func (a mergeEntryArray) identity(entry json.RawMessage) map[string]any {
+	var m map[string]any
+	if json.Unmarshal(entry, &m) != nil {
+		return nil
+	}
+	delete(m, a.free)
+	return m
+}
+
+var (
+	mergeConfigurations = mergeEntryArray{entries: func(r mergeReport) []json.RawMessage { return r.Configurations }}
+	mergeNotBuilt       = mergeEntryArray{entries: func(r mergeReport) []json.RawMessage { return r.ConfigurationsNotBuilt }, free: "error"}
+	mergeLoaded         = mergeEntryArray{entries: func(r mergeReport) []json.RawMessage { return r.Consumers.Loaded }}
+	mergeUnavailable    = mergeEntryArray{entries: func(r mergeReport) []json.RawMessage { return r.Consumers.Unavailable }, free: "reason"}
+)
 
 // mergeFindingKey is the canonical key contract/grammar/merge.md fixes: the finding's path, line
 // and column, its code, its symbol reference, and the name of the analyzer whose report carried
@@ -268,19 +374,242 @@ func (c mergeCase) anyEdge(holds func(sides []mergeEvaluation) bool) bool {
 	return false
 }
 
-// mergePairedState reports whether one side of an edge is dead while another side holds state.
-func mergePairedState(sides []mergeEvaluation, state string) bool {
-	for _, e := range sides {
-		if e.State != mergeStateDead {
+// pending decodes the finding a dead evaluation carries. A finding that does not decode reads as
+// the zero finding, which names no symbol and no component.
+func (e mergeEvaluation) pending() mergeFinding {
+	var f mergeFinding
+	if json.Unmarshal(e.Finding, &f) != nil {
+		return mergeFinding{}
+	}
+	return f
+}
+
+// pairedState is the strongest state, live then dead then absent, among the evaluations of the
+// case on the other sides of e's edge, or "" where no other side holds one.
+func (c mergeCase) pairedState(e mergeEvaluation) string {
+	strongest := ""
+	for _, other := range c.evaluations() {
+		if other.Edge != e.Edge || other.Side == e.Side {
 			continue
 		}
-		if slices.ContainsFunc(sides, func(other mergeEvaluation) bool {
-			return other.Side != e.Side && other.State == state
-		}) {
+		if strongest == "" || stateStrength[other.State] < stateStrength[strongest] {
+			strongest = other.State
+		}
+	}
+	return strongest
+}
+
+// carriesFallenMember reports whether a report of the case holds a pending finding whose pair
+// reads as state and carries, in its findings, a finding of the pending finding's component.
+func (c mergeCase) carriesFallenMember(state string) bool {
+	for _, r := range c.inputs {
+		for _, e := range r.EdgeEvaluations {
+			if e.State != mergeStateDead || c.pairedState(e) != state {
+				continue
+			}
+			id := e.pending().Component.ID
+			if slices.ContainsFunc(r.Findings, func(f mergeFinding) bool { return f.Component.ID == id }) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// promotesPairedDead reports whether a pending finding whose pair is dead reaches the case's
+// merged report.
+func (c mergeCase) promotesPairedDead() bool {
+	if c.expected == nil {
+		return false
+	}
+	for _, e := range c.evaluations() {
+		if e.State != mergeStateDead || c.pairedState(e) != mergeStateDead {
+			continue
+		}
+		ref := e.pending().Symbol.Ref
+		if slices.ContainsFunc(c.expected.Findings, func(f mergeFinding) bool { return f.Symbol.Ref == ref }) {
 			return true
 		}
 	}
 	return false
+}
+
+// pendsBesideADeadPair reports whether one report holds two pending findings of one component on
+// two edges, the pair of one reading as state and the pair of the other dead.
+func (c mergeCase) pendsBesideADeadPair(state string) bool {
+	for _, r := range c.inputs {
+		for _, dropping := range r.EdgeEvaluations {
+			if dropping.State != mergeStateDead || c.pairedState(dropping) != state {
+				continue
+			}
+			id := dropping.pending().Component.ID
+			if slices.ContainsFunc(r.EdgeEvaluations, func(dead mergeEvaluation) bool {
+				return dead.State == mergeStateDead && dead.Edge != dropping.Edge &&
+					c.pairedState(dead) == mergeStateDead && dead.pending().Component.ID == id
+			}) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// refused reports whether the case ends at the failure code before a merged report exists.
+func (c mergeCase) refused() bool {
+	return c.expected == nil && c.exit == mergeFailureExit
+}
+
+// refusedOnTargets reports whether the case is refused and two of its inputs name targets that
+// are not one JSON value.
+func (c mergeCase) refusedOnTargets() bool {
+	if !c.refused() {
+		return false
+	}
+	for i, a := range c.inputs {
+		if slices.ContainsFunc(c.inputs[i+1:], func(b mergeReport) bool { return !sameRawJSON(a.Target, b.Target) }) {
+			return true
+		}
+	}
+	return false
+}
+
+// refusedOnOneArtifact reports whether the case is refused and two of its inputs carry one
+// analyzer name and one analyzer version, and caller.json gives the two one digest.
+func (c mergeCase) refusedOnOneArtifact() bool {
+	if !c.refused() || len(c.digests) != len(c.inputs) {
+		return false
+	}
+	for i, a := range c.inputs {
+		for j := i + 1; j < len(c.inputs); j++ {
+			b := c.inputs[j]
+			if a.Analyzer.Name == b.Analyzer.Name && a.Analyzer.Version == b.Analyzer.Version &&
+				c.digests[i] != "" && c.digests[i] == c.digests[j] {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// refusedOnOneNameTwice reports whether the case is refused and two of its inputs carry one
+// analyzer name at two versions, and caller.json gives the two two digests.
+func (c mergeCase) refusedOnOneNameTwice() bool {
+	if !c.refused() || len(c.digests) != len(c.inputs) {
+		return false
+	}
+	for i, a := range c.inputs {
+		for j := i + 1; j < len(c.inputs); j++ {
+			b := c.inputs[j]
+			if a.Analyzer.Name == b.Analyzer.Name && a.Analyzer.Version != b.Analyzer.Version &&
+				c.digests[i] != "" && c.digests[j] != "" && c.digests[i] != c.digests[j] {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// mergesOneRuleCountedTwoWays reports whether the case merges two inputs holding entries under one
+// rule, the input read first holding the lesser count, whose encoding sorts after the other's,
+// and the merged report carries both. The merged order is then neither the order the inputs are
+// read in nor the order of the counts.
+func (c mergeCase) mergesOneRuleCountedTwoWays() bool {
+	if c.expected == nil {
+		return false
+	}
+	for i, a := range c.inputs {
+		for _, b := range c.inputs[i+1:] {
+			for _, x := range a.TestFileRules {
+				if slices.ContainsFunc(b.TestFileRules, func(y mergeRule) bool {
+					return x.Rule == y.Rule && x.Matched < y.Matched && bytes.Compare(x.encoding(), y.encoding()) > 0 &&
+						slices.Contains(c.expected.TestFileRules, x) && slices.Contains(c.expected.TestFileRules, y)
+				}) {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
+// encoding is the entry's compact JSON encoding, or nil where it does not encode.
+func (r mergeRule) encoding() []byte {
+	data, err := json.Marshal(r)
+	if err != nil {
+		return nil
+	}
+	return data
+}
+
+// refusedOnOmitted reports whether the case is refused and one of its inputs omitted a finding.
+func (c mergeCase) refusedOnOmitted() bool {
+	return c.refused() && slices.ContainsFunc(c.inputs, func(r mergeReport) bool { return r.Totals.Omitted != 0 })
+}
+
+// anySharedID reports whether two inputs of the case carry entries under one id, the first input's
+// in the array one names and the second's in the array other names, for which holds.
+func (c mergeCase) anySharedID(one, other mergeEntryArray, holds func(a, b mergeReport, x, y json.RawMessage) bool) bool {
+	for i, a := range c.inputs {
+		for j, b := range c.inputs {
+			if i == j {
+				continue
+			}
+			for _, x := range one.entries(a) {
+				if slices.ContainsFunc(other.entries(b), func(y json.RawMessage) bool {
+					return mergeEntryID(x) == mergeEntryID(y) && holds(a, b, x, y)
+				}) {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
+// refusedOnIdentity reports whether the case is refused and two of its inputs carry entries of
+// array under one id whose identity members differ.
+func (c mergeCase) refusedOnIdentity(array mergeEntryArray) bool {
+	return c.refused() && c.anySharedID(array, array, func(_, _ mergeReport, x, y json.RawMessage) bool {
+		return !reflect.DeepEqual(array.identity(x), array.identity(y))
+	})
+}
+
+// refusedAcross reports whether the case is refused and two of its inputs carry one id, the first
+// in the array one names and the second in the array other names.
+func (c mergeCase) refusedAcross(one, other mergeEntryArray) bool {
+	return c.refused() && c.anySharedID(one, other, func(_, _ mergeReport, _, _ json.RawMessage) bool { return true })
+}
+
+// mergesFreeText reports whether the case merges two entries of array under one id that agree on
+// every identity member and differ in free text, the merged report carrying the entry of the input
+// merged_from names first.
+func (c mergeCase) mergesFreeText(array mergeEntryArray) bool {
+	if c.expected == nil {
+		return false
+	}
+	return c.anySharedID(array, array, func(a, b mergeReport, x, y json.RawMessage) bool {
+		return a.Analyzer.Name < b.Analyzer.Name && !sameRawJSON(x, y) && reflect.DeepEqual(array.identity(x), array.identity(y)) &&
+			slices.ContainsFunc(array.entries(*c.expected), func(z json.RawMessage) bool { return sameRawJSON(z, x) })
+	})
+}
+
+// mergeEntryID is the id an entry of an id-keyed array carries, or "" where it carries none.
+func mergeEntryID(entry json.RawMessage) string {
+	var e struct {
+		ID string `json:"id"`
+	}
+	if json.Unmarshal(entry, &e) != nil {
+		return ""
+	}
+	return e.ID
+}
+
+// sameRawJSON reports whether two documents are one JSON value: objects by their members in any
+// order, arrays element by element. Two documents neither of which decodes are equal.
+func sameRawJSON(a, b json.RawMessage) bool {
+	var x, y any
+	errA, errB := json.Unmarshal(a, &x), json.Unmarshal(b, &y)
+	return (errA == nil) == (errB == nil) && reflect.DeepEqual(x, y)
 }
 
 // twoAnalyzersClaimOneLanguage reports whether two input reports of the case were written by
@@ -375,9 +704,10 @@ func mergeReadFile(fsys fs.FS, root, dir, name string) ([]byte, bool, error) {
 }
 
 // loadMergeCase decodes one case directory: its accepted range, its expected exit code, its input
-// reports in file-name order and its expected merged report where the case holds one. A missing
-// accepted range or exit code leaves the field empty, because mergeLayoutProblems owns which files
-// a case holds; a document that does not decode is an error, because nothing can be checked then.
+// reports in file-name order with the digest caller.json gives each, and its expected merged
+// report where the case holds one. A missing accepted range, exit code or caller.json leaves the
+// field empty, because mergeLayoutProblems owns which files a case holds; a document that does
+// not decode is an error, because nothing can be checked then.
 func loadMergeCase(fsys fs.FS, root, dir string) (mergeCase, error) {
 	c := mergeCase{dir: dir, exit: -1}
 	accepted, held, err := mergeReadFile(fsys, root, dir, mergeAcceptedFile)
@@ -396,7 +726,17 @@ func loadMergeCase(fsys fs.FS, root, dir string) (mergeCase, error) {
 			c.exit = -1
 		}
 	}
-	if err = c.loadInputs(fsys, root); err != nil {
+	callerFacts, held, err := mergeReadFile(fsys, root, dir, mergeCallerFile)
+	if err != nil {
+		return c, err
+	}
+	var caller mergeCaller
+	if held {
+		if err = json.Unmarshal(callerFacts, &caller); err != nil {
+			return c, fmt.Errorf("decoding %s: %w", mergeCallerFile, err)
+		}
+	}
+	if err = c.loadInputs(fsys, root, caller.Digests); err != nil {
 		return c, err
 	}
 	expected, held, err := mergeReadFile(fsys, root, dir, mergeExpectedFile)
@@ -414,8 +754,9 @@ func loadMergeCase(fsys fs.FS, root, dir string) (mergeCase, error) {
 	return c, nil
 }
 
-// loadInputs decodes every report under the case's inputs directory, in file-name order.
-func (c *mergeCase) loadInputs(fsys fs.FS, root string) error {
+// loadInputs decodes every report under the case's inputs directory, in file-name order, each
+// with its digest from digests, which is keyed by file name.
+func (c *mergeCase) loadInputs(fsys fs.FS, root string, digests map[string]string) error {
 	inputs := root + "/" + c.dir + "/" + mergeInputsDir
 	entries, err := fs.ReadDir(fsys, inputs)
 	if errors.Is(err, fs.ErrNotExist) {
@@ -438,6 +779,7 @@ func (c *mergeCase) loadInputs(fsys fs.FS, root string) error {
 			return fmt.Errorf("decoding %s/%s/%s: %w", mergeInputsDir, c.dir, name, err)
 		}
 		c.inputs = append(c.inputs, report)
+		c.digests = append(c.digests, digests[name])
 		c.documents = append(c.documents, mergeDocument{path: mergeInputsDir + "/" + name, data: data})
 	}
 	return nil
@@ -466,6 +808,9 @@ func mergeLayoutProblems(fsys fs.FS, root, dir string) []string {
 		out = append(out, fmt.Sprintf("%v: want %s naming the schema range the case is merged under", errMergeNoAccepted, mergeAcceptedFile))
 	case strings.Count(strings.TrimSpace(string(accepted)), "\n") > 0:
 		out = append(out, fmt.Sprintf("%s holds %d lines, want the range on one line", mergeAcceptedFile, strings.Count(strings.TrimSpace(string(accepted)), "\n")+1))
+	}
+	if _, held, err := mergeReadFile(fsys, root, dir, mergeCallerFile); err != nil || !held {
+		out = append(out, fmt.Sprintf("holds no %s (%v), want the facts the caller supplies", mergeCallerFile, err))
 	}
 	inputs, err := fs.ReadDir(fsys, root+"/"+dir+"/"+mergeInputsDir)
 	if err != nil && !errors.Is(err, fs.ErrNotExist) {
@@ -814,6 +1159,13 @@ func TestMergeCaseChecksRefuse(t *testing.T) {
 			wantMsg: "holds inputs/02-go.txtar, want only the input reports",
 		},
 		{
+			name: "case_holds_no_caller_facts",
+			mutate: func(_ *testing.T, m fstest.MapFS) {
+				delete(m, mergeVectorsDir+"/"+mergePlantedDir+"/"+mergeCallerFile)
+			},
+			wantMsg: "holds no caller.json",
+		},
+		{
 			name: "case_names_no_accepted_range",
 			mutate: func(_ *testing.T, m fstest.MapFS) {
 				delete(m, mergeVectorsDir+"/"+mergePlantedDir+"/"+mergeAcceptedFile)
@@ -835,11 +1187,11 @@ func TestMergeCaseChecksRefuse(t *testing.T) {
 }
 
 // TestMissingMergeShapesNamesEveryUncoveredShape drives the coverage check over a synthetic case
-// set, so each of the ten predicates is exercised in both directions before any case exists.
+// set, so each predicate is exercised in both directions before any case exists.
 func TestMissingMergeShapesNamesEveryUncoveredShape(t *testing.T) {
 	full := mergeShapeCases()
 	if missing := missingMergeShapes(full); len(missing) > 0 {
-		t.Fatalf("missingMergeShapes(the ten shapes) = %q, want none", missing)
+		t.Fatalf("missingMergeShapes(one case per shape) = %q, want none", missing)
 	}
 	for i, shape := range mergeShapes {
 		t.Run(mergeSubtestName(shape.name), func(t *testing.T) {
@@ -852,6 +1204,109 @@ func TestMissingMergeShapesNamesEveryUncoveredShape(t *testing.T) {
 				if other != shape.name {
 					t.Errorf("missingMergeShapes(the set without %q) also names %q, want one case per shape", shape.name, other)
 				}
+			}
+		})
+	}
+}
+
+const mergeOneArtifactDir = "one-artifact-run-twice"
+
+// TestMissingMergeShapesTellsOneArtifactFromItsNearMisses strips the synthetic one-artifact case
+// of each value its shape turns on, so a predicate that reads only some of them fails here.
+func TestMissingMergeShapesTellsOneArtifactFromItsNearMisses(t *testing.T) {
+	const shape = "two reports one analyzer artifact wrote"
+	full := mergeShapeCases()
+	at := slices.IndexFunc(full, func(c mergeCase) bool { return c.dir == mergeOneArtifactDir })
+	if at < 0 || slices.Contains(missingMergeShapes(full), shape) {
+		t.Fatalf("Setup: mergeShapeCases() holds no %s case covering %q", mergeOneArtifactDir, shape)
+	}
+	cases := []struct {
+		strip func(c *mergeCase)
+		name  string
+	}{
+		{name: "two_digests", strip: func(c *mergeCase) { c.digests = []string{mergePlantedGoDigest, mergePlantedTSDigest} }},
+		{name: "two_versions", strip: func(c *mergeCase) { c.inputs[1].Analyzer.Version = "1.1.0" }},
+		{name: "two_names", strip: func(c *mergeCase) { c.inputs[1].Analyzer.Name = "other-go" }},
+		{name: "no_digest", strip: func(c *mergeCase) { c.digests = []string{"", ""} }},
+		{name: "a_merged_report", strip: func(c *mergeCase) { c.exit, c.expected = mergeFindingsExit, &mergeReport{} }},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			stripped := slices.Clone(full)
+			c := stripped[at]
+			c.inputs = slices.Clone(c.inputs)
+			tc.strip(&c)
+			stripped[at] = c
+			if missing := missingMergeShapes(stripped); !slices.Contains(missing, shape) {
+				t.Errorf("missingMergeShapes(the set with the %s case given %s) = %q, want it to name %q", mergeOneArtifactDir, tc.name, missing, shape)
+			}
+		})
+	}
+}
+
+const mergeOneNameDir = "one-analyzer-name-twice"
+
+// TestMissingMergeShapesTellsOneNameTwiceFromItsNearMisses strips the synthetic one-name case of
+// each value its shape turns on, so a predicate that reads only some of them fails here.
+func TestMissingMergeShapesTellsOneNameTwiceFromItsNearMisses(t *testing.T) {
+	cases := []struct {
+		strip func(c *mergeCase)
+		name  string
+	}{
+		{name: "one_version", strip: func(c *mergeCase) { c.inputs[1].Analyzer.Version = c.inputs[0].Analyzer.Version }},
+		{name: "one_digest", strip: func(c *mergeCase) { c.digests = []string{mergePlantedGoDigest, mergePlantedGoDigest} }},
+		{name: "no_second_digest", strip: func(c *mergeCase) { c.digests = []string{mergePlantedGoDigest, ""} }},
+		{name: "two_names", strip: func(c *mergeCase) { c.inputs[1].Analyzer.Name = "other-go" }},
+		{name: "a_merged_report", strip: func(c *mergeCase) { c.exit, c.expected = mergeFindingsExit, &mergeReport{} }},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			stripped := mergeShapeCases()
+			at := slices.IndexFunc(stripped, func(c mergeCase) bool { return c.dir == mergeOneNameDir })
+			if at < 0 || slices.Contains(missingMergeShapes(stripped), mergeOneNameShape) {
+				t.Fatalf("Setup: mergeShapeCases() holds no %s case covering %q", mergeOneNameDir, mergeOneNameShape)
+			}
+			tc.strip(&stripped[at])
+			if missing := missingMergeShapes(stripped); !slices.Contains(missing, mergeOneNameShape) {
+				t.Errorf("missingMergeShapes(the set with the %s case given %s) = %q, want it to name %q", mergeOneNameDir, tc.name, missing, mergeOneNameShape)
+			}
+		})
+	}
+}
+
+const mergeOneRuleDir = "test-file-rule-counted-two-ways"
+
+// TestMissingMergeShapesTellsOneRuleCountedTwoWaysFromItsNearMisses strips the synthetic
+// one-rule case of each value its shape turns on, so a predicate that reads only some of them
+// fails here.
+func TestMissingMergeShapesTellsOneRuleCountedTwoWaysFromItsNearMisses(t *testing.T) {
+	// counted gives the first input x and the second y, and the merged report both.
+	counted := func(c *mergeCase, x, y mergeRule) {
+		c.inputs[0].TestFileRules, c.inputs[1].TestFileRules = []mergeRule{x}, []mergeRule{y}
+		c.expected = &mergeReport{TestFileRules: []mergeRule{y, x}}
+	}
+	suffix := func(matched int) mergeRule { return mergeRule{Rule: "go-test-suffix", Matched: matched} }
+	cases := []struct {
+		strip func(c *mergeCase)
+		name  string
+	}{
+		{name: "two_rules", strip: func(c *mergeCase) { counted(c, suffix(9), mergeRule{Rule: "go-test-file", Matched: 10}) }},
+		{name: "the_greater_count_read_first", strip: func(c *mergeCase) { counted(c, suffix(9), suffix(8)) }},
+		{name: "the_encodings_in_count_order", strip: func(c *mergeCase) { counted(c, suffix(2), suffix(3)) }},
+		{name: "the_lesser_count_not_merged", strip: func(c *mergeCase) { c.expected = &mergeReport{TestFileRules: []mergeRule{suffix(10)}} }},
+		{name: "the_greater_count_not_merged", strip: func(c *mergeCase) { c.expected = &mergeReport{TestFileRules: []mergeRule{suffix(9)}} }},
+		{name: "a_refused_case", strip: func(c *mergeCase) { c.exit, c.expected = mergeFailureExit, nil }},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			stripped := mergeShapeCases()
+			at := slices.IndexFunc(stripped, func(c mergeCase) bool { return c.dir == mergeOneRuleDir })
+			if at < 0 || slices.Contains(missingMergeShapes(stripped), mergeOneRuleShape) {
+				t.Fatalf("Setup: mergeShapeCases() holds no %s case covering %q", mergeOneRuleDir, mergeOneRuleShape)
+			}
+			tc.strip(&stripped[at])
+			if missing := missingMergeShapes(stripped); !slices.Contains(missing, mergeOneRuleShape) {
+				t.Errorf("missingMergeShapes(the set with the %s case given %s) = %q, want it to name %q", mergeOneRuleDir, tc.name, missing, mergeOneRuleShape)
 			}
 		})
 	}
@@ -948,6 +1403,12 @@ const (
 		`"suppressions_in_effect": 0, "reasons_recorded": 0, "stale_suppressions": 0, "pending": 0, "omitted": 0}}` + "\n"
 )
 
+// mergePlantedCaller is the planted case's caller.json: the merging product the planted merged
+// report names, and one digest per planted input.
+const mergePlantedCaller = `{"schema_version": "1.0.0", "contract_version": "1.0.0", ` +
+	`"analyzer": {"name": "deadset", "version": "1.0.0", "conformance": {"corpus_version": "1.0.0", "result": "pass", "digest": "` + mergePlantedMergedDigest + `"}}, ` +
+	`"digests": {"00-go.json": "` + mergePlantedGoDigest + `", "01-ts.json": "` + mergePlantedTSDigest + `"}, "fail_on": "deny"}` + "\n"
+
 // plantedMergeCase is one complete case in memory, laid out as vectors/merge lays a case out on
 // disk, so every check runs against a well-formed case before the first one lands and keeps
 // running against the same code afterwards.
@@ -956,6 +1417,7 @@ func plantedMergeCase() fstest.MapFS {
 	return fstest.MapFS{
 		dir + "/" + mergeAcceptedFile:              {Data: []byte("1.0.0\n")},
 		dir + "/" + mergeExitFile:                  {Data: []byte("1\n")},
+		dir + "/" + mergeCallerFile:                {Data: []byte(mergePlantedCaller)},
 		dir + "/" + mergeInputsDir + "/00-go.json": {Data: []byte(mergePlantedGoReport)},
 		dir + "/" + mergeInputsDir + "/01-ts.json": {Data: []byte(mergePlantedTSReport)},
 		dir + "/" + mergeExpectedFile:              {Data: []byte(mergePlantedMergedReport)},
@@ -1003,6 +1465,12 @@ func mergeShapeCases() []mergeCase {
 		}
 		return e
 	}
+	pendingOn := func(edge, side, component, ref string) mergeEvaluation {
+		return mergeEvaluation{
+			Edge: edge, Side: side, State: mergeStateDead,
+			Finding: json.RawMessage(`{"symbol": {"ref": "` + ref + `"}, "component": {"id": "` + component + `"}}`),
+		}
+	}
 	live := evaluation("provides", mergeStateLive)
 	staleReport := tsReport(evaluation("used_by", mergeStateLive))
 	staleReport.StaleSuppressions = []json.RawMessage{json.RawMessage(`{}`)}
@@ -1016,14 +1484,49 @@ func mergeShapeCases() []mergeCase {
 	failedReport := tsReport()
 	failedReport.Analyzer.Conformance.Result = "fail"
 
+	goRoot := pendingOn("wire/ServerEvent", "provides", "deadset-go/c-1", "go://example.com/app#ServerEvent")
+	goMember := pendingOn("wire/EventKind", "provides", "deadset-go/c-1", "go://example.com/app#eventKind")
+	tsPair := pendingOn("wire/EventKind", "used_by", "deadset-ts/c-1", "ts://@example/app/wire.ts#EventKind")
+	withMember := func(r mergeReport) mergeReport {
+		r.Findings = []mergeFinding{{Component: mergeComponent{ID: "deadset-go/c-1"}}}
+		return r
+	}
+	promoted := &mergeReport{Findings: []mergeFinding{{Symbol: mergeSymbol{Ref: "go://example.com/app#ServerEvent"}}}}
+
+	refused := func(dir string, edit func(a, b *mergeReport)) mergeCase {
+		a, b := goReport(live), tsReport()
+		edit(&a, &b)
+		return mergeCase{dir: dir, accepted: "1.0.0", exit: mergeFailureExit, inputs: []mergeReport{a, b}}
+	}
+	mergedCase := func(dir string, edit func(a, b, m *mergeReport)) mergeCase {
+		a, b, m := goReport(live), tsReport(), &mergeReport{}
+		edit(&a, &b, m)
+		return mergeCase{dir: dir, accepted: "1.0.0", exit: mergeFindingsExit, expected: m, inputs: []mergeReport{a, b}}
+	}
+	entry := func(id, members string) []json.RawMessage {
+		return []json.RawMessage{json.RawMessage(`{"id": "` + id + `"` + members + `}`)}
+	}
+	oneArtifact := refused(mergeOneArtifactDir, func(a, b *mergeReport) { b.Analyzer = a.Analyzer })
+	oneArtifact.digests = []string{mergePlantedGoDigest, mergePlantedGoDigest}
+	oneName := refused(mergeOneNameDir, func(a, b *mergeReport) {
+		b.Analyzer = a.Analyzer
+		b.Analyzer.Version = "1.1.0"
+	})
+	oneName.digests = []string{mergePlantedGoDigest, mergePlantedTSDigest}
+	lesser, greater := mergeRule{Rule: "go-test-suffix", Matched: 9}, mergeRule{Rule: "go-test-suffix", Matched: 10}
+	oneRule := mergedCase(mergeOneRuleDir, func(a, b, m *mergeReport) {
+		a.TestFileRules, b.TestFileRules = []mergeRule{lesser}, []mergeRule{greater}
+		m.TestFileRules = []mergeRule{greater, lesser}
+	})
+
 	return []mergeCase{
 		{dir: "one-report", accepted: "1.0.0", exit: mergeCleanExit, expected: merged, inputs: []mergeReport{goReport()}},
 		{dir: "no-edges", accepted: "1.0.0", exit: mergeCleanExit, expected: merged, inputs: []mergeReport{goReport(), tsReport()}},
 		{dir: "pair-live", accepted: "1.0.0", exit: mergeCleanExit, expected: merged, inputs: []mergeReport{
-			goReport(evaluation("provides", mergeStateDead)), tsReport(evaluation("used_by", mergeStateLive)),
+			withMember(goReport(goRoot)), tsReport(evaluation("used_by", mergeStateLive)),
 		}},
-		{dir: "pair-dead", accepted: "1.0.0", exit: mergeFindingsExit, expected: merged, inputs: []mergeReport{
-			goReport(evaluation("provides", mergeStateDead)), tsReport(evaluation("used_by", mergeStateDead)),
+		{dir: "pair-dead", accepted: "1.0.0", exit: mergeFindingsExit, expected: promoted, inputs: []mergeReport{
+			goReport(goRoot), tsReport(pendingOn("wire/ServerEvent", "used_by", "deadset-ts/c-1", "ts://@example/app/wire.ts#ServerEvent")),
 		}},
 		{dir: "unresolved-edge", accepted: "1.0.0", exit: mergeFailureExit, inputs: []mergeReport{
 			goReport(evaluation("provides", mergeStateDead)), tsReport(otherEdge),
@@ -1043,5 +1546,41 @@ func mergeShapeCases() []mergeCase {
 		{dir: "stale-suppression", accepted: "1.0.0", exit: mergeFindingsExit, expected: merged, inputs: []mergeReport{
 			goReport(live), staleReport,
 		}},
+		{dir: "pair-absent", accepted: "1.0.0", exit: mergeFindingsExit, expected: merged, inputs: []mergeReport{
+			withMember(goReport(goRoot)), tsReport(evaluation("used_by", mergeStateAbsent)),
+		}},
+		{dir: "member-on-a-second-edge", accepted: "1.0.0", exit: mergeCleanExit, expected: merged, inputs: []mergeReport{
+			goReport(goRoot, goMember), tsReport(evaluation("used_by", mergeStateLive), tsPair),
+		}},
+		{dir: "member-beside-a-stale-edge", accepted: "1.0.0", exit: mergeFindingsExit, expected: merged, inputs: []mergeReport{
+			goReport(goRoot, goMember), tsReport(evaluation("used_by", mergeStateAbsent), tsPair),
+		}},
+		refused("targets-differ", func(a, b *mergeReport) {
+			a.Target, b.Target = json.RawMessage(`{"root": "."}`), json.RawMessage(`{"root": "web"}`)
+		}),
+		refused("findings-omitted", func(_, b *mergeReport) { b.Totals.Omitted = 1 }),
+		refused("configuration-entries-differ", func(a, b *mergeReport) {
+			a.Configurations, b.Configurations = entry("linux-amd64", `, "tags": []`), entry("linux-amd64", `, "tags": ["netgo"]`)
+		}),
+		mergedCase("configuration-not-built-errors-merged", func(a, b, m *mergeReport) {
+			a.ConfigurationsNotBuilt, b.ConfigurationsNotBuilt = entry("windows-amd64", `, "error": "a"`), entry("windows-amd64", `, "error": "b"`)
+			m.ConfigurationsNotBuilt = a.ConfigurationsNotBuilt
+		}),
+		refused("configuration-built-and-not-built", func(a, b *mergeReport) {
+			a.Configurations, b.ConfigurationsNotBuilt = entry("linux-amd64", ""), entry("linux-amd64", `, "error": "e"`)
+		}),
+		refused("consumer-entries-differ", func(a, b *mergeReport) {
+			a.Consumers.Loaded, b.Consumers.Loaded = entry("example.com/cli", `, "path": "../cli"`), entry("example.com/cli", `, "path": "../tools/cli"`)
+		}),
+		mergedCase("consumer-unavailable-reasons-merged", func(a, b, m *mergeReport) {
+			a.Consumers.Unavailable, b.Consumers.Unavailable = entry("example.com/cli", `, "reason": "a"`), entry("example.com/cli", `, "reason": "b"`)
+			m.Consumers.Unavailable = a.Consumers.Unavailable
+		}),
+		refused("consumer-loaded-and-unavailable", func(a, b *mergeReport) {
+			a.Consumers.Loaded, b.Consumers.Unavailable = entry("example.com/cli", `, "path": "../cli"`), entry("example.com/cli", `, "reason": "r"`)
+		}),
+		oneArtifact,
+		oneName,
+		oneRule,
 	}
 }

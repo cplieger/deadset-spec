@@ -271,7 +271,7 @@
       "code": "DS1502",
       "name": "file-never-imported",
       "languages": ["go", "ts"],
-      "rule": "A source file that no import reaches and no root names.",
+      "rule": "A source file that no import reaches, that no root names, and in which no declared cross-language edge names a declaration. An edge's side names a declaration as a root names one, so a file holding a declaration an edge names is evaluated with the edge rather than reported: whether that declaration is dead is the edge evaluation's to say, and the merge resolves it against the paired side.",
       "default_enabled": true,
       "default_severity": "deny",
       "max_class": "certain",

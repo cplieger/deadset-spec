@@ -121,6 +121,62 @@
       "violates": "the envelope carries a member the schema does not declare"
     },
     {
+      "file": "scope-consumer-role-target.json",
+      "schema": "contract/scope.schema.json",
+      "constraint": "enum",
+      "instance_path": "/consumers/0/role",
+      "violates": "a module the document places among the consumers declares the target's role, so the document contradicts itself about which module the analysis reports on"
+    },
+    {
+      "file": "scope-key-case-variant.json",
+      "schema": "contract/scope.schema.json",
+      "constraint": "additionalProperties",
+      "instance_path": "",
+      "violates": "the scope spells a declared key in another case, and the closed key list compares keys as bytes, so the spelling names no declared key"
+    },
+    {
+      "file": "scope-target-absent.json",
+      "schema": "contract/scope.schema.json",
+      "constraint": "required",
+      "instance_path": "",
+      "violates": "the scope names consumers and no target, so the analysis has nothing to report on"
+    },
+    {
+      "file": "scope-target-id-empty.json",
+      "schema": "contract/scope.schema.json",
+      "constraint": "minLength",
+      "instance_path": "/target/id",
+      "violates": "the target's name is empty, which names no module; a document that leaves the name to the load omits the member"
+    },
+    {
+      "file": "scope-target-id-null.json",
+      "schema": "contract/scope.schema.json",
+      "constraint": "type",
+      "instance_path": "/target/id",
+      "violates": "the target's name is null rather than a string; a document that leaves the name to the load omits the member"
+    },
+    {
+      "file": "scope-target-path-empty.json",
+      "schema": "contract/scope.schema.json",
+      "constraint": "minLength",
+      "instance_path": "/target/path",
+      "violates": "the target's path is empty, so it names no directory to load"
+    },
+    {
+      "file": "scope-unknown-member.json",
+      "schema": "contract/scope.schema.json",
+      "constraint": "additionalProperties",
+      "instance_path": "",
+      "violates": "the scope carries a member the closed key list does not declare"
+    },
+    {
+      "file": "scope-workspace-not-a-string.json",
+      "schema": "contract/scope.schema.json",
+      "constraint": "type",
+      "instance_path": "/workspace",
+      "violates": "the workspace member is a Boolean rather than the path of a workspace file"
+    },
+    {
       "file": "stale-suppression-code-not-ds1703.json",
       "schema": "contract/report.schema.json",
       "constraint": "const",

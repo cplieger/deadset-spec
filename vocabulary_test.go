@@ -680,3 +680,48 @@ func TestVocabularySeverityKeysNameALiveKindOrFamily(t *testing.T) {
 		})
 	}
 }
+
+// TestVocabularySeverityVectorsAgreeWithTheVocabulary reads the published configuration cases
+// through the same resolver: a case refused at a severity key names a key the vocabulary refuses,
+// and every severity key a resolved configuration prints is one it resolves.
+func TestVocabularySeverityVectorsAgreeWithTheVocabulary(t *testing.T) {
+	doc := loadKinds(t)
+	shape := severityKeyShape(t)
+	var refused int
+	for _, dir := range configVectorDirs(t) {
+		t.Run(dir, func(t *testing.T) {
+			if names, ok := strings.CutPrefix(refusalNamesIfAny(t, dir), "severity."); ok {
+				refused++
+				if errs := severityKeyErrors(map[string]string{names: "warn"}, doc, shape); len(errs) == 0 {
+					t.Errorf("%s/%s refuses severity.%s, want a key %s resolves to nothing, and it resolves", configVectorsDir, dir, names, kindsPath)
+				}
+			}
+			data, ok := readVectorFile(t, dir, vectorExpectedFile)
+			if !ok {
+				return
+			}
+			var resolved struct {
+				Severity map[string]string `json:"severity"`
+			}
+			if err := json.Unmarshal(data, &resolved); err != nil {
+				t.Fatalf("Setup: json.Unmarshal(%s/%s/%s): %v", configVectorsDir, dir, vectorExpectedFile, err)
+			}
+			if errs := severityKeyErrors(resolved.Severity, doc, shape); len(errs) != 0 {
+				t.Errorf("%s/%s/%s prints severity keys the vocabulary refuses: %s", configVectorsDir, dir, vectorExpectedFile, joined(errs))
+			}
+		})
+	}
+	if refused == 0 {
+		t.Errorf("no case under %s is refused at a severity key, want one naming a key no live kind carries", configVectorsDir)
+	}
+}
+
+// refusalNamesIfAny returns the key a refused case names, and the empty string for a case that
+// resolves.
+func refusalNamesIfAny(t *testing.T, dir string) string {
+	t.Helper()
+	if _, ok := readVectorFile(t, dir, vectorErrorFile); !ok {
+		return ""
+	}
+	return refusalNames(t, dir)
+}

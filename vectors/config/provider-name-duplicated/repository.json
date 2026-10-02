@@ -1,0 +1,9 @@
+{
+  "target": { "kind": "application" },
+  "providers": {
+    "analyzers": [
+      { "name": "deadset-go", "languages": ["go"], "command": "deadset-go" },
+      { "name": "deadset-go", "languages": ["go"], "command": "/opt/deadset/bin/deadset-go" }
+    ]
+  }
+}

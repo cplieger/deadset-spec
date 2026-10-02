@@ -25,8 +25,8 @@ and read that evidence for every class and not only for the text-matching ones. 
 one clause of detail naming the relation and the thing it relates to (`satisfies io.Writer`,
 `named by {{.Title}}`). A class whose evidence is a type relation names the conversion or the
 consumer site, a class whose evidence is a text match names the position of the matching text, the
-generated-file class names the package clause of the generated file, and the linker, cgo, assembly
-and plugin class names the directive, or the package clause of the file that declares the symbol
+generated-file class names the package clause of the generated file, and the assembly and plugin
+class names the assembly directive, or the package clause of the file that declares the symbol
 where the evidence is the shape of the package. The detail is display text; the class name is the
 machine-readable half.
 
@@ -137,11 +137,11 @@ From `contract/exemptions.json`, class `generated-file`.
 
 ### linkname-cgo-asm-plugin
 
-A symbol that another compilation unit or the runtime reaches by name outside the type checker's view is retained: a linker-level alias, a symbol exported to C, a symbol an assembly file names, or an exported symbol of a package whose shape is a plugin's.
+A symbol that another compilation unit reaches by name outside the type checker's view is retained: a symbol an assembly file names, or an exported symbol of a package whose shape is a plugin's. A linker-level alias and a symbol exported to C are roots of the analysis rather than exemptions, so this class retains neither.
 
-Retains: The named symbol, and every exported function and variable of a plugin's main package.
+Retains: The symbol an assembly file names, and every exported function and variable of a plugin's main package.
 
-Mechanism in Go: Retain a function or variable named on either side of a `//go:linkname` directive in a file that imports `"unsafe"`, in any loaded package, the only kind of file the directive binds in; a function carrying a `//export` directive in a cgo file; a symbol named by a `TEXT ·name` directive in an assembly file of the same package; and an exported function or variable of a main package that declares no `main` function, which is the shape of a plugin's main package. A name a `plugin` `Lookup` call carries is retained by `reflective-lookup` in the package that holds the call.
+Mechanism in Go: Retain a symbol named by a `TEXT ·name` directive in an assembly file of the same package, and an exported function or variable of a main package that declares no `main` function, which is the shape of a plugin's main package. A name a `plugin` `Lookup` call carries is retained by `reflective-lookup` in the package that holds the call.
 
 From `contract/exemptions.json`, class `linkname-cgo-asm-plugin`.
 
