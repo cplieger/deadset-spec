@@ -595,7 +595,7 @@ func TestSuppressionInlineCorpusFollowsTheDecisionProcedure(t *testing.T) {
 						t.Errorf("accepted case %d names the code %q, want DS and four digits", i, code)
 					}
 				}
-				if reason := groups[reasonGroup]; strings.TrimSpace(reason) == "" {
+				if reason := groups[reasonGroup]; isWhitespace(reason) {
 					t.Errorf("accepted case %d captures the reason %q, want a reason that is not whitespace", i, reason)
 				}
 				return
@@ -626,6 +626,15 @@ func TestSuppressionInlineCorpusFollowsTheDecisionProcedure(t *testing.T) {
 			}
 		})
 	}
+}
+
+// contractWhitespace is the four characters the suppression page defines as whitespace.
+const contractWhitespace = " \t\r\n"
+
+// isWhitespace reports whether s holds no character other than the four the
+// suppression page defines as whitespace, which is what an empty reason is.
+func isWhitespace(s string) bool {
+	return strings.Trim(s, contractWhitespace) == ""
 }
 
 // entryKeys is the closed key list an ignore entry and a baseline row share.
@@ -696,7 +705,7 @@ func failedEntryChecks(t *testing.T, raw json.RawMessage, forms map[symbolFormKe
 			fail("path-form")
 		}
 	}
-	if reason, ok := values["reason"]; !mistyped["reason"] && (!ok || strings.TrimSpace(reason) == "") {
+	if reason, ok := values["reason"]; !mistyped["reason"] && (!ok || isWhitespace(reason)) {
 		fail("reason-required")
 	}
 	slices.Sort(failed)
@@ -1020,7 +1029,7 @@ func TestTextLineShellFilterAgreesWithTheExpression(t *testing.T) {
 // constructsOutsideBothDialects compile in one of RE2 and ECMAScript without flags and not
 // in the other, or read differently in the two, so no published expression carries one.
 var constructsOutsideBothDialects = []string{
-	`\A`, `\z`, `\Z`, `\Q`, `\E`, `\p{`, `\P{`, `(?P<`, `(?>`, `(?=`, `(?!`, `(?<=`, `(?<!`, `(?#`, `[:`,
+	`\A`, `\z`, `\Z`, `\Q`, `\E`, `\p{`, `\P{`, `(?P<`, `(?>`, `(?=`, `(?!`, `(?<=`, `(?<!`, `(?#`, `[:`, `\s`, `\S`,
 }
 
 var (

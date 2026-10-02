@@ -93,7 +93,7 @@
       }
     },
     "merged_from": {
-      "description": "One entry per input report a merge read, ordered by name and then by version, each compared bytewise. A report an analyzer writes omits this member; a merged report carries it, so the version and the artifact digest of every analyzer that ran is in the document the merge produced.",
+      "description": "One entry per input report a merge read, ordered by name compared bytewise. No two entries share a name, because a merge refuses two input reports of one analyzer name. A report an analyzer writes omits this member; a merged report carries it, so the version and the artifact digest of every analyzer that ran is in the document the merge produced.",
       "type": "array",
       "uniqueItems": true,
       "items": {
@@ -112,7 +112,7 @@
             "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(-[0-9A-Za-z.-]+)?(\\+[0-9A-Za-z.-]+)?$"
           },
           "digest": {
-            "description": "sha256: followed by the lowercase hexadecimal SHA-256 of the analyzer artifact that ran, which is the digest the provider entry naming it records.",
+            "description": "sha256: followed by the lowercase hexadecimal SHA-256 of the analyzer artifact that ran. No input report carries it, because an analyzer does not attest its own artifact, so a merge takes it from its caller, the product that ran the analyzer.",
             "type": "string",
             "pattern": "^sha256:[0-9a-f]{64}$"
           }
@@ -303,7 +303,7 @@
                 "minLength": 1
               },
               "role": {
-                "description": "The role the scope document gave the module. Every entry of this array was loaded as a consumer of the target.",
+                "description": "The role the scope document gave the module, in the vocabulary scope.schema.json declares. Every entry of this array was loaded as a consumer of the target.",
                 "type": "string",
                 "enum": ["consumer"]
               },
@@ -338,7 +338,7 @@
                 "description": "Why the consumer was not loaded, in one sentence for a reader of the report: the configuration excluded it, or it declared no path. Required, so an unavailable consumer is never a bare name.",
                 "type": "string",
                 "minLength": 1,
-                "pattern": "\\S"
+                "pattern": "[^ \\t\\r\\n]"
               }
             }
           }
@@ -357,7 +357,7 @@
       }
     },
     "edge_evaluations": {
-      "description": "One record per declared cross-language edge side the product enumerated, ordered by edge, then side, then the name of the analyzer that carried the record, each compared bytewise. An analyzer reads only the sides of an edge that carry its own language and never resolves the paired symbol. A side holds more than one record when more than one analyzer claims its language, so the array is not deduplicated. A merged report carries every evaluation whose state is live or absent and none whose state is dead, because the merge resolves each dead evaluation into a promotion, a drop or a stale-edge finding.",
+      "description": "One record per declared cross-language edge side the product enumerated, ordered by edge, then side, then the name of the analyzer that carried the record, each compared bytewise, then by the bytewise comparison of the records' compact encodings in the property order of this schema. An analyzer reads only the sides of an edge that carry its own language and never resolves the paired symbol. A side holds more than one record when more than one analyzer claims its language, so the array is not deduplicated. A merged report carries every evaluation whose state is live or absent and none whose state is dead, because the merge resolves each dead evaluation into a promotion, a drop or a stale-edge finding.",
       "type": "array",
       "items": {
         "type": "object",
@@ -448,7 +448,7 @@
                 "description": "The reason the suppression carries: a maintainer's adjudication for a directive or an ignore entry, and the provenance the analyzer wrote for a baseline row. A suppression carrying none is reported under its own code and binds nothing, so every record here has one.",
                 "type": "string",
                 "minLength": 1,
-                "pattern": "\\S"
+                "pattern": "[^ \\t\\r\\n]"
               }
             }
           },
@@ -483,7 +483,7 @@
             "description": "Why the suppression is stale, in one sentence a text line renders verbatim: the mechanism and the code it named, and where the symbol reports a different code, that code, so the maintainer corrects the code rather than hunting for it.",
             "type": "string",
             "minLength": 1,
-            "pattern": "\\S"
+            "pattern": "[^ \\t\\r\\n]"
           },
           "analyzer": {
             "description": "The name of the analyzer whose report carried this record. A report an analyzer writes omits it, because this envelope's analyzer.name is that name; a merged report carries it, because the canonical key's last component distinguishes records drawn from different reports.",
@@ -520,7 +520,7 @@
             "description": "Why the product does not implement the capability, in one or two sentences for a reader of the report. Required on every row, so a gap is never a bare entry.",
             "type": "string",
             "minLength": 1,
-            "pattern": "\\S"
+            "pattern": "[^ \\t\\r\\n]"
           },
           "analyzer": {
             "description": "The name of the analyzer whose report carried this row. A report an analyzer writes omits it, because this envelope's analyzer.name is that name; a merged report carries it, because the canonical key's last component distinguishes rows drawn from different reports.",
@@ -541,7 +541,7 @@
       }
     },
     "test_file_rules": {
-      "description": "The rules by which the run classified a file as a test file, one entry per rule, ordered by rule compared bytewise, each with the number of files it matched. A reader compares the counts against the tree to see which convention decided the production and test reference split.",
+      "description": "The rules by which the run classified a file as a test file, each with the number of files it matched, ordered by rule compared bytewise, then by the bytewise comparison of the entries' compact encodings in the property order of this schema. A report an analyzer writes holds one entry per rule; a merged report holds one entry per distinct entry, so two analyzers that count one rule differently contribute two entries. A reader compares the counts against the tree to see which convention decided the production and test reference split.",
       "type": "array",
       "uniqueItems": true,
       "items": {
@@ -589,7 +589,7 @@
           "required": ["allow", "warn", "deny"],
           "properties": {
             "allow": {
-              "description": "How many findings carry the allow severity, which never fails a run.",
+              "description": "How many findings carry the allow severity: always 0, because a finding at allow is withheld.",
               "type": "integer",
               "minimum": 0
             },
@@ -606,12 +606,12 @@
           }
         },
         "deletable_lines": {
-          "description": "The number of distinct source lines a reader deletes by acting on every finding in findings: the lines the fall sets of the reported component roots span, a line two of them share counted once.",
+          "description": "The number of source lines a reader deletes by acting on every finding in findings: the sum of deletable_lines over the distinct components the root findings of findings name, each component counted once however many of its root members the array holds.",
           "type": "integer",
           "minimum": 0
         },
         "suppressions_in_effect": {
-          "description": "How many suppression records bound to a symbol that would otherwise have produced a finding under the record's code. It is where a suppressed finding is visible, because no record for it appears in findings or in any output rendered from findings. A record bound to a symbol whose finding the configuration withholds, by setting the severity of its code to allow or by setting a minimum confidence the finding does not reach, is dormant rather than in effect and is not counted here, so turning a kind off or raising the confidence floor never turns its adjudications into findings.",
+          "description": "How many suppression records bound to a symbol that would otherwise have produced a finding under the record's code. It is where a suppressed finding is visible, because no record for it appears in findings or in any output rendered from findings. A record bound to a symbol whose finding the configuration withholds, by setting the severity of its code to allow, by setting a minimum confidence the finding does not reach, or by withholding in either way a root finding of the component the finding's component.id names, is dormant rather than in effect and is not counted here, so turning a kind off or raising the confidence floor never turns its adjudications into findings.",
           "type": "integer",
           "minimum": 0
         },

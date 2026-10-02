@@ -1,0 +1,12 @@
+{
+  "name": "entry-file-declaring-nothing",
+  "description": "A program whose entry file declares nothing and only runs statements when the program starts. No import reaches that file, a root names it, and it holds no declaration for a root or an edge to name, so it is not reported as never imported.",
+  "languages": ["go", "ts"],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Entry",
+      "report": "none"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "schema_version": "6.0.0",
+  "contract_version": "3.2.0",
+  "analyzer": {
+    "name": "deadset",
+    "version": "1.0.0",
+    "conformance": {
+      "corpus_version": "1.0.0",
+      "result": "pass",
+      "digest": "sha256:890ddff06aecf253706705aa5cefa6281c1d1f63ddb62927d11f6d0ef03b1ade"
+    }
+  },
+  "digests": {
+    "00-ts.json": "sha256:5c5ab9f4a00f39a12023fa05a42d8015800d96cca15e10cd6c920a313ee0745d"
+  },
+  "fail_on": "deny"
+}

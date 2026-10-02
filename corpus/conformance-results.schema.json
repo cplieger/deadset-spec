@@ -274,7 +274,7 @@
                   "description": "The runner's one-line account of a fail or a gap for a human reader, naming what differed. Never present on a pass, and never the only record of the difference: actual carries the answer.",
                   "type": "string",
                   "minLength": 1,
-                  "pattern": "\\S"
+                  "pattern": "[^ \\t\\r\\n]"
                 }
               },
               "if": {
@@ -322,7 +322,7 @@
             "description": "The runner's one-line account of a fixture-level failure for a human reader: a rendering that would not load, an analysis that did not complete, or a closed-world violation summarized. Never present on a pass.",
             "type": "string",
             "minLength": 1,
-            "pattern": "\\S"
+            "pattern": "[^ \\t\\r\\n]"
           }
         },
         "allOf": [

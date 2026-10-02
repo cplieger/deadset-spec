@@ -1,0 +1,164 @@
+{
+  "schema_version": "6.0.0",
+  "contract_version": "3.2.0",
+  "analyzer": {
+    "name": "deadset",
+    "version": "1.0.0",
+    "languages": [
+      "go"
+    ],
+    "schema_versions_accepted": [
+      "6.0.0"
+    ],
+    "conformance": {
+      "corpus_version": "1.0.0",
+      "result": "pass",
+      "digest": "sha256:890ddff06aecf253706705aa5cefa6281c1d1f63ddb62927d11f6d0ef03b1ade"
+    }
+  },
+  "merged_from": [
+    {
+      "name": "deadset-go",
+      "version": "1.1.0",
+      "digest": "sha256:d8ff9f456206d837f2de0f886e7edb53df313ad18c7e5b1fb4d5fd3d7c650cb6"
+    },
+    {
+      "name": "example-go",
+      "version": "1.0.0",
+      "digest": "sha256:0e9398b88d91c4071f79b320af4bc1d0a34701f5dd210c84e841525962bb6e72"
+    }
+  ],
+  "target": {
+    "kind": "application",
+    "root": ".",
+    "identity": "example.com/app"
+  },
+  "configurations": [
+    {
+      "id": "linux-amd64",
+      "os": "linux",
+      "arch": "amd64",
+      "tags": []
+    }
+  ],
+  "configurations_not_built": [
+    {
+      "id": "windows-amd64",
+      "os": "windows",
+      "arch": "amd64",
+      "tags": [],
+      "error": "example.com/app/internal/store: undefined: syscall.Flock"
+    }
+  ],
+  "consumers": {
+    "declared": 0,
+    "loaded": [],
+    "unavailable": []
+  },
+  "findings": [
+    {
+      "code": "DS1002",
+      "kind": "unused-unexported",
+      "language": "go",
+      "position": {
+        "path": "internal/store/legacy.go",
+        "line": 9,
+        "column": 6,
+        "end_line": 13
+      },
+      "symbol": {
+        "ref": "go://example.com/app/internal/store#oldHelper",
+        "kind": "function",
+        "name": "oldHelper",
+        "parent": "go://example.com/app/internal/store#",
+        "exported": false,
+        "size_lines": 5
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "liveness_relation": "reference-counting",
+      "test_only": false,
+      "generated": false,
+      "component": {
+        "id": "example-go/c-2",
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 5
+      },
+      "retained_by": [],
+      "configurations": [
+        "linux-amd64"
+      ],
+      "consumers_loaded": [],
+      "fixability": "deletable",
+      "severity": "deny",
+      "message": "unexported function has no reference in the target",
+      "analyzer": "example-go",
+      "details": {}
+    },
+    {
+      "code": "DS1002",
+      "kind": "unused-unexported",
+      "language": "go",
+      "position": {
+        "path": "internal/store/store.go",
+        "line": 41,
+        "column": 6,
+        "end_line": 48
+      },
+      "symbol": {
+        "ref": "go://example.com/app/internal/store#normalizeKey",
+        "kind": "function",
+        "name": "normalizeKey",
+        "parent": "go://example.com/app/internal/store#",
+        "exported": false,
+        "size_lines": 8
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "liveness_relation": "reference-counting",
+      "test_only": false,
+      "generated": false,
+      "component": {
+        "id": "deadset-go/c-2",
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 8
+      },
+      "retained_by": [],
+      "configurations": [
+        "linux-amd64"
+      ],
+      "consumers_loaded": [],
+      "fixability": "deletable",
+      "severity": "deny",
+      "message": "unexported function has no reference in the target",
+      "analyzer": "deadset-go",
+      "details": {}
+    }
+  ],
+  "edge_evaluations": [],
+  "stale_suppressions": [],
+  "declared_gaps": [],
+  "excluded_by_cgo": [],
+  "test_file_rules": [
+    {
+      "rule": "go-test-suffix",
+      "matched": 3
+    }
+  ],
+  "totals": {
+    "findings": 2,
+    "by_severity": {
+      "allow": 0,
+      "warn": 0,
+      "deny": 2
+    },
+    "deletable_lines": 13,
+    "suppressions_in_effect": 0,
+    "reasons_recorded": 0,
+    "stale_suppressions": 0,
+    "pending": 0,
+    "omitted": 0
+  }
+}

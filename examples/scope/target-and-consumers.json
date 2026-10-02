@@ -1,0 +1,8 @@
+{
+  "target": { "id": "example.com/app", "role": "target", "path": "app" },
+  "workspace": "go.work",
+  "consumers": [
+    { "id": "example.com/consumer", "role": "consumer", "path": "consumer" },
+    { "path": "/src/example.com/tool" }
+  ]
+}

@@ -137,7 +137,7 @@
       "type": "boolean"
     },
     "component": {
-      "description": "The dead component the subject belongs to, so a report is worked from its roots and one deletion removes a cluster.",
+      "description": "The dead component the subject belongs to: its root members and every dead symbol that falls with them, a symbol falling with a root when it is dead only through it. A finding about a symbol that falls with a root names that root's component, so every finding one deletion removes carries one identifier, a report is worked from its roots, and one deletion removes a cluster.",
       "type": "object",
       "additionalProperties": false,
       "required": ["id", "root", "symbol_count", "deletable_lines"],
@@ -148,11 +148,11 @@
           "pattern": "^[a-z][a-z0-9-]*/c-[0-9]+$"
         },
         "root": {
-          "description": "Whether the subject is a root member of its component: a member that no dead component outside its own references and whose container is not itself dead, so a report is worked from it. A cycle has as many root members as members with no dead predecessor outside the cycle, so every component has at least one.",
+          "description": "Whether the subject is a root member of its component. A dead member and its dead container count as referencing each other, so they share a strongly connected cycle, and a symbol on no cycle is a cycle of one. A root member is a member of a cycle that no dead symbol outside the cycle references through any of its members, whose own container is not itself dead, so a report is worked from it. Every such cycle holds at least one root member, because a member's dead container sits on the member's own cycle, so every component has at least one, and a symbol that falls with a root is never one.",
           "type": "boolean"
         },
         "symbol_count": {
-          "description": "The number of symbols that fall with the component: its own members and every dead symbol only this component reaches.",
+          "description": "The number of the component's members: its root members and every symbol that falls with them, the subject included.",
           "type": "integer",
           "minimum": 1
         },
@@ -290,7 +290,7 @@
             "reason": {
               "description": "Why the finding is not to be reported, or, in a baseline row, the analyzer name and version that recorded the row. Absent on the record a reason-free finding reports.",
               "type": "string",
-              "pattern": "\\S"
+              "pattern": "[^ \\t\\r\\n]"
             }
           }
         },

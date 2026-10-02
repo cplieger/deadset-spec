@@ -57,7 +57,7 @@
             "description": "Why the product does not implement the capability, in one or two sentences for a reader of the product's conformance results: what is missing, and where applicable the tool or convention the gap stands in for. Required on every row, so a gap is never a bare entry.",
             "type": "string",
             "minLength": 1,
-            "pattern": "\\S"
+            "pattern": "[^ \\t\\r\\n]"
           }
         }
       }

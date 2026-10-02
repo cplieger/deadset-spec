@@ -50,6 +50,11 @@ An edge has exactly two sides, `provides` and `used_by`; `provides` exists becau
 grammar `contract/grammar/symbol-ref.md` states, which is language-tagged and carries no line
 number, so an edge survives every edit above the declarations it names.
 
+A side may name any declaration, a type or a member. An edge that names a type says nothing about
+that type's members: each member is judged on its own, or through an edge whose side names it, so an
+edge on a type holds none of the type's members live (from `contract/grammar/merge.md`, the
+vocabulary).
+
 Both references are exact. An edge admits no pattern, no glob and no bare name, for the same reason
 an ignore entry does not: a declaration broader than one symbol would silence findings nobody
 declared (from `contract/grammar/symbol-ref.md`, patterns).
@@ -87,6 +92,12 @@ finding inside the edge evaluation rather than reporting it, and a wire type con
 its generated client is never reported as unnecessarily exported (from `contract/kinds.json`, rows
 `DS1101` and `DS1102`).
 
+A file is evaluated with the edge too. A declared edge names a declaration of the file that holds it
+as a root does, so a file whose only declarations are edge-paired is not reported as never imported
+while the edge names one of them; the declaration's own evaluation carries the answer, and a pair
+the merge finds dead is reported through the declaration's finding (from `contract/kinds.json`, row
+`DS1502`).
+
 ## What the merge does with each pairing
 
 The merge takes every `dead` evaluation in canonical order and reads the strongest state on the
@@ -96,13 +107,19 @@ whichever side is which:
 | One side | The other side | What the merge does |
 | --- | --- | --- |
 | `live` | `live` | Nothing. No side holds a pending finding. |
-| `dead` | `live` | Drops the pending finding. The pair is live, so the symbol stays. |
-| `dead` | `dead` | Promotes each pending finding into the merged report's findings and unions the paired symbols' components, so one deletion covers both sides. |
-| `dead` | `absent` | Drops the pending finding and reports the edge as `DS1705`. A misspelled reference must not turn a live pairing into a deletion, so the stale edge is the defect to fix first. |
+| `dead` | `live` | Drops the pending finding's component: every finding its report carries in that component, pending or not. The pair is live, so the symbol stays, and so does everything it references. |
+| `dead` | `dead` | Promotes each pending finding into the merged report's findings and unions the paired symbols' components, so one deletion covers both sides, unless the component of either finding is dropped on another edge. |
+| `dead` | `absent` | Drops the pending finding's component: every finding its report carries in that component, pending or not, and reports the edge as `DS1705`. A misspelled reference must not turn a live pairing into a deletion, so the stale edge is the defect to fix first. |
 | `live` | `absent` | Reports the edge as `DS1705`. |
 | `absent` | `absent` | Reports the edge as `DS1705`, once for the edge however many sides are absent. |
 | `dead` | no record at all | Ends the run with the failure code, 3, naming the unresolved edge, the pending side and its symbol. No report in the merge evaluated the paired side, so no answer exists. |
 | `live` | no record at all | Nothing. Nothing looked at the paired side, so there is nothing to report. |
+
+A drop reaches every edge the dropped component holds a pending finding on. Once a component is
+dropped, each of its `dead` evaluations reads as `live` on its own edge, so a member of a component
+dropped on one edge keeps the symbol paired with it on another edge from being promoted, whichever
+rule dropped the component. The merge repeats the drops until no further component is dropped, and
+only then promotes what remains, so the outcome does not depend on the order it visits the edges in.
 
 From `contract/grammar/merge.md`, steps 4 and 5. `DS1705` is `stale-cross-language-edge`, and only
 the merge emits it: an analyzer never does, whatever it finds on its own side (from

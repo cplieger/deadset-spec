@@ -19,8 +19,9 @@ From `contract/exit-codes.json`, one row per code.
 Codes 2 and 3 end a run before any verdict exists, and each prints no finding list. Codes 4, 1 and
 0 are verdicts about a complete report, and when more than one verdict condition holds the highest
 code wins: a pending finding outranks findings and stale suppressions, because an unmerged report
-cannot be read as an answer at all, and those outrank a clean result. A finding whose severity is
-`warn` never fails a run (from `contract/exit-codes.json`, the document's `description`).
+cannot be read as an answer at all, and those outrank a clean result. A finding fails a run when its
+severity is at or above `reporters.fail_on`, `deny` by default, so under the default a `warn`
+finding never fails a run (from `contract/exit-codes.json`, the document's `description`).
 
 Two consequences a gate can rely on. A run that returns 0 or 1 has produced a complete report, so a
 gate reads the report for either code. A run that returns 4 has produced a report that is an input
@@ -41,7 +42,9 @@ Three inputs decide it, and each is declared elsewhere in the contract:
 
 ## What the merge returns
 
-The merge's verdict is 0 or 1. It returns 3 in two places, admission and an edge whose paired side
-no report evaluated, and in both a merged report never exists. It never returns 4, because the
-merged report holds no pending finding, and never 2, because a malformed invocation is reported
-before any report exists (from `contract/grammar/merge.md`, the step-and-exit-code table).
+The merge's verdict is 0 or 1, and it applies the caller's `fail_on` as an analyzer's verdict
+applies `reporters.fail_on` (from `contract/grammar/merge.md`, step 7). It returns 3 in two places,
+admission and an edge whose paired side no report evaluated, and in both a merged report never
+exists. It never returns 4, because the merged report holds no pending finding, and never 2, because
+a malformed invocation is reported before any report exists (from `contract/grammar/merge.md`, the
+step-and-exit-code table).

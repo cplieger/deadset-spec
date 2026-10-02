@@ -1,5 +1,5 @@
 {
-  "contract_version": "3.1.0",
+  "contract_version": "3.2.0",
   "target": { "kind": "library" },
   "analysis": {
     "languages": ["go", "ts"],
@@ -24,6 +24,19 @@
     "cascade": "roots",
     "max_findings": 200,
     "fail_on": "warn"
+  },
+  "providers": {
+    "analyzers": [
+      { "name": "deadset-ts", "languages": ["ts"], "command": "deadset-ts" },
+      {
+        "name": "example-go",
+        "languages": ["go"],
+        "command": "/opt/example-go/bin/example-go",
+        "source": "go:example.com/example-go/cmd/example-go",
+        "version": "1.4.0",
+        "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
+      }
+    ]
   },
   "go": {},
   "ts": {

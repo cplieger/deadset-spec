@@ -18,9 +18,10 @@ The columns of every table below, each the field of the same name in the kind's 
 - **Default** is `default_enabled`. `on` means an analyzer reports the kind unless a configuration
   disables it.
 - **Severity** is `default_severity`, one of `allow`, `warn` and `deny` (from
-  `contract/kinds.json`, `severities`). A finding at or above the failing severity exits with the
-  findings code, and a `warn` finding never fails a run (from `contract/exit-codes.json`, codes 1
-  and 0). A configuration names a code or a two-digit family prefix to change a severity (from
+  `contract/kinds.json`, `severities`). A finding at or above the failing severity,
+  `reporters.fail_on`, exits with the findings code, and under the default, `deny`, a `warn` finding
+  never fails a run (from `contract/exit-codes.json`, codes 1 and 0, and the document's
+  `description`). A configuration names a code or a two-digit family prefix to change a severity (from
   `contract/config.schema.json`, `severity`).
 - **Fixability** is `fixability`, one of `deletable`, `narrowable`, `manual` and `none` (from
   `contract/kinds.json`, `fixabilities`): what a mechanical edit may do with the finding.
@@ -218,7 +219,7 @@ From `contract/kinds.json`, row `DS1501`.
 
 ### DS1502 file-never-imported
 
-A source file that no import reaches and no root names.
+A source file that no import reaches, that no root names, and in which no declared cross-language edge names a declaration. An edge's side names a declaration as a root names one, so a file holding a declaration an edge names is evaluated with the edge rather than reported: whether that declaration is dead is the edge evaluation's to say, and the merge resolves it against the paired side.
 
 From `contract/kinds.json`, row `DS1502`.
 

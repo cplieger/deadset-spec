@@ -1,0 +1,63 @@
+{
+  "schema_version": "6.0.0",
+  "contract_version": "3.2.0",
+  "analyzer": {
+    "name": "example-go",
+    "version": "1.0.0",
+    "languages": [
+      "go"
+    ],
+    "schema_versions_accepted": [
+      "6.0.0"
+    ],
+    "conformance": {
+      "corpus_version": "1.0.0",
+      "result": "pass",
+      "digest": "sha256:737f7f7cf7a04d7694a42410db90cf739550e4fc14767bb8f33338b73ef39300"
+    }
+  },
+  "target": {
+    "kind": "application",
+    "root": ".",
+    "identity": "example.com/app"
+  },
+  "configurations": [
+    {
+      "id": "linux-amd64",
+      "os": "linux",
+      "arch": "amd64",
+      "tags": []
+    }
+  ],
+  "configurations_not_built": [],
+  "consumers": {
+    "declared": 0,
+    "loaded": [],
+    "unavailable": []
+  },
+  "findings": [],
+  "edge_evaluations": [],
+  "stale_suppressions": [],
+  "declared_gaps": [],
+  "excluded_by_cgo": [],
+  "test_file_rules": [
+    {
+      "rule": "go-test-suffix",
+      "matched": 10
+    }
+  ],
+  "totals": {
+    "findings": 0,
+    "by_severity": {
+      "allow": 0,
+      "warn": 0,
+      "deny": 0
+    },
+    "deletable_lines": 0,
+    "suppressions_in_effect": 0,
+    "reasons_recorded": 0,
+    "stale_suppressions": 0,
+    "pending": 0,
+    "omitted": 0
+  }
+}

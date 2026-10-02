@@ -10,6 +10,7 @@ checked together.
 examples/
   findings/<kind>.json    one finding per issue-kind family, an instance of contract/finding.schema.json
   reports/<state>.json    one report per envelope state, an instance of contract/report.schema.json
+  scope/<shape>.json      one scope document per shape, an instance of contract/scope.schema.json
   negatives/<name>.json   a refused document, each violating exactly one constraint
   negatives/index.json    one row per refused document: its schema, its constraint, its instance path
 ```
@@ -43,6 +44,17 @@ count in `totals` is the count of the array it describes.
 
 A report a product commits as a fixture belongs in this directory too, so it is validated where
 the schema lives rather than in the product that wrote it.
+
+## scope/
+
+The scope documents an analyzer accepts. `target-alone.json` names a target and nothing else, and
+`target-and-consumers.json` names every member
+[`../contract/scope.schema.json`](../contract/scope.schema.json) declares: a target with its name
+and role, a workspace file, one consumer with every member and one with its path alone. The
+negatives whose row names that schema are the scope documents an analyzer refuses, so the two sets
+together state what a conforming scope decoder accepts, and an analyzer runs its own decoder over
+both. A decoder also refuses a key written twice in one object, which no schema keyword states, so
+no document here carries one.
 
 ## negatives/
 

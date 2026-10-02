@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "deadset configuration",
-  "description": "The closed key list every deadset product reads. A repository configuration (deadset.json at the target root) and a central configuration (the file the invocation names) are both instances of this schema; a command-line flag outranks the repository configuration, which outranks the central configuration, which outranks the default each key declares here. Each source is optional and neither has to be complete on its own, so no key is required at the root; the resolved configuration is what must name a target kind, and a run whose sources all omit it exits with the usage code. A key this list does not declare fails the decode and exits with the usage code, so no product implements a parser or a validator for it. Every key carries its JSON type, its default where it has one, the product that reads it under x-owner (product: every product; analyzer: every analyzer; orchestrator, go-analyzer, ts-analyzer: that one), and whether it is required through the enclosing object's required array. No key admits arbitrary nesting: every object closes with additionalProperties false. An object marked x-setting is one setting: a higher-ranked source replaces it whole, it carries the default a run uses when no source names it, it carries one provenance entry under its own dotted path, and every member it declares is required and carries no default of its own. An object without the mark is a section, whose keys a higher-ranked source replaces one by one and which carries one provenance entry per key; a section of declared keys carries no default, because each of its keys carries its own, and a section keyed by a pattern carries the default a run uses when no source names a key. The one key resolution ignores is provenance, marked x-ignored-by-resolution.",
+  "description": "The closed key list every deadset product reads. A repository configuration (deadset.json at the target root) and a central configuration (the file the invocation names) are both instances of this schema; a command-line flag outranks the repository configuration, which outranks the central configuration, which outranks the default each key declares here. Each source is optional and neither has to be complete on its own, so no key is required at the root; the resolved configuration is what must name a target kind, and a run whose sources all omit it exits with the usage code. A key this list does not declare fails the decode and exits with the usage code, so no product implements a parser or a validator for it. Every key carries its JSON type, its default where it has one, the product that reads it under x-owner (product: every product; analyzer: every analyzer; orchestrator, go-analyzer, ts-analyzer: that one), and whether it is required through the enclosing object's required array. No key admits arbitrary nesting: every object closes with additionalProperties false. An object marked x-setting is one setting: a higher-ranked source replaces it whole, it carries the default a run uses when no source names it, it carries one provenance entry under its own dotted path, and every member it declares is required and carries no default of its own. An object without the mark is a section, whose keys a higher-ranked source replaces one by one and which carries one provenance entry per key; a section of declared keys carries no default, because each of its keys carries its own, and a section keyed by a pattern carries the default a run uses when no source names a key. The one key resolution ignores is provenance, marked x-ignored-by-resolution. A key of type integer takes a number written as an optional minus sign and digits alone, with no fraction and no exponent: 100.0 and 1e2 are refused naming the key with the usage code, although each denotes an integer and JSON Schema's integer type admits both.",
   "type": "object",
   "additionalProperties": false,
   "properties": {
@@ -44,7 +44,7 @@
           "x-owner": "orchestrator"
         },
         "min_confidence": {
-          "description": "The lowest reachability class a finding must reach to be reported. possible, the default, reports every finding; probable omits findings about a library's exported symbols with no consumer information; certain reports only findings whose every caller is in the analyzed graph.",
+          "description": "The lowest reachability class a finding must reach to be reported. possible, the default, reports every finding; probable omits findings about a library's exported symbols with no consumer information; certain reports only findings whose every caller is in the analyzed graph. When the minimum withholds a root finding, it withholds with it every finding whose component.id names the root's component, whatever confidence those findings carry: every other root member of the component, the other root members of the root's own cycle among them, and every symbol that falls with a root, which is dead only through it.",
           "type": "string",
           "enum": ["certain", "probable", "possible"],
           "default": "possible",
@@ -217,7 +217,7 @@
       }
     },
     "severity": {
-      "description": "Per-issue-kind severity. A key is a code (DS1101) or a two-digit range prefix naming a whole family (DS18, the intra-function kinds); a value is allow, warn or deny, and a finding at or above the failing severity, reporters.fail_on, exits with the findings code. A kind this object does not name takes the default severity contract/kinds.json declares for it. A key naming a kind whose severity the Contract fixes is an unimplemented key, and so is a family prefix whose range holds such a kind: DS17 is refused because DS1703 is fixed on at deny. Only a code's severity changes here; its reachability class is derived by the analysis.",
+      "description": "Per-issue-kind severity. A key is a code (DS1101) or a two-digit range prefix naming a whole family (DS18, the intra-function kinds); a value is allow, warn or deny, and a finding at or above the failing severity, reporters.fail_on, exits with the findings code. A finding whose resolved severity is allow is withheld, and a withheld root finding withholds with it every finding whose component.id names the root's component, whatever severity those findings carry: every other root member of the component, the other root members of the root's own cycle among them, and every symbol that falls with a root, which is dead only through it. A kind this object does not name takes the default severity contract/kinds.json declares for it. A key naming a kind whose severity the Contract fixes is an unimplemented key, and so is a family prefix whose range holds such a kind: DS17 is refused because DS1703 is fixed on at deny. A key naming no live kind of contract/kinds.json is refused the same way, a retired code, an unassigned code and a prefix whose range holds no live kind alike: DS2999 and DS29 are refused, so every key names something an analyzer reports. Only a code's severity changes here; its reachability class is derived by the analysis.",
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
@@ -288,11 +288,114 @@
           "x-owner": "product"
         },
         "fail_on": {
-          "description": "The lowest severity at which a finding fails the run: deny, the default, fails only on a deny finding; warn fails on a warn or deny finding; allow fails on every finding. The committed form of the invocation's fail-on option, which outranks it.",
+          "description": "The lowest severity at which a finding fails the run: deny, the default, fails only on a deny finding; warn fails on a warn or deny finding; allow fails on the same findings as warn, because a finding at allow is withheld. The committed form of the invocation's fail-on option, which outranks it.",
           "type": "string",
           "enum": ["allow", "warn", "deny"],
           "default": "deny",
           "x-owner": "product"
+        }
+      }
+    },
+    "providers": {
+      "description": "The analyzers the orchestrator runs. The orchestrator reads this section and passes no part of it to an analyzer.",
+      "type": "object",
+      "additionalProperties": false,
+      "x-owner": "orchestrator",
+      "properties": {
+        "analyzers": {
+          "description": "The provider list: one entry per analyzer the orchestrator may run. The orchestrator runs every entry whose languages include a language in scope, two entries claiming one language included, and executes an entry's command only where it already resolves to an executable on the local filesystem, so an analysis makes no network request. An entry may be added, edited or deleted, a default entry included, so a third-party analyzer joins a first-party one or replaces it. Two entries never share a name, because the run keys every file it writes for an analyzer by the entry's name: a list naming one name twice is refused with the usage code, naming the later entry's name. The default is the two first-party analyzers, deadset-go claiming go and deadset-ts claiming ts, each run by its own name. The default entries pin no artifact: an analysis executes only what is installed, and acquisition fetches only an entry that names its source, version and digest.",
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "description": "One analyzer, in exactly one of two shapes: an installed analyzer, which names its command alone, or an acquirable one, which also names the artifact acquisition fetches and verifies.",
+            "oneOf": [
+              {
+                "description": "An installed analyzer: run from its command, never fetched.",
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["name", "languages", "command"],
+                "properties": {
+                  "name": {
+                    "description": "The analyzer's name, as its report's analyzer.name spells it: lowercase words joined by single hyphens.",
+                    "type": "string",
+                    "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$",
+                    "x-owner": "orchestrator"
+                  },
+                  "languages": {
+                    "description": "The languages the analyzer claims, drawn from the languages field of contract/kinds.json.",
+                    "type": "array",
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "enum": ["go", "ts"]
+                    },
+                    "x-owner": "orchestrator"
+                  },
+                  "command": {
+                    "description": "The analyzer's executable: a name resolved on PATH, or an absolute path taken as it is. A command that resolves to no executable ends the run with the failure code, naming the analyzer and this entry.",
+                    "type": "string",
+                    "minLength": 1,
+                    "x-owner": "orchestrator"
+                  }
+                }
+              },
+              {
+                "description": "An acquirable analyzer: run from its command, and fetched by acquisition from its source at its version and verified against its digest before it is ever executed.",
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["name", "languages", "command", "source", "version", "digest"],
+                "properties": {
+                  "name": {
+                    "description": "The analyzer's name, as its report's analyzer.name spells it: lowercase words joined by single hyphens.",
+                    "type": "string",
+                    "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$",
+                    "x-owner": "orchestrator"
+                  },
+                  "languages": {
+                    "description": "The languages the analyzer claims, drawn from the languages field of contract/kinds.json.",
+                    "type": "array",
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "enum": ["go", "ts"]
+                    },
+                    "x-owner": "orchestrator"
+                  },
+                  "command": {
+                    "description": "The analyzer's executable: a name resolved on PATH, or an absolute path taken as it is. A command that resolves to no executable ends the run with the failure code, naming the analyzer and this entry.",
+                    "type": "string",
+                    "minLength": 1,
+                    "x-owner": "orchestrator"
+                  },
+                  "source": {
+                    "description": "Where acquisition fetches the analyzer from: go: followed by the package path of the analyzer's main package, or npm: followed by the package name.",
+                    "type": "string",
+                    "pattern": "^(go|npm):[^ \\t\\r\\n]+$",
+                    "x-owner": "orchestrator"
+                  },
+                  "version": {
+                    "description": "The version acquisition fetches, exactly: a semantic version with no leading v.",
+                    "type": "string",
+                    "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(-[0-9A-Za-z.-]+)?(\\+[0-9A-Za-z.-]+)?$",
+                    "x-owner": "orchestrator"
+                  },
+                  "digest": {
+                    "description": "sha256: followed by the lowercase hexadecimal SHA-256 of the artifact source names at version. Acquisition verifies the fetched artifact against it before the artifact is ever executed, and on a mismatch ends with the failure code, naming the artifact, and runs nothing.",
+                    "type": "string",
+                    "pattern": "^sha256:[0-9a-f]{64}$",
+                    "x-owner": "orchestrator"
+                  }
+                }
+              }
+            ]
+          },
+          "default": [
+            { "name": "deadset-go", "languages": ["go"], "command": "deadset-go" },
+            { "name": "deadset-ts", "languages": ["ts"], "command": "deadset-ts" }
+          ],
+          "x-owner": "orchestrator"
         }
       }
     },
@@ -606,7 +709,7 @@
       "patternProperties": {
         "^[a-z][a-z_]*(\\.[A-Za-z0-9_]+)*$": {
           "type": "string",
-          "pattern": "^(default|(repository|central|flag): .+)$"
+          "pattern": "^(default|(repository|central|flag): [^\\r\\n]+)$"
         }
       },
       "x-ignored-by-resolution": true,

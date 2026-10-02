@@ -1,0 +1,5 @@
+{
+  "name": "integer-written-with-a-fraction",
+  "description": "A repository configuration writing an integer setting as a number with a fraction part. The value denotes an integer and is still refused naming the key, because an integer setting is written as digits alone, with no fraction and no exponent.",
+  "covers": ["integer-written-with-a-fraction"]
+}

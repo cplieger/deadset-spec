@@ -1,0 +1,5 @@
+{
+  "target": { "path": "." },
+  "consumers": [],
+  "network": true
+}

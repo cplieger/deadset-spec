@@ -1,0 +1,5 @@
+{
+  "name": "provider-name-duplicated",
+  "description": "A repository configuration whose provider list holds two entries under one name, each of a shape the schema admits. The run is refused naming the later entry's name, because every file a run writes for an analyzer is keyed by the entry's name.",
+  "covers": ["provider-name-duplicated"]
+}

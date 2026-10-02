@@ -1,5 +1,5 @@
 {
-  "description": "The exit codes every analyzer and the orchestrator return, so that one gate reads every product the same way. Codes 2 and 3 end a run before any verdict exists and print no finding list. Codes 4, 1 and 0 are verdicts about a complete report, and when more than one verdict condition holds the highest code wins: a pending finding outranks findings and stale suppressions, because an unmerged report cannot be read as an answer at all, and those outrank a clean result. A finding whose severity is warn never fails a run.",
+  "description": "The exit codes every analyzer and the orchestrator return, so that one gate reads every product the same way. Codes 2 and 3 end a run before any verdict exists and print no finding list. Codes 4, 1 and 0 are verdicts about a complete report, and when more than one verdict condition holds the highest code wins: a pending finding outranks findings and stale suppressions, because an unmerged report cannot be read as an answer at all, and those outrank a clean result. A finding fails a run when its severity is at or above reporters.fail_on, deny by default, so under the default a finding whose severity is warn never fails a run.",
   "exit_codes": [
     {
       "code": 0,

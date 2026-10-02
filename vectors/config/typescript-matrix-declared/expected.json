@@ -1,5 +1,5 @@
 {
-  "contract_version": "3.1.0",
+  "contract_version": "3.2.0",
   "target": { "kind": "application" },
   "analysis": {
     "languages": ["ts"],
@@ -24,6 +24,12 @@
     "cascade": "roots",
     "max_findings": 0,
     "fail_on": "deny"
+  },
+  "providers": {
+    "analyzers": [
+      { "name": "deadset-go", "languages": ["go"], "command": "deadset-go" },
+      { "name": "deadset-ts", "languages": ["ts"], "command": "deadset-ts" }
+    ]
   },
   "go": {},
   "ts": {
@@ -53,6 +59,7 @@
     "reporters.cascade": "default",
     "reporters.max_findings": "default",
     "reporters.fail_on": "default",
+    "providers.analyzers": "default",
     "ts.test_files": "default",
     "ts.entry_files": "default",
     "ts.injection_registrations": "default",

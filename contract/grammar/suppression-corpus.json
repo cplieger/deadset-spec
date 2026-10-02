@@ -49,6 +49,13 @@
     "reason": "Trailing whitespace after the reason is trimmed and does not refuse the directive."
   },
   {
+    "input": { "comment": "//deadset:ignore DS1001 -- \u00a0", "line_offset": -1 },
+    "kind": "inline",
+    "accepted": true,
+    "rule": "reason-text",
+    "reason": "A reason of one no-break space is a reason: whitespace is the space, the tab, the line feed and the carriage return alone, and every other character, U+00A0 included, is text."
+  },
+  {
     "input": { "comment": "//deadset:ignore DS1001", "line_offset": -1 },
     "kind": "inline",
     "accepted": false,
@@ -244,6 +251,13 @@
     "accepted": true,
     "rule": "entry-shape",
     "reason": "A symbol in a nested package: the reference carries the package directory and the path carries the file."
+  },
+  {
+    "input": { "code": "DS1001", "symbol": "go://example.com/app#Catalog.ResolveAlias", "path": "catalog.go", "reason": "\u00a0" },
+    "kind": "ignore-entry",
+    "accepted": true,
+    "rule": "reason-text",
+    "reason": "A reason of one no-break space is a reason, as it is in an inline directive: U+00A0 is not one of the four whitespace characters, so the entry binds and reports nothing."
   },
   {
     "input": { "code": "DS1001", "symbol": "go://example.com/app#Catalog.ResolveAlias", "path": "catalog.go" },

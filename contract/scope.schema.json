@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "deadset scope document",
+  "description": "What one analysis loads: the target it reports on and the consumers whose references count against it, each a directory on the local filesystem. The invoking product writes the document and names it to an analyzer's analyze command; an analyzer named no document analyzes the directory it is given, with no consumer. The document is strict JSON, decoded by each language's standard library with a closed key list compared as bytes: a key this schema does not declare, a key written twice in one object, and a value of a type it does not admit, null included, are refused, and the analysis ends with the failure code before it loads anything. A relative path inside the document is resolved against the directory that holds the document and an absolute path is taken as it is. No member names anything but the local filesystem, so resolving a scope makes no network request and fetches no module.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["target"],
+  "properties": {
+    "target": {
+      "description": "The module the analysis reports on.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path"],
+      "properties": {
+        "id": {
+          "description": "The name the target publishes itself under: its module path where the language has one, its package name otherwise. Absent, the analysis takes the name the load reports for the directory.",
+          "type": "string",
+          "minLength": 1
+        },
+        "role": {
+          "description": "The module's role. A module's role is where the document places it, so this member may be omitted, and a value other than target is refused.",
+          "type": "string",
+          "enum": ["target"]
+        },
+        "path": {
+          "description": "The directory holding the target, absolute or relative to the directory that holds the document.",
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "workspace": {
+      "description": "The workspace file through which a consumer's load resolves the target, where the target and its consumers share one: for Go, a go.work file. Absent, each consumer resolves the target through its own module file. The path is absolute or relative to the directory that holds the document. An analyzer of a language with no workspace file accepts the member and reads nothing from it.",
+      "type": "string",
+      "minLength": 1
+    },
+    "consumers": {
+      "description": "The consumers the analysis loads beside the target. A reference from any of them keeps a target symbol live, and a report names each consumer it loaded in consumers.loaded. Absent or empty, the analysis loads the target alone.",
+      "type": "array",
+      "items": {
+        "description": "One consumer of the target.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path"],
+        "properties": {
+          "id": {
+            "description": "The name the consumer publishes itself under: its module path where the language has one, its package name otherwise. Absent, the analysis takes the name the load reports for the directory.",
+            "type": "string",
+            "minLength": 1
+          },
+          "role": {
+            "description": "The module's role. A module's role is where the document places it, so this member may be omitted, and a value other than consumer is refused.",
+            "type": "string",
+            "enum": ["consumer"]
+          },
+          "path": {
+            "description": "The directory holding the consumer, absolute or relative to the directory that holds the document.",
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }
+}

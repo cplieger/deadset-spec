@@ -1,0 +1,3 @@
+{
+  "consumers": [{ "id": "example.com/consumer", "role": "consumer", "path": "consumer" }]
+}
