@@ -16,7 +16,7 @@ import (
 	"testing"
 	"testing/fstest"
 
-	"github.com/cplieger/deadset-spec/v3"
+	"github.com/cplieger/deadset-spec/v4"
 )
 
 // This file is the merge contract/grammar/merge.md states, run over each published case's
@@ -615,10 +615,11 @@ func strongestOther(e referenceEvaluation, evaluations []referenceEvaluation, dr
 }
 
 // unionComponents joins the components of promoted findings on the other sides of one edge, in
-// canonical order, the identifier the loop reaches first surviving, and rewrites every finding
-// whose component the union named.
+// canonical order, the identifier the loop reaches first surviving however many edges a join
+// spans, and rewrites every finding whose component the union named.
 func unionComponents(findings []*jsonValue, promoted []promotion) {
 	parent := map[string]string{}
+	reached := map[string]int{}
 	var find func(id string) string
 	find = func(id string) string {
 		if p, ok := parent[id]; ok && p != id {
@@ -629,6 +630,7 @@ func unionComponents(findings []*jsonValue, promoted []promotion) {
 	reach := func(id string) {
 		if _, ok := parent[id]; !ok {
 			parent[id] = id
+			reached[id] = len(reached)
 		}
 	}
 	for _, f := range promoted {
@@ -640,7 +642,11 @@ func unionComponents(findings []*jsonValue, promoted []promotion) {
 			}
 			other := g.finding.at("component", "id").str()
 			reach(other)
-			if a, b := find(id), find(other); a != b {
+			a, b := find(id), find(other)
+			if reached[b] < reached[a] {
+				a, b = b, a
+			}
+			if a != b {
 				parent[b] = a
 			}
 		}

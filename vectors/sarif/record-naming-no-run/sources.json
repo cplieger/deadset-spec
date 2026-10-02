@@ -1,0 +1,8 @@
+{
+  "description": "The target files the case's results name, by target-relative path.",
+  "files": {
+    "wire.go": "package app\n\ntype ServerEvent struct{}\n\nfunc Unused() {}\n",
+    "web/src/wire.ts": "export interface ServerEvent {}\n\nexport function unused(): void {}\n",
+    "deadset-ignore.json": "{\n  \"description\": \"Adjudications.\",\n  \"ignore\": [\n    {\n      \"code\": \"DS1002\",\n      \"symbol\": \"go://example.com/app#gone\",\n      \"path\": \"catalog.go\",\n      \"reason\": \"kept for a caller the analysis does not load\"\n    }\n  ]\n}\n"
+  }
+}

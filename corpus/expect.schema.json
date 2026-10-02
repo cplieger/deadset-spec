@@ -63,6 +63,104 @@
         "minLength": 1
       }
     },
+    "configured_declarations": {
+      "description": "The configured declarations the runner sets before analysing this fixture, one member per entry: the member name is the fixture-local logical name an expectation names that entry by, and the value names the configuration key the runner writes the entry into and the entry itself. A runner sets each key to the entries this member names under it, in ascending order of logical name compared bytewise, and leaves a key no member names at its default. An entry under ts.lifecycle_contracts.components or ts.lifecycle_contracts.bases is one lifecycle contract of its own: the runner writes one ts.lifecycle_contracts entry per such member, in the same order, holding that entry alone under the named list and the member's members as the contract's members. No rendering's manifest binds a name this member declares, and a name this member and configured_roots both declare, or this member and a manifest both carry, is a defect: an entry is a row of the configuration rather than a declaration of the target, so an expectation naming one is answered by the subject of the finding rather than by a position. An entry spells one language's own names, so the member is named only by a fixture that lists the language the key belongs to and no other. It is the fixture's declaration rather than any expectation's, for the reason closed_world states. The member is optional and never empty.",
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+      },
+      "additionalProperties": {
+        "description": "One configured declaration: the key that carries it, the entry the runner writes into that key and, for an entry of a lifecycle contract, the members that contract names.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["key", "entry"],
+        "if": {
+          "properties": { "key": { "enum": ["ts.lifecycle_contracts.components", "ts.lifecycle_contracts.bases"] } }
+        },
+        "then": { "required": ["members"] },
+        "else": { "not": { "required": ["members"] } },
+        "properties": {
+          "key": {
+            "description": "The configuration key the entry is written into, as its dotted path in contract/config.schema.json, the path through an entry of ts.lifecycle_contracts naming the list of that entry the declaration is written into.",
+            "type": "string",
+            "enum": ["ts.injection_registrations", "ts.serializers", "ts.lifecycle_contracts.components", "ts.lifecycle_contracts.bases"]
+          },
+          "members": {
+            "description": "The members of the lifecycle contract the runner writes the entry into, as the members list of an entry of ts.lifecycle_contracts spells them. Required for a key under ts.lifecycle_contracts and refused under any other key.",
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "entry": {
+            "description": "One entry of that key, in one of the shapes contract/config.schema.json declares for the key's entries, spelled as the configuration document spells it.",
+            "type": "object",
+            "minProperties": 1,
+            "additionalProperties": false,
+            "properties": {
+              "symbol": {
+                "description": "A symbol entry's stable symbol reference.",
+                "type": "string"
+              },
+              "module": {
+                "description": "A module entry's module specifier.",
+                "type": "string"
+              },
+              "name": {
+                "description": "A module entry's path from the module's exports.",
+                "type": "string"
+              },
+              "global": {
+                "description": "A global entry's path from the global scope.",
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "edge_evaluations": {
+      "description": "The edge evaluations the analyzer must publish for this fixture, exhaustive: one member per evaluation the report's edge_evaluations array holds, named by the edge's identifier and the side. The rendering's target carries the edges document, deadset-edges.json, which declares the edges, and the runner leaves it as it is. A side spells one language's own reference, so the member is named only by a fixture that lists one language. Absent means the report holds no edge evaluation. It is the fixture's declaration rather than any expectation's, because an evaluation is a record of the report rather than a finding at a position.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "description": "One evaluation: the edge, the side, the state, and for a dead side the logical name of the declaration the pending finding is about and that finding's code.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["edge", "side", "state"],
+        "if": { "properties": { "state": { "const": "dead" } } },
+        "then": { "required": ["symbol", "report"] },
+        "else": { "not": { "anyOf": [{ "required": ["symbol"] }, { "required": ["report"] }] } },
+        "properties": {
+          "edge": {
+            "description": "The identifier of the edge, as the edges document spells it.",
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_.-]+(/[A-Za-z0-9_.-]+)*$"
+          },
+          "side": {
+            "description": "The side of the edge the evaluation is about.",
+            "type": "string",
+            "enum": ["provides", "used_by"]
+          },
+          "state": {
+            "description": "The state the evaluation must carry.",
+            "type": "string",
+            "enum": ["live", "dead", "absent"]
+          },
+          "symbol": {
+            "description": "For a dead side, the fixture-local logical name of the declaration the pending finding is about, resolved through the rendering's manifest as an expectation's symbol is.",
+            "type": "string",
+            "pattern": "^[A-Za-z_][A-Za-z0-9_]*(\\.[A-Za-z_][A-Za-z0-9_]*)*$"
+          },
+          "report": {
+            "description": "For a dead side, the code of the pending finding, drawn from the code field of a live row in contract/kinds.json.",
+            "type": "string",
+            "pattern": "^DS[0-9]{4}$"
+          }
+        }
+      }
+    },
     "expect": {
       "description": "One expectation per subject, exhaustive for the target. Each names a subject by its logical name and states what an analyzer must report there.",
       "type": "array",

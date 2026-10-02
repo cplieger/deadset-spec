@@ -1,0 +1,1 @@
+{{range $k, $v := .totals.by_severity}}{{$k}}={{$v}} {{end}}|{{range .stale_suppressions}}x{{else}}none{{end}}|{{range $i, $f := .findings}}{{if eq $f.code "DS1101"}}{{continue}}{{end}}{{$i}}{{$f.code}}{{if eq .code "DS1801"}}{{break}}{{end}} {{end}}

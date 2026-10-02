@@ -1,0 +1,54 @@
+The Go rendering: a target module whose command imports neither of the
+module's two other packages, and a consumer module that imports one of them.
+The consumer requires the target and replaces it with ../target, so the
+rendering loads with no network access.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Extra": { "file": "target/extra/extra.go", "line": 1 },
+    "Greet": { "file": "target/extra/extra.go", "line": 5 },
+    "Orphan": { "file": "target/orphan/orphan.go", "line": 1 },
+    "width": { "file": "target/orphan/orphan.go", "line": 5 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target imports neither of its two other packages.
+package main
+
+func main() {}
+-- target/extra/extra.go --
+// Package extra is imported by the consumer alone.
+package extra
+
+// Greet is called by the consumer.
+func Greet() string { return "hello" }
+-- target/orphan/orphan.go --
+// Package orphan is imported by nothing.
+package orphan
+
+// width is reached by no import and by no root.
+func width() int { return 2 }
+-- consumer/go.mod --
+module example.com/consumer
+
+go 1.27.0
+
+require example.com/target v0.0.0
+
+replace example.com/target => ../target
+-- consumer/main.go --
+// Command consumer imports a package of the target that the target itself does not.
+package main
+
+import "example.com/target/extra"
+
+func main() {
+	if extra.Greet() == "" {
+		panic("the target returned an empty string")
+	}
+}

@@ -1,0 +1,22 @@
+{
+  "name": "@example/target",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./main.ts",
+  "dependencies": {
+    "unused-runtime": "1.0.0",
+    "used-runtime": "1.0.0"
+  },
+  "devDependencies": {
+    "dev-tool": "1.0.0",
+    "host-peer": "1.0.0",
+    "host-plugin": "1.0.0",
+    "optional-peer": "1.0.0",
+    "unused-dev": "1.0.0"
+  },
+  "peerDependencies": {
+    "peer-unused": "1.0.0",
+    "peer-used": "1.0.0"
+  }
+}

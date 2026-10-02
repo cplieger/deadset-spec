@@ -1,0 +1,182 @@
+{
+  "schema_version": "6.0.0",
+  "contract_version": "4.0.0",
+  "analyzer": {
+    "name": "deadset-go",
+    "version": "1.0.0",
+    "languages": [
+      "go"
+    ],
+    "schema_versions_accepted": [
+      "6.0.0",
+      "6.1.0"
+    ],
+    "conformance": {
+      "corpus_version": "1.0.0",
+      "result": "pass",
+      "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000001"
+    }
+  },
+  "target": {
+    "kind": "application",
+    "root": ".",
+    "identity": "example.com/app"
+  },
+  "configurations": [
+    {
+      "id": "linux-amd64",
+      "os": "linux",
+      "arch": "amd64",
+      "tags": []
+    }
+  ],
+  "configurations_not_built": [],
+  "consumers": {
+    "declared": 0,
+    "loaded": [],
+    "unavailable": []
+  },
+  "findings": [
+    {
+      "code": "DS1001",
+      "kind": "unused-exported",
+      "language": "go",
+      "position": {
+        "path": "a:b.go",
+        "line": 3,
+        "column": 6,
+        "end_line": 3
+      },
+      "symbol": {
+        "ref": "go://example.com/app#A",
+        "kind": "function",
+        "name": "A",
+        "exported": true,
+        "size_lines": 1
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "test_only": false,
+      "generated": false,
+      "component": {
+        "id": "deadset-go/c-1",
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 1
+      },
+      "retained_by": [],
+      "configurations": [
+        "linux-amd64"
+      ],
+      "consumers_loaded": [],
+      "fixability": "deletable",
+      "severity": "deny",
+      "message": "exported function has no reference in the target",
+      "details": {},
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "code": "DS1001",
+      "kind": "unused-exported",
+      "language": "go",
+      "position": {
+        "path": "dir:x/sub:y/file name é,(1).go",
+        "line": 3,
+        "column": 6,
+        "end_line": 3
+      },
+      "symbol": {
+        "ref": "go://example.com/app/dir:x/sub:y#B",
+        "kind": "function",
+        "name": "B",
+        "exported": true,
+        "size_lines": 1
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "test_only": false,
+      "generated": false,
+      "component": {
+        "id": "deadset-go/c-2",
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 1
+      },
+      "retained_by": [],
+      "configurations": [
+        "linux-amd64"
+      ],
+      "consumers_loaded": [],
+      "fixability": "deletable",
+      "severity": "deny",
+      "message": "exported function has no reference in the target",
+      "details": {},
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "code": "DS1301",
+      "kind": "write-only-symbol",
+      "language": "go",
+      "position": {
+        "path": "100%/~keep$&+=@.go",
+        "line": 4,
+        "column": 2,
+        "end_line": 4
+      },
+      "symbol": {
+        "ref": "go://example.com/app/100%#t.n",
+        "kind": "field",
+        "name": "t.n",
+        "exported": false,
+        "size_lines": 1
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "test_only": false,
+      "generated": false,
+      "component": {
+        "id": "deadset-go/c-3",
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 0
+      },
+      "retained_by": [],
+      "configurations": [
+        "linux-amd64"
+      ],
+      "consumers_loaded": [],
+      "fixability": "manual",
+      "severity": "warn",
+      "message": "field is written and never read",
+      "details": {
+        "write_positions": [
+          {
+            "path": "dir:x/sub:y/file name é,(1).go",
+            "line": 5,
+            "column": 2,
+            "end_line": 5
+          }
+        ]
+      }
+    }
+  ],
+  "edge_evaluations": [],
+  "stale_suppressions": [],
+  "declared_gaps": [],
+  "excluded_by_cgo": [],
+  "test_file_rules": [],
+  "totals": {
+    "findings": 3,
+    "by_severity": {
+      "allow": 0,
+      "warn": 1,
+      "deny": 2
+    },
+    "deletable_lines": 2,
+    "suppressions_in_effect": 0,
+    "reasons_recorded": 0,
+    "stale_suppressions": 0,
+    "pending": 0,
+    "omitted": 0
+  }
+}

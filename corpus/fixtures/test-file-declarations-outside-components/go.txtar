@@ -1,0 +1,80 @@
+The Go rendering: one command module whose command calls one function of a
+package, beside four production functions of that package that only the
+package's test file reaches, each through a different shape of test-file
+declaration. Nothing in the module imports anything outside the standard
+library, so the rendering loads with no network access.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Live": { "file": "target/codec/codec.go", "line": 4 },
+    "Encode": { "file": "target/codec/codec.go", "line": 7 },
+    "Decode": { "file": "target/codec/codec.go", "line": 10 },
+    "Parse": { "file": "target/codec/codec.go", "line": 13 },
+    "Format": { "file": "target/codec/codec.go", "line": 16 },
+    "encodeAll": { "file": "target/codec/codec_test.go", "line": 6 },
+    "TestDecode": { "file": "target/codec/codec_test.go", "line": 10 },
+    "mustParse": { "file": "target/codec/codec_test.go", "line": 17 },
+    "TestRoundTrip": { "file": "target/codec/codec_test.go", "line": 22 },
+    "formatBoth": { "file": "target/codec/codec_test.go", "line": 29 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+package main
+
+import "example.com/target/codec"
+
+func main() { println(codec.Live()) }
+-- target/codec/codec.go --
+package codec
+
+// Live is called by the command.
+func Live() int { return 1 }
+
+// Encode is called by a test-file helper that nothing calls.
+func Encode() int { return 2 }
+
+// Decode is called by a test whose every reference is dead.
+func Decode() int { return 3 }
+
+// Parse is called by a test-file helper that a test calls.
+func Parse() int { return 5 }
+
+// Format is called by a test-file helper that also calls a live declaration.
+func Format() int { return 6 }
+-- target/codec/codec_test.go --
+package codec
+
+import "testing"
+
+// encodeAll is a test-file helper that nothing calls.
+func encodeAll() int {
+	return Encode()
+}
+
+func TestDecode(t *testing.T) {
+	if Decode() != 3 {
+		t.Error("Decode returned the wrong value")
+	}
+}
+
+// mustParse is a test-file helper a test calls.
+func mustParse(t *testing.T) int {
+	t.Helper()
+	return Parse()
+}
+
+func TestRoundTrip(t *testing.T) {
+	if mustParse(t) != Live()+4 {
+		t.Error("Parse and Live disagree")
+	}
+}
+
+// formatBoth is a test-file helper that nothing calls.
+func formatBoth() int {
+	return Format() + Live()
+}

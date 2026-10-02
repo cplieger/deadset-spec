@@ -1,0 +1,166 @@
+{
+  "schema_version": "6.0.0",
+  "contract_version": "4.0.0",
+  "analyzer": {
+    "name": "deadset-ts",
+    "version": "3.12.0",
+    "languages": [
+      "ts"
+    ],
+    "schema_versions_accepted": [
+      "6.0.0",
+      "6.1.0"
+    ],
+    "conformance": {
+      "corpus_version": "1.0.0",
+      "result": "pass",
+      "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000001"
+    }
+  },
+  "target": {
+    "kind": "application",
+    "root": ".",
+    "identity": "@example/app"
+  },
+  "configurations": [
+    {
+      "id": "linux-amd64",
+      "os": "linux",
+      "arch": "amd64",
+      "tags": []
+    }
+  ],
+  "configurations_not_built": [],
+  "consumers": {
+    "declared": 0,
+    "loaded": [],
+    "unavailable": []
+  },
+  "findings": [
+    {
+      "code": "DS1003",
+      "kind": "unused-member",
+      "language": "ts",
+      "position": {
+        "path": "src/panel.ts",
+        "line": 4,
+        "column": 11,
+        "end_line": 4
+      },
+      "symbol": {
+        "ref": "ts://@example/app/src/panel.ts#Panel.#frame",
+        "kind": "class-member",
+        "name": "Panel.#frame",
+        "exported": false,
+        "size_lines": 1
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "test_only": false,
+      "generated": false,
+      "component": {
+        "id": "deadset-ts/c-1",
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 1
+      },
+      "retained_by": [],
+      "configurations": [
+        "linux-amd64"
+      ],
+      "consumers_loaded": [],
+      "fixability": "deletable",
+      "severity": "deny",
+      "message": "private member has no reference",
+      "details": {},
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "code": "DS1502",
+      "kind": "file-never-imported",
+      "language": "ts",
+      "position": {
+        "path": "src/orphan.ts",
+        "line": 1,
+        "column": 1,
+        "end_line": 1
+      },
+      "symbol": {
+        "ref": "ts://@example/app/src/orphan.ts#:file",
+        "kind": "file",
+        "name": "src/orphan.ts",
+        "size_lines": 1
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "test_only": false,
+      "generated": false,
+      "component": {
+        "id": "deadset-ts/c-2",
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 0
+      },
+      "retained_by": [],
+      "configurations": [],
+      "consumers_loaded": [],
+      "fixability": "deletable",
+      "severity": "deny",
+      "message": "file is imported by nothing",
+      "details": {}
+    },
+    {
+      "code": "DS1706",
+      "kind": "unmatched-configured-declaration",
+      "language": "ts",
+      "position": {
+        "path": "deadset.json",
+        "line": 1,
+        "column": 1,
+        "end_line": 1
+      },
+      "symbol": {
+        "ref": "ts://@example/app/src/codec.ts#neverDeclared",
+        "kind": "configured-declaration",
+        "name": "ts://@example/app/src/codec.ts#neverDeclared",
+        "size_lines": 1
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "test_only": false,
+      "generated": false,
+      "component": {
+        "id": "deadset-ts/c-3",
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 0
+      },
+      "retained_by": [],
+      "configurations": [],
+      "consumers_loaded": [],
+      "fixability": "none",
+      "severity": "deny",
+      "message": "configured declaration names no declaration",
+      "details": {}
+    }
+  ],
+  "edge_evaluations": [],
+  "stale_suppressions": [],
+  "declared_gaps": [],
+  "excluded_by_cgo": [],
+  "test_file_rules": [],
+  "totals": {
+    "findings": 3,
+    "by_severity": {
+      "allow": 0,
+      "warn": 0,
+      "deny": 3
+    },
+    "deletable_lines": 1,
+    "suppressions_in_effect": 0,
+    "reasons_recorded": 0,
+    "stale_suppressions": 0,
+    "pending": 0,
+    "omitted": 0
+  }
+}

@@ -11,6 +11,7 @@ examples/
   findings/<kind>.json    one finding per issue-kind family, an instance of contract/finding.schema.json
   reports/<state>.json    one report per envelope state, an instance of contract/report.schema.json
   scope/<shape>.json      one scope document per shape, an instance of contract/scope.schema.json
+  describe/<state>.json   one describe document per conformance state, an instance of contract/describe.schema.json
   negatives/<name>.json   a refused document, each violating exactly one constraint
   negatives/index.json    one row per refused document: its schema, its constraint, its instance path
 ```
@@ -55,6 +56,16 @@ negatives whose row names that schema are the scope documents an analyzer refuse
 together state what a conforming scope decoder accepts, and an analyzer runs its own decoder over
 both. A decoder also refuses a key written twice in one object, which no schema keyword states, so
 no document here carries one.
+
+## describe/
+
+The documents an analyzer's describe command writes. `conformance-recorded.json` carries the
+analyzer's conformance record, and `conformance-not-recorded.json` omits the member, which is how
+an analyzer that records no conformance run describes itself; an invoking product refuses both an
+absent record and a result other than pass. The negatives whose row names
+[`../contract/describe.schema.json`](../contract/describe.schema.json) are the describe documents
+a decoder refuses, a `null` conformance among them. A decoder also refuses a key written twice and
+anything after the object, which no schema keyword states, so no document here carries one.
 
 ## negatives/
 

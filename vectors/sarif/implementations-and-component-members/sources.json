@@ -1,0 +1,6 @@
+{
+  "description": "The target files the case's results name, by target-relative path.",
+  "files": {
+    "src/shapes.ts": "export interface Shape {\n  area(): number;\n}\n\nexport class Square implements Shape {\n  area(): number {\n    return 4;\n  }\n}\n\nexport class Circle implements Shape {\n  area(): number {\n    return 3;\n  }\n}\n\nexport function describe(s: Shape): string {\n  return helper(s);\n}\n\nfunction helper(s: Shape): string {\n  return String(s.area()) + suffix;\n}\n\nconst suffix = \" units\";\n"
+  }
+}

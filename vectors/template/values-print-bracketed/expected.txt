@@ -1,0 +1,4 @@
+[map[arch:amd64 id:linux-amd64 os:linux tags:[]] map[arch:arm64 id:linux-arm64 os:linux tags:[netgo]]]
+map[allow:0 deny:1 warn:2]
+[]
+<nil> <nil> []

@@ -1,0 +1,39 @@
+The Go rendering: one main package beside two functions nothing calls, each of
+whose bodies never reads its parameter. One declares the parameter on the
+function's first line and carries the directive above the function; the other
+wraps its signature and carries the directive above the parameter, inside the
+parameter list.
+
+-- fixture.json --
+{
+  "symbols": {
+    "FirstLineSignature": { "file": "target/main.go", "line": 9 },
+    "WrappedSignature": { "file": "target/main.go", "line": 15 },
+    "WrappedSignature.chunk": { "file": "target/main.go", "line": 17 }
+  }
+}
+-- target/go.mod --
+module example.com/app
+
+go 1.27.0
+-- target/main.go --
+package main
+
+func main() {}
+
+// firstLine is called by nothing, and its body never reads chunk; the directive
+// above it names the parameter's code alone.
+//
+//deadset:ignore DS1801 -- Kept to match the decoder signature the next release adds.
+func firstLine(chunk []byte) int {
+	return 1
+}
+
+// wrapped is called by nothing, and its body never reads chunk; the directive
+// inside the parameter list names the parameter's code alone.
+func wrapped(
+	//deadset:ignore DS1801 -- Kept to match the decoder signature the next release adds.
+	chunk []byte,
+) int {
+	return 2
+}

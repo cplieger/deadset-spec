@@ -1,0 +1,281 @@
+{
+  "schema_version": "6.0.0",
+  "contract_version": "4.0.0",
+  "analyzer": {
+    "name": "deadset-go",
+    "version": "1.20.2",
+    "languages": [
+      "go"
+    ],
+    "schema_versions_accepted": [
+      "6.0.0",
+      "6.1.0"
+    ],
+    "conformance": {
+      "corpus_version": "1.0.0",
+      "result": "pass",
+      "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000001"
+    }
+  },
+  "target": {
+    "kind": "application",
+    "root": ".",
+    "identity": "example.com/app"
+  },
+  "configurations": [
+    {
+      "id": "linux-amd64",
+      "os": "linux",
+      "arch": "amd64",
+      "tags": []
+    }
+  ],
+  "configurations_not_built": [],
+  "consumers": {
+    "declared": 0,
+    "loaded": [],
+    "unavailable": []
+  },
+  "findings": [
+    {
+      "code": "DS1501",
+      "kind": "file-never-built",
+      "language": "go",
+      "position": {
+        "path": "legacy.go",
+        "line": 1,
+        "column": 1,
+        "end_line": 1
+      },
+      "symbol": {
+        "ref": "go://example.com/app#legacy.go:file",
+        "kind": "file",
+        "name": "legacy.go",
+        "size_lines": 1
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "test_only": false,
+      "generated": false,
+      "component": {
+        "id": "deadset-go/c-1",
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 0
+      },
+      "retained_by": [],
+      "configurations": [],
+      "consumers_loaded": [],
+      "fixability": "deletable",
+      "severity": "deny",
+      "message": "file is built by no configuration of the declared matrix",
+      "details": {
+        "excluded_by": "//go:build windows"
+      }
+    },
+    {
+      "code": "DS1002",
+      "kind": "unused-unexported",
+      "language": "go",
+      "position": {
+        "path": "catalog.go",
+        "line": 20,
+        "column": 6,
+        "end_line": 22
+      },
+      "symbol": {
+        "ref": "go://example.com/app#helper",
+        "kind": "function",
+        "name": "helper",
+        "exported": false,
+        "size_lines": 3
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "test_only": false,
+      "generated": false,
+      "component": {
+        "id": "deadset-go/c-2",
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 3
+      },
+      "retained_by": [],
+      "configurations": [
+        "linux-amd64"
+      ],
+      "consumers_loaded": [],
+      "fixability": "deletable",
+      "severity": "deny",
+      "message": "unexported function has no reference in the target",
+      "details": {},
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "code": "DS1601",
+      "kind": "unused-dependency",
+      "language": "go",
+      "position": {
+        "path": "go.mod",
+        "line": 5,
+        "column": 1,
+        "end_line": 5
+      },
+      "symbol": {
+        "ref": "go://example.com/app#example.com/lib:require",
+        "kind": "dependency",
+        "name": "example.com/lib",
+        "size_lines": 1
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "test_only": false,
+      "generated": false,
+      "component": {
+        "id": "deadset-go/c-3",
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 0
+      },
+      "retained_by": [],
+      "configurations": [],
+      "consumers_loaded": [],
+      "fixability": "manual",
+      "severity": "deny",
+      "message": "direct requirement that no package of the target imports",
+      "details": {
+        "dependency_class": "require"
+      }
+    },
+    {
+      "code": "DS1605",
+      "kind": "unused-module-directive",
+      "language": "go",
+      "position": {
+        "path": "go.mod",
+        "line": 7,
+        "column": 1,
+        "end_line": 7
+      },
+      "symbol": {
+        "ref": "go://example.com/app#example.com/old@v1.0.0:replace",
+        "kind": "module-directive",
+        "name": "example.com/old",
+        "size_lines": 1
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "test_only": false,
+      "generated": false,
+      "component": {
+        "id": "deadset-go/c-6",
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 0
+      },
+      "retained_by": [],
+      "configurations": [],
+      "consumers_loaded": [],
+      "fixability": "manual",
+      "severity": "deny",
+      "message": "replace directive names a module the build list does not hold",
+      "details": {
+        "replacement": "../old"
+      }
+    },
+    {
+      "code": "DS1701",
+      "kind": "suppression-without-reason",
+      "language": "go",
+      "position": {
+        "path": "deadset-ignore.json",
+        "line": 4,
+        "column": 1,
+        "end_line": 4
+      },
+      "symbol": {
+        "ref": "go://example.com/app#deadset-ignore.json:file",
+        "kind": "suppression",
+        "name": "deadset-ignore.json",
+        "size_lines": 1
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "test_only": false,
+      "generated": false,
+      "component": {
+        "id": "deadset-go/c-4",
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 0
+      },
+      "retained_by": [],
+      "configurations": [],
+      "consumers_loaded": [],
+      "fixability": "none",
+      "severity": "deny",
+      "message": "ignore entry carries no reason",
+      "details": {
+        "mechanism": "ignore",
+        "entry": {
+          "code": "DS1002",
+          "symbol": "go://example.com/app#helper",
+          "path": "catalog.go"
+        }
+      }
+    },
+    {
+      "code": "DS1704",
+      "kind": "unmatched-root",
+      "language": "go",
+      "position": {
+        "path": "deadset.json",
+        "line": 1,
+        "column": 1,
+        "end_line": 1
+      },
+      "symbol": {
+        "ref": "go://example.com/app#absent*",
+        "kind": "root",
+        "name": "go://example.com/app#absent*",
+        "size_lines": 1
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "test_only": false,
+      "generated": false,
+      "component": {
+        "id": "deadset-go/c-5",
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 0
+      },
+      "retained_by": [],
+      "configurations": [],
+      "consumers_loaded": [],
+      "fixability": "none",
+      "severity": "deny",
+      "message": "configured root matches no symbol",
+      "details": {}
+    }
+  ],
+  "edge_evaluations": [],
+  "stale_suppressions": [],
+  "declared_gaps": [],
+  "excluded_by_cgo": [],
+  "test_file_rules": [],
+  "totals": {
+    "findings": 6,
+    "by_severity": {
+      "allow": 0,
+      "warn": 0,
+      "deny": 6
+    },
+    "deletable_lines": 3,
+    "suppressions_in_effect": 0,
+    "reasons_recorded": 0,
+    "stale_suppressions": 0,
+    "pending": 0,
+    "omitted": 0
+  }
+}

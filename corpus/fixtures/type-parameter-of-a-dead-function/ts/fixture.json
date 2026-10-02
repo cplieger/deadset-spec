@@ -1,0 +1,8 @@
+{
+  "symbols": {
+    "keep": { "file": "target/main.ts", "line": 2 },
+    "keep.T": { "file": "target/main.ts", "line": 3 },
+    "pick": { "file": "target/main.ts", "line": 9 },
+    "pick.U": { "file": "target/main.ts", "line": 10 }
+  }
+}

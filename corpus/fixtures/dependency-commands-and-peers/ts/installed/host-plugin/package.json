@@ -1,0 +1,1 @@
+{"name": "host-plugin", "private": true, "version": "1.0.0", "types": "./index.d.ts", "peerDependencies": {"host-peer": "1.0.0", "optional-peer": "1.0.0"}, "peerDependenciesMeta": {"optional-peer": {"optional": true}}}

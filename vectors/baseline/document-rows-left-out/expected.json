@@ -1,0 +1,11 @@
+{
+  "description": "Recorded findings: a run fails only on a finding this document does not hold.",
+  "baseline": [
+    {
+      "code": "DS1002",
+      "symbol": "go://example.com/app#helper",
+      "path": "catalog.go",
+      "reason": "recorded by deadset-go 1.20.2"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "type-parameter-of-a-method-signature",
+  "description": "A type parameter of a method signature an interface declares belongs to the interface's declaration and is never reported, while a function's type parameter its signature and body name nowhere is reported.",
+  "languages": ["ts"],
+  "target_kind": "application",
+  "expect": [
+    { "symbol": "Maker.build.T", "report": "none" },
+    {
+      "symbol": "shape.U",
+      "report": "DS1303",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-parameter",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

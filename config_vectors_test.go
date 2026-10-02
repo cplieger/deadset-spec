@@ -13,7 +13,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/cplieger/deadset-spec/v3"
+	"github.com/cplieger/deadset-spec/v4"
 )
 
 const (
@@ -32,6 +32,7 @@ var configVectorAspects = []string{
 	"array-spanning-lines",
 	"duplicated-key",
 	"integer-written-with-a-fraction",
+	"member-written-as-null",
 	"missing-target-kind",
 	"provenance-on-input",
 	"provider-name-duplicated",
@@ -576,6 +577,33 @@ func TestConfigVectorIntegerCaseHoldsANonIntegerSpelling(t *testing.T) {
 	spelled, _ := doc[section][key].(json.Number)
 	if !strings.ContainsAny(spelled.String(), ".eE") {
 		t.Errorf("%s/%s/%s writes %s as %q, want a number with a fraction or an exponent", configVectorsDir, dir, vectorRepositoryFile, names, spelled)
+	}
+}
+
+// TestConfigVectorNullCaseHoldsANullAtAKeyWithADefault pins the input the case exists for: the
+// key its refusal names declares a default, so a decoder that reads null as an absent key resolves
+// the default instead of refusing, and the case writes that key as null.
+func TestConfigVectorNullCaseHoldsANullAtAKeyWithADefault(t *testing.T) {
+	dir := caseCovering(t, "member-written-as-null")
+	names := refusalNames(t, dir)
+	section, key, ok := strings.Cut(names, ".")
+	if !ok {
+		t.Fatalf("Setup: the refusal names %q, want a dotted path to one key", names)
+	}
+	node := lookupKey(t, walkSchema(loadConfigSchema(t)), names).node
+	if _, ok := node["default"]; !ok {
+		t.Errorf("schema[%s] declares no default, want a key whose absence resolves to one", names)
+	}
+	data, ok := readVectorFile(t, dir, vectorRepositoryFile)
+	if !ok {
+		t.Fatalf("Setup: %s/%s/%s is absent, want the null the refusal is about", configVectorsDir, dir, vectorRepositoryFile)
+	}
+	var doc map[string]map[string]json.RawMessage
+	if err := json.Unmarshal(data, &doc); err != nil {
+		t.Fatalf("Setup: decoding %s/%s/%s: %v", configVectorsDir, dir, vectorRepositoryFile, err)
+	}
+	if got, present := doc[section][key]; !present || string(got) != "null" {
+		t.Errorf("%s/%s/%s writes %s as %q (present %t), want null", configVectorsDir, dir, vectorRepositoryFile, names, got, present)
 	}
 }
 

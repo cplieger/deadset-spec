@@ -1,0 +1,18 @@
+{
+  "symbols": {
+    "Payload.id": { "file": "target/wire.ts", "line": 3 },
+    "Payload.inner": { "file": "target/wire.ts", "line": 4 },
+    "Payload.meta": { "file": "target/wire.ts", "line": 5 },
+    "Inner": { "file": "target/wire.ts", "line": 9 },
+    "Inner.label": { "file": "target/wire.ts", "line": 10 },
+    "Meta": { "file": "target/wire.ts", "line": 14 },
+    "Meta.at": { "file": "target/wire.ts", "line": 15 },
+    "Stamp.at": { "file": "target/wire.ts", "line": 25 },
+    "Stamp.toJSON": { "file": "target/wire.ts", "line": 27 },
+    "Stamp.describe": { "file": "target/wire.ts", "line": 31 },
+    "Logged.line": { "file": "target/wire.ts", "line": 39 },
+    "Unsent.title": { "file": "target/wire.ts", "line": 20 },
+    "Lookup.refresh": { "file": "target/wire.ts", "line": 44 },
+    "Lookup.flush": { "file": "target/wire.ts", "line": 48 }
+  }
+}

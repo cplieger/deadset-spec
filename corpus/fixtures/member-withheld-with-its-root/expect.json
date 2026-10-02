@@ -1,0 +1,33 @@
+{
+  "name": "member-withheld-with-its-root",
+  "description": "A declaration that falls with a root is withheld with it. Two dead exported functions each call an unexported function nothing else calls: an inline directive withholds the first, so the function falling with it is reported under no code either, while the second and the function falling with it are both reported, the second as its component's root member.",
+  "languages": ["go", "ts"],
+  "target_kind": "application",
+  "expect": [
+    { "symbol": "Live", "report": "none" },
+    { "symbol": "Withheld", "report": "none" },
+    { "symbol": "balance", "report": "none" },
+    {
+      "symbol": "Reported",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting",
+      "component": {
+        "root": true
+      }
+    },
+    {
+      "symbol": "audit",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reachability",
+      "component": {
+        "root": false
+      }
+    }
+  ]
+}

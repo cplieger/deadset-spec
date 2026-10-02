@@ -1,0 +1,97 @@
+{
+  "name": "serialization-contract-object-types",
+  "description": "A serializer reads the data members of every object type a serialized value's static type names, and of every object type reached from those members' types: an interface, an object type a type alias declares and a class alike, through a union, together with a class's toJSON method and no other method. A value passed to a rest parameter typed any[] of a function the analyzed program does not declare is read the same way. Beside them, an interface member no serialized value carries is reported, and of two members a string literal names, the one looked up through a receiver typed with a string index signature is reported while the one looked up through an any-typed receiver is retained.",
+  "languages": ["ts"],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Payload.id",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    },
+    {
+      "symbol": "Payload.inner",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    },
+    {
+      "symbol": "Payload.meta",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    },
+    { "symbol": "Inner", "report": "none" },
+    {
+      "symbol": "Inner.label",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    },
+    { "symbol": "Meta", "report": "none" },
+    {
+      "symbol": "Meta.at",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    },
+    {
+      "symbol": "Stamp.at",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    },
+    {
+      "symbol": "Stamp.toJSON",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    },
+    {
+      "symbol": "Stamp.describe",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Logged.line",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    },
+    {
+      "symbol": "Unsent.title",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Lookup.refresh",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Lookup.flush",
+      "report": "none",
+      "retained_by": [
+        "reflective-lookup"
+      ]
+    }
+  ]
+}

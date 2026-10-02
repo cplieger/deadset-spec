@@ -73,15 +73,15 @@ From `contract/kinds.json`, row `DS1003`.
 
 ### DS1004 test-only-use
 
-A symbol with zero production references and at least one test reference: an unused-exported or unused-unexported candidate whose test reference count is not zero, reported once under this code. A reference from a consumer's test files is a test reference unless the configuration counts consumer tests as production.
+A symbol with zero production references and at least one test reference: an unused-exported, unused-unexported or unused-member candidate whose test reference count is not zero, reported once under this code. A reference from a consumer's test files is a test reference unless the configuration counts consumer tests as production.
 
-Derived from `DS1001` and `DS1002`.
+Derived from `DS1001`, `DS1002` and `DS1003`.
 
 From `contract/kinds.json`, row `DS1004`.
 
 ### DS1005 test-of-dead-code
 
-A test symbol whose set of referenced target symbols is non-empty and every member of that set is reported dead. A test that references at least one live target symbol is never reported, no notion of a test's subject and no name matching enters the rule, and the message states the rule. The test joins the dead component of the symbols it references.
+A test symbol whose set of referenced target symbols is non-empty and every member of that set is reported dead. A test that references at least one live target symbol is never reported, no notion of a test's subject and no name matching enters the rule, and the message states the rule. The test joins the dead component of the symbols it references, and it and each of them count as referencing each other, so the test is a member of their cycle and never a dead symbol outside it.
 
 From `contract/kinds.json`, row `DS1005`.
 
@@ -108,7 +108,7 @@ Symbols that are alive but more visible than their references require. From `con
 
 An exported symbol whose every reference is inside the symbol's own package or module, reported as a candidate for unexporting. The subject is a package-level declaration or a method, and three subjects are excluded: an interface method, whose exportedness is the contract of the interface that declares it; a struct field, which an encoder reads by name; and a method that satisfies an interface some symbol uses as a type, which cannot be unexported without its type ceasing to satisfy that interface. The finding names the narrower visibility the references support. A declared cross-language edge counts as an out-of-package reference; where the edge's other side is unknown to the analyzer the finding is emitted pending.
 
-Precondition: Closed world only. Reported always for a main package and an internal/ directory tree, and for a published package only when the configuration declares the consumer set complete and every declared consumer loads. A library with no consumer loaded and no complete consumer set declared gets this finding on its internal/ tree and its main packages and never on its published API.
+Precondition: Closed world only. Reported always for a main package and an internal/ directory tree, and for a published package only when the configuration declares the consumer set complete and every declared consumer loads. A library with no consumer loaded and no complete consumer set declared gets this finding on its internal/ tree and its main packages and never on its published API. A symbol the rule of DS1301 holds for is not reported under this code, whatever severity the configuration gives DS1301, because the write-only finding names the defect to fix first.
 
 From `contract/kinds.json`, row `DS1101`.
 
@@ -116,7 +116,7 @@ From `contract/kinds.json`, row `DS1101`.
 
 An exported symbol of a non-internal package whose every reference is inside the target module, reported as a candidate for relocation behind an internal boundary. The subject is a package-level declaration or a method, and three subjects are excluded: an interface method, whose exportedness is the contract of the interface that declares it; a struct field, which an encoder reads by name; and a method that satisfies an interface some symbol uses as a type, which cannot be unexported without its type ceasing to satisfy that interface. The finding names the narrower visibility the references support. A declared cross-language edge counts as an out-of-package reference; where the edge's other side is unknown to the analyzer the finding is emitted pending.
 
-Precondition: Closed world only. Reported always for a main package and an internal/ directory tree, and for a published package only when the configuration declares the consumer set complete and every declared consumer loads. A library with no consumer loaded and no complete consumer set declared gets this finding on its internal/ tree and its main packages and never on its published API.
+Precondition: Closed world only. Reported always for a main package and an internal/ directory tree, and for a published package only when the configuration declares the consumer set complete and every declared consumer loads. A library with no consumer loaded and no complete consumer set declared gets this finding on its internal/ tree and its main packages and never on its published API. A symbol the rule of DS1301 holds for is not reported under this code, whatever severity the configuration gives DS1301, because the write-only finding names the defect to fix first.
 
 From `contract/kinds.json`, row `DS1102`.
 
@@ -132,7 +132,7 @@ From `contract/kinds.json`, row `DS1103`.
 
 An exported declaration used only inside its own file, reported as a candidate for removing the export keyword. The finding names the narrower visibility the references support.
 
-Precondition: Closed world only. Reported in a file that is not an entry file and that either belongs to a project whose consumer set the configuration declares complete or is reached by no manifest export. A declared cross-language edge counts as a reference from outside the file; where the edge's other side is unknown to the analyzer the finding is emitted pending.
+Precondition: Closed world only. Reported in a file that is not an entry file and that either belongs to a project whose consumer set the configuration declares complete or is reached by no manifest export. A declared cross-language edge counts as a reference from outside the file; where the edge's other side is unknown to the analyzer the finding is emitted pending. A symbol the rule of DS1301 holds for is not reported under this code, whatever severity the configuration gives DS1301, because the write-only finding names the defect to fix first.
 
 From `contract/kinds.json`, row `DS1104`.
 
@@ -156,7 +156,7 @@ From `contract/kinds.json`, row `DS1201`.
 
 An interface method that no call site invokes or selects through the interface, whatever the number of implementations. The finding names the concrete implementations and their positions.
 
-Precondition: Exempt: every method of an interface that declares an unexported method, the sum-type shape whose method set exists to restrict the implementors; and every marker method, an interface method whose every implementation carries an empty body.
+Precondition: Exempt: in Go, every method of an interface that declares an unexported method, the sum-type shape whose method set exists to restrict the implementors, a shape a TypeScript interface cannot take because it declares no member less visible than itself; and, in both languages, every marker method, an interface method whose every implementation carries an empty body.
 
 From `contract/kinds.json`, row `DS1203`.
 
@@ -190,9 +190,9 @@ From `contract/kinds.json`, row `DS1302`.
 
 ### DS1303 unused-type-parameter
 
-A type parameter of a function or method that no part of the declaration's signature and no part of the declaration's body names, at the certain class. The deletion is local to the declaration and the explicit instantiations the reference set already lists.
+A type parameter of a function or method that no part of the declaration's signature and no part of the declaration's body names, at the certain class. The deletion is local to the declaration and the explicit instantiations the reference set already lists. A type parameter of a function or method that is itself dead falls with it and is reported under no code of its own.
 
-Precondition: Function and method type parameters only. A type parameter of a type declaration is never reported, because a phantom type parameter such as `type ID[T any] int` makes two instantiations distinct types while naming the parameter nowhere, so deleting it changes the program.
+Precondition: Function and method type parameters only. A type parameter of a type declaration is never reported, because a phantom type parameter such as `type ID[T any] int` makes two instantiations distinct types while naming the parameter nowhere, so deleting it changes the program. A method signature an interface or an object type declares belongs to that type declaration, so its type parameters are never reported either.
 
 From `contract/kinds.json`, row `DS1303`.
 
@@ -219,7 +219,7 @@ From `contract/kinds.json`, row `DS1501`.
 
 ### DS1502 file-never-imported
 
-A source file that no import reaches, that no root names, and in which no declared cross-language edge names a declaration. An edge's side names a declaration as a root names one, so a file holding a declaration an edge names is evaluated with the edge rather than reported: whether that declaration is dead is the edge evaluation's to say, and the merge resolves it against the paired side.
+A source file that no import reaches, that no root names, and in which no declared cross-language edge names a declaration. An import written in a loaded consumer reaches a file of the target as an import written in the target does. An edge's side names a declaration as a root names one, so a file holding a declaration an edge names is evaluated with the edge rather than reported: whether that declaration is dead is the edge evaluation's to say, and the merge resolves it against the paired side.
 
 From `contract/kinds.json`, row `DS1502`.
 
@@ -236,7 +236,7 @@ Declared dependencies and module-file directives that are exactly a no-op. From 
 
 A directly declared dependency that no import in the target needs. On the Go side, a direct require whose module provides no package any target package or test variant imports. On the TypeScript side, a manifest dependency, development dependency or peer dependency the project's import closure does not need. A deletion finding whose fix would remove the last use of a dependency names that dependency.
 
-Precondition: On the Go side the rule is the semantics of `go mod tidy -diff` exactly: a requirement marked indirect is never reported, because it exists to pin a transitive version and removing it changes the build list.
+Precondition: On the Go side the rule is the semantics of `go mod tidy -diff` exactly: a requirement marked indirect is never reported, because it exists to pin a transitive version and removing it changes the build list. On the TypeScript side the import closure is the files of the run's projects, and three more dependencies are needed: one whose installed manifest declares a command, because a command is run by name rather than imported; one that the installed manifest of a needed dependency declares as a peer and does not mark optional; and, to a fixpoint, the required peers of every dependency so held. An installed manifest is the package's manifest in the nearest node_modules directory at or above the target, and a dependency with none is decided by the import closure alone.
 
 From `contract/kinds.json`, row `DS1601`.
 
@@ -250,7 +250,7 @@ From `contract/kinds.json`, row `DS1605`.
 
 ## DS1700 to DS1799: `self-check`
 
-Suppressions, configured roots and declared edges that no longer match anything; the run checks its own inputs. From `contract/kinds.json`, the `self-check` range.
+Suppressions, configured roots, configured declarations and declared edges that no longer match anything; the run checks its own inputs. From `contract/kinds.json`, the `self-check` range.
 
 | Code | Name | Languages | Default | Severity | Fixability |
 | --- | --- | --- | --- | --- | --- |
@@ -259,6 +259,7 @@ Suppressions, configured roots and declared edges that no longer match anything;
 | `DS1703` | `stale-suppression` | `go`, `ts` | `on` | `deny` | `none` |
 | `DS1704` | `unmatched-root` | `go`, `ts` | `on` | `deny` | `none` |
 | `DS1705` | `stale-cross-language-edge` | `go`, `ts` | `on` | `deny` | `none` |
+| `DS1706` | `unmatched-configured-declaration` | `ts` | `on` | `deny` | `none` |
 
 ### DS1701 suppression-without-reason
 
@@ -293,6 +294,14 @@ From `contract/kinds.json`, row `DS1704`.
 A declared cross-language edge with a side that at least one analyzer evaluated and every evaluation of that side reports absent, so no analyzer that ran enumerates that side's symbol. Emitted by the merge, once per edge, never by an analyzer, so a stale edge is visible rather than silently inert. A dead side paired with an absent side drops its pending finding, and the edge is the reported defect: a misspelled reference must not turn a live pairing into a deletion.
 
 From `contract/kinds.json`, row `DS1705`.
+
+### DS1706 unmatched-configured-declaration
+
+An entry of a configuration key that names a declaration, being an entry of ts.injection_registrations, of the components or the bases of an entry of ts.lifecycle_contracts, or of ts.serializers, that names no declaration in any project of the run, by the resolution the ts section of contract/config.schema.json states for its shape. An entry that names a declaration no call reaches matches. An exemption whose configured declarations nobody checks silently retains nothing, so a stale entry is a finding. The kind is fixed on at deny: no flag, no severity setting and no exception reduces it below a finding, and a configuration naming this code under a severity key is an unimplemented key.
+
+The row carries `"fixed": true`. No configuration changes this kind's enablement or its severity: a configuration that names this code under a severity key, or a family prefix whose range holds it, names a key the product does not implement and the run ends with the usage code (from `contract/config.schema.json`, `severity`, and `contract/exit-codes.json`, code 2).
+
+From `contract/kinds.json`, row `DS1706`.
 
 ## DS1800 to DS1899: `intra-function`
 

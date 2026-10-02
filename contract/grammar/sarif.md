@@ -1,6 +1,6 @@
 # The SARIF 2.1.0 mapping
 
-The SARIF format is the report shaped for upload to a code-scanning service: one [SARIF 2.1.0](https://docs.oasis-open.org/sarif/sarif/v2.1.0/errata01/os/sarif-v2.1.0-errata01-os-complete.html) log, one run per analyzer, one result per finding. This page states the mapping object by object for an implementer who has no access to any existing implementation, names the two fingerprint keys and how each is computed, and states which SARIF properties are never emitted and why.
+The SARIF format is the report shaped for upload to a code-scanning service: one [SARIF 2.1.0](https://docs.oasis-open.org/sarif/sarif/v2.1.0/errata01/os/sarif-v2.1.0-errata01-os-complete.html) log, one run per analyzer, one result per finding. This page states the mapping object by object for an implementer who has no access to any existing implementation, names the two fingerprint keys and how each is computed, and states which SARIF properties are never emitted and why. The published test vectors under [`vectors/sarif/`](../../vectors/sarif/README.md) pin an implementation against declared inputs and outputs: each case holds a report, the source files its line fingerprints read and either the expected document, compared as a decoded value, or the exit code the rendering ends with.
 
 The mapping is written against [GitHub's supported-properties table](https://docs.github.com/en/code-security/code-scanning/integrating-with-code-scanning/sarif-support-for-code-scanning) as well as the OASIS schema, because a property the schema allows and the ingest ignores is a property that silently does nothing. GitHub's page closes its table with the sentence that the rest of the supported fields are ignored, so every property this page emits is either in that table or is emitted for a stated reason with the note that GitHub does not read it. The last section lists every emitted property beside the row that reads it.
 
@@ -14,9 +14,13 @@ The mapping is written against [GitHub's supported-properties table](https://doc
 }
 ```
 
-`$schema` is the OASIS URI of the 2.1.0 errata01 schema, fixed so that two producers write the same bytes; GitHub accepts any 2.1.0 schema URI. `version` is `2.1.0`. `runs` holds one run per analyzer report.
+`$schema` is the OASIS URI of the 2.1.0 errata01 schema, fixed so that two producers write the same value; GitHub accepts any 2.1.0 schema URI. `version` is `2.1.0`. `runs` holds one run per analyzer report. A merged document adds `properties.totals`, the merged report's `totals`, described below.
 
-An analyzer writing its own SARIF produces a log with one run. The orchestrator writing the merged report produces one run per input report, in bytewise order of `analyzer.name`, each holding the findings and stale suppressions that report carried, and then one further run when the merged report holds a finding no input report carried. That happens for `DS1705`, which the merge emits (`merge.md`, step 5); the extra run's `tool.driver` is the orchestrator's own name and version, its `automationDetails.id` is `deadset/merge/`, and its `rules` list every live kind in `kinds.json`. The run a merged finding belongs to is the one whose `tool.driver.name` equals the analyzer that carried it, the field `report.schema.json` keeps on each record for the canonical key.
+The document is one JSON text as [RFC 8259](https://www.rfc-editor.org/rfc/rfc8259) defines it, encoded as UTF-8 with no byte order mark. This page fixes the document's value and not its bytes: two documents for one report are the same SARIF when they decode to equal JSON values, an object's members compared by name in any order, an array's elements in order and a string after its escapes are read, so a producer writes any escape RFC 8259 permits, U+2028 and U+2029 written raw or as `\u2028` and `\u2029` alike. A product writes the same bytes for the same report on every run.
+
+An analyzer writing its own SARIF produces a log with one run. The orchestrator writing the merged report produces one run per `merged_from` entry, in bytewise order of its `name`, each holding the findings and stale suppressions that report carried, and then one further run when the merged report holds a record that names no analyzer. That happens for `DS1705`, which the merge emits (`merge.md`, step 5); the extra run's `tool.driver` is the orchestrator's own name and version, its `automationDetails.id` is `deadset/merge/`, and its `rules` list every live kind in `kinds.json`. The run a merged record belongs to is the one whose `tool.driver.name` equals the record's `analyzer` member, the field `report.schema.json` keeps on each record for the canonical key, and a record with no `analyzer` member, a stale suppression among them, belongs to the extra run. A record whose `analyzer` names no `merged_from` entry is a defect of the document rather than a result to place: the rendering fails, and the product exits with code 3 with the report already written. The `analyzer` member of a merged record is rendered by the run that holds the result and by nothing else.
+
+A run of an input report takes `tool.driver.name` and `tool.driver.version` from that report's `merged_from` entry, and its `automationDetails.id` and its `rules` from the `analyzer.languages` of the input report itself, which the orchestrator holds because it read the report; the merged report's own `analyzer.languages` is the union, which names no one run's language. A run's `totals` are those of the report its tool wrote, so a run describes its own results and an analyzer's run carries the same `totals` in its own log and in a merged one: a run of an input report carries that input report's `totals`, and the merge's own run carries the merged report's. A merged document also carries the merged report's `totals` as the log's own `properties.totals`, which is where a reader finds the counts of the merged report as a whole, `omitted` among them, because the cap applies to the merged report and a merge admits no input that omitted a finding.
 
 GitHub accepts at most 20 runs per file, 25,000 results per run (it displays the top 5,000) and 10 MB per gzip-compressed file. A configured maximum finding count is how a producer stays under those limits without silently truncating: the JSON report's `totals.omitted` names what the SARIF lacks.
 
@@ -30,15 +34,15 @@ GitHub accepts at most 20 runs per file, 25,000 results per run (it displays the
 | `tool.driver.rules[]` | One rule per kind, [below](#the-rules). |
 | `automationDetails.id` | `deadset/<language>/`, where `<language>` is the report's `analyzer.languages` entries joined with `+` in bytewise order, so `deadset/go/` for a Go analyzer and `deadset/ts/` for a TypeScript one. GitHub reads the text before the last `/` as the category and the empty remainder as no run identifier, and uses the category to tell one language's alerts from another's on the same commit. |
 | `columnKind` | The SARIF name of the unit `finding.schema.json` fixes for `position.column`: `utf16CodeUnits` when the schema counts UTF-16 code units, `unicodeCodePoints` when it counts code points. SARIF admits no third value and requires the property on every run that holds a result (section 3.14.27), so the schema's unit is one of these two. GitHub does not read it. It is emitted because an absent `columnKind` defaults to `unicodeCodePoints`, and a producer counting UTF-16 code units would then mislabel every column after a character outside the Basic Multilingual Plane. |
-| `originalUriBaseIds` | `{ "%SRCROOT%": { "description": { "text": "The target root, the directory the analyzer was run on." } } }`. The entry declares the base identifier every location uses and deliberately omits `uri`: SARIF section 3.14.14 permits the omission for exactly this case, producing deterministic output with no machine path in it. GitHub does not read it. |
-| `results[]` | One result per finding, then one per stale suppression, [below](#the-results). |
-| `properties.totals` | The report's `totals` object, unchanged. GitHub does not read it. It is the place a reader of the file sees `suppressions_in_effect`, `reasons_recorded` and `omitted`, the counts that describe what this document does not contain. |
+| `originalUriBaseIds` | `{ "%SRCROOT%": { "description": { "text": "The target root." } } }`, in every run, an analyzer's and the merge's alike, wherever the product ran. The entry declares the base identifier every location uses and deliberately omits `uri`: SARIF section 3.14.14 permits the omission for exactly this case, producing deterministic output with no machine path in it. GitHub does not read it. |
+| `results[]` | One result per finding, then one per stale suppression, [below](#the-results). A run that holds no record carries an empty array. |
+| `properties.totals` | The `totals` object of the report the run's tool wrote, unchanged: in a merged document, an input report's run carries that input report's `totals` and the merge's own run the merged report's. GitHub does not read it. It is the place a reader of the file sees `suppressions_in_effect`, `reasons_recorded` and `omitted`, the counts that describe what this document does not contain. |
 
 Not emitted on the run: `invocations` (GitHub reads its working directory only to relativize absolute URIs, and every URI here is already relative; the array would otherwise carry the command line and the machine path), `artifacts`, `versionControlProvenance` (the analyzer reads no version control), `taxonomies`, `translations` and `policies`.
 
 ## The rules
 
-`tool.driver.rules[]` holds one `reportingDescriptor` for every live kind in `kinds.json` whose `languages` includes the run's language, in bytewise order of `code`, whether or not the run holds a result for it and whether or not the configuration enabled it. A fixed rule list keeps `ruleIndex` stable across runs and configurations, which is the property GitHub's page asks of rules: information that changes when the tool changes, not when the code does.
+`tool.driver.rules[]` holds one `reportingDescriptor` for every live kind in `kinds.json` whose `languages` includes one of the run's languages, in bytewise order of `code`, whether or not the run holds a result for it and whether or not the configuration enabled it. A fixed rule list keeps `ruleIndex` stable across runs and configurations, which is the property GitHub's page asks of rules: information that changes when the tool changes, not when the code does.
 
 | Property | Value |
 | --- | --- |
@@ -55,7 +59,7 @@ Not emitted on a rule: `helpUri` and `help.markdown` (GitHub shows `help.text` w
 
 ## The results
 
-`results[]` holds one result per record of the report's `findings`, in report order, then one per record of `stale_suppressions`, in report order; the same sequence the text format prints. A stale suppression is a result under `ruleId` `DS1703` at level `error`, located at the suppression's own site (`text-line.md`, "Three cases with no special form"). No other record of the report becomes a result; the [omitted section](#what-is-never-emitted) says which and why.
+`results[]` holds one result per record of the report's `findings`, in report order, then one per record of `stale_suppressions`, in report order; the same sequence the text format prints. A stale suppression is a result under `ruleId` `DS1703` at level `error`, located at the suppression's own site (`text-line.md`, "Three cases with no special form"), with `message.text` the record's `message`. Its region's `endLine` is its `startLine`, because the record's position carries no end line; it has no related location; and it carries no `properties`, because the bag holds the fields of a finding and a stale-suppression record is not one. No other record of the report becomes a result; the [omitted section](#what-is-never-emitted) says which and why.
 
 | Property | Value |
 | --- | --- |
@@ -66,7 +70,7 @@ Not emitted on a rule: `helpUri` and `help.markdown` (GitHub shows `help.text` w
 | `locations[]` | Exactly one location, the finding's `position`, [below](#the-location). GitHub reads only the first location of a result; SARIF allows more, and this format never has a second. |
 | `relatedLocations[]` | The positions the finding names beyond its own, [below](#related-locations). Absent when the finding names none. |
 | `partialFingerprints` | The two keys [below](#partial-fingerprints). |
-| `properties` | Every field of the finding this page has not mapped above, under its schema name and with its value unchanged. At schema version 6.0.0 that is `language`, `symbol`, `reachability_class`, `confidence`, `liveness_relation`, `test_only`, `generated`, `component`, `retained_by`, `configurations`, `consumers_loaded`, `fixability` and `details`. A field the finding omits is absent from the bag, never written as a null or as an empty value. GitHub does not read the bag; it serves other SARIF consumers, a codemod and a reader of the file, and it changes nothing about the alert GitHub shows. |
+| `properties` | Every field of the finding this page has not mapped above, under its schema name and with its value unchanged; a merged finding's `analyzer` is mapped by the run that holds the result. At schema versions 6.0.0 and 6.1.0 that is `language`, `symbol`, `reachability_class`, `confidence`, `liveness_relation`, `test_only`, `generated`, `component`, `retained_by`, `configurations`, `consumers_loaded`, `fixability` and `details`. A field the finding omits is absent from the bag, never written as a null or as an empty value. GitHub does not read the bag; it serves other SARIF consumers, a codemod and a reader of the file, and it changes nothing about the alert GitHub shows. |
 
 Not emitted on a result: `kind` (the default `fail` is right for every result), `rule` (a `ruleId` with a `ruleIndex` locates the descriptor), `fixes` (the report is the interface for an edit, and no product edits source in this version), `codeFlows`, `stacks`, `taxa`, `baselineState`, `rank`, `occurrenceCount`, and `suppressions`, whose omission has [its own section](#the-omitted-suppression).
 
@@ -83,7 +87,7 @@ Not emitted on a result: `kind` (the default `fail` is right for every result), 
 
 | Property | Value |
 | --- | --- |
-| `artifactLocation.uri` | The finding's `position.path`, a relative reference: the target-relative path with `/` separators, each segment percent-encoded as RFC 3986 requires for a path segment (a space becomes `%20`), and no leading `./`. |
+| `artifactLocation.uri` | The finding's `position.path`, a relative reference: the target-relative path with `/` separators and no leading `./`, each segment percent-encoded byte by byte over its UTF-8 encoding. A letter, a digit and each of `-._~$&+:=@` is written as itself, and every other byte as `%` and two uppercase hexadecimal digits, so a space becomes `%20`, `é` becomes `%C3%A9` and `,` becomes `%2C`. Every character written as itself is one RFC 3986 admits in a path segment. A colon in the first segment is written `%3A`, because a relative reference whose first segment holds a colon reads as a scheme ([RFC 3986, section 4.2](https://www.rfc-editor.org/rfc/rfc3986#section-4.2)), so `a:b.go` is `a%3Ab.go`; a colon in a later segment is written as itself. |
 | `artifactLocation.uriBaseId` | `%SRCROOT%`, the identifier declared in `originalUriBaseIds`. GitHub does not read it; it resolves a relative URI against the root of the repository being analyzed. |
 | `region.startLine` | `position.line`. |
 | `region.startColumn` | `position.column`, in the unit `columnKind` names. Every finding carries a column, so no clamp for a missing one is needed. |
@@ -131,6 +135,8 @@ Two keys, each a versioned hierarchical string as SARIF section 3.27.17 asks, co
 5. Render `h` as lowercase hexadecimal with no leading zeros, then `:`, then the number of lines so far in this file, this one included, whose rendered hash is identical. The counter starts at 1 and disambiguates identical windows, such as repeated lines in a long run of identical lines.
 6. The value for a result is the string computed for the line `position.line`.
 
+A result whose file the product cannot read, or whose `position.line` is past the last line the procedure numbers, has no value. The rendering fails, and the product exits with code 3 with the report already written, because a key computed from other bytes would open a second alert for the same finding.
+
 A vector. The file below, stored with LF line endings and a trailing LF, is five lines long: the third holds a two-byte UTF-8 character, the fourth is indented, and the indentation may be a tab or spaces without changing any value below, because step 2 drops both.
 
 ```text
@@ -171,11 +177,11 @@ The first column is the run's configured severity on a result and the kind's `de
 
 SARIF 2.1.0 has a `suppressions` array (section 3.27.23) built for adjudicated results: a `suppression` object with `kind` `inSource` or `external` and a `justification`, which is what the mandatory `reason` on every ignore entry would fill. It is not used, for two reasons that hold together.
 
-First, nothing exists to mark. A matched suppression marks its symbol live before the sweep (`suppression.md`), so the sweep produces no finding for that symbol and no finding for the symbols only it referenced. A suppressed finding does not exist in the report, and a SARIF result cannot be emitted for a finding that does not exist.
+First, nothing exists to mark. A matched suppression withholds the finding its code names, and one whose code does not report a part of a declaration also marks its symbol live before the sweep (`suppression.md`), so the sweep produces no finding for that symbol and no finding for the symbols only it referenced. A suppressed finding does not exist in the report, and a SARIF result cannot be emitted for a finding that does not exist.
 
 Second, the one consumer this format targets would publish it. GitHub's supported-properties table does not list `suppressions`, its page states that unlisted properties are ignored, and the upload action does not support the property. A result emitted with a `suppressions` entry would appear as an open code-scanning alert, which is the opposite of what an adjudication with a reason is for.
 
-The omission is visible rather than silent. The report's `totals.suppressions_in_effect` and `totals.reasons_recorded` carry the counts, the summary line prints them, and this document carries the same `totals` object under `runs[].properties.totals`. A suppression that matched nothing is not omitted: it is a `DS1703` result like any other finding.
+The omission is visible rather than silent. The report's `totals.suppressions_in_effect` and `totals.reasons_recorded` carry the counts, the summary line prints them, and this document carries the same `totals` object under `runs[].properties.totals`, and in a merged document the merged report's under the log's `properties.totals`. A suppression that matched nothing is not omitted: it is a `DS1703` result like any other finding.
 
 ## What is never emitted
 
@@ -183,7 +189,7 @@ The omission is visible rather than silent. The report's `totals.suppressions_in
 | --- | --- |
 | A suppressed finding, and the `suppressions` property | The section above. |
 | A pending finding | It lives in an edge evaluation, is neither reported nor suppressed, and the run that holds one exits with code 4 to say the report is an input to a merge and not an answer. The SARIF a lone analyzer writes for such a report omits it, the same as the text format, and the exit code carries the warning. |
-| A finding past the configured maximum count | `totals.omitted` in the report and in `runs[].properties.totals` names how many. |
+| A finding past the configured maximum count | `totals.omitted` in the report and in `runs[].properties.totals` names how many; for a merged report, the log's `properties.totals`. |
 | `region.endColumn` | The finding carries no end column; SARIF's default is the end of `endLine`, which is the declaration's extent. |
 | `invocations`, `artifacts`, `versionControlProvenance` | Machine paths and command lines the report's determinism rule keeps out; nothing GitHub needs, since every URI is relative. |
 | `fixes` | The report is the interface for an edit; no product edits source in this version. |
@@ -199,6 +205,7 @@ One row per property this mapping emits, with the row of GitHub's supported-prop
 | `$schema` | sarifLog `$schema`, Required |
 | `version` | sarifLog `version`, Required |
 | `runs[]` | sarifLog `runs[]`, Required |
+| `properties.totals` | none; in a merged document, carries the merged report's totals for a reader of the file |
 | `runs[].tool.driver` | run `tool.driver`, Required |
 | `runs[].tool.driver.name` | toolComponent `name`, Required |
 | `runs[].tool.driver.version` | toolComponent `version`, Optional; not used when `semanticVersion` is present |

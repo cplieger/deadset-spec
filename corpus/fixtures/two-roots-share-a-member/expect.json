@@ -1,0 +1,61 @@
+{
+  "name": "two-roots-share-a-member",
+  "description": "Two dead functions whose deletions share a dead function belong to one component, of which both are root members: the component counts the three functions and their lines once, while a dead function that shares nothing is a component of its own.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "expect": [
+    { "symbol": "Live", "report": "none" },
+    {
+      "symbol": "Left",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting",
+      "component": {
+        "root": true,
+        "symbol_count": 3,
+        "deletable_lines": 3
+      }
+    },
+    {
+      "symbol": "Right",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting",
+      "component": {
+        "root": true,
+        "symbol_count": 3,
+        "deletable_lines": 3
+      }
+    },
+    {
+      "symbol": "shared",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reachability",
+      "component": {
+        "root": false,
+        "symbol_count": 3,
+        "deletable_lines": 3
+      }
+    },
+    {
+      "symbol": "Alone",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting",
+      "component": {
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 1
+      }
+    }
+  ]
+}

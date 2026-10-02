@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "deadset describe document",
+  "description": "What an analyzer's describe command writes to standard output, and what an invoking product reads before it runs any analysis: the analyzer's name, its version, the contract version it implements, the report schema versions it reads, the languages it claims and its recorded result over the conformance corpus. The document is one strict JSON object, decoded by each language's standard library with a closed key list compared as bytes: a key this schema does not declare, a key written twice, a value of a type it does not admit, null included, and anything after the object are refused, and the invoking product ends the run with the failure code. Members are written in the order this schema lists them. The document describes the artifact and no analysis, so it names no target and carries no finding; the invoking product admits an analyzer whose document records a conformance result of pass, reads one of the schema versions the run accepts and names the provider entry's analyzer, and refuses it otherwise, before any analysis runs.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name", "version", "contract_version", "schema_versions_accepted", "languages"],
+  "properties": {
+    "name": {
+      "description": "The analyzer's name, spelled as the analyzer.name of every report it writes.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$"
+    },
+    "version": {
+      "description": "The version of the analyzer artifact that answered, spelled as the analyzer.version of every report it writes.",
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(-[0-9A-Za-z.-]+)?(\\+[0-9A-Za-z.-]+)?$"
+    },
+    "contract_version": {
+      "description": "The contract version the analyzer implements, the contract_version of contract/contract.json it names in every report.",
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "schema_versions_accepted": {
+      "description": "Every report schema version the analyzer reads, drawn from the schema_versions of the contract version it implements.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+      }
+    },
+    "languages": {
+      "description": "The languages the analyzer claims, drawn from the languages field of kinds.json.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": ["go", "ts"]
+      }
+    },
+    "conformance": {
+      "description": "The analyzer's recorded result over the conformance corpus, copied from the results document its corpus runner wrote, in the shape a report's analyzer.conformance takes. The member is absent where the analyzer records no conformance run, which an invoking product reads as no record and refuses as it refuses a result other than pass; it is never null.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["corpus_version", "result", "digest"],
+      "properties": {
+        "corpus_version": {
+          "description": "The corpus_version of corpus.json the product answered.",
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
+        "result": {
+          "description": "The product's result over the whole corpus: fail when any fixture failed, pass otherwise. A declared gap never lowers it.",
+          "type": "string",
+          "enum": ["pass", "fail"]
+        },
+        "digest": {
+          "description": "sha256: followed by the lowercase hexadecimal SHA-256 of the bytes of the results document the corpus runner wrote, so a reader holding that file recomputes it.",
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        }
+      }
+    }
+  }
+}

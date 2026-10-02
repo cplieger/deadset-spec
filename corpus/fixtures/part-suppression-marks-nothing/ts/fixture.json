@@ -1,0 +1,7 @@
+{
+  "symbols": {
+    "FirstLineSignature": { "file": "target/main.ts", "line": 9 },
+    "WrappedSignature": { "file": "target/main.ts", "line": 15 },
+    "WrappedSignature.chunk": { "file": "target/main.ts", "line": 17 }
+  }
+}

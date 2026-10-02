@@ -1,0 +1,2 @@
+{{range .findings}}{{.position.path}}:{{.position.line}}:{{.position.column}}: {{.code}} {{.symbol.name}} [{{.confidence}}]
+{{end}}{{.totals.findings}} findings, {{.totals.deletable_lines}} deletable lines

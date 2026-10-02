@@ -1,0 +1,6 @@
+{
+  "description": "The target files the case's results name, by target-relative path.",
+  "files": {
+    "catalog.go": "package app\n\nfunc Unused() int {\n\treturn 1\n}\n\ntype scanner struct {\n\tlast int\n}\n\nfunc newScanner() *scanner {\n\ts := &scanner{}\n\ts.last = 2\n\treturn s\n}\n\nfunc (s *scanner) reset() {\n\ts.last = 0\n}\n"
+  }
+}

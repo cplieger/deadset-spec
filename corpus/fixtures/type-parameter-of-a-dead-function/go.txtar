@@ -1,0 +1,37 @@
+The Go rendering: two generic functions that never name their type parameter,
+one called by main and one called by nothing, each type parameter on a line of
+its own.
+
+-- fixture.json --
+{
+  "symbols": {
+    "keep": { "file": "target/main.go", "line": 8 },
+    "keep.T": { "file": "target/main.go", "line": 9 },
+    "pick": { "file": "target/main.go", "line": 15 },
+    "pick.U": { "file": "target/main.go", "line": 16 }
+  }
+}
+-- target/go.mod --
+module example.com/app
+
+go 1.27.0
+-- target/main.go --
+package main
+
+func main() {
+	println(keep[int](1))
+}
+
+// keep is called by main and never names T.
+func keep[
+	T any,
+](n int) int {
+	return n
+}
+
+// pick is called by nothing and never names U.
+func pick[
+	U any,
+](n int) int {
+	return n
+}

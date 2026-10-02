@@ -1,0 +1,35 @@
+{
+  "description": "Recorded findings: a run fails only on a finding this document does not hold.",
+  "baseline": [
+    {
+      "code": "DS1001",
+      "symbol": "go://example.com/app#Unused",
+      "path": "catalog.go",
+      "reason": "recorded by deadset-go 1.20.2"
+    },
+    {
+      "code": "DS1003",
+      "symbol": "go://example.com/app#scanner.spare",
+      "path": "catalog.go",
+      "reason": "recorded by deadset-go 1.20.2"
+    },
+    {
+      "code": "DS1101",
+      "symbol": "go://example.com/app#Normalize",
+      "path": "catalog.go",
+      "reason": "recorded by deadset-go 1.20.2"
+    },
+    {
+      "code": "DS1301",
+      "symbol": "go://example.com/app#scanner.last",
+      "path": "catalog.go",
+      "reason": "recorded by deadset-go 1.20.2"
+    },
+    {
+      "code": "DS1801",
+      "symbol": "go://example.com/app#scanner.feed",
+      "path": "catalog.go",
+      "reason": "recorded by deadset-go 1.20.2"
+    }
+  ]
+}

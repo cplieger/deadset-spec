@@ -1,0 +1,13 @@
+{
+  "symbols": {
+    "UnusedRuntime": { "file": "target/package.json", "line": 8 },
+    "UsedRuntime": { "file": "target/package.json", "line": 9 },
+    "Command": { "file": "target/package.json", "line": 12 },
+    "RequiredPeer": { "file": "target/package.json", "line": 13 },
+    "PeerHost": { "file": "target/package.json", "line": 14 },
+    "OptionalPeer": { "file": "target/package.json", "line": 15 },
+    "UnusedDev": { "file": "target/package.json", "line": 16 },
+    "UnusedPeer": { "file": "target/package.json", "line": 19 },
+    "UsedPeer": { "file": "target/package.json", "line": 20 }
+  }
+}

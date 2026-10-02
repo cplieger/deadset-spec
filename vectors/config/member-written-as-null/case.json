@@ -1,0 +1,5 @@
+{
+  "name": "member-written-as-null",
+  "description": "A repository configuration writing an integer setting that has a default as null. The run is refused naming the key, because no key admits null, so a null is neither read as the key's absence nor resolved to the default.",
+  "covers": ["member-written-as-null"]
+}

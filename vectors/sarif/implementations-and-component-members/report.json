@@ -1,0 +1,191 @@
+{
+  "schema_version": "6.0.0",
+  "contract_version": "4.0.0",
+  "analyzer": {
+    "name": "deadset-ts",
+    "version": "1.0.0",
+    "languages": [
+      "ts"
+    ],
+    "schema_versions_accepted": [
+      "6.0.0",
+      "6.1.0"
+    ],
+    "conformance": {
+      "corpus_version": "1.0.0",
+      "result": "pass",
+      "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000001"
+    }
+  },
+  "target": {
+    "kind": "application",
+    "root": ".",
+    "identity": "@example/app"
+  },
+  "configurations": [
+    {
+      "id": "linux-amd64",
+      "os": "linux",
+      "arch": "amd64",
+      "tags": []
+    }
+  ],
+  "configurations_not_built": [],
+  "consumers": {
+    "declared": 0,
+    "loaded": [],
+    "unavailable": []
+  },
+  "findings": [
+    {
+      "code": "DS1201",
+      "kind": "unused-interface",
+      "language": "ts",
+      "position": {
+        "path": "src/shapes.ts",
+        "line": 1,
+        "column": 18,
+        "end_line": 3
+      },
+      "symbol": {
+        "ref": "ts://@example/app/src/shapes.ts#Shape",
+        "kind": "interface",
+        "name": "Shape",
+        "exported": true,
+        "size_lines": 3
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "test_only": false,
+      "generated": false,
+      "component": {
+        "id": "deadset-ts/c-1",
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 3
+      },
+      "retained_by": [],
+      "configurations": [
+        "linux-amd64"
+      ],
+      "consumers_loaded": [],
+      "fixability": "manual",
+      "severity": "deny",
+      "message": "exported interface is implemented and never used as a type",
+      "details": {
+        "implementations": [
+          {
+            "ref": "ts://@example/app/src/shapes.ts#Square",
+            "name": "Square",
+            "position": {
+              "path": "src/shapes.ts",
+              "line": 5,
+              "column": 14,
+              "end_line": 9
+            }
+          },
+          {
+            "ref": "ts://@example/app/src/shapes.ts#Circle",
+            "name": "Circle",
+            "position": {
+              "path": "src/shapes.ts",
+              "line": 11,
+              "column": 14,
+              "end_line": 15
+            }
+          }
+        ]
+      },
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "code": "DS1001",
+      "kind": "unused-exported",
+      "language": "ts",
+      "position": {
+        "path": "src/shapes.ts",
+        "line": 17,
+        "column": 17,
+        "end_line": 19
+      },
+      "symbol": {
+        "ref": "ts://@example/app/src/shapes.ts#describe",
+        "kind": "function",
+        "name": "describe",
+        "exported": true,
+        "size_lines": 3
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "test_only": false,
+      "generated": false,
+      "component": {
+        "id": "deadset-ts/c-2",
+        "root": true,
+        "symbol_count": 3,
+        "deletable_lines": 7,
+        "members": [
+          {
+            "ref": "ts://@example/app/src/shapes.ts#describe",
+            "name": "describe",
+            "position": {
+              "path": "src/shapes.ts",
+              "line": 17,
+              "column": 17,
+              "end_line": 19
+            }
+          },
+          {
+            "ref": "ts://@example/app/src/shapes.ts#helper",
+            "name": "helper",
+            "position": {
+              "path": "src/shapes.ts",
+              "line": 21,
+              "column": 10,
+              "end_line": 23
+            }
+          },
+          {
+            "ref": "ts://@example/app/src/shapes.ts#suffix",
+            "name": "suffix",
+            "position": {
+              "path": "src/shapes.ts",
+              "line": 25,
+              "column": 7,
+              "end_line": 25
+            }
+          }
+        ]
+      },
+      "retained_by": [],
+      "configurations": [
+        "linux-amd64"
+      ],
+      "consumers_loaded": [],
+      "fixability": "deletable",
+      "severity": "deny",
+      "message": "exported function has no reference in the target",
+      "details": {},
+      "liveness_relation": "reference-counting"
+    }
+  ],
+  "edge_evaluations": [],
+  "stale_suppressions": [],
+  "declared_gaps": [],
+  "excluded_by_cgo": [],
+  "test_file_rules": [],
+  "totals": {
+    "findings": 2,
+    "by_severity": {
+      "allow": 0,
+      "warn": 0,
+      "deny": 2
+    },
+    "deletable_lines": 10,
+    "suppressions_in_effect": 0,
+    "reasons_recorded": 0,
+    "stale_suppressions": 0,
+    "pending": 0,
+    "omitted": 0
+  }
+}

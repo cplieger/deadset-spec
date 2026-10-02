@@ -1,0 +1,31 @@
+{
+  "name": "part-suppression-marks-nothing",
+  "description": "A suppression for a part of a declaration withholds the part's finding and marks nothing. Two functions nothing calls each never read their parameter, and each carries an inline directive for the parameter's code alone: above the function where the parameter is declared on the function's first line, and above the parameter inside a wrapped parameter list. Each function is still reported as dead, each parameter's finding is withheld, and neither directive is stale.",
+  "languages": ["go", "ts"],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "FirstLineSignature",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting",
+      "component": {
+        "root": true
+      }
+    },
+    {
+      "symbol": "WrappedSignature",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting",
+      "component": {
+        "root": true
+      }
+    },
+    { "symbol": "WrappedSignature.chunk", "report": "none" }
+  ]
+}

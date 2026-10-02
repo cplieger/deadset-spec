@@ -1,0 +1,9 @@
+{
+  "symbols": {
+    "Live": { "file": "target/ledger.ts", "line": 2 },
+    "Withheld": { "file": "target/ledger.ts", "line": 8 },
+    "balance": { "file": "target/ledger.ts", "line": 13 },
+    "Reported": { "file": "target/ledger.ts", "line": 18 },
+    "audit": { "file": "target/ledger.ts", "line": 23 }
+  }
+}

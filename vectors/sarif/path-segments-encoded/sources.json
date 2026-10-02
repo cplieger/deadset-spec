@@ -1,0 +1,8 @@
+{
+  "description": "The target files the case's results name, by target-relative path.",
+  "files": {
+    "a:b.go": "package app\n\nfunc A() {}\n",
+    "dir:x/sub:y/file name é,(1).go": "package sub\n\nfunc B() {}\n\nvar _ = 1\n",
+    "100%/~keep$&+=@.go": "package p\n\ntype t struct {\n\tn int\n}\n"
+  }
+}

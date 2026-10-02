@@ -1,0 +1,24 @@
+{
+  "name": "type-parameter-of-a-dead-function",
+  "description": "A type parameter a live function never names is reported, and one a dead function never names falls with the function and is reported under no code of its own: only the function is reported.",
+  "languages": ["go", "ts"],
+  "target_kind": "application",
+  "expect": [
+    { "symbol": "keep", "report": "none" },
+    {
+      "symbol": "keep.T",
+      "report": "DS1303",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-parameter"
+    },
+    {
+      "symbol": "pick",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    },
+    { "symbol": "pick.U", "report": "none" }
+  ]
+}

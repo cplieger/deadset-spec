@@ -17,7 +17,7 @@ import (
 	"testing"
 	"testing/fstest"
 
-	"github.com/cplieger/deadset-spec/v3"
+	"github.com/cplieger/deadset-spec/v4"
 )
 
 const (
@@ -69,6 +69,7 @@ type corpusLayout struct {
 	TargetDirectory     string            `json:"target_directory"`
 	ConsumerDirectory   string            `json:"consumer_directory"`
 	DependencyDirectory string            `json:"dependency_directory"`
+	InstalledDirectory  string            `json:"installed_directory"`
 }
 
 type corpusSchemas struct {
@@ -94,14 +95,36 @@ type vocabulary struct {
 // expectationDocument mirrors a fixture's expect.json; an unknown key fails
 // the decode, so a fixture cannot carry a field the schema does not declare.
 type expectationDocument struct {
-	ConfiguredRoots map[string]string `json:"configured_roots"`
-	Name            string            `json:"name"`
-	Description     string            `json:"description"`
-	TargetKind      string            `json:"target_kind"`
-	Languages       []string          `json:"languages"`
-	Consumers       []string          `json:"consumers"`
-	ClosedWorld     []string          `json:"closed_world"`
-	Expect          []expectationRow  `json:"expect"`
+	ConfiguredRoots        map[string]string                `json:"configured_roots"`
+	ConfiguredDeclarations map[string]configuredDeclaration `json:"configured_declarations"`
+	Name                   string                           `json:"name"`
+	Description            string                           `json:"description"`
+	TargetKind             string                           `json:"target_kind"`
+	Languages              []string                         `json:"languages"`
+	Consumers              []string                         `json:"consumers"`
+	ClosedWorld            []string                         `json:"closed_world"`
+	EdgeEvaluations        []expectedEvaluation             `json:"edge_evaluations"`
+	Expect                 []expectationRow                 `json:"expect"`
+}
+
+// configuredDeclaration mirrors one configured_declarations member: the key the
+// runner writes the entry into, the entry itself, and for an entry of a lifecycle
+// contract the contract's members.
+type configuredDeclaration struct {
+	Entry   map[string]string `json:"entry"`
+	Key     string            `json:"key"`
+	Members []string          `json:"members"`
+}
+
+// expectedEvaluation mirrors one edge_evaluations member: the edge and side the
+// report's record names, the state it carries, and for a dead side the logical
+// name and the code of the pending finding.
+type expectedEvaluation struct {
+	Edge   string `json:"edge"`
+	Side   string `json:"side"`
+	State  string `json:"state"`
+	Symbol string `json:"symbol"`
+	Report string `json:"report"`
 }
 
 type expectationRow struct {
@@ -193,6 +216,8 @@ var (
 	errOrphanSymbol    = errors.New("manifest name no expectation uses")
 	errOrphanRoot      = errors.New("configured root no expectation uses")
 	errRootAlsoBound   = errors.New("configured root a manifest binds as well")
+	errOrphanEntry     = errors.New("configured declaration no expectation uses")
+	errEntryAlsoBound  = errors.New("configured declaration a manifest or configured_roots binds as well")
 	errNoFile          = errors.New("manifest entry has no file")
 	errNoLine          = errors.New("manifest entry has no line")
 	errDuplicateTxtar  = errors.New("txtar section declared twice")
@@ -425,6 +450,23 @@ func resolveExpectations(expect *expectationDocument, manifest manifestDocument)
 	positions := make(map[string]symbolPosition, len(expect.Expect))
 	expected := make(map[string]bool, len(expect.Expect))
 	var errs []error
+	for _, evaluation := range expect.EdgeEvaluations {
+		if evaluation.Symbol == "" {
+			continue
+		}
+		if _, ok := manifest.Symbols[evaluation.Symbol]; !ok {
+			errs = append(errs, fmt.Errorf("%w: %q", errUnboundSymbol, evaluation.Symbol))
+		}
+	}
+	rowNames := map[string]bool{}
+	for _, row := range expect.Expect {
+		rowNames[row.Symbol] = true
+	}
+	for _, evaluation := range expect.EdgeEvaluations {
+		if evaluation.Symbol != "" && !rowNames[evaluation.Symbol] {
+			expected[evaluation.Symbol] = true
+		}
+	}
 	for _, row := range expect.Expect {
 		if expected[row.Symbol] {
 			errs = append(errs, fmt.Errorf("%w: %q", errDuplicateSymbol, row.Symbol))
@@ -432,7 +474,14 @@ func resolveExpectations(expect *expectationDocument, manifest manifestDocument)
 		}
 		expected[row.Symbol] = true
 		entry, ok := manifest.Symbols[row.Symbol]
-		if _, configured := expect.ConfiguredRoots[row.Symbol]; configured {
+		_, root := expect.ConfiguredRoots[row.Symbol]
+		if _, declared := expect.ConfiguredDeclarations[row.Symbol]; declared {
+			if ok || root {
+				errs = append(errs, fmt.Errorf("%w: %q", errEntryAlsoBound, row.Symbol))
+			}
+			continue
+		}
+		if root {
 			if ok {
 				errs = append(errs, fmt.Errorf("%w: %q", errRootAlsoBound, row.Symbol))
 			}
@@ -457,6 +506,11 @@ func resolveExpectations(expect *expectationDocument, manifest manifestDocument)
 	for _, name := range slices.Sorted(maps.Keys(expect.ConfiguredRoots)) {
 		if !expected[name] {
 			errs = append(errs, fmt.Errorf("%w: %q", errOrphanRoot, name))
+		}
+	}
+	for _, name := range slices.Sorted(maps.Keys(expect.ConfiguredDeclarations)) {
+		if !expected[name] {
+			errs = append(errs, fmt.Errorf("%w: %q", errOrphanEntry, name))
 		}
 	}
 	if err := errors.Join(errs...); err != nil {
@@ -650,6 +704,8 @@ func checkRendering(expect *expectationDocument, language string, files map[stri
 		return fmt.Errorf("rendering %q: %w", language, err)
 	}
 	errs := checkConfigurations(expect, language, manifest.Configurations)
+	errs = append(errs, checkEdgeEvaluations(expect, language, files)...)
+	errs = append(errs, checkInstalledPackages(language, files)...)
 	for _, name := range slices.Sorted(maps.Keys(positions)) {
 		pos := positions[name]
 		content, ok := files[pos.File]
@@ -672,6 +728,107 @@ func checkRendering(expect *expectationDocument, language string, files map[stri
 		errs = append(errs, checkGoDependencyModules(expect.Consumers, files)...)
 	}
 	return errors.Join(errs...)
+}
+
+// installedDir is the directory a TypeScript rendering carries its installed
+// packages in, which the runner renames node_modules.
+const installedDir = "installed"
+
+// checkInstalledPackages holds an installed tree to the layout corpus.json states:
+// only a TypeScript rendering carries one, and every manifest below it names the
+// package its path below node_modules gives, so the target resolves each one.
+func checkInstalledPackages(language string, files map[string][]byte) []error {
+	var errs []error
+	for _, name := range slices.Sorted(maps.Keys(files)) {
+		rest, below := strings.CutPrefix(name, installedDir+"/")
+		if !below {
+			continue
+		}
+		if language != "ts" {
+			errs = append(errs, fmt.Errorf("rendering %q carries %s, which only a TypeScript rendering may", language, name))
+			continue
+		}
+		dir, file := path.Split(rest)
+		if file != "package.json" {
+			continue
+		}
+		var manifest struct {
+			Name    string `json:"name"`
+			Private bool   `json:"private"`
+		}
+		if err := json.Unmarshal(files[name], &manifest); err != nil {
+			errs = append(errs, fmt.Errorf("rendering %q %s: %w", language, name, err))
+			continue
+		}
+		if want := strings.TrimSuffix(dir, "/"); manifest.Name != want || !manifest.Private {
+			errs = append(errs, fmt.Errorf("rendering %q %s names %q private %t, want %q and private", language, name, manifest.Name, manifest.Private, want))
+		}
+	}
+	return errs
+}
+
+// edgesDocumentPath is where a rendering carries the edges document its target declares.
+const edgesDocumentPath = targetDir + "/deadset-edges.json"
+
+// edgesDocument mirrors a target's deadset-edges.json.
+type edgesDocument struct {
+	Description string `json:"description"`
+	Edges       []struct {
+		ID       string `json:"id"`
+		Because  string `json:"because"`
+		Provides string `json:"provides"`
+		UsedBy   string `json:"used_by"`
+	} `json:"edges"`
+}
+
+// checkEdgeEvaluations holds a fixture's edge_evaluations member to the edges
+// document its rendering carries: the member and the document appear together and
+// only in a one-language fixture, every entry names a declared edge's side once,
+// and every side the rendering's language spells has its entry, because the
+// analyzer publishes one record per such side and the member is exhaustive.
+func checkEdgeEvaluations(expect *expectationDocument, language string, files map[string][]byte) []error {
+	data, held := files[edgesDocumentPath]
+	switch {
+	case !held && len(expect.EdgeEvaluations) == 0:
+		return nil
+	case !held:
+		return []error{fmt.Errorf("rendering %q names edge evaluations and carries no %s", language, edgesDocumentPath)}
+	case len(expect.EdgeEvaluations) == 0:
+		return []error{fmt.Errorf("rendering %q carries %s and the expectation file names no edge evaluation", language, edgesDocumentPath)}
+	case len(expect.Languages) != 1:
+		return []error{fmt.Errorf("edge_evaluations named by a fixture listing %v, want one language", expect.Languages)}
+	}
+	var edges edgesDocument
+	if err := decodeStrict(data, &edges); err != nil {
+		return []error{fmt.Errorf("rendering %q %s: %w", language, edgesDocumentPath, err)}
+	}
+	prefix := language + "://"
+	sides := map[string]bool{}
+	for _, edge := range edges.Edges {
+		for side, ref := range map[string]string{"provides": edge.Provides, "used_by": edge.UsedBy} {
+			if strings.HasPrefix(ref, prefix) {
+				sides[edge.ID+" "+side] = true
+			}
+		}
+	}
+	var errs []error
+	named := map[string]bool{}
+	for _, evaluation := range expect.EdgeEvaluations {
+		key := evaluation.Edge + " " + evaluation.Side
+		switch {
+		case named[key]:
+			errs = append(errs, fmt.Errorf("edge_evaluations names %s twice", key))
+		case !sides[key]:
+			errs = append(errs, fmt.Errorf("edge_evaluations names %s, which %s declares no %s side of", key, edgesDocumentPath, language))
+		}
+		named[key] = true
+	}
+	for _, key := range slices.Sorted(maps.Keys(sides)) {
+		if !named[key] {
+			errs = append(errs, fmt.Errorf("%s declares the %s side %s and edge_evaluations names no entry for it", edgesDocumentPath, language, key))
+		}
+	}
+	return errs
 }
 
 // topLevelDirectories is every directory at the rendering root, sorted, which is
@@ -820,8 +977,8 @@ func TestCorpusDocument(t *testing.T) {
 		if got := slices.Sorted(maps.Keys(doc.Layout.Renderings)); !slices.Equal(got, kinds.Languages) {
 			t.Errorf("layout.renderings languages = %v, want %s languages %v", got, kindsPath, kinds.Languages)
 		}
-		gotPaths := []string{doc.Layout.FixtureDirectory, doc.Layout.ExpectationFile, doc.Layout.ManifestFile, doc.Layout.TargetDirectory, doc.Layout.ConsumerDirectory, doc.Layout.DependencyDirectory}
-		wantPaths := []string{fixturesDir + "/<name>/", expectFile, manifestFile, targetDir + "/", "<consumer>/", "<dependency>/"}
+		gotPaths := []string{doc.Layout.FixtureDirectory, doc.Layout.ExpectationFile, doc.Layout.ManifestFile, doc.Layout.TargetDirectory, doc.Layout.ConsumerDirectory, doc.Layout.DependencyDirectory, doc.Layout.InstalledDirectory}
+		wantPaths := []string{fixturesDir + "/<name>/", expectFile, manifestFile, targetDir + "/", "<consumer>/", "<dependency>/", installedDir + "/"}
 		if !slices.Equal(gotPaths, wantPaths) {
 			t.Errorf("layout paths = %q, want %q", gotPaths, wantPaths)
 		}
@@ -1224,6 +1381,19 @@ func TestResolveExpectationsBinds(t *testing.T) {
 			manifest: manifestDocument{Symbols: map[string]manifestPosition{"PlainDead": {File: "target/main.go", Line: line(12)}}},
 			want:     map[string]symbolPosition{"PlainDead": {File: "target/main.go", Line: 12}},
 		},
+		{
+			// A configured declaration resolves as a configured root does.
+			name: "a_configured_declaration_beside_a_declaration",
+			expect: expectationDocument{
+				ConfiguredDeclarations: map[string]configuredDeclaration{"AbsentEntry": {Key: "ts.serializers", Entry: map[string]string{"global": "JSON.absent"}}},
+				Expect: []expectationRow{
+					{Symbol: "AbsentEntry", Report: "DS1706", Confidence: "certain"},
+					{Symbol: "PlainDead", Report: "DS1002", Confidence: "certain"},
+				},
+			},
+			manifest: manifestDocument{Symbols: map[string]manifestPosition{"PlainDead": {File: "target/main.ts", Line: line(12)}}},
+			want:     map[string]symbolPosition{"PlainDead": {File: "target/main.ts", Line: 12}},
+		},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -1318,6 +1488,37 @@ func TestResolveExpectationsRefuses(t *testing.T) {
 			manifest:   manifestDocument{Symbols: map[string]manifestPosition{"AbsentPattern": {File: "target/main.go", Line: line(3)}}},
 			wantErr:    errRootAlsoBound,
 			wantSymbol: "AbsentPattern",
+		},
+		{
+			name: "configured_declaration_no_expectation_uses",
+			expect: expectationDocument{
+				ConfiguredDeclarations: map[string]configuredDeclaration{"Forgotten": {Key: "ts.serializers", Entry: map[string]string{"global": "JSON.forgotten"}}},
+				Expect:                 []expectationRow{{Symbol: "DeadExport", Report: "DS1001", Confidence: "certain"}},
+			},
+			manifest:   manifestDocument{Symbols: map[string]manifestPosition{"DeadExport": {File: "target/dead.ts", Line: line(5)}}},
+			wantErr:    errOrphanEntry,
+			wantSymbol: "Forgotten",
+		},
+		{
+			name: "configured_declaration_the_manifest_binds_as_well",
+			expect: expectationDocument{
+				ConfiguredDeclarations: map[string]configuredDeclaration{"AbsentEntry": {Key: "ts.serializers", Entry: map[string]string{"global": "JSON.absent"}}},
+				Expect:                 []expectationRow{{Symbol: "AbsentEntry", Report: "DS1706", Confidence: "certain"}},
+			},
+			manifest:   manifestDocument{Symbols: map[string]manifestPosition{"AbsentEntry": {File: "target/main.ts", Line: line(3)}}},
+			wantErr:    errEntryAlsoBound,
+			wantSymbol: "AbsentEntry",
+		},
+		{
+			name: "configured_declaration_configured_roots_names_as_well",
+			expect: expectationDocument{
+				ConfiguredRoots:        map[string]string{"AbsentEntry": "ts://@example/app/src/index.ts#absent*"},
+				ConfiguredDeclarations: map[string]configuredDeclaration{"AbsentEntry": {Key: "ts.serializers", Entry: map[string]string{"global": "JSON.absent"}}},
+				Expect:                 []expectationRow{{Symbol: "AbsentEntry", Report: "DS1706", Confidence: "certain"}},
+			},
+			manifest:   manifestDocument{Symbols: map[string]manifestPosition{}},
+			wantErr:    errEntryAlsoBound,
+			wantSymbol: "AbsentEntry",
 		},
 		{
 			name: "logical_name_expected_twice",
@@ -1897,6 +2098,146 @@ func TestCorpusConfiguredRootsSpellTheFixturesOwnLanguage(t *testing.T) {
 			}
 			if !strings.Contains(got[0].Error(), tc.wantMsg) {
 				t.Errorf("checkConfiguredRootsScope(planted %s) = %q, want it to name %s", tc.name, got[0], tc.wantMsg)
+			}
+		})
+	}
+}
+
+// checkConfiguredDeclarationsScope reports every fixture whose configured
+// declarations are not answerable through every rendering it lists: an entry
+// names a declaration in the spelling of the language its key belongs to, so the
+// fixture lists that language alone.
+func checkConfiguredDeclarationsScope(doc *expectationDocument) []error {
+	var errs []error
+	for _, name := range slices.Sorted(maps.Keys(doc.ConfiguredDeclarations)) {
+		language, _, _ := strings.Cut(doc.ConfiguredDeclarations[name].Key, ".")
+		if !slices.Equal(doc.Languages, []string{language}) {
+			errs = append(errs, fmt.Errorf("%s configured declaration %s is an entry of %s and the fixture lists %v, want the key's language alone",
+				doc.Name, name, doc.ConfiguredDeclarations[name].Key, doc.Languages))
+		}
+	}
+	return errs
+}
+
+func TestCorpusConfiguredDeclarationsSpellTheFixturesOwnLanguage(t *testing.T) {
+	for _, doc := range corpusExpectations(t) {
+		t.Run("fixture_"+doc.Name, func(t *testing.T) {
+			if got := checkConfiguredDeclarationsScope(&doc); len(got) != 0 {
+				t.Errorf("checkConfiguredDeclarationsScope(%s) = %v, want every entry in the fixture's own language", doc.Name, got)
+			}
+		})
+	}
+	entry := map[string]configuredDeclaration{"AbsentEntry": {Key: "ts.serializers", Entry: map[string]string{"global": "JSON.absent"}}}
+	for _, tc := range []struct {
+		name      string
+		languages []string
+		wantErr   bool
+	}{
+		{name: "the_keys_language_alone", languages: []string{"ts"}},
+		{name: "two_languages", languages: []string{"go", "ts"}, wantErr: true},
+		{name: "the_other_language", languages: []string{"go"}, wantErr: true},
+	} {
+		t.Run("planted_"+tc.name, func(t *testing.T) {
+			doc := expectationDocument{Name: "planted", Languages: tc.languages, ConfiguredDeclarations: entry}
+			if got := checkConfiguredDeclarationsScope(&doc); (len(got) != 0) != tc.wantErr {
+				t.Errorf("checkConfiguredDeclarationsScope(planted %s) = %v, want an error %t", tc.name, got, tc.wantErr)
+			}
+		})
+	}
+}
+
+// configuredDeclarationsDocument is the configuration a runner writes for a
+// fixture's configured declarations: the target kind, and each key set to the
+// entries named under it in ascending order of logical name.
+func configuredDeclarationsDocument(t *testing.T, doc *expectationDocument) []byte {
+	t.Helper()
+	keys := map[string][]any{}
+	for _, name := range slices.Sorted(maps.Keys(doc.ConfiguredDeclarations)) {
+		declared := doc.ConfiguredDeclarations[name]
+		_, key, _ := strings.Cut(declared.Key, ".")
+		if contract, list, lifecycle := strings.Cut(key, "."); lifecycle {
+			keys[contract] = append(keys[contract], map[string]any{list: []map[string]string{declared.Entry}, "members": declared.Members})
+			continue
+		}
+		keys[key] = append(keys[key], declared.Entry)
+	}
+	data, err := json.Marshal(map[string]any{"target": map[string]string{"kind": doc.TargetKind}, "ts": keys})
+	if err != nil {
+		t.Fatalf("Setup: json.Marshal(the configured declarations of %s): %v", doc.Name, err)
+	}
+	return data
+}
+
+// TestCorpusConfiguredDeclarationsAreEntriesOfTheirKey holds every configured
+// declaration to the shapes the configuration schema declares for its key, so a
+// runner writes a configuration the analyzer reads rather than one it refuses.
+func TestCorpusConfiguredDeclarationsAreEntriesOfTheirKey(t *testing.T) {
+	for _, doc := range corpusExpectations(t) {
+		if len(doc.ConfiguredDeclarations) == 0 {
+			continue
+		}
+		t.Run("fixture_"+doc.Name, func(t *testing.T) {
+			validateAgainst(t, configSchemaPath, configuredDeclarationsDocument(t, &doc))
+		})
+	}
+	planted := expectationDocument{Name: "planted", TargetKind: "application", ConfiguredDeclarations: map[string]configuredDeclaration{
+		"BothShapes": {Key: "ts.serializers", Entry: map[string]string{"global": "JSON.stringify", "symbol": "ts://./main.ts#encode"}},
+	}}
+	problems, err := validationProblems(configSchemaPath, configuredDeclarationsDocument(t, &planted))
+	if err != nil {
+		t.Fatalf("Setup: validationProblems(%q, planted): %v", configSchemaPath, err)
+	}
+	if len(problems) == 0 {
+		t.Errorf("validationProblems(%q, an entry carrying two shapes) = no violation, want the entry refused", configSchemaPath)
+	}
+}
+
+// TestExpectSchemaConfiguredDeclarationsBindALogicalNameToAKeyAndAnEntry pins the
+// fixture-level member a DS1706 row rests on: a member binds one logical name to a
+// key of the closed set and one entry, and a member naming no entry, an entry of
+// another key, or a member without its entry is refused.
+func TestExpectSchemaConfiguredDeclarationsBindALogicalNameToAKeyAndAnEntry(t *testing.T) {
+	cases := []struct {
+		name    string
+		value   string
+		wantAt  string
+		refused bool
+	}{
+		{name: "one_entry", value: `{"AbsentEntry":{"key":"ts.serializers","entry":{"global":"JSON.absent"}}}`},
+		{name: "an_injection_registration", value: `{"AbsentEntry":{"key":"ts.injection_registrations","entry":{"symbol":"ts://./main.ts#register"}}}`},
+		{name: "no_entry_at_all", value: `{}`, refused: true, wantAt: "/configured_declarations"},
+		{name: "a_key_outside_the_set", value: `{"AbsentEntry":{"key":"ts.lifecycle_contracts","entry":{"global":"JSON.absent"}}}`, refused: true, wantAt: "/configured_declarations/AbsentEntry/key"},
+		{name: "a_member_without_its_entry", value: `{"AbsentEntry":{"key":"ts.serializers"}}`, refused: true, wantAt: "/configured_declarations/AbsentEntry"},
+		{name: "an_empty_entry", value: `{"AbsentEntry":{"key":"ts.serializers","entry":{}}}`, refused: true, wantAt: "/configured_declarations/AbsentEntry/entry"},
+		{name: "an_undeclared_member", value: `{"AbsentEntry":{"key":"ts.serializers","entry":{"global":"JSON.absent"},"line":1}}`, refused: true, wantAt: "/configured_declarations/AbsentEntry"},
+		{name: "a_lifecycle_component", value: `{"AbsentEntry":{"key":"ts.lifecycle_contracts.components","entry":{"symbol":"ts://./main.ts#component"},"members":["connected"]}}`},
+		{name: "a_lifecycle_base", value: `{"AbsentEntry":{"key":"ts.lifecycle_contracts.bases","entry":{"global":"HTMLElement"},"members":["connectedCallback"]}}`},
+		{name: "a_lifecycle_entry_without_members", value: `{"AbsentEntry":{"key":"ts.lifecycle_contracts.bases","entry":{"global":"HTMLElement"}}}`, refused: true, wantAt: "/configured_declarations/AbsentEntry"},
+		{name: "members_under_another_key", value: `{"AbsentEntry":{"key":"ts.serializers","entry":{"global":"JSON.absent"},"members":["connected"]}}`, refused: true, wantAt: "/configured_declarations/AbsentEntry"},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			document := `{"name":"planted","description":"One planted fixture.","languages":["ts"],` +
+				`"target_kind":"application","configured_declarations":` + tc.value +
+				`,"expect":[{"symbol":"AbsentEntry","report":"DS1706","confidence":"certain"}]}`
+			problems, err := validationProblems(expectSchemaPath, []byte(document))
+			if err != nil {
+				t.Fatalf("Setup: validationProblems(%q, %s): %v", expectSchemaPath, tc.name, err)
+			}
+			if !tc.refused {
+				if len(problems) != 0 {
+					t.Errorf("validationProblems(%q, %s) = %v, want no violation", expectSchemaPath, tc.name, problems)
+				}
+				return
+			}
+			named := false
+			for _, problem := range problems {
+				if strings.HasPrefix(problem.InstanceLocation, tc.wantAt) {
+					named = true
+				}
+			}
+			if !named {
+				t.Errorf("validationProblems(%q, %s) = %v, want a violation at %q", expectSchemaPath, tc.name, problems, tc.wantAt)
 			}
 		})
 	}
@@ -2803,5 +3144,117 @@ func TestCorpusComponentCountsPinNoValueAnotherRenderingCannotCarry(t *testing.T
 				t.Errorf("checkComponentLanguageScope(planted %s) = %q, want it to name %s", tc.name, got[0], tc.wantMsg)
 			}
 		})
+	}
+}
+
+// TestCorpusEdgeEvaluationsNameEveryDeclaredSideOfTheRenderingsLanguage holds the
+// edge_evaluations member to the edges document of its rendering, and plants one
+// departure per rule into a copy of the fixture that names the member.
+func TestCorpusEdgeEvaluationsNameEveryDeclaredSideOfTheRenderingsLanguage(t *testing.T) {
+	const fixture = "part-finding-never-pending"
+	dir := path.Join(fixturesDir, fixture)
+	data, err := fs.ReadFile(spec.Corpus, path.Join(dir, expectFile))
+	if err != nil {
+		t.Fatalf("Setup: %v", err)
+	}
+	files, err := renderingFiles(spec.Corpus, dir, "go")
+	if err != nil {
+		t.Fatalf("Setup: renderingFiles(%s): %v", dir, err)
+	}
+	load := func() expectationDocument {
+		var doc expectationDocument
+		if err := decodeStrict(data, &doc); err != nil {
+			t.Fatalf("Setup: decoding %s: %v", fixture, err)
+		}
+		return doc
+	}
+	doc := load()
+	if got := checkEdgeEvaluations(&doc, "go", files); len(got) != 0 {
+		t.Fatalf("checkEdgeEvaluations(%s) = %v, want none", fixture, got)
+	}
+	withoutDocument := maps.Clone(files)
+	delete(withoutDocument, edgesDocumentPath)
+	tests := []struct {
+		plant func(*expectationDocument)
+		files map[string][]byte
+		name  string
+	}{
+		{name: "a_side_left_out", plant: func(d *expectationDocument) { d.EdgeEvaluations = d.EdgeEvaluations[1:] }},
+		{name: "a_side_named_twice", plant: func(d *expectationDocument) {
+			d.EdgeEvaluations = append(d.EdgeEvaluations, d.EdgeEvaluations[0])
+		}},
+		{name: "the_other_languages_side", plant: func(d *expectationDocument) { d.EdgeEvaluations[0].Side = "used_by" }},
+		{name: "an_undeclared_edge", plant: func(d *expectationDocument) { d.EdgeEvaluations[0].Edge = "wire/undeclared" }},
+		{name: "two_languages", plant: func(d *expectationDocument) { d.Languages = []string{"go", "ts"} }},
+		{name: "no_edges_document", plant: func(*expectationDocument) {}, files: withoutDocument},
+		{name: "no_member_beside_the_document", plant: func(d *expectationDocument) { d.EdgeEvaluations = nil }},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			planted := load()
+			tc.plant(&planted)
+			held := files
+			if tc.files != nil {
+				held = tc.files
+			}
+			if got := checkEdgeEvaluations(&planted, "go", held); len(got) == 0 {
+				t.Errorf("checkEdgeEvaluations(%s with %s) = none, want the departure named", fixture, tc.name)
+			}
+		})
+	}
+}
+
+// TestExpectSchemaEdgeEvaluationsCarryAPendingFindingOnlyForADeadSide pins the shape of
+// one evaluation: a dead side names the declaration and the code of its pending
+// finding, and a live or absent side names neither.
+func TestExpectSchemaEdgeEvaluationsCarryAPendingFindingOnlyForADeadSide(t *testing.T) {
+	cases := []struct {
+		name    string
+		value   string
+		refused bool
+	}{
+		{name: "a_dead_side", value: `{"edge":"wire/a","side":"provides","state":"dead","symbol":"A","report":"DS1002"}`},
+		{name: "a_live_side", value: `{"edge":"wire/a","side":"provides","state":"live"}`},
+		{name: "a_dead_side_without_its_finding", value: `{"edge":"wire/a","side":"provides","state":"dead","symbol":"A"}`, refused: true},
+		{name: "an_absent_side_with_a_finding", value: `{"edge":"wire/a","side":"provides","state":"absent","report":"DS1002"}`, refused: true},
+		{name: "a_side_outside_the_two", value: `{"edge":"wire/a","side":"consumes","state":"live"}`, refused: true},
+		{name: "an_undeclared_member", value: `{"edge":"wire/a","side":"provides","state":"live","line":1}`, refused: true},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			document := `{"name":"planted","description":"One planted fixture.","languages":["go"],` +
+				`"target_kind":"application","edge_evaluations":[` + tc.value + `],` +
+				`"expect":[{"symbol":"A","report":"none"}]}`
+			problems, err := validationProblems(expectSchemaPath, []byte(document))
+			if err != nil {
+				t.Fatalf("Setup: validationProblems(%q, %s): %v", expectSchemaPath, tc.name, err)
+			}
+			named := slices.ContainsFunc(problems, func(p validationProblem) bool {
+				return strings.HasPrefix(p.InstanceLocation, "/edge_evaluations/0")
+			})
+			if named != tc.refused {
+				t.Errorf("validationProblems(%q, %s) = %v, want a violation at /edge_evaluations/0 %t", expectSchemaPath, tc.name, problems, tc.refused)
+			}
+		})
+	}
+}
+
+// TestCorpusInstalledPackagesNameTheirPath plants a manifest whose name departs from
+// its path, and an installed tree in a Go rendering, and requires both refused.
+func TestCorpusInstalledPackagesNameTheirPath(t *testing.T) {
+	files, err := renderingFiles(spec.Corpus, path.Join(fixturesDir, "dependency-commands-and-peers"), "ts")
+	if err != nil {
+		t.Fatalf("Setup: %v", err)
+	}
+	if got := checkInstalledPackages("ts", files); len(got) != 0 {
+		t.Fatalf("checkInstalledPackages(dependency-commands-and-peers) = %v, want none", got)
+	}
+	renamed := maps.Clone(files)
+	renamed["installed/used-runtime/package.json"] = []byte(`{"name": "used-runtime-2", "private": true}`)
+	if got := checkInstalledPackages("ts", renamed); len(got) == 0 {
+		t.Errorf("checkInstalledPackages(a manifest naming another package) = none, want it refused")
+	}
+	if got := checkInstalledPackages("go", files); len(got) == 0 {
+		t.Errorf("checkInstalledPackages(go, an installed tree) = none, want it refused")
 	}
 }
