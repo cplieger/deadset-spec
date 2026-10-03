@@ -1,0 +1,44 @@
+{
+  "name": "test-driver-signatures",
+  "description": "A parameter of a function the Go test driver runs is fixed by the driver, so a test, a benchmark, a fuzz test and TestMain that never read theirs are not reported. A test-file helper a test calls is judged like any function and its unread parameter is reported, and a test-file helper nothing calls is not judged, so its unread parameter is not.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "TestParameter",
+      "report": "none"
+    },
+    {
+      "symbol": "BenchmarkParameter",
+      "report": "none"
+    },
+    {
+      "symbol": "FuzzParameter",
+      "report": "none"
+    },
+    {
+      "symbol": "MainParameter",
+      "report": "none"
+    },
+    {
+      "symbol": "HelperUnread",
+      "report": "DS1801",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "parameter",
+      "details": {
+        "overlap": [
+          "revive unused-parameter",
+          "gopls unusedparams",
+          "unparam"
+        ]
+      }
+    },
+    {
+      "symbol": "DeadHelperUnread",
+      "report": "none"
+    }
+  ]
+}

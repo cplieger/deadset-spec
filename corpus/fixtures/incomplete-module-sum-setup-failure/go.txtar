@@ -1,0 +1,20 @@
+The Go rendering: a command whose module file requires a module at a version
+and whose module sum file holds no checksum for it.
+
+-- fixture.json --
+{
+  "symbols": {}
+}
+-- target/go.mod --
+module example.com/app
+
+go 1.27.0
+
+require example.com/dep v1.0.0
+-- target/go.sum --
+-- target/main.go --
+package main
+
+import "example.com/dep"
+
+func main() { println(dep.Version) }

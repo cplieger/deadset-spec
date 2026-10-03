@@ -1,7 +1,7 @@
 {
   "name": "intra-function-parts",
-  "description": "One part per kind of the intra-function group is reported: a parameter its body never reads, a result every call drops, the statement after a return, the store nothing reads before the next one, and the case an earlier case of the same switch already answers. Beside each sits a part of the same shape that is not reported, so the fixture pins the boundary of each kind rather than the presence of a finding.",
-  "languages": ["go"],
+  "description": "One part per kind of the intra-function group that both languages share is reported: a parameter its body never reads, a result every call drops, the statement after a return, the store nothing reads before the next one, and the case an earlier case of the same switch already answers. Beside each sits a part of the same shape that is not reported, so the fixture pins the boundary of each kind rather than the presence of a finding.",
+  "languages": ["go", "ts"],
   "target_kind": "application",
   "expect": [
     {
@@ -9,10 +9,7 @@
       "report": "DS1801",
       "confidence": "certain",
       "reachability_class": "certain",
-      "symbol_kind": "parameter",
-      "details": {
-        "overlap": ["revive unused-parameter", "gopls unusedparams", "unparam"]
-      }
+      "symbol_kind": "parameter"
     },
     {
       "symbol": "ReadParameter",
@@ -23,10 +20,7 @@
       "report": "DS1803",
       "confidence": "certain",
       "reachability_class": "certain",
-      "symbol_kind": "result",
-      "details": {
-        "overlap": ["unparam"]
-      }
+      "symbol_kind": "result"
     },
     {
       "symbol": "ReadResult",
@@ -37,20 +31,14 @@
       "report": "DS1805",
       "confidence": "certain",
       "reachability_class": "certain",
-      "symbol_kind": "statement",
-      "details": {
-        "overlap": ["go vet unreachable"]
-      }
+      "symbol_kind": "statement"
     },
     {
       "symbol": "DeadStore",
       "report": "DS1807",
       "confidence": "certain",
       "reachability_class": "certain",
-      "symbol_kind": "store",
-      "details": {
-        "overlap": ["ineffassign", "wastedassign", "staticcheck SA4006"]
-      }
+      "symbol_kind": "store"
     },
     {
       "symbol": "LiveStore",
@@ -65,10 +53,7 @@
       "report": "DS1809",
       "confidence": "certain",
       "reachability_class": "certain",
-      "symbol_kind": "case",
-      "details": {
-        "overlap": ["staticcheck SA4020"]
-      }
+      "symbol_kind": "case"
     }
   ]
 }

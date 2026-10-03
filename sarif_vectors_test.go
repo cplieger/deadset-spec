@@ -19,7 +19,7 @@ import (
 	"unicode/utf16"
 	"unicode/utf8"
 
-	spec "github.com/cplieger/deadset-spec/v4"
+	spec "github.com/cplieger/deadset-spec/v5"
 )
 
 // sarifVectorsDir holds one directory per published SARIF case.

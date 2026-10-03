@@ -1,0 +1,21 @@
+{
+  "name": "workspace-member-source",
+  "description": "A workspace whose application member imports a library member that was never built. The import resolves to the library's source through the output and root directories its compiler configuration maps, so a declaration the application uses is live and one nothing uses is reported, with no build and no installed package.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "used",
+      "report": "none"
+    },
+    {
+      "symbol": "unused",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    }
+  ]
+}

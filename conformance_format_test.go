@@ -11,7 +11,7 @@ import (
 	"testing"
 	"testing/fstest"
 
-	"github.com/cplieger/deadset-spec/v4"
+	"github.com/cplieger/deadset-spec/v5"
 )
 
 const (

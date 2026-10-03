@@ -1,0 +1,27 @@
+{
+  "name": "unnecessary-code-diagnostic",
+  "description": "A project whose compiler options turn unused parameters into errors. The compiler marks that diagnostic as reporting unnecessary code, so it is no type error: the function holding the parameter is evaluated, the parameter is reported, and no skip is listed.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "scaled",
+      "report": "none"
+    },
+    {
+      "symbol": "label",
+      "report": "DS1801",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "parameter",
+      "details": {
+        "overlap": [
+          "tsc --noUnusedParameters",
+          "@typescript-eslint/no-unused-vars"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "name": "test-support-code",
+  "description": "Code that only test files import is test code. A function of it a test calls is live, a function of it nothing calls is reported under the unused code its visibility selects, and a production function only that code calls is reported as test-only use, because a reference from test-support code is a test reference.",
+  "languages": [
+    "go",
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Live",
+      "report": "none"
+    },
+    {
+      "symbol": "Encode",
+      "report": "DS1004",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Fixture",
+      "report": "none"
+    },
+    {
+      "symbol": "Unused",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

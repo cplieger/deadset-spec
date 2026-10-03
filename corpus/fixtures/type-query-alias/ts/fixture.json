@@ -1,0 +1,9 @@
+{
+  "symbols": {
+    "useCounter": { "file": "target/counter.ts", "line": 2 },
+    "resetCounter": { "file": "target/counter.ts", "line": 7 },
+    "unusedCounter": { "file": "target/counter.ts", "line": 10 },
+    "GlobalUseCounter": { "file": "target/globals.d.ts", "line": 4 },
+    "GlobalResetCounter": { "file": "target/globals.d.ts", "line": 5 }
+  }
+}

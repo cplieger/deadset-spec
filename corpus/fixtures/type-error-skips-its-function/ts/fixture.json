@@ -1,0 +1,10 @@
+{
+  "symbols": {
+    "helper": { "file": "target/main.ts", "line": 2 },
+    "panel": { "file": "target/main.ts", "line": 8 },
+    "count": { "file": "target/main.ts", "line": 10 },
+    "broken": { "file": "target/main.ts", "line": 16 },
+    "BrokenErrors": { "file": "target/main.ts", "line": 18 },
+    "dead": { "file": "target/main.ts", "line": 22 }
+  }
+}

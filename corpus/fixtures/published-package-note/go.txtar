@@ -1,0 +1,31 @@
+The Go rendering: a command calling a function of one package, and a second
+package nothing imports.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Run": { "file": "target/core/core.go", "line": 4 },
+    "ClientFile": { "file": "target/client/client.go", "line": 1 },
+    "Fetch": { "file": "target/client/client.go", "line": 4 }
+  }
+}
+-- target/go.mod --
+module example.com/service
+
+go 1.27.0
+-- target/main.go --
+package main
+
+import "example.com/service/core"
+
+func main() { println(core.Run()) }
+-- target/core/core.go --
+package core
+
+// Run is called by the command.
+func Run() int { return 1 }
+-- target/client/client.go --
+package client
+
+// Fetch is a function of a package nothing in the module imports.
+func Fetch() int { return 2 }

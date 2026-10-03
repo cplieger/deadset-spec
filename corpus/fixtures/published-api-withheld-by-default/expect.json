@@ -1,0 +1,36 @@
+{
+  "name": "published-api-withheld-by-default",
+  "description": "The library of published-api-confidence analyzed under the default minimum confidence, with no consumer declared. The findings about the published API, a public member of a published type included, are withheld, and the findings about what only the library's own code can name are reported.",
+  "languages": [
+    "go",
+    "ts"
+  ],
+  "target_kind": "library",
+  "expect": [
+    {
+      "symbol": "Catalog",
+      "report": "none"
+    },
+    {
+      "symbol": "Exposed",
+      "report": "none"
+    },
+    {
+      "symbol": "hidden",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    },
+    {
+      "symbol": "Count",
+      "report": "none"
+    },
+    {
+      "symbol": "orphan",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    }
+  ]
+}

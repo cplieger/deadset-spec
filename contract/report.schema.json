@@ -18,6 +18,10 @@
     "declared_gaps",
     "excluded_by_cgo",
     "test_file_rules",
+    "type_error_skips",
+    "notes",
+    "unanswered_questions",
+    "conventions_applied",
     "totals"
   ],
   "properties": {
@@ -278,7 +282,7 @@
       }
     },
     "consumers": {
-      "description": "The consumer set the analysis loaded beside the target, which decides the reachability class of a library's findings: every declared consumer loaded gives certain, a declared consumer that was not loaded gives probable, and no consumer information for a library gives possible.",
+      "description": "The consumer set the analysis loaded beside the target, which decides the reachability class of a library's findings about its published API, a member of a type the published API names included: every declared consumer loaded gives certain, a declared consumer that was not loaded gives probable, and no consumer information for a library gives possible. A finding about a library's internals is certain whatever this set holds.",
       "type": "object",
       "additionalProperties": false,
       "required": ["declared", "loaded", "unavailable"],
@@ -541,7 +545,7 @@
       }
     },
     "test_file_rules": {
-      "description": "The rules by which the run classified a file as a test file, each with the number of files it matched, ordered by rule compared bytewise, then by the bytewise comparison of the entries' compact encodings in the property order of this schema. A report an analyzer writes holds one entry per rule; a merged report holds one entry per distinct entry, so two analyzers that count one rule differently contribute two entries. A reader compares the counts against the tree to see which convention decided the production and test reference split.",
+      "description": "The rules by which the run classified a file as a test file, each with the number of files it matched, ordered by rule compared bytewise, then by the bytewise comparison of the entries' compact encodings in the property order of this schema. A report an analyzer writes holds one entry per rule; a merged report holds one entry per distinct entry, so two analyzers that count one rule differently contribute two entries. A file the analysis classified as test-support code, which grammar/analysis.md defines, is counted under the rule test-support, the one rule name an analyzer writes for a classification no file-name pattern made. A reader compares the counts against the tree to see which convention decided the production and test reference split.",
       "type": "array",
       "uniqueItems": true,
       "items": {
@@ -558,6 +562,126 @@
             "description": "How many files the rule classified as test files in this run.",
             "type": "integer",
             "minimum": 0
+          }
+        }
+      }
+    },
+    "type_error_skips": {
+      "description": "One entry per type error the compiler reported inside a function or a file-level statement the analysis therefore did not evaluate, ordered by path compared bytewise, then by line, then by the bytewise comparison of the entries' compact encodings in the property order of this schema. grammar/analysis.md states what a skip withholds. A merged report holds one entry per distinct entry. Empty for a run in which no type error skipped anything.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "line", "message"],
+        "properties": {
+          "path": {
+            "description": "The file holding the error, relative to the target root, with / as the separator, no leading ./, no trailing / and never absolute.",
+            "type": "string",
+            "pattern": "^(\\.?[A-Za-z0-9_@-][A-Za-z0-9_@.-]*)(/\\.?[A-Za-z0-9_@-][A-Za-z0-9_@.-]*)*$"
+          },
+          "line": {
+            "description": "The line of the error's position, counted from 1.",
+            "type": "integer",
+            "minimum": 1
+          },
+          "message": {
+            "description": "The compiler's message for the error, on one line and never empty. It names no absolute path and no other host detail.",
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[^\\r\\n]+$"
+          }
+        }
+      }
+    },
+    "notes": {
+      "description": "One entry per hint the analysis has about the run's setup, ordered by kind, then by path, each compared bytewise, then by the bytewise comparison of the entries' compact encodings in the property order of this schema. A note is no finding: it fails no run, no reporter counts it and no suppression applies to it, and the findings beside it are reported as they would be without it. A merged report holds one entry per distinct entry. Empty for a run with no hint.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "path", "key", "message"],
+        "properties": {
+          "kind": {
+            "description": "What the note is about, from a closed set. published-package: a package of an application that no other package of the target imports and that outside programs may import, which grammar/analysis.md defines.",
+            "type": "string",
+            "enum": ["published-package"]
+          },
+          "path": {
+            "description": "The directory the note is about, relative to the target root, with / as the separator, no leading ./, no trailing / and never absolute.",
+            "type": "string",
+            "pattern": "^(\\.?[A-Za-z0-9_@-][A-Za-z0-9_@.-]*)(/\\.?[A-Za-z0-9_@-][A-Za-z0-9_@.-]*)*$"
+          },
+          "key": {
+            "description": "The configuration key that settles the note, as a dotted path of contract/config.schema.json.",
+            "type": "string",
+            "enum": ["roots.patterns"]
+          },
+          "message": {
+            "description": "The note in words, on one line and never empty, naming what the analysis could not tell and the key that tells it.",
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[^\\r\\n]+$"
+          }
+        }
+      }
+    },
+    "unanswered_questions": {
+      "description": "One entry per configuration in which at least one question the analysis asked its type checker went unanswered, ordered by configuration compared bytewise, then by the bytewise comparison of the entries' compact encodings in the property order of this schema. grammar/analysis.md states what an unanswered question holds. A merged report holds one entry per distinct entry, so two analyzers that count one configuration differently contribute two entries. Empty for a run whose every question was answered.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["configuration", "questions", "declarations"],
+        "properties": {
+          "configuration": {
+            "description": "The id of the entry of configurations the questions were asked in.",
+            "type": "string",
+            "minLength": 1
+          },
+          "questions": {
+            "description": "How many questions went unanswered in the configuration.",
+            "type": "integer",
+            "minimum": 1
+          },
+          "declarations": {
+            "description": "How many declarations the unanswered questions held, each counted once: a declaration held is reported by no finding in the configuration.",
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "conventions_applied": {
+      "description": "One entry per convention row the analysis applied, ordered by name, then by manifest, each compared bytewise, then by the bytewise comparison of the entries' compact encodings in the property order of this schema. grammar/analysis.md states when a row applies. A merged report holds one entry per distinct entry. Empty for a run that applied no row, and for a language whose analyzer carries no convention table.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "package", "version", "manifest"],
+        "properties": {
+          "name": {
+            "description": "The row's name: lowercase words joined by single hyphens, the name ts.disabled_conventions spells to disable the row.",
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$"
+          },
+          "package": {
+            "description": "The enabling package the row names.",
+            "type": "string",
+            "minLength": 1
+          },
+          "version": {
+            "description": "The enabling package's version as its installed manifest names it.",
+            "type": "string",
+            "minLength": 1
+          },
+          "manifest": {
+            "description": "The manifest that declares the enabling package as a dependency, relative to the target root, with / as the separator, no leading ./ and never absolute.",
+            "type": "string",
+            "pattern": "^(\\.?[A-Za-z0-9_@-][A-Za-z0-9_@.-]*)(/\\.?[A-Za-z0-9_@-][A-Za-z0-9_@.-]*)*$"
           }
         }
       }

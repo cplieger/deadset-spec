@@ -1,0 +1,38 @@
+The Go rendering of published-api-confidence, analyzed under the default
+minimum confidence.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Catalog": { "file": "target/catalog.go", "line": 4 },
+    "Exposed": { "file": "target/catalog.go", "line": 6 },
+    "hidden": { "file": "target/catalog.go", "line": 8 },
+    "Count": { "file": "target/catalog.go", "line": 12 },
+    "orphan": { "file": "target/catalog.go", "line": 20 }
+  }
+}
+-- target/go.mod --
+module example.com/catalog
+
+go 1.27.0
+-- target/catalog.go --
+package catalog
+
+// Catalog is a type the published API names.
+type Catalog struct {
+	// Exposed is a field of the published type that nothing reads or writes.
+	Exposed int
+	// hidden is a field only this package can name, and nothing does.
+	hidden int
+}
+
+// Count is a published function nothing calls.
+func Count(c *Catalog) int {
+	if c == nil {
+		return 0
+	}
+	return 1
+}
+
+// orphan is a function only this package can name, and nothing does.
+func orphan() int { return 2 }

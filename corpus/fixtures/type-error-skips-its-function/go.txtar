@@ -1,0 +1,42 @@
+The Go rendering: one command whose function holds an undefined method and an
+undefined function on one line, beside a helper it calls and a function nothing
+calls.
+
+-- fixture.json --
+{
+  "symbols": {
+    "helper": { "file": "target/main.go", "line": 4 },
+    "panel": { "file": "target/main.go", "line": 8 },
+    "count": { "file": "target/main.go", "line": 11 },
+    "broken": { "file": "target/main.go", "line": 14 },
+    "BrokenErrors": { "file": "target/main.go", "line": 16 },
+    "dead": { "file": "target/main.go", "line": 20 }
+  }
+}
+-- target/go.mod --
+module example.com/app
+
+go 1.27.0
+-- target/main.go --
+package main
+
+// helper is called by the function that holds the type errors.
+func helper() int { return 1 }
+
+// panel is the type the function reaches through a member name that does not
+// resolve.
+type panel struct{}
+
+// count is a method of panel only the unresolved member name could reach.
+func (panel) count() int { return 2 }
+
+// broken holds two type errors on one line.
+func broken() int {
+	p := panel{}
+	return helper() + p.cuont() + missing()
+}
+
+// dead is called by nothing.
+func dead() int { return 3 }
+
+func main() { println(broken()) }

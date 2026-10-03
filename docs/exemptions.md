@@ -147,13 +147,13 @@ From `contract/exemptions.json`, class `linkname-cgo-asm-plugin`.
 
 ### template-field
 
-Where the project configures template directories, a member whose name appears in a template as a field or method reference is retained at the lowest confidence, and the exemption names the template site that matched. Where the language's template grammar has action delimiters, the project configures the pair the scan reads and the grammar's own pair stands where it does not. The evidence is a text match, not a type relation, so this is a weak class and it applies only where the project asked for it.
+Where the project configures template directories, or holds a component file, a member whose name appears in a template or in a component file's markup as a field or method reference is retained at the lowest confidence, and the exemption names the template site that matched. Where the language's template grammar has action delimiters, the project configures the pair the scan reads and the grammar's own pair stands where it does not. The evidence is a text match, not a type relation, so this is a weak class and it applies only where the project asked for it or holds markup no other rule reads.
 
 Retains: The field or method whose name the template references, on any type.
 
 Mechanism in Go: Scan every file under the configured template directories, parsed with the action delimiters the configuration sets in `analysis.template_delimiters` and with the `text/template` delimiters `{{` and `}}` where it sets none, and retain every exported field and method whose name appears as a field or method reference in any form the template grammar records: a field reference on the dot, on a variable, or on the result of a parenthesized pipeline or of a call, at every position of a chain, so that `.Page.Title` names `Page` and `Title`. Record the template file and line.
 
-Mechanism in TypeScript: Scan every file under the configured template directories for the member's name in an interpolation or binding position; retain every member so named, recording the template file and line.
+Mechanism in TypeScript: Scan every file under the configured template directories, and the markup of every live component file, for the member's name in an interpolation or binding position; retain every member so named, recording the template file and line.
 
 TypeScript visibility: retains a member declared `private`, yes; retains a member declared with a `#private` name, no.
 

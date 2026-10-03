@@ -16,7 +16,7 @@ import (
 	"testing"
 	"testing/fstest"
 
-	"github.com/cplieger/deadset-spec/v4"
+	"github.com/cplieger/deadset-spec/v5"
 )
 
 const (
@@ -1371,6 +1371,7 @@ const (
 		`"edge_evaluations": [{"edge": "wire/ServerEvent", "side": "provides", "symbol": "go://example.com/app#ServerEvent", "state": "live"}], ` +
 		`"stale_suppressions": [], "declared_gaps": [], "excluded_by_cgo": [], ` +
 		`"test_file_rules": [{"rule": "go-test-file", "matched": 0}], ` +
+		`"type_error_skips": [], "notes": [], "unanswered_questions": [], "conventions_applied": [], ` +
 		`"totals": {"findings": 1, "by_severity": {"allow": 0, "warn": 0, "deny": 1}, "deletable_lines": 1, ` +
 		`"suppressions_in_effect": 0, "reasons_recorded": 0, "stale_suppressions": 0, "pending": 0, "omitted": 0}}` + "\n"
 	mergePlantedTSReport = `{"schema_version": "1.0.0", "contract_version": "1.0.0", ` +
@@ -1381,6 +1382,7 @@ const (
 		`"edge_evaluations": [{"edge": "wire/ServerEvent", "side": "used_by", "symbol": "ts://@example/app/beta.ts#ServerEvent", "state": "live"}], ` +
 		`"stale_suppressions": [], "declared_gaps": [], "excluded_by_cgo": [], ` +
 		`"test_file_rules": [{"rule": "ts-test-pattern", "matched": 0}], ` +
+		`"type_error_skips": [], "notes": [], "unanswered_questions": [], "conventions_applied": [], ` +
 		`"totals": {"findings": 1, "by_severity": {"allow": 0, "warn": 0, "deny": 1}, "deletable_lines": 1, ` +
 		`"suppressions_in_effect": 0, "reasons_recorded": 0, "stale_suppressions": 0, "pending": 0, "omitted": 0}}` + "\n"
 
@@ -1399,6 +1401,7 @@ const (
 		`{"edge": "wire/ServerEvent", "side": "used_by", "symbol": "ts://@example/app/beta.ts#ServerEvent", "state": "live", "analyzer": "deadset-ts"}], ` +
 		`"stale_suppressions": [], "declared_gaps": [], "excluded_by_cgo": [], ` +
 		`"test_file_rules": [{"rule": "go-test-file", "matched": 0}, {"rule": "ts-test-pattern", "matched": 0}], ` +
+		`"type_error_skips": [], "notes": [], "unanswered_questions": [], "conventions_applied": [], ` +
 		`"totals": {"findings": 2, "by_severity": {"allow": 0, "warn": 0, "deny": 2}, "deletable_lines": 2, ` +
 		`"suppressions_in_effect": 0, "reasons_recorded": 0, "stale_suppressions": 0, "pending": 0, "omitted": 0}}` + "\n"
 )

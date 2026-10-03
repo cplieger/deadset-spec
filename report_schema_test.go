@@ -6,7 +6,7 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/cplieger/deadset-spec/v4"
+	"github.com/cplieger/deadset-spec/v5"
 )
 
 const (
@@ -117,9 +117,9 @@ func TestReportSchemaProperties(t *testing.T) {
 			at:   "",
 			want: []string{
 				"analyzer", "configurations", "configurations_not_built", "consumers",
-				"contract_version", "declared_gaps", "edge_evaluations", "excluded_by_cgo",
-				"findings", "merged_from", "schema_version", "stale_suppressions", "target",
-				"test_file_rules", "totals",
+				"contract_version", "conventions_applied", "declared_gaps", "edge_evaluations", "excluded_by_cgo",
+				"findings", "merged_from", "notes", "schema_version", "stale_suppressions", "target",
+				"test_file_rules", "totals", "type_error_skips", "unanswered_questions",
 			},
 		},
 		{name: "analyzer", at: "properties/analyzer", want: []string{"conformance", "languages", "name", "schema_versions_accepted", "version"}},
@@ -139,6 +139,10 @@ func TestReportSchemaProperties(t *testing.T) {
 		{name: "stale_suppression_position", at: reportStaleItemPath + "/properties/position", want: []string{"column", "line", "path"}},
 		{name: "declared_gap", at: "properties/declared_gaps/items", want: []string{"analyzer", "capability", "fixture", "reason", "symbol"}},
 		{name: "test_file_rule", at: "properties/test_file_rules/items", want: []string{"matched", "rule"}},
+		{name: "type_error_skip", at: "properties/type_error_skips/items", want: []string{"line", "message", "path"}},
+		{name: "note", at: "properties/notes/items", want: []string{"key", "kind", "message", "path"}},
+		{name: "unanswered_question", at: "properties/unanswered_questions/items", want: []string{"configuration", "declarations", "questions"}},
+		{name: "convention_applied", at: "properties/conventions_applied/items", want: []string{"manifest", "name", "package", "version"}},
 		{
 			name: "totals",
 			at:   "properties/totals",
@@ -206,7 +210,8 @@ func TestReportSchemaRequiredMembers(t *testing.T) {
 			want: []string{
 				"schema_version", "contract_version", "analyzer", "target", "configurations",
 				"configurations_not_built", "consumers", "findings", "edge_evaluations",
-				"stale_suppressions", "declared_gaps", "excluded_by_cgo", "test_file_rules", "totals",
+				"stale_suppressions", "declared_gaps", "excluded_by_cgo", "test_file_rules",
+				"type_error_skips", "notes", "unanswered_questions", "conventions_applied", "totals",
 			},
 		},
 		{name: "analyzer", at: "properties/analyzer", want: []string{"name", "version", "languages", "schema_versions_accepted", "conformance"}},
@@ -223,6 +228,10 @@ func TestReportSchemaRequiredMembers(t *testing.T) {
 		{name: "stale_suppression_position", at: reportStaleItemPath + "/properties/position", want: []string{"path", "line", "column"}},
 		{name: "declared_gap", at: "properties/declared_gaps/items", want: []string{"fixture", "capability", "reason"}},
 		{name: "test_file_rule", at: "properties/test_file_rules/items", want: []string{"rule", "matched"}},
+		{name: "type_error_skip", at: "properties/type_error_skips/items", want: []string{"path", "line", "message"}},
+		{name: "note", at: "properties/notes/items", want: []string{"kind", "path", "key", "message"}},
+		{name: "unanswered_question", at: "properties/unanswered_questions/items", want: []string{"configuration", "questions", "declarations"}},
+		{name: "convention_applied", at: "properties/conventions_applied/items", want: []string{"name", "package", "version", "manifest"}},
 		{
 			name: "totals",
 			at:   "properties/totals",

@@ -11,7 +11,7 @@ This repository holds what those three programs agree on: data and documentation
 ## Install
 
 ```sh
-go get github.com/cplieger/deadset-spec/v4@latest
+go get github.com/cplieger/deadset-spec/v5@latest
 ```
 
 The module is a test dependency for a Go analyzer that runs the corpus. A TypeScript analyzer clones the repository at a tag instead; no npm package is published.
@@ -23,7 +23,7 @@ import (
     "io/fs"
     "testing"
 
-    "github.com/cplieger/deadset-spec/v4"
+    "github.com/cplieger/deadset-spec/v5"
 )
 
 func TestKindsAreCurrent(t *testing.T) {
@@ -51,7 +51,8 @@ func TestKindsAreCurrent(t *testing.T) {
 - The exemption classes: the reasons an unreferenced symbol is still live, such as a method that satisfies an interface.
 - The finding schema and the report schema, so every analyzer emits the same JSON object shape and the same SARIF mapping.
 - The suppression grammar: an inline directive on the line above a declaration, an ignore-file entry scoped to one symbol in one file, and a baseline row of the same shape, each carrying a reason, plus the rule that a suppression matching nothing is itself reported.
-- The exit-code table, `contract/exit-codes.json`: 0 clean, 1 findings at or above the failing severity or a stale suppression, 2 usage error, 3 load or type-check failure, 4 a report holding a finding whose cross-language reference is still unresolved.
+- The analysis rules, `contract/grammar/analysis.md`: what the program is (component files and workspace packages included), which of it is test code, the roots an analyzer marks beside the configured ones, what a type error withholds, the setup failures that end a run with the fix named, and the notes a report carries.
+- The exit-code table, `contract/exit-codes.json`: 0 clean, 1 findings at or above the failing severity or a stale suppression, 2 usage error, 3 a failure before any verdict (a setup failure, an unreadable configuration, a run with no program, memory exhaustion), 4 a report holding a finding whose cross-language reference is still unresolved.
 - The text-line format, position first as `path:line:col`, so one grep expression matches the output of every analyzer.
 - The merge of several reports into one, stated as an algorithm with a deterministic order, together with published input and output vectors so a merge implementation is tested against declared data rather than against another implementation.
 - The scope document, `contract/scope.schema.json`: the target an analysis reports on and the consumers whose references count against it, which the invoking product writes and an analyzer reads.

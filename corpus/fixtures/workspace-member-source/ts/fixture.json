@@ -1,0 +1,6 @@
+{
+  "symbols": {
+    "used": { "file": "target/packages/lib/src/helpers.ts", "line": 2 },
+    "unused": { "file": "target/packages/lib/src/helpers.ts", "line": 7 }
+  }
+}

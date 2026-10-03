@@ -1,0 +1,52 @@
+The Go rendering: one package whose test file holds a test, a benchmark, a fuzz
+test and TestMain, none of which reads its parameter, a helper the test calls
+with a parameter it never reads, and a helper nothing calls with the same shape.
+
+-- fixture.json --
+{
+  "symbols": {
+    "TestParameter": { "file": "target/catalog/catalog_test.go", "line": 7 },
+    "BenchmarkParameter": { "file": "target/catalog/catalog_test.go", "line": 13 },
+    "FuzzParameter": { "file": "target/catalog/catalog_test.go", "line": 15 },
+    "MainParameter": { "file": "target/catalog/catalog_test.go", "line": 5 },
+    "HelperUnread": { "file": "target/catalog/catalog_test.go", "line": 18 },
+    "DeadHelperUnread": { "file": "target/catalog/catalog_test.go", "line": 21 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+package main
+
+import "example.com/target/catalog"
+
+func main() { println(catalog.Live(0)) }
+-- target/catalog/catalog.go --
+package catalog
+
+// Live returns its argument.
+func Live(n int) int { return n }
+-- target/catalog/catalog_test.go --
+package catalog
+
+import "testing"
+
+func TestMain(m *testing.M) { _ = Live(0) }
+
+func TestLive(t *testing.T) {
+	if helper(Live(1), 2) != 1 {
+		panic("Live")
+	}
+}
+
+func BenchmarkLive(b *testing.B) { _ = Live(2) }
+
+func FuzzLive(f *testing.F) { _ = Live(3) }
+
+// helper is called by a test and never reads its second parameter.
+func helper(n, unread int) int { return n }
+
+// deadHelper is called by nothing and never reads its second parameter.
+func deadHelper(n, unread int) int { return Live(n) }

@@ -1,0 +1,9 @@
+{
+  "symbols": {
+    "Catalog": { "file": "target/catalog.ts", "line": 2 },
+    "Exposed": { "file": "target/catalog.ts", "line": 4 },
+    "hidden": { "file": "target/catalog.ts", "line": 9 },
+    "Count": { "file": "target/catalog.ts", "line": 15 },
+    "orphan": { "file": "target/catalog.ts", "line": 20 }
+  }
+}

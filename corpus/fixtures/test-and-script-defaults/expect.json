@@ -1,0 +1,39 @@
+{
+  "name": "test-and-script-defaults",
+  "description": "Test files named by the default patterns beyond the .test qualifier, a .spec file and files under __tests__ and __mocks__ directories, make every reference they hold a test reference; and a file a manifest script runs by its path is a root.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "inSpec",
+      "report": "DS1004",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "inTests",
+      "report": "DS1004",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "inMocks",
+      "report": "DS1004",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "production",
+      "report": "none"
+    },
+    {
+      "symbol": "seed",
+      "report": "none"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "name": "configuration-files-and-strings",
+  "description": "A configuration module named by the configuration naming convention and a JSON configuration file beside the manifest. The module is a root, a relative string it holds roots the source file it names, and a string in either that names a declared dependency uses it; a declared dependency no string, no import and no command names is reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "prepare",
+      "report": "none"
+    },
+    {
+      "symbol": "UsedByModule",
+      "report": "none"
+    },
+    {
+      "symbol": "UsedByJSON",
+      "report": "none"
+    },
+    {
+      "symbol": "UnusedTool",
+      "report": "DS1601",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "dependency",
+      "details": {
+        "dependency_class": "dev-dependency"
+      }
+    }
+  ]
+}

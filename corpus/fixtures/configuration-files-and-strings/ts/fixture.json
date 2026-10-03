@@ -1,0 +1,8 @@
+{
+  "symbols": {
+    "prepare": { "file": "target/setup/prepare.ts", "line": 2 },
+    "UsedByModule": { "file": "target/package.json", "line": 8 },
+    "UsedByJSON": { "file": "target/package.json", "line": 9 },
+    "UnusedTool": { "file": "target/package.json", "line": 10 }
+  }
+}

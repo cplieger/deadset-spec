@@ -1,0 +1,44 @@
+One main package with two init functions in one file, the first holding a
+statement after its return, and a baseline row naming the unreachable-statement
+code on init. The row binds both functions, one record each: the record on the
+first is in effect and the record on the second matches nothing.
+
+-- fixture.json --
+{
+  "symbols": {
+    "UnreachableStatement": { "file": "target/main.go", "line": 7 },
+    "RowBindingBothInits": { "file": "target/deadset-baseline.json", "line": 4 }
+  }
+}
+-- target/go.mod --
+module example.com/app
+
+go 1.27.0
+-- target/main.go --
+package main
+
+// The first init holds a statement after its return.
+func init() {
+	println("before the return")
+	return
+	println("after the return")
+}
+
+// The second init holds no statement after a return.
+func init() {
+	println("reached")
+}
+
+func main() {}
+-- target/deadset-baseline.json --
+{
+  "description": "One row naming init, which binds both init functions of main.go.",
+  "baseline": [
+    {
+      "code": "DS1805",
+      "symbol": "go://example.com/app#init",
+      "path": "main.go",
+      "reason": "recorded by deadset-go 1.0.0"
+    }
+  ]
+}

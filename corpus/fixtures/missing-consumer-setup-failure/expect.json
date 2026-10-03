@@ -1,0 +1,12 @@
+{
+  "name": "missing-consumer-setup-failure",
+  "description": "A library declares one consumer, and the path the scope names for it holds nothing. The run ends with the setup failure that names the consumer, before any finding list exists, and reports nothing about the library's published declarations.",
+  "languages": ["go", "ts"],
+  "target_kind": "library",
+  "consumers": ["downstream"],
+  "setup_failure": {
+    "class": "missing-consumer",
+    "names": ["downstream"]
+  },
+  "expect": []
+}

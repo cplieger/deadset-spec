@@ -9,7 +9,7 @@ exists and, when one does, what the verdict is.
 | 0 | `clean` | The report holds no finding at or above the failing severity, no stale suppression and no pending finding. Also the code a run returns when the exit code is configured off, while still printing the report. |
 | 1 | `findings` | The report holds at least one finding at or above the failing severity, or at least one stale suppression, whatever severity the configuration assigns to any other kind; the count of stale suppressions is named. |
 | 2 | `usage` | The invocation is malformed, no configuration source supplies the target kind, a configuration source names a key the product does not implement, an explanation request names a symbol that does not exist, a template the invocation names cannot be read or does not parse, or a flag asks the product to edit source. The usage text is printed and no analysis runs. |
-| 3 | `failure` | The target, a declared consumer or a build configuration failed to load or type-check, a file's references could not be resolved, an analyzer could not be found, described or admitted, an acquired artifact's digest did not match, a pending finding met no other side at the merge, or a requested rendering could not be produced, in which case the report is already written and the rendering is not. The errors are printed and no finding list is, so a partial result is never read as a clean tree. |
+| 3 | `failure` | A configuration the invocation or the configuration document names cannot be read, the run holds no program to analyze, a setup failure stops the analysis, the analysis needs more memory than the machine makes available, a declared consumer or a declared build configuration failed to load, an analyzer could not be found, described or admitted, an acquired artifact's digest did not match, a pending finding met no other side at the merge, or a requested rendering could not be produced, in which case the report is already written and the rendering is not. A type error in source the program holds is none of these: it skips the function holding it, as grammar/analysis.md states, and the exit code follows the findings. The errors are printed and no finding list is, so a partial result is never read as a clean tree. |
 | 4 | `pending` | The report holds at least one pending finding, a finding whose cross-language edge the other side has not evaluated, and the count of pending findings is named. A report with this code is an input to a merge, not an answer. |
 
 From `contract/exit-codes.json`, one row per code.
@@ -27,6 +27,29 @@ Two consequences a gate can rely on. A run that returns 0 or 1 has produced a co
 gate reads the report for either code. A run that returns 4 has produced a report that is an input
 to a merge, so a gate that treats 4 as a failure of the target is reading a partial answer; merge
 the reports and read the merged verdict instead (from `contract/grammar/merge.md`, step 7).
+
+## Setup failures and memory
+
+A setup failure is a file or a component the analysis needs and the project does not provide. It
+ends the run with code 3 before any finding list exists, and the run prints one line per failure on
+standard error that starts with `setup failure:`, a space, the class, a colon and a space, then
+names what is missing and the fix (from `contract/exit-codes.json`, `setup_failures`, and `contract/grammar/analysis.md`,
+"Setup failures"):
+
+| Class | Meaning | Fix |
+| --- | --- | --- |
+| `missing-module` | An import names a module the project expects to exist and nothing provides it: code a generator writes that was not generated, a package that was not built, or a declared dependency that was not installed. | Name the import and the file that writes it, and tell the user to run the generator, the build or the install that provides the module. |
+| `incomplete-module-sum` | The module sum file lacks a checksum the build of the target or of a declared consumer needs. | Name the module and tell the user to run go mod tidy in the module that requires it. |
+| `test-build-tag` | Test files of the target build under no configuration of the run, because a build constraint they carry is satisfied by no configuration. | Name the files and the exact entry of analysis.configurations that builds them. |
+| `missing-consumer` | A declared consumer is absent from the path the scope names for it, or its own dependencies are not installed. | Name the consumer and tell the user to check it out at that path and install its dependencies. |
+| `workspace-member-without-source` | An import resolves to a member of the workspace, and neither the file the default resolution reaches nor the member's manifest entry read back through its emit mappings is a source file of the member. | Name the member, the subpath, the importing file and the targets the member's manifest names, and tell the user to build the member, or to give its compiler configuration an output and a root directory that map the target to its source. |
+| `convention-not-literal` | A convention row applies and the configuration property that moves one of its directories is not a literal in the framework configuration file. | Name the file and the property, and tell the user to write the property as a literal, or to disable the row in ts.disabled_conventions and name the files in ts.entry_files. |
+
+A run that needs more memory than the machine makes available also ends with code 3, before it
+writes a report, and prints `memory exhausted: at least N GB were needed, M GB are available`
+(from `contract/exit-codes.json`, `memory_exhaustion`). A type error in source the program holds
+ends nothing: it skips the function that holds it and the exit code follows the findings (from
+`contract/grammar/analysis.md`, "Type errors").
 
 ## What decides code 1
 

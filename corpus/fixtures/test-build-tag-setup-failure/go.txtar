@@ -1,0 +1,31 @@
+One main package whose only test file carries a build constraint no configuration
+of the run satisfies, so the run ends with the setup failure that names the
+configuration entry building the tests.
+
+-- fixture.json --
+{
+  "symbols": {}
+}
+-- target/go.mod --
+module example.com/app
+
+go 1.27.0
+-- target/main.go --
+package main
+
+func main() { println(label()) }
+
+// label is called by main and by the tagged test.
+func label() string { return "app" }
+-- target/main_test.go --
+//go:build integration
+
+package main
+
+import "testing"
+
+func TestLabel(t *testing.T) {
+	if label() != "app" {
+		t.Fatal("label")
+	}
+}

@@ -1,0 +1,36 @@
+{
+  "name": "type-query-alias",
+  "description": "A declaration file declares globals whose type is a type query of a module's export. A use of the global is a use of the export it names, the type query in the global's declaration is not a use, and the global declarations themselves are not reported; an export no use of a global reaches is reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "useCounter",
+      "report": "none"
+    },
+    {
+      "symbol": "resetCounter",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "unusedCounter",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "GlobalUseCounter",
+      "report": "none"
+    },
+    {
+      "symbol": "GlobalResetCounter",
+      "report": "none"
+    }
+  ]
+}

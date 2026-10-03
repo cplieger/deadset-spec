@@ -1,0 +1,49 @@
+{
+  "name": "component-files",
+  "description": "Component files the entry file imports. A block's top-level declaration nothing references and an import binding only the markup uses are retained, a member whose name the markup holds is retained by the template-field class, and a frontmatter block at the start of a file is read as a block; the exports and members no block and no markup reaches are reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "localHelper",
+      "report": "none"
+    },
+    {
+      "symbol": "format",
+      "report": "none"
+    },
+    {
+      "symbol": "unusedFormat",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "title",
+      "report": "none",
+      "retained_by": [
+        "template-field"
+      ]
+    },
+    {
+      "symbol": "summary",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    },
+    {
+      "symbol": "heading",
+      "report": "none"
+    },
+    {
+      "symbol": "unusedHeading",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    }
+  ]
+}

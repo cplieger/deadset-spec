@@ -1,0 +1,35 @@
+{
+  "name": "published-package-note",
+  "description": "An application with a package that no other package imports and that is neither a command nor internal. The package's file and its unused declarations are reported as in any application, and the report carries a note naming the package, because outside programs may import it and only the user can say so.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "notes": [
+    {
+      "kind": "published-package",
+      "path": "client"
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "Run",
+      "report": "none"
+    },
+    {
+      "symbol": "ClientFile",
+      "report": "DS1502",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "Fetch",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}
