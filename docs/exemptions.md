@@ -1,53 +1,28 @@
 # Exemption classes
 
-An exemption is a named class of reason for which an analyzer keeps a symbol that the reference
-graph alone would report. Each class has a detection rule the analyzer computes from its language's
-type information and program graph, never from a text search except where the class says so. The
-analyzer records the class name in the retained symbol's `retained_by` field, lists the symbols it
-held back and their classes on request, and lets a maintainer switch a class off by name so an
-exemption suspected of hiding a defect can be tested (from `contract/exemptions.json`, and
-`contract/config.schema.json`, `exemptions.disabled`). A symbol an exemption retains is not
-reported, so a finding carries `retained_by` present and empty (from
-`contract/finding.schema.json`, `retained_by`).
+An exemption is a named class of reason for which an analyzer keeps a symbol that the reference graph alone would report. Each class has a detection rule the analyzer computes from its language's type information and program graph, never from a text search except where the class says so.
 
-The vocabulary is closed: a conformance expectation naming a class this file does not declare is a
-defect in the expectation.
+The analyzer records the class name in the retained symbol's `retained_by` field and lists the symbols it held back, with their classes, on request. A maintainer can switch a class off by name to test an exemption suspected of hiding a defect. The sources are `contract/exemptions.json` and `contract/config.schema.json`, `exemptions.disabled`. A symbol an exemption retains is not reported, so a finding carries `retained_by` present and empty. The source is `contract/finding.schema.json`, `retained_by`.
 
-An exemption's evidence site decides which run records it: under a production sweep, which counts no
-reference from a test file, an exemption whose evidence site is in a test file does not hold, for
-every class in this file. A conversion, an encoder or template destination, a directive, a
-generated-file clause or a matching text in a test file retains nothing for production, exactly as a
-reference from a test file makes nothing live for production, and the symbol is reported under the
-code its production references select; a run that counts test references records the exemption.
+The vocabulary is closed. A conformance expectation naming a class this file does not declare is a defect in the expectation.
 
-Every exemption an analyzer records names the site its evidence was found at, so a maintainer can go
-and read that evidence for every class and not only for the text-matching ones. Each also carries
-one clause of detail naming the relation and the thing it relates to (`satisfies io.Writer`,
-`named by {{.Title}}`). A class whose evidence is a type relation names the conversion or the
-consumer site, a class whose evidence is a text match names the position of the matching text, the
-generated-file class names the package clause of the generated file, and the assembly and plugin
-class names the assembly directive, or the package clause of the file that declares the symbol
-where the evidence is the shape of the package. The detail is display text; the class name is the
-machine-readable half.
+An exemption's evidence site decides which run records it. A production sweep counts no reference from a test file, so under it an exemption whose evidence site is in a test file does not hold, for every class in this file.
+
+A conversion, an encoder or template destination, a directive, a generated-file clause or a matching text in a test file retains nothing for production. A reference from a test file makes nothing live for production in the same way, and the symbol is reported under the code its production references select. A run that counts test references records the exemption.
+
+Every exemption an analyzer records names the site its evidence was found at, so a maintainer can go and read that evidence for every class and not only for the text-matching ones. Each also carries one clause of detail naming the relation and the thing it relates to, such as `satisfies io.Writer` or `named by {{.Title}}`.
+
+A class whose evidence is a type relation names the conversion or the consumer site. A class whose evidence is a text match names the position of the matching text. The generated-file class names the package clause of the generated file. The assembly and plugin class names the assembly directive, or, where the evidence is the shape of the package, the package clause of the file that declares the symbol. The detail is display text, and the class name is the machine-readable half.
 
 This page states every class, one section each. The fields:
 
-- **Languages** are the languages the class runs on, `go` for Go and `ts` for TypeScript and
-  JavaScript.
-- **Confidence** uses the report's reachability vocabulary: `certain` for a class derived from a
-  type relation, `possible` for a class derived from a text match (from `contract/kinds.json`,
-  `reachability_classes`).
-- **Rule** is the detection rule stated for an implementer in any language, and **mechanism**
-  restates it in each listed language's own terms.
-- **Retains** names what the class keeps.
-- **TypeScript visibility** is `typescript_visibility`, present on every class that runs on
-  TypeScript. It answers two questions: whether the class can retain a class member declared with
-  the `private` modifier, and whether it can retain one declared with a `#private` name. The two
-  differ at run time. `private` is a compile-time constraint only, so a `private` member stays
-  reachable by its name through a string index, a decorator, a container or a serializer, while a
-  `#private` name cannot be named from outside its class body at all. Every class that reaches
-  members by name therefore applies to `private` and not to `#private`, and a `#private` member
-  with no reference in its own class body is reported whatever else the program does.
+- Languages are the languages the class runs on, `go` for Go and `ts` for TypeScript and JavaScript.
+- Confidence uses the report's reachability vocabulary, `certain` for a class derived from a type relation and `possible` for a class derived from a text match. The source is `contract/kinds.json`, `reachability_classes`.
+- Rule is the detection rule stated for an implementer in any language, and Mechanism restates it in each listed language's own terms.
+- Retains names what the class keeps.
+- TypeScript visibility is `typescript_visibility`, present on every class that runs on TypeScript. It answers whether the class can retain a class member declared with the `private` modifier, and whether it can retain one declared with a `#private` name.
+
+The two differ at run time. `private` is a compile-time constraint only. A `private` member stays reachable by its name through a string index, a decorator, a container or a serializer, while a `#private` name cannot be named from outside its class body at all. Every class that reaches members by name therefore applies to `private` and not to `#private`, and a `#private` member with no reference in its own class body is reported whatever else the program does.
 
 | Class | Languages | Confidence |
 | --- | --- | --- |
@@ -69,7 +44,9 @@ This page states every class, one section each. The fields:
 
 ### interface-satisfaction
 
-A method is retained when a value of its receiver's type reaches a position typed as an interface the method helps satisfy. The analyzer records every site where a value of type T is converted or assigned to an interface type I (an explicit conversion or a satisfaction assertion, an assignment, an argument, a return value, an element stored in an I-typed container) and, for each recorded (T, I) pair, retains the methods of T that satisfy I. The assertion is not a use of I beyond itself: when nothing else uses I as a type, I is still reported as an unused satisfaction assertion while T's methods stay retained.
+A method is retained when a value of its receiver's type reaches a position typed as an interface the method helps satisfy. The analyzer records every site where a value of type T is converted or assigned to an interface type I. Such a site is an explicit conversion or a satisfaction assertion, an assignment, an argument, a return value, or an element stored in an I-typed container. For each recorded (T, I) pair, the analyzer retains the methods of T that satisfy I.
+
+The assertion is not a use of I beyond itself. When nothing else uses I as a type, I is still reported as an unused satisfaction assertion while T's methods stay retained.
 
 Retains: The methods of T that satisfy I, for each recorded (T, I) pair.
 
@@ -77,13 +54,15 @@ Mechanism in Go: Build the conversion set from the type-checked program: an asse
 
 Mechanism in TypeScript: Build the same conversion set over class instance types flowing into interface-typed positions: an `implements` clause, an assignment, an argument, a return value, an element stored in an interface-typed container. For each (class, interface) pair, the checker's assignability test decides satisfaction and the members the interface requires are retained.
 
-TypeScript visibility: retains a member declared `private`, no; retains a member declared with a `#private` name, no.
+TypeScript visibility: retains neither a member declared `private` nor a member declared with a `#private` name.
 
 From `contract/exemptions.json`, class `interface-satisfaction`.
 
 ### encoding-reflection
 
-A type whose values reach a consumer that inspects them by name at runtime has the members that consumer reads retained, on the type and on every type the consumer walks to through its fields. What is retained is per destination: a destination that reads fields alone retains the exported fields and the tagged fields, a destination that resolves one method by name retains that method as well, and a destination that resolves any method by name retains the exported methods as well. A consumer the analysis cannot read counts as one that resolves any method by name: a value passed as an interface-typed argument to a function or method outside the analyzed program has left the analysis, and whatever that function does with it reads its fields and may call its exported methods.
+A type whose values reach a consumer that inspects them by name at runtime has the members that consumer reads retained. That holds on the type and on every type the consumer walks to through its fields. What is retained depends on the destination. A destination that reads fields alone retains the exported fields and the tagged fields. A destination that resolves one method by name retains that method as well, and a destination that resolves any method by name retains the exported methods as well.
+
+A consumer the analysis cannot read counts as one that resolves any method by name. A value passed as an interface-typed argument to a function or method outside the analyzed program has left the analysis. Whatever that function does with the value reads its fields and may call its exported methods.
 
 Retains: The exported fields and the struct fields carrying a tag, on every type that flows into a destination and on every defined type reached from those types' fields through a pointer, an array, a slice, a map key or value, or an embedded field; the `LogValue` method as well for a `log/slog` destination; and the exported methods as well for a destination that resolves a method by name and for a destination outside the analyzed program. The reach stops at an interface-typed field.
 
@@ -93,7 +72,7 @@ From `contract/exemptions.json`, class `encoding-reflection`.
 
 ### format-verb-contract
 
-A type whose values reach a formatting facility that calls its string or error method has that method retained, on the operand's own type and on every type the facility walks to beneath it: the facility invokes `String` or `Error` through an interface at runtime, so the method has no static reference.
+A type whose values reach a formatting facility that calls its string or error method has that method retained. That holds on the operand's own type and on every type the facility walks to beneath it. The facility invokes `String` or `Error` through an interface at runtime, so the method has no static reference.
 
 Retains: The `String() string` and `Error() string` methods of the operand's type and of every defined type reached from it through a pointer, an array, a slice, a map key or value, an embedded field or an exported struct field; the reach stops at an interface-typed field.
 
@@ -103,7 +82,7 @@ From `contract/exemptions.json`, class `format-verb-contract`.
 
 ### errors-duck-typing
 
-The standard error helpers reach comparison and unwrapping methods by duck typing rather than through a declared interface, so those methods have no static reference and are retained on any type the program uses as an error.
+The standard error helpers reach comparison and unwrapping methods by duck typing rather than through a declared interface. Those methods therefore have no static reference, and they are retained on any type the program uses as an error.
 
 Retains: Methods with signature `Is(error) bool`, `As(any) bool`, `Unwrap() error` or `Unwrap() []error` on a type reachable as an error.
 
@@ -113,7 +92,7 @@ From `contract/exemptions.json`, class `errors-duck-typing`.
 
 ### enum-group
 
-A member of an enumerated type whose values can arrive by conversion rather than by name is never dead in isolation. When the type carries a string, text or binary conversion method, or a value of the type is produced from an integer or from a decoded wire value, every member of that type is retained, so that a member reached only by value is never reported.
+A member of an enumerated type whose values can arrive by conversion rather than by name is never dead in isolation. When the type carries a string, text or binary conversion method, or a value of the type is produced from an integer or from a decoded wire value, every member of that type is retained. A member reached only by value is therefore never reported.
 
 Retains: Every member of the enumerated type.
 
@@ -121,7 +100,7 @@ Mechanism in Go: The enumerated type is a defined type whose constants are decla
 
 Mechanism in TypeScript: The enumerated type is an `enum` declaration. The class fires when a value of the enum is produced by a type assertion from `number` or `string`, by the reverse mapping `E[n]`, or by a decoded value typed as `E`. Retain every member of the enum.
 
-TypeScript visibility: retains a member declared `private`, no; retains a member declared with a `#private` name, no.
+TypeScript visibility: retains neither a member declared `private` nor a member declared with a `#private` name.
 
 From `contract/exemptions.json`, class `enum-group`.
 
@@ -147,7 +126,7 @@ From `contract/exemptions.json`, class `linkname-cgo-asm-plugin`.
 
 ### template-field
 
-Where the project configures template directories, or holds a component file, a member whose name appears in a template or in a component file's markup as a field or method reference is retained at the lowest confidence, and the exemption names the template site that matched. Where the language's template grammar has action delimiters, the project configures the pair the scan reads and the grammar's own pair stands where it does not. The evidence is a text match, not a type relation, so this is a weak class and it applies only where the project asked for it or holds markup no other rule reads.
+This class applies where the project configures template directories or holds a component file. There, a member whose name appears in a template, or in a component file's markup, as a field or method reference is retained at the lowest confidence. The exemption names the template site that matched. Where the language's template grammar has action delimiters, the project configures the pair the scan reads, and the grammar's own pair stands where the project configures none. The evidence is a text match, not a type relation. This is therefore a weak class, and it applies only where the project asked for it or holds markup no other rule reads.
 
 Retains: The field or method whose name the template references, on any type.
 
@@ -155,7 +134,7 @@ Mechanism in Go: Scan every file under the configured template directories, pars
 
 Mechanism in TypeScript: Scan every file under the configured template directories, and the markup of every live component file, for the member's name in an interpolation or binding position; retain every member so named, recording the template file and line.
 
-TypeScript visibility: retains a member declared `private`, yes; retains a member declared with a `#private` name, no.
+TypeScript visibility: retains a member declared `private`, and never a member declared with a `#private` name.
 
 From `contract/exemptions.json`, class `template-field`.
 
@@ -169,31 +148,31 @@ Mechanism in Go: A string literal equal to a method or field name is, or is a co
 
 Mechanism in TypeScript: A string literal equal to a member name is the index of an element access (`obj["name"]`) whose receiver's type is `any` or declares no string index signature, or an argument of a `Reflect` call (`Reflect.get`, `Reflect.set`, `Reflect.has`); retain the matching member, recording the site. An element access whose receiver's type declares a string index signature, `Record<string, unknown>` among them, reads the signature and retains nothing.
 
-TypeScript visibility: retains a member declared `private`, yes; retains a member declared with a `#private` name, no.
+TypeScript visibility: retains a member declared `private`, and never a member declared with a `#private` name.
 
 From `contract/exemptions.json`, class `reflective-lookup`.
 
 ### decorator
 
-A member that carries a decorator, or whose class carries a decorator, is retained: the decorator receives the member or the class at runtime and may reach the member by name, so the decorator's own symbol counts as a reference to what it decorates.
+A member that carries a decorator, or whose class carries a decorator, is retained. The decorator receives the member or the class at runtime and may reach the member by name, so the decorator's own symbol counts as a reference to what it decorates.
 
 Retains: The decorated member, and every member of a decorated class that a decorator can name at runtime.
 
 Mechanism in TypeScript: A member is retained when a decorator expression is attached to it, or when a decorator expression is attached to its class. The retention covers `private` members, which a decorator can reach by name, and never `#private` ones.
 
-TypeScript visibility: retains a member declared `private`, yes; retains a member declared with a `#private` name, no.
+TypeScript visibility: retains a member declared `private`, and never a member declared with a `#private` name.
 
 From `contract/exemptions.json`, class `decorator`.
 
 ### injection-container
 
-Where the project configures a dependency-injection container, a class the container constructs has its constructor and the members the container injects retained, because the container instantiates the class and populates those members with no reference in the program's own code. A class is constructed by the container when it is registered with it or when a parameter of its constructor carries a decorator; a property or an accessor carrying a decorator does not by itself make its class one the container constructs.
+Where the project configures a dependency-injection container, a class the container constructs has its constructor and its injected members retained. The container instantiates the class and populates those members with no reference in the program's own code. A class is constructed by the container when it is registered with it or when a parameter of its constructor carries a decorator. A property or an accessor carrying a decorator does not by itself make its class one the container constructs.
 
 Retains: The class's constructor and every injected member: each property and accessor of the class, or of a class it extends, that carries a decorator.
 
 Mechanism in TypeScript: The class is passed to a call of a declaration `ts.injection_registrations` names, or a parameter of its constructor carries a decorator; a decorated property or accessor of a class that neither route reaches makes no class container-constructed. For a class either route reaches, retain the constructor and each property and accessor that carries a decorator, on the class and on every class it extends.
 
-TypeScript visibility: retains a member declared `private`, yes; retains a member declared with a `#private` name, no.
+TypeScript visibility: retains a member declared `private`, and never a member declared with a `#private` name.
 
 From `contract/exemptions.json`, class `injection-container`.
 
@@ -205,18 +184,20 @@ Retains: The lifecycle member.
 
 Mechanism in TypeScript: The project declares a framework and that framework's lifecycle member names as an entry of `ts.lifecycle_contracts`; a member whose name is in that entry's list is retained when its class is reachable as a component of that framework, by registration, by a decorator or by extending a declaration the entry's `bases` names.
 
-TypeScript visibility: retains a member declared `private`, yes; retains a member declared with a `#private` name, no.
+TypeScript visibility: retains a member declared `private`, and never a member declared with a `#private` name.
 
 From `contract/exemptions.json`, class `framework-lifecycle`.
 
 ### serialization-contract
 
-A value that flows into a serializer or a schema validator has its data members retained, because the serializer reads them by name at runtime: the data members of every class, interface and object type its static type names, and of every such type reached from those members' types, because the serializer walks the value it is given whatever declared the value's type. Those destinations retain one method, `toJSON`, which a serializer calls on a value that carries one, and no other. A destination outside the analyzed program retains more: a value passed to a parameter typed `unknown` or `any`, a rest parameter whose element type is one of them included, of a function the analyzed program does not declare has left the analysis, so its data members are retained together with the two conversion methods a serializer or a formatter resolves by name.
+A value that flows into a serializer or a schema validator has its data members retained, because the serializer reads them by name at runtime. Those are the data members of every class, interface and object type its static type names, and of every such type reached from those members' types. The serializer walks the value it is given, whatever declared the value's type. Those destinations retain one method, `toJSON`, which a serializer calls on a value that carries one, and no other.
+
+A destination outside the analyzed program retains more. A value passed to a parameter typed `unknown` or `any` of a function the analyzed program does not declare has left the analysis, and a rest parameter whose element type is one of them counts the same way. Its data members are retained together with the two conversion methods a serializer or a formatter resolves by name.
 
 Retains: The data members of every class, interface and object type the value's static type names and of every such type reached from their members' types, being a class's properties and an interface's or an object type's property signatures; the `toJSON` member of each of those types; and the `toString` member as well for a destination outside the analyzed program; never any other method or accessor.
 
 Mechanism in TypeScript: A value is an argument of `JSON.stringify` or of a declaration `ts.serializers` names. Take the value's static type and walk it: a union or an intersection walks each constituent, an array or a tuple walks its element types, and a class, an interface or an object type literal, the object type a type alias declares included, retains its data members, being a class's properties and an interface's or an object type literal's property signatures, and its `toJSON` member, then walks each retained data member's type and each index signature's value type, applied until no further type joins; the walk stops at a type parameter, at `unknown` and at `any`, whose members the analysis does not see. Those destinations retain no other method and no accessor. A value passed to a parameter typed `unknown` or `any`, or to a rest parameter whose element type is `unknown` or `any`, such as `console.log(...data: any[])`, of a function or method none of whose declarations is in a file of the project or of a declared consumer, the compiler's library declarations included, is a destination too, recorded at the call with the detail naming the callee: retain by the same walk the same data members and each walked type's `toJSON` and `toString` members, which a serializer and a formatter resolve by the value's own shape, and no other member. A parameter typed as an interface or as an object type is not this crossing, because the callee's own declaration names the members it reads. Any function of the project whose `unknown`-typed or `any`-typed parameter, a rest parameter of either element type included, it passes to such a call, or to any other destination of this class, is itself a destination, applied until no further function joins.
 
-TypeScript visibility: retains a member declared `private`, yes; retains a member declared with a `#private` name, no.
+TypeScript visibility: retains a member declared `private`, and never a member declared with a `#private` name.
 
 From `contract/exemptions.json`, class `serialization-contract`.
