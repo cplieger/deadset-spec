@@ -31,7 +31,7 @@ Code 3 covers nine cases:
 
 - A configuration the invocation or the configuration document names cannot be read.
 - The run holds no program to analyze.
-- A setup failure stops the analysis.
+- A setup failure stops the analysis of a declared build configuration, or of every configuration the analysis derived.
 - The analysis needs more memory than the machine makes available.
 - A declared consumer or a declared build configuration failed to load.
 - An analyzer could not be found, described or admitted.
@@ -51,7 +51,7 @@ Two consequences a gate can rely on. A run that returns 0 or 1 has produced a co
 
 ## Setup failures and memory
 
-A setup failure is a file or a component the analysis needs and the project does not provide. It ends the run with code 3 before any finding list exists. The run prints one line per failure on standard error. Each line starts with `setup failure:`, a space, the class, a colon and a space, then names what is missing and the fix. The sources are `contract/exit-codes.json`, `setup_failures`, and `contract/grammar/analysis.md`, "Setup failures". The six classes are these:
+A setup failure is a file or a component the analysis needs and the project does not provide. In a declared build configuration it ends the run with code 3 before any finding list exists. A configuration the analysis derived is dropped instead: the report lists it in `configurations_not_built` with the failure's line as its error, and the run analyzes the rest. When every derived configuration is dropped, the run ends with code 3 as well. For a failure that ends the run, the run prints one line per failure on standard error. Each line starts with `setup failure:`, a space, the class, a colon and a space, then names what is missing and the fix. The sources are `contract/exit-codes.json`, `setup_failures`, and `contract/grammar/analysis.md`, "Setup failures". The six classes are these:
 
 - `missing-module` means an import names a module the project expects to exist and nothing provides it. That is code a generator writes that was not generated, a package that was not built, or a declared dependency that was not installed. The line names the import and the file that writes it, and tells the user to run the generator, the build or the install that provides the module.
 - `incomplete-module-sum` means the module sum file lacks a checksum the build of the target or of a declared consumer needs. The line names the module and tells the user to run `go mod tidy` in the module that requires it.
@@ -60,7 +60,7 @@ A setup failure is a file or a component the analysis needs and the project does
 - `workspace-member-without-source` means an import resolves to a member of the workspace, and no source file of the member is found. Neither the file the default resolution reaches nor the member's manifest entry, read back through its emit mappings, is a source file of the member. The line names the member, the subpath, the importing file and the targets the member's manifest names. It tells the user to build the member, or to give its compiler configuration an output and a root directory that map the target to its source.
 - `convention-not-literal` means a convention row applies and the configuration property that moves one of its directories is not a literal in the framework configuration file. The line names the file and the property. It tells the user to write the property as a literal, or to disable the row in `ts.disabled_conventions` and name the files in `ts.entry_files`.
 
-A run that needs more memory than the machine makes available also ends with code 3, before it writes a report. It prints one line on standard error, `memory exhausted: at least N GB were needed, M GB are available`. N is the memory the analysis measured it needed when it stopped, and M is the memory the machine made available to it, each a decimal number with at most one digit after the point. The source is `contract/exit-codes.json`, `memory_exhaustion`. A type error in source the program holds ends nothing. It skips the function that holds it and the exit code follows the findings. The source is `contract/grammar/analysis.md`, "Type errors".
+A run that needs more memory than the machine makes available also ends with code 3, before it writes a report. It prints one line on standard error, `memory exhausted: at least N GB were needed, M GB are available`. N is the memory the analysis was about to need when it stopped, rounded up, and M is the memory the machine made available to it, rounded down, each a decimal number with at most one digit after the point, so N is greater than M. The source is `contract/exit-codes.json`, `memory_exhaustion`. A type error in source the program holds ends nothing. It skips the function that holds it and the exit code follows the findings. The source is `contract/grammar/analysis.md`, "Type errors".
 
 ## What decides code 1
 
