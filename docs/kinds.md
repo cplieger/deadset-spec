@@ -1,48 +1,21 @@
 # Issue kinds
 
-Every kind an analyzer reports carries a code, a name, the rule that produces it, a confidence
-ceiling, a default enablement, a default severity and a fixability. This page states all of them,
-one table per code range and one section per kind. Every value is read from
-`contract/kinds.json`, and each section names the row it comes from.
+Every kind an analyzer reports carries a code, a name, the rule that produces it, a confidence ceiling, a default enablement, a default severity and a fixability. This page states all of them, one table per code range and one section per kind. Every value is read from `contract/kinds.json`, and each section names the row it comes from.
 
-A code is the prefix `DS` followed by four digits. Ranges group codes by family, and a code names
-at most one kind for the life of the code space: a retired code stays retired and closes this page
-as a table rather than naming a different kind later (from `contract/kinds.json`, `prefix`,
-`ranges` and `retired`). One code renders identically in a text output line, an ignore entry, a
-configuration key and a SARIF rule identifier.
+A code is the prefix `DS` followed by four digits. Ranges group codes by family. A code names at most one kind for the life of the code space. A retired code stays retired and is listed in the table that closes this page, rather than naming a different kind later. The source is `contract/kinds.json`, `prefix`, `ranges` and `retired`. One code renders identically in a text output line, an ignore entry, a configuration key and a SARIF rule identifier.
 
 The columns of every table below, each the field of the same name in the kind's row:
 
-- **Languages** are the languages the kind applies to: `go` is Go, `ts` is TypeScript and
-  JavaScript (from `contract/kinds.json`, `languages`).
-- **Default** is `default_enabled`. `on` means an analyzer reports the kind unless a configuration
-  disables it.
-- **Severity** is `default_severity`, one of `allow`, `warn` and `deny` (from
-  `contract/kinds.json`, `severities`). A finding at or above the failing severity,
-  `reporters.fail_on`, exits with the findings code, and under the default, `deny`, a `warn` finding
-  never fails a run (from `contract/exit-codes.json`, codes 1 and 0, and the document's
-  `description`). A configuration names a code or a two-digit family prefix to change a severity (from
-  `contract/config.schema.json`, `severity`).
-- **Fixability** is `fixability`, one of `deletable`, `narrowable`, `manual` and `none` (from
-  `contract/kinds.json`, `fixabilities`): what a mechanical edit may do with the finding.
+- Languages are the languages the kind applies to, where `go` is Go and `ts` is TypeScript and JavaScript. The source is `contract/kinds.json`, `languages`.
+- Default is `default_enabled`. `on` means an analyzer reports the kind unless a configuration disables it.
+- Severity is `default_severity`, one of `allow`, `warn` and `deny`, as `contract/kinds.json`, `severities`, lists them. A finding at or above the failing severity, `reporters.fail_on`, exits with the findings code. Under the default, `deny`, a `warn` finding never fails a run. The sources are `contract/exit-codes.json`, codes 1 and 0, and the document's `description`. A configuration names a code or a two-digit family prefix under `severity` to change a severity, as `contract/config.schema.json` states.
+- Fixability is `fixability`, one of `deletable`, `narrowable`, `manual` and `none`, as `contract/kinds.json`, `fixabilities`, lists them. It says what a mechanical edit may do with the finding.
 
-Confidence is a ceiling on the reachability class, not a second axis. A finding carries a
-`reachability_class`, which is what the analysis knows about the symbol's callers, and a
-`confidence`, which is that class capped by the kind's `max_class`; both take one value from
-`certain`, `probable` and `possible`, ordered from the strongest (from `contract/kinds.json`,
-`reachability_classes`). Every kind in this contract version declares the ceiling `certain`, so a
-kind whose ceiling is lower states it in its own section. A finding about a library's published
-API, a public member of a published type included, is `possible` when the run holds no consumer
-information, and the default `analysis.min_confidence`, `probable`, withholds it; every other
-finding is reported (from `contract/grammar/analysis.md`, "Confidence", and
-`contract/config.schema.json`, `analysis.min_confidence`).
+Confidence is a ceiling on the reachability class, not a second axis. A finding carries a `reachability_class`, which is what the analysis knows about the symbol's callers, and a `confidence`, which is that class capped by the kind's `max_class`. Both take one value from `certain`, `probable` and `possible`, ordered from the strongest. The source is `contract/kinds.json`, `reachability_classes`.
 
-Three fields appear on a row only where they apply, and each section carries them where present.
-`precondition` is a condition the analyzer checks before it reports the kind. `derived_from` names
-the kinds a derived kind is computed from; such a finding is reported once, under the most specific
-code. `overlap` names, per language, the external linters or rules that report the same kind, so a
-project already running one silences whichever side it prefers; `none known` and `not applicable`
-are values of that field rather than omissions.
+Every kind in this contract version declares the ceiling `certain`, so a kind whose ceiling is lower states it in its own section. A finding about a library's published API, a public member of a published type included, is `possible` when the run holds no consumer information, and the default `analysis.min_confidence`, `probable`, withholds it. Every other finding is reported. The sources are `contract/grammar/analysis.md`, "Confidence", and `contract/config.schema.json`, `analysis.min_confidence`.
+
+Three fields appear on a row only where they apply, and each section carries them where present. `precondition` is a condition the analyzer checks before it reports the kind. `derived_from` names the kinds a derived kind is computed from, and such a finding is reported once, under the most specific code. `overlap` names, per language, the external linters or rules that report the same kind, so a project already running one silences whichever side it prefers. The entries `none known` and `not applicable` are values of that field rather than omissions.
 
 ## DS1000 to DS1099: `unused-declarations`
 
@@ -136,7 +109,7 @@ From `contract/kinds.json`, row `DS1103`.
 
 An exported declaration used only inside its own file, reported as a candidate for removing the export keyword. The finding names the narrower visibility the references support.
 
-Precondition: Closed world only. Reported in a file that is not an entry file and that either belongs to a project whose consumer set the configuration declares complete or is reached by no manifest export. A declared cross-language edge counts as a reference from outside the file; where the edge's other side is unknown to the analyzer the finding is emitted pending. A symbol the rule of DS1301 holds for is not reported under this code, whatever severity the configuration gives DS1301, because the write-only finding names the defect to fix first.
+Precondition: Closed world only. Reported in a file that is not an entry file and that either belongs to a project whose consumer set the configuration declares complete or is reached by no manifest export. A declared cross-language edge counts as a reference from outside the file. Where the edge's other side is unknown to the analyzer, the finding is emitted pending. A symbol the rule of DS1301 holds for is not reported under this code, whatever severity the configuration gives DS1301, because the write-only finding names the defect to fix first.
 
 From `contract/kinds.json`, row `DS1104`.
 
@@ -160,7 +133,7 @@ From `contract/kinds.json`, row `DS1201`.
 
 An interface method that no call site invokes or selects through the interface, whatever the number of implementations. The finding names the concrete implementations and their positions.
 
-Precondition: Exempt: in Go, every method of an interface that declares an unexported method, the sum-type shape whose method set exists to restrict the implementors, a shape a TypeScript interface cannot take because it declares no member less visible than itself; and, in both languages, every marker method, an interface method whose every implementation carries an empty body.
+Precondition: In Go, every method of an interface that declares an unexported method is exempt. That is the sum-type shape, whose method set exists to restrict the implementors, and a TypeScript interface cannot take it because it declares no member less visible than itself. Also exempt, in both languages, is every marker method, an interface method whose every implementation carries an empty body.
 
 From `contract/kinds.json`, row `DS1203`.
 
@@ -196,7 +169,7 @@ From `contract/kinds.json`, row `DS1302`.
 
 A type parameter of a function or method that no part of the declaration's signature and no part of the declaration's body names, at the certain class. The deletion is local to the declaration and the explicit instantiations the reference set already lists. A type parameter of a function or method that is itself dead falls with it and is reported under no code of its own.
 
-Precondition: Function and method type parameters only. A type parameter of a type declaration is never reported, because a phantom type parameter such as `type ID[T any] int` makes two instantiations distinct types while naming the parameter nowhere, so deleting it changes the program. A method signature an interface or an object type declares belongs to that type declaration, so its type parameters are never reported either.
+Precondition: Function and method type parameters only. A type parameter of a type declaration is never reported. A phantom type parameter such as `type ID[T any] int` makes two instantiations distinct types while naming the parameter nowhere, so deleting it changes the program. A method signature an interface or an object type declares belongs to that type declaration, so its type parameters are never reported either.
 
 From `contract/kinds.json`, row `DS1303`.
 
@@ -217,7 +190,7 @@ Source files nothing builds or imports. From `contract/kinds.json`, the `non-cod
 
 A source file no configuration in the build matrix builds. On the Go side the finding names the build constraint that excluded the file. A file whose build constraint is the ignore tag is never reported: the toolchain applies no build constraint to a file named on its own command line, so that tag is the toolchain's convention for a file built by hand. A file any other custom tag excludes is reported under a matrix the configuration declares complete, because completeness is the maintainer's assertion that the listed configurations are every one the target builds, and a configuration the maintainer builds by hand belongs in that list.
 
-Precondition: Reported only when the configuration declares the build matrix complete, and never for a file the toolchain ignored solely because it imports "C" under a build with cgo disabled; such a file is recorded as excluded by cgo rather than as never built.
+Precondition: Reported only when the configuration declares the build matrix complete, and never for a file the toolchain ignored solely because it imports "C" under a build with cgo disabled. Such a file is recorded as excluded by cgo rather than as never built.
 
 From `contract/kinds.json`, row `DS1501`.
 
@@ -240,7 +213,11 @@ Declared dependencies and module-file directives that are exactly a no-op. From 
 
 A directly declared dependency that no import in the target needs. On the Go side, a direct require whose module provides no package any target package or test variant imports. On the TypeScript side, a manifest dependency, development dependency or peer dependency the project's import closure does not need. A deletion finding whose fix would remove the last use of a dependency names that dependency.
 
-Precondition: On the Go side the rule is the semantics of `go mod tidy -diff` exactly: a requirement marked indirect is never reported, because it exists to pin a transitive version and removing it changes the build list. On the TypeScript side the import closure is the files of the run's projects, and three more dependencies are needed: one whose installed manifest declares a command, because a command is run by name rather than imported; one that the installed manifest of a needed dependency declares as a peer and does not mark optional; and, to a fixpoint, the required peers of every dependency so held. An installed manifest is the package's manifest in the nearest node_modules directory at or above the target, and a dependency with none is decided by the import closure alone.
+Precondition: On the Go side the rule is exactly the semantics of `go mod tidy -diff`. A requirement marked indirect is never reported, because it exists to pin a transitive version and removing it changes the build list.
+
+On the TypeScript side the import closure is the files of the run's projects, and three more dependencies are needed. The first is a dependency whose installed manifest declares a command, because a command is run by name rather than imported. The second is a dependency that the installed manifest of a needed dependency declares as a peer and does not mark optional. The third is, to a fixpoint, the required peers of every dependency so held.
+
+An installed manifest is the package's manifest in the nearest node_modules directory at or above the target, and a dependency with none is decided by the import closure alone.
 
 From `contract/kinds.json`, row `DS1601`.
 
@@ -248,13 +225,13 @@ From `contract/kinds.json`, row `DS1601`.
 
 A replace directive whose target module is absent from the build list, the one case in which the directive is exactly a no-op.
 
-Precondition: Only a replace whose target is absent from the build list. No other module-file directive is reported: not an exclude directive, because not selected is a counterfactual about a resolution that did not happen; not a workspace use entry and not a tool directive, because each is an external entry point whose invocation lives outside anything the analysis reads.
+Precondition: Only a replace whose target is absent from the build list. No other module-file directive is reported. An exclude directive is not, because not selected is a counterfactual about a resolution that did not happen. A workspace use entry and a tool directive are not, because each is an external entry point whose invocation lives outside anything the analysis reads.
 
 From `contract/kinds.json`, row `DS1605`.
 
 ## DS1700 to DS1799: `self-check`
 
-Suppressions, configured roots, configured declarations and declared edges that no longer match anything; the run checks its own inputs. From `contract/kinds.json`, the `self-check` range.
+Suppressions, configured roots, configured declarations and declared edges that no longer match anything, so the run checks its own inputs. From `contract/kinds.json`, the `self-check` range.
 
 | Code | Name | Languages | Default | Severity | Fixability |
 | --- | --- | --- | --- | --- | --- |
@@ -281,7 +258,7 @@ From `contract/kinds.json`, row `DS1702`.
 
 A suppression that matches no current finding, at either mechanism and in the baseline alike. The run exits with the findings code when at least one is reported. The kind is fixed on at deny: no flag, no severity setting and no per-mechanism exception reduces it below a finding, and a configuration naming this code under a severity key is an unimplemented key.
 
-The row carries `"fixed": true`. No configuration changes this kind's enablement or its severity: a configuration that names this code under a severity key, or a family prefix whose range holds it, names a key the product does not implement and the run ends with the usage code (from `contract/config.schema.json`, `severity`, and `contract/exit-codes.json`, code 2).
+The row carries `"fixed": true`. No configuration changes this kind's enablement or its severity. A configuration that names this code under a severity key, or a family prefix whose range holds it, names a key the product does not implement, and the run ends with the usage code. The sources are `contract/config.schema.json`, `severity`, and `contract/exit-codes.json`, code 2.
 
 From `contract/kinds.json`, row `DS1703`.
 
@@ -289,7 +266,7 @@ From `contract/kinds.json`, row `DS1703`.
 
 A configured root that matches no symbol, or a configured root pattern that matches no symbol. A root set nobody checks silently changes every result, so a stale one is a finding. The kind is fixed on at deny: no flag, no severity setting and no exception reduces it below a finding, and a configuration naming this code under a severity key is an unimplemented key.
 
-The row carries `"fixed": true`. No configuration changes this kind's enablement or its severity: a configuration that names this code under a severity key, or a family prefix whose range holds it, names a key the product does not implement and the run ends with the usage code (from `contract/config.schema.json`, `severity`, and `contract/exit-codes.json`, code 2).
+The row carries `"fixed": true`. No configuration changes this kind's enablement or its severity. A configuration that names this code under a severity key, or a family prefix whose range holds it, names a key the product does not implement, and the run ends with the usage code. The sources are `contract/config.schema.json`, `severity`, and `contract/exit-codes.json`, code 2.
 
 From `contract/kinds.json`, row `DS1704`.
 
@@ -303,7 +280,7 @@ From `contract/kinds.json`, row `DS1705`.
 
 An entry of a configuration key that names a declaration, being an entry of ts.injection_registrations, of the components or the bases of an entry of ts.lifecycle_contracts, or of ts.serializers, that names no declaration in any project of the run, by the resolution the ts section of contract/config.schema.json states for its shape. An entry that names a declaration no call reaches matches. An exemption whose configured declarations nobody checks silently retains nothing, so a stale entry is a finding. The kind is fixed on at deny: no flag, no severity setting and no exception reduces it below a finding, and a configuration naming this code under a severity key is an unimplemented key.
 
-The row carries `"fixed": true`. No configuration changes this kind's enablement or its severity: a configuration that names this code under a severity key, or a family prefix whose range holds it, names a key the product does not implement and the run ends with the usage code (from `contract/config.schema.json`, `severity`, and `contract/exit-codes.json`, code 2).
+The row carries `"fixed": true`. No configuration changes this kind's enablement or its severity. A configuration that names this code under a severity key, or a family prefix whose range holds it, names a key the product does not implement, and the run ends with the usage code. The sources are `contract/config.schema.json`, `severity`, and `contract/exit-codes.json`, code 2.
 
 From `contract/kinds.json`, row `DS1706`.
 
@@ -324,9 +301,11 @@ Dead code inside a function body. The six kinds form one issue group with one en
 
 A parameter with no reference inside its function body, on a function whose signature is free to change.
 
-Precondition: The signature must be free, defined as follows: the function is not a method retained by interface satisfaction, is not used as a value, is not a go:linkname or cgo target, is not a function the Go test driver runs (a test, benchmark or fuzz test of a test file, or TestMain), and is not a stub whose body is empty or only panics. A parameter its body never names is dead whatever the callers, so a published declaration of a library is reported too, with the fixability the vocabulary gives the kind: the signature change is a breaking change.
+Precondition: The signature must be free. A free signature belongs to a function that is not a method retained by interface satisfaction, is not used as a value and is not a go:linkname or cgo target. It is also not a function the Go test driver runs, which is a test, benchmark or fuzz test of a test file, or TestMain, and not a stub whose body is empty or only panics.
 
-Overlap: in Go `revive unused-parameter`, `gopls unusedparams`, `unparam`; in TypeScript `tsc --noUnusedParameters`, `@typescript-eslint/no-unused-vars`.
+A parameter its body never names is dead whatever the callers. A published declaration of a library is therefore reported too, with the fixability the vocabulary gives the kind, because the signature change is a breaking change.
+
+Overlap in Go: `revive unused-parameter`, `gopls unusedparams`, `unparam`. Overlap in TypeScript: `tsc --noUnusedParameters`, `@typescript-eslint/no-unused-vars`.
 
 From `contract/kinds.json`, row `DS1801`.
 
@@ -336,7 +315,7 @@ A named method receiver with no reference inside the method body, on a method wh
 
 Precondition: The same free-signature rule as unused-parameter, applied to the receiver.
 
-Overlap: in Go `revive unused-receiver`; in TypeScript `not applicable`.
+Overlap in Go: `revive unused-receiver`. Overlap in TypeScript: `not applicable`.
 
 From `contract/kinds.json`, row `DS1802`.
 
@@ -344,9 +323,9 @@ From `contract/kinds.json`, row `DS1802`.
 
 A result value that no call site of the function uses, on a function whose signature is free to change.
 
-Precondition: The same free-signature rule as unused-parameter, plus a closed-world condition: every call site of the function must be in the loaded graph, because an unknown caller may consume the result, so the kind reports only for a function whose callers are all visible.
+Precondition: The same free-signature rule as unused-parameter, plus a closed-world condition. Every call site of the function must be in the loaded graph, because an unknown caller may consume the result. The kind therefore reports only for a function whose callers are all visible.
 
-Overlap: in Go `unparam`; in TypeScript `none known`.
+Overlap in Go: `unparam`. Overlap in TypeScript: `none known`.
 
 From `contract/kinds.json`, row `DS1803`.
 
@@ -354,7 +333,7 @@ From `contract/kinds.json`, row `DS1803`.
 
 A statement that control flow cannot reach, at the precision the language's compiler applies to the same construct.
 
-Overlap: in Go `go vet unreachable`; in TypeScript `tsc allowUnreachableCode`, `eslint no-unreachable`.
+Overlap in Go: `go vet unreachable`. Overlap in TypeScript: `tsc allowUnreachableCode`, `eslint no-unreachable`.
 
 From `contract/kinds.json`, row `DS1805`.
 
@@ -362,7 +341,7 @@ From `contract/kinds.json`, row `DS1805`.
 
 A write to a local variable with no read before the next write to it or the end of its scope, computed on the same read-and-write classification the write-only-symbol kind uses. The finding names the write position.
 
-Overlap: in Go `ineffassign`, `wastedassign`, `staticcheck SA4006`; in TypeScript `eslint no-useless-assignment`.
+Overlap in Go: `ineffassign`, `wastedassign`, `staticcheck SA4006`. Overlap in TypeScript: `eslint no-useless-assignment`.
 
 From `contract/kinds.json`, row `DS1807`.
 
@@ -370,14 +349,13 @@ From `contract/kinds.json`, row `DS1807`.
 
 A switch case whose type or value an earlier case in the same switch already covers.
 
-Overlap: in Go `staticcheck SA4020`; in TypeScript `none known`.
+Overlap in Go: `staticcheck SA4020`. Overlap in TypeScript: `none known`.
 
 From `contract/kinds.json`, row `DS1809`.
 
 ## Retired codes
 
-Each code below named a kind that this contract no longer defines. No analyzer reports one, and no
-code here is ever assigned to another kind (from `contract/kinds.json`, `retired`).
+Each code below named a kind that this contract no longer defines. No analyzer reports one, and no code here is ever assigned to another kind. The source is `contract/kinds.json`, `retired`.
 
 | Code | Name |
 | --- | --- |
