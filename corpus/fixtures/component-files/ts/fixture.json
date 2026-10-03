@@ -1,0 +1,11 @@
+{
+  "symbols": {
+    "localHelper": { "file": "target/Widget.vue", "line": 11 },
+    "format": { "file": "target/format.ts", "line": 2 },
+    "unusedFormat": { "file": "target/format.ts", "line": 7 },
+    "title": { "file": "target/model.ts", "line": 4 },
+    "summary": { "file": "target/model.ts", "line": 9 },
+    "heading": { "file": "target/heading.ts", "line": 2 },
+    "unusedHeading": { "file": "target/heading.ts", "line": 7 }
+  }
+}

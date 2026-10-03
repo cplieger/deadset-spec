@@ -1,0 +1,11 @@
+{
+  "name": "incomplete-module-sum-setup-failure",
+  "description": "A command imports a package of a module its module file requires, and the module sum file holds no checksum for that module. The run ends with the setup failure that names the module, before any finding list exists, and reports nothing.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "setup_failure": {
+    "class": "incomplete-module-sum",
+    "names": ["example.com/dep"]
+  },
+  "expect": []
+}

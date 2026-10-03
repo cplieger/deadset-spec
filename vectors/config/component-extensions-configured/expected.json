@@ -1,0 +1,70 @@
+{
+  "contract_version": "5.0.0",
+  "target": { "kind": "application" },
+  "analysis": {
+    "languages": [],
+    "min_confidence": "probable",
+    "generated_files": "exclude",
+    "consumer_tests": "test",
+    "configurations": [],
+    "matrix": { "complete": false },
+    "template_dirs": [],
+    "template_delimiters": { "left": "{{", "right": "}}" }
+  },
+  "consumers": { "complete": false },
+  "roots": { "patterns": [] },
+  "severity": {},
+  "exemptions": { "disabled": [] },
+  "reporters": {
+    "formats": ["text"],
+    "sort": "position",
+    "cascade": "roots",
+    "max_findings": 0,
+    "fail_on": "deny"
+  },
+  "providers": {
+    "analyzers": [
+      { "name": "deadset-go", "languages": ["go"], "command": "deadset-go" },
+      { "name": "deadset-ts", "languages": ["ts"], "command": "deadset-ts" }
+    ]
+  },
+  "go": {},
+  "ts": {
+    "test_files": ["**/*.test.{ts,tsx,mts,cts}", "**/*.spec.*", "**/__tests__/**", "**/__mocks__/**"],
+    "entry_files": [],
+    "component_extensions": [".vue", ".html"],
+    "disabled_conventions": [],
+    "injection_registrations": [],
+    "lifecycle_contracts": [],
+    "serializers": []
+  },
+  "provenance": {
+    "contract_version": "default",
+    "target.kind": "repository: repository.json",
+    "analysis.languages": "default",
+    "analysis.min_confidence": "default",
+    "analysis.generated_files": "default",
+    "analysis.consumer_tests": "default",
+    "analysis.configurations": "default",
+    "analysis.matrix.complete": "default",
+    "analysis.template_dirs": "default",
+    "analysis.template_delimiters": "default",
+    "consumers.complete": "default",
+    "roots.patterns": "default",
+    "severity": "default",
+    "exemptions.disabled": "default",
+    "reporters.formats": "default",
+    "reporters.sort": "default",
+    "reporters.cascade": "default",
+    "reporters.max_findings": "default",
+    "reporters.fail_on": "default",
+    "providers.analyzers": "default",
+    "ts.test_files": "default",
+    "ts.entry_files": "default",
+    "ts.component_extensions": "repository: repository.json",
+    "ts.disabled_conventions": "default",
+    "ts.injection_registrations": "default",
+    "ts.lifecycle_contracts": "default",
+    "ts.serializers": "default"
+  }
+}

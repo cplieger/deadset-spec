@@ -44,10 +44,10 @@
           "x-owner": "orchestrator"
         },
         "min_confidence": {
-          "description": "The lowest reachability class a finding must reach to be reported. possible, the default, reports every finding; probable omits findings about a library's exported symbols with no consumer information; certain reports only findings whose every caller is in the analyzed graph. When the minimum withholds a root finding, it withholds with it every finding whose component.id names the root's component, whatever confidence those findings carry: every other root member of the component, the other root members of the root's own cycle among them, and every symbol that falls with a root, which is dead only through it.",
+          "description": "The lowest reachability class a finding must reach to be reported. probable, the default, omits the findings about a library's published API, a member of a type the published API names included, when the run holds no consumer information, and reports every other finding; possible reports every finding; certain reports only findings whose every caller is in the analyzed graph. The dial is the one place a library's published API is withheld: no kind carries a default that depends on the target kind. When the minimum withholds a root finding, it withholds with it every finding whose component.id names the root's component, whatever confidence those findings carry: every other root member of the component, the other root members of the root's own cycle among them, and every symbol that falls with a root, which is dead only through it.",
           "type": "string",
           "enum": ["certain", "probable", "possible"],
-          "default": "possible",
+          "default": "probable",
           "x-owner": "analyzer"
         },
         "generated_files": {
@@ -255,7 +255,7 @@
       "x-owner": "product",
       "properties": {
         "formats": {
-          "description": "The output formats rendered from the one ordered finding list: text (one finding per line, position first), json (the report document), github (one workflow annotation per failing finding and per stale suppression), sarif (SARIF 2.1.0 for code scanning, contract/grammar/sarif.md) and template (a user-supplied template in the language contract/grammar/template.md states).",
+          "description": "The output formats rendered from the one ordered finding list: text (one finding per line, position first), json (the report document), github (one workflow annotation per failing finding and per stale suppression, and one warning annotation per type-error skip), sarif (SARIF 2.1.0 for code scanning, contract/grammar/sarif.md) and template (a user-supplied template in the language contract/grammar/template.md states).",
           "type": "array",
           "uniqueItems": true,
           "minItems": 1,
@@ -413,7 +413,7 @@
       "x-owner": "ts-analyzer",
       "properties": {
         "test_files": {
-          "description": "Glob patterns, relative to the target root, naming the files classified as test files. The default is the naming most TypeScript projects follow; a project whose tests are named otherwise sets its own so that a symbol only its tests reach is reported as test-only use.",
+          "description": "Glob patterns, relative to the target root, naming the files classified as test files. The default is the naming the common TypeScript test runners share: a file whose name carries a .test or a .spec qualifier, and every file under a __tests__ or a __mocks__ directory; a project whose tests are named otherwise sets its own so that a symbol only its tests reach is reported as test-only use. A file no pattern names is still test code when it is test-support code, which grammar/analysis.md defines.",
           "type": "array",
           "uniqueItems": true,
           "minItems": 1,
@@ -421,16 +421,38 @@
             "type": "string",
             "minLength": 1
           },
-          "default": ["**/*.test.{ts,tsx,mts,cts}"],
+          "default": ["**/*.test.{ts,tsx,mts,cts}", "**/*.spec.*", "**/__tests__/**", "**/__mocks__/**"],
           "x-owner": "ts-analyzer"
         },
         "entry_files": {
-          "description": "Glob patterns, relative to the target root, naming files whose exports are roots, beside the entry points the package manifest names. An empty array, the default, adds none.",
+          "description": "Glob patterns, relative to the target root, naming files whose exports are roots, beside the entry points the package manifest names and the roots grammar/analysis.md lists. An empty array, the default, adds none. The patterns apply whatever convention row applies or is disabled, so a project whose framework configuration moves a directory to a value the analysis cannot read names the files here.",
           "type": "array",
           "uniqueItems": true,
           "items": {
             "type": "string",
             "minLength": 1
+          },
+          "default": [],
+          "x-owner": "ts-analyzer"
+        },
+        "component_extensions": {
+          "description": "The file name extensions of component files, each a full stop followed by letters and digits: a file whose name ends with one is read as markup holding script blocks, as grammar/analysis.md states. An empty array reads no file as a component file.",
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^\\.[A-Za-z0-9]+$"
+          },
+          "default": [".vue", ".svelte", ".astro"],
+          "x-owner": "ts-analyzer"
+        },
+        "disabled_conventions": {
+          "description": "The names of the convention rows of the analyzer's table that do not apply, whatever the dependencies hold: a disabled row adds no root and raises no setup failure. A name the analyzer's table does not carry is refused with the usage code naming this key, so a misspelled name never leaves a row applying. An empty array, the default, disables none.",
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$"
           },
           "default": [],
           "x-owner": "ts-analyzer"

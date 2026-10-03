@@ -16,7 +16,7 @@ import (
 	"testing"
 	"testing/fstest"
 
-	"github.com/cplieger/deadset-spec/v4"
+	"github.com/cplieger/deadset-spec/v5"
 )
 
 // This file is the merge contract/grammar/merge.md states, run over each published case's
@@ -335,7 +335,7 @@ func sortByKey(records []*jsonValue, key func(*jsonValue) mergeKey) {
 
 // unionEntries carries every entry of the named array of every input once, ordered by the
 // named member and then by the compact encoding.
-func unionEntries(inputs []mergeInput, array, by string) *jsonValue {
+func unionEntries(inputs []mergeInput, array string, by ...string) *jsonValue {
 	seen := map[string]bool{}
 	var out []*jsonValue
 	for _, in := range inputs {
@@ -348,7 +348,17 @@ func unionEntries(inputs []mergeInput, array, by string) *jsonValue {
 		}
 	}
 	slices.SortStableFunc(out, func(a, b *jsonValue) int {
-		return cmp.Or(strings.Compare(a.get(by).str(), b.get(by).str()), bytes.Compare(a.compactBytes(), b.compactBytes()))
+		for _, member := range by {
+			x, y := a.get(member), b.get(member)
+			order := strings.Compare(x.str(), y.str())
+			if x.kind == jsonNumber {
+				order = cmp.Compare(x.num(), y.num())
+			}
+			if order != 0 {
+				return order
+			}
+		}
+		return bytes.Compare(a.compactBytes(), b.compactBytes())
 	})
 	return jsonArrayOf(out...)
 }
@@ -465,6 +475,10 @@ func referenceMerge(inputs []mergeInput, accepted []string, caller mergeCaller, 
 	report.set("declared_gaps", jsonArrayOf(gaps...), "")
 	report.set("excluded_by_cgo", unionStrings(inputs, "excluded_by_cgo"), "")
 	report.set("test_file_rules", unionEntries(inputs, "test_file_rules", "rule"), "")
+	report.set("type_error_skips", unionEntries(inputs, "type_error_skips", "path", "line"), "")
+	report.set("notes", unionEntries(inputs, "notes", "kind", "path"), "")
+	report.set("unanswered_questions", unionEntries(inputs, "unanswered_questions", "configuration"), "")
+	report.set("conventions_applied", unionEntries(inputs, "conventions_applied", "name", "manifest"), "")
 	report.set("totals", mergedTotals(inputs, findings, stale), "")
 
 	exit := mergeCleanExit

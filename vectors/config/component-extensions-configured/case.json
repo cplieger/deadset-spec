@@ -1,0 +1,5 @@
+{
+  "name": "component-extensions-configured",
+  "description": "A repository configuration naming its own component extensions and leaving the convention rows at their default. The resolved configuration carries the extensions the repository names in the order it names them, under one provenance entry for the array, and the default list of disabled convention rows, which is empty, so a project whose components carry another extension states it and a project with no component file can read none.",
+  "covers": ["component-extensions-configured"]
+}

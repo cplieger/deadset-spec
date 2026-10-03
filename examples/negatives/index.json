@@ -135,6 +135,34 @@
       "violates": "a configuration the analysis ran carries the members of both shapes, a platform and a project, and an entry is one shape or the other"
     },
     {
+      "file": "report-convention-name-not-a-word-list.json",
+      "schema": "contract/report.schema.json",
+      "constraint": "pattern",
+      "instance_path": "/conventions_applied/0/name",
+      "violates": "the applied convention row's name is not lowercase words joined by hyphens, so the configuration cannot spell it to disable the row"
+    },
+    {
+      "file": "report-note-kind-outside-vocabulary.json",
+      "schema": "contract/report.schema.json",
+      "constraint": "enum",
+      "instance_path": "/notes/0/kind",
+      "violates": "the note's kind is outside the closed set of notes the report carries"
+    },
+    {
+      "file": "report-type-error-skip-line-zero.json",
+      "schema": "contract/report.schema.json",
+      "constraint": "minimum",
+      "instance_path": "/type_error_skips/0/line",
+      "violates": "the type-error skip names line 0, and lines are counted from 1"
+    },
+    {
+      "file": "report-unanswered-questions-zero.json",
+      "schema": "contract/report.schema.json",
+      "constraint": "minimum",
+      "instance_path": "/unanswered_questions/0/questions",
+      "violates": "the entry counts no unanswered question, and a configuration whose every question was answered has no entry"
+    },
+    {
       "file": "report-unknown-member.json",
       "schema": "contract/report.schema.json",
       "constraint": "additionalProperties",

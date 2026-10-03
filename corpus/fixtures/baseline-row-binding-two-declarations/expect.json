@@ -1,0 +1,16 @@
+{
+  "name": "baseline-row-binding-two-declarations",
+  "description": "A baseline row whose symbol and path bind two declarations binds one record to each. The record on the declaration that holds the recorded finding is in effect, so the finding is withheld, and the row is not stale while one of its records is in effect, so the record on the other declaration is not reported either.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "UnreachableStatement",
+      "report": "none"
+    },
+    {
+      "symbol": "RowBindingBothInits",
+      "report": "none"
+    }
+  ]
+}

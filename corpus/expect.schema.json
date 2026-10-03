@@ -4,6 +4,9 @@
   "description": "The language-neutral expectation file of one conformance fixture, expect.json. It names what an analyzer must report and what it must not report, per issue kind and per exemption class, and it binds to each language rendering through one thing only: the fixture-local logical name in each expectation's symbol field, which the rendering's manifest, fixture.json, maps to a file and a line. No field of an expectation names a language; the fixture-level languages array is the one place a language appears, and it names which renderings exist rather than what any of them contains. The expectation list is exhaustive for the target: a finding on a position no expectation resolves to fails the analyzer.",
   "type": "object",
   "additionalProperties": false,
+  "if": { "required": ["setup_failure"] },
+  "then": { "properties": { "expect": { "maxItems": 0 } } },
+  "else": { "properties": { "expect": { "minItems": 1 } } },
   "required": ["name", "description", "languages", "target_kind", "expect"],
   "properties": {
     "name": {
@@ -161,10 +164,70 @@
         }
       }
     },
-    "expect": {
-      "description": "One expectation per subject, exhaustive for the target. Each names a subject by its logical name and states what an analyzer must report there.",
+    "min_confidence": {
+      "description": "The minimum confidence the runner sets in analysis.min_confidence before analysing this fixture, as contract/config.schema.json declares that key. A runner leaves the key at its default where the member is absent, so a fixture that omits it is answered under the default, which withholds the findings about a library's published API when the run holds no consumer information. It is the fixture's declaration rather than any expectation's, for the reason closed_world states.",
+      "type": "string",
+      "enum": ["certain", "probable", "possible"]
+    },
+    "type_error_skips": {
+      "description": "The type errors the analyzer must list in the report's type_error_skips array, exhaustive: one logical name per entry, each mapped through the rendering's manifest to the file and the line of the error's position. A record the array holds that no name resolves to fails the analyzer, and a fixture that omits the member expects the array empty. The compiler's message is not compared, because it is the compiler's wording rather than the analysis's. The member is optional and never empty.",
       "type": "array",
       "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+      }
+    },
+    "notes": {
+      "description": "The notes the analyzer must list in the report's notes array, exhaustive: one entry per note, naming its kind and its path relative to the target root as contract/report.schema.json spells them. A note the array holds that no entry names fails the analyzer, and a fixture that omits the member expects the array empty. The note's message is not compared. A path spells one language's own layout, so the member is named only by a fixture that lists one language. The member is optional and never empty.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "path"],
+        "properties": {
+          "kind": {
+            "description": "The note's kind, drawn from the kind enumeration of a notes entry in contract/report.schema.json.",
+            "type": "string",
+            "enum": ["published-package"]
+          },
+          "path": {
+            "description": "The directory the note names, relative to the target root.",
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "setup_failure": {
+      "description": "The setup failure the run must end with, in place of a report: the analyzer must exit with the failure code contract/exit-codes.json names, write no finding, and print on standard error a line that starts with \"setup failure: \", the class and \": \", and contains every string names lists. A fixture that carries the member carries an empty expect array, because a run that ends this way answers no expectation, and no other member that configures or answers a report. Under the class missing-consumer, every name that is also an entry of consumers is a consumer the renderings hold no directory for, and at least one name is. The member is optional.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["class", "names"],
+      "properties": {
+        "class": {
+          "description": "The class of the failure, drawn from the class field of contract/exit-codes.json's setup_failures.",
+          "type": "string",
+          "enum": ["missing-module", "incomplete-module-sum", "test-build-tag", "missing-consumer", "workspace-member-without-source", "convention-not-literal"]
+        },
+        "names": {
+          "description": "The strings the line on standard error contains: what is missing, spelled as the rendering spells it.",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "expect": {
+      "description": "One expectation per subject, exhaustive for the target. Each names a subject by its logical name and states what an analyzer must report there. The list is empty in a fixture whose run ends with a setup failure, and holds at least one expectation in every other fixture.",
+      "type": "array",
       "items": {
         "type": "object",
         "additionalProperties": false,

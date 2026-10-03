@@ -1,0 +1,58 @@
+The Go rendering: a command calling one function of a package, and a second
+package that only the first package's external test file imports. The
+test-support package calls a second function of the first package. Nothing
+imports anything outside the standard library, so the rendering loads with no
+network access.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Live": { "file": "target/codec/codec.go", "line": 4 },
+    "Encode": { "file": "target/codec/codec.go", "line": 7 },
+    "Fixture": { "file": "target/testsupport/testsupport.go", "line": 6 },
+    "Unused": { "file": "target/testsupport/testsupport.go", "line": 9 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+package main
+
+import "example.com/target/codec"
+
+func main() { println(codec.Live()) }
+-- target/codec/codec.go --
+package codec
+
+// Live is called by the command.
+func Live() int { return 1 }
+
+// Encode is called by test-support code alone.
+func Encode() int { return 2 }
+-- target/testsupport/testsupport.go --
+package testsupport
+
+import "example.com/target/codec"
+
+// Fixture is called by a test, and calls a live function beside the one only it calls.
+func Fixture() int { return codec.Encode() + codec.Live() }
+
+// Unused is called by nothing.
+func Unused() int { return 3 }
+-- target/codec/codec_test.go --
+package codec_test
+
+import (
+	"testing"
+
+	"example.com/target/codec"
+	"example.com/target/testsupport"
+)
+
+func TestEncode(t *testing.T) {
+	if testsupport.Fixture() != codec.Live()+2 {
+		t.Error("Fixture and Live disagree")
+	}
+}

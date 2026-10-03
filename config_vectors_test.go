@@ -8,12 +8,13 @@ import (
 	"io"
 	"io/fs"
 	"maps"
+	"reflect"
 	"regexp"
 	"slices"
 	"strings"
 	"testing"
 
-	"github.com/cplieger/deadset-spec/v4"
+	"github.com/cplieger/deadset-spec/v5"
 )
 
 const (
@@ -30,6 +31,8 @@ const (
 // names at least one of them and every one of them is named by at least one case.
 var configVectorAspects = []string{
 	"array-spanning-lines",
+	"component-extension-without-a-full-stop",
+	"component-extensions-configured",
 	"duplicated-key",
 	"integer-written-with-a-fraction",
 	"member-written-as-null",
@@ -607,6 +610,46 @@ func TestConfigVectorNullCaseHoldsANullAtAKeyWithADefault(t *testing.T) {
 	}
 }
 
+// TestConfigVectorComponentExtensionCaseHoldsAnExtensionThePatternRefuses pins the input the
+// case exists for: the key its refusal names is an array whose items carry a pattern, and the
+// case writes that key with exactly one element the pattern refuses, so only the pattern
+// refuses the document.
+func TestConfigVectorComponentExtensionCaseHoldsAnExtensionThePatternRefuses(t *testing.T) {
+	dir := caseCovering(t, "component-extension-without-a-full-stop")
+	names := refusalNames(t, dir)
+	section, key, ok := strings.Cut(names, ".")
+	if !ok {
+		t.Fatalf("Setup: the refusal names %q, want a dotted path to one key", names)
+	}
+	items, _ := lookupKey(t, walkSchema(loadConfigSchema(t)), names).node["items"].(map[string]any)
+	pattern, _ := items["pattern"].(string)
+	if pattern == "" {
+		t.Fatalf("schema[%s].items.pattern is absent, want a key whose elements a pattern constrains", names)
+	}
+	shape := regexp.MustCompile(pattern)
+	data, ok := readVectorFile(t, dir, vectorRepositoryFile)
+	if !ok {
+		t.Fatalf("Setup: %s/%s/%s is absent, want the value the refusal is about", configVectorsDir, dir, vectorRepositoryFile)
+	}
+	var doc map[string]map[string]json.RawMessage
+	if err := json.Unmarshal(data, &doc); err != nil {
+		t.Fatalf("Setup: decoding %s/%s/%s: %v", configVectorsDir, dir, vectorRepositoryFile, err)
+	}
+	var written []string
+	if err := json.Unmarshal(doc[section][key], &written); err != nil {
+		t.Fatalf("Setup: decoding %s in %s/%s/%s: %v", names, configVectorsDir, dir, vectorRepositoryFile, err)
+	}
+	var refused []string
+	for _, element := range written {
+		if !shape.MatchString(element) {
+			refused = append(refused, element)
+		}
+	}
+	if len(refused) != 1 {
+		t.Errorf("%s/%s/%s writes %s as %q, of which %q the pattern %q refuses, want exactly one refused element", configVectorsDir, dir, vectorRepositoryFile, names, written, refused, pattern)
+	}
+}
+
 // TestConfigVectorProviderNameCaseHoldsOneNameTwice pins the input the case exists for: a
 // provider list the schema admits whose entries repeat one name, so only the unique-name rule
 // refuses it, and a refusal naming the entry that repeats the name.
@@ -850,4 +893,48 @@ func TestVectorSchemaProblemsRefuses(t *testing.T) {
 			}
 		})
 	}
+}
+
+// TestConfigVectorDefaultsAreTheSchemaDefaults holds every setting a resolved configuration
+// attributes to the default to the default config.schema.json declares for it, so a default the
+// schema moves cannot leave a case resolving to the old one.
+func TestConfigVectorDefaultsAreTheSchemaDefaults(t *testing.T) {
+	index := newVectorSchemaIndex(t)
+	for _, dir := range configVectorDirs(t) {
+		data, ok := readVectorFile(t, dir, vectorExpectedFile)
+		if !ok {
+			continue
+		}
+		t.Run(dir, func(t *testing.T) {
+			doc, err := vectorDecodeConfig(data)
+			if err != nil {
+				t.Fatalf("Setup: decoding %s/%s/%s: %v", configVectorsDir, dir, vectorExpectedFile, err)
+			}
+			provenance, _ := doc["provenance"].(map[string]any)
+			for _, setting := range slices.Sorted(maps.Keys(provenance)) {
+				key, declared := index[setting]
+				want, hasDefault := key.node["default"]
+				if provenance[setting] != "default" || !declared || !hasDefault {
+					continue
+				}
+				got := vectorValueAt(doc, setting)
+				if !reflect.DeepEqual(got, want) {
+					t.Errorf("%s/%s/%s %s = %v, provenance default, want the schema's default %v", configVectorsDir, dir, vectorExpectedFile, setting, got, want)
+				}
+			}
+		})
+	}
+}
+
+// vectorValueAt reads the value a dotted setting path names in a resolved configuration.
+func vectorValueAt(doc map[string]any, setting string) any {
+	var at any = doc
+	for name := range strings.SplitSeq(setting, ".") {
+		object, ok := at.(map[string]any)
+		if !ok {
+			return nil
+		}
+		at = object[name]
+	}
+	return at
 }

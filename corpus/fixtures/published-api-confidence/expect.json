@@ -1,0 +1,42 @@
+{
+  "name": "published-api-confidence",
+  "description": "A library analyzed with no consumer declared and every finding asked for. A published function nothing calls and a public member of a published type nothing reads are reported at possible, because outside programs may use them; a member only the type's own code can name and a function only the module can name are reported at certain.",
+  "languages": [
+    "go",
+    "ts"
+  ],
+  "target_kind": "library",
+  "min_confidence": "possible",
+  "expect": [
+    {
+      "symbol": "Catalog",
+      "report": "none"
+    },
+    {
+      "symbol": "Exposed",
+      "report": "DS1003",
+      "confidence": "possible",
+      "reachability_class": "possible"
+    },
+    {
+      "symbol": "hidden",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    },
+    {
+      "symbol": "Count",
+      "report": "DS1001",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "orphan",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    }
+  ]
+}

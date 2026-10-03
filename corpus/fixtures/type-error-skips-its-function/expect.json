@@ -1,0 +1,38 @@
+{
+  "name": "type-error-skips-its-function",
+  "description": "A function holding type errors is not evaluated and the run goes on. Nothing is reported about the function, the declaration it calls by a name that resolves stays live, a method of a type it reaches through a member name that does not resolve is retained, each error is listed with its file and line, and a function nothing calls beside it is reported.",
+  "languages": [
+    "go",
+    "ts"
+  ],
+  "target_kind": "application",
+  "type_error_skips": [
+    "BrokenErrors"
+  ],
+  "expect": [
+    {
+      "symbol": "helper",
+      "report": "none"
+    },
+    {
+      "symbol": "panel",
+      "report": "none"
+    },
+    {
+      "symbol": "count",
+      "report": "none"
+    },
+    {
+      "symbol": "broken",
+      "report": "none"
+    },
+    {
+      "symbol": "dead",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

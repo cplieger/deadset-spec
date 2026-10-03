@@ -1,0 +1,11 @@
+{
+  "name": "test-build-tag-setup-failure",
+  "description": "A test file whose build constraint no configuration of the run satisfies builds under no configuration, so the references it holds are invisible to the run. The run ends with the setup failure for the class, naming the file and the tag an entry of analysis.configurations would add, before any finding list exists.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "setup_failure": {
+    "class": "test-build-tag",
+    "names": ["main_test.go", "integration"]
+  },
+  "expect": []
+}

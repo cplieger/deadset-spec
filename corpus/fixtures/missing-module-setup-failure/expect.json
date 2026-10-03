@@ -1,0 +1,16 @@
+{
+  "name": "missing-module-setup-failure",
+  "description": "An import names a module the project expects to exist and nothing provides it: a package of the target's own module that was never generated, and a declared dependency that was never installed. The run ends with the setup failure that names the import, and reports nothing.",
+  "languages": [
+    "go",
+    "ts"
+  ],
+  "target_kind": "application",
+  "setup_failure": {
+    "class": "missing-module",
+    "names": [
+      "gen"
+    ]
+  },
+  "expect": []
+}

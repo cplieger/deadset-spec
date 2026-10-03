@@ -17,7 +17,7 @@ import (
 	"testing"
 	"testing/fstest"
 
-	"github.com/cplieger/deadset-spec/v4"
+	"github.com/cplieger/deadset-spec/v5"
 )
 
 const (
@@ -105,6 +105,23 @@ type expectationDocument struct {
 	ClosedWorld            []string                         `json:"closed_world"`
 	EdgeEvaluations        []expectedEvaluation             `json:"edge_evaluations"`
 	Expect                 []expectationRow                 `json:"expect"`
+	TypeErrorSkips         []string                         `json:"type_error_skips"`
+	Notes                  []expectedNote                   `json:"notes"`
+	SetupFailure           *expectedSetupFailure            `json:"setup_failure"`
+	MinConfidence          string                           `json:"min_confidence"`
+}
+
+// expectedNote mirrors one notes entry: the note's kind and the directory it names.
+type expectedNote struct {
+	Kind string `json:"kind"`
+	Path string `json:"path"`
+}
+
+// expectedSetupFailure mirrors the setup_failure member: the class the run ends with and the
+// strings its line on standard error contains.
+type expectedSetupFailure struct {
+	Class string   `json:"class"`
+	Names []string `json:"names"`
 }
 
 // configuredDeclaration mirrors one configured_declarations member: the key the
@@ -244,7 +261,7 @@ var (
 
 	// vocabularyFields are the expectation-file fields corpus.json must name
 	// a closed vocabulary for.
-	vocabularyFields = []string{"confidence", "details", "languages", "reachability_class", "report", "retained_by", "symbol_kind"}
+	vocabularyFields = []string{"confidence", "details", "languages", "notes", "reachability_class", "report", "retained_by", "setup_failure", "symbol_kind"}
 )
 
 // decodeStrict decodes one JSON object, failing on any key the target type
@@ -462,6 +479,22 @@ func resolveExpectations(expect *expectationDocument, manifest manifestDocument)
 	for _, row := range expect.Expect {
 		rowNames[row.Symbol] = true
 	}
+	for _, name := range expect.TypeErrorSkips {
+		entry, ok := manifest.Symbols[name]
+		switch {
+		case rowNames[name]:
+			errs = append(errs, fmt.Errorf("%w: %q", errDuplicateSymbol, name))
+		case !ok:
+			errs = append(errs, fmt.Errorf("%w: %q", errUnboundSymbol, name))
+		case entry.File == "":
+			errs = append(errs, fmt.Errorf("%w: %q", errNoFile, name))
+		case entry.Line == nil || *entry.Line < 1:
+			errs = append(errs, fmt.Errorf("%w: %q", errNoLine, name))
+		default:
+			expected[name] = true
+			positions[name] = symbolPosition{File: entry.File, Line: *entry.Line}
+		}
+	}
 	for _, evaluation := range expect.EdgeEvaluations {
 		if evaluation.Symbol != "" && !rowNames[evaluation.Symbol] {
 			expected[evaluation.Symbol] = true
@@ -669,7 +702,7 @@ func checkFixture(fsys fs.FS, dir string) error {
 	if err = decodeStrict(data, &expect); err != nil {
 		return fmt.Errorf("%s: %w", expectFile, err)
 	}
-	var errs []error
+	errs := checkSetupFailure(&expect)
 	if expect.Name != path.Base(dir) {
 		errs = append(errs, fmt.Errorf("%s name = %q, want the directory name %q", expectFile, expect.Name, path.Base(dir)))
 	}
@@ -716,14 +749,21 @@ func checkRendering(expect *expectationDocument, language string, files map[stri
 			errs = append(errs, fmt.Errorf("rendering %q symbol %q names %s:%d, want a line within the file's %d", language, name, pos.File, pos.Line, lineCount(content)))
 		}
 	}
-	for _, d := range append([]string{targetDir}, expect.Consumers...) {
+	absent := absentConsumers(expect)
+	present := slices.DeleteFunc(slices.Clone(expect.Consumers), func(c string) bool { return slices.Contains(absent, c) })
+	for _, d := range append([]string{targetDir}, present...) {
 		if !hasDirectory(files, d) {
 			errs = append(errs, fmt.Errorf("rendering %q has no %s/ directory", language, d))
 		}
 	}
+	for _, d := range absent {
+		if hasDirectory(files, d) {
+			errs = append(errs, fmt.Errorf("rendering %q holds %s/, which its missing-consumer setup failure names as absent", language, d))
+		}
+	}
 	if language == "go" {
-		if len(expect.Consumers) > 0 {
-			errs = append(errs, checkGoConsumerModules(expect.Consumers, files)...)
+		if len(present) > 0 {
+			errs = append(errs, checkGoConsumerModules(present, files)...)
 		}
 		errs = append(errs, checkGoDependencyModules(expect.Consumers, files)...)
 	}
@@ -1056,7 +1096,7 @@ func TestCorpusDocument(t *testing.T) {
 	})
 
 	t.Run("runner", func(t *testing.T) {
-		for _, step := range []string{"select", "load", "resolve", "report_phase", "closed_world", "suppression_phase", "capabilities", "results"} {
+		for _, step := range []string{"select", "load", "resolve", "report_phase", "closed_world", "setup_failure", "suppression_phase", "capabilities", "results"} {
 			if doc.Runner[step] == "" {
 				t.Errorf("runner[%q] = %q, want the step stated", step, doc.Runner[step])
 			}
@@ -3257,4 +3297,52 @@ func TestCorpusInstalledPackagesNameTheirPath(t *testing.T) {
 	if got := checkInstalledPackages("go", files); len(got) == 0 {
 		t.Errorf("checkInstalledPackages(go, an installed tree) = none, want it refused")
 	}
+}
+
+// missingConsumerClass is the setup-failure class whose fixture renders a declared consumer as absent.
+const missingConsumerClass = "missing-consumer"
+
+// absentConsumers is the declared consumers a missing-consumer setup failure names: the ones its
+// renderings hold no directory for, because the absence is what the run must end on.
+func absentConsumers(expect *expectationDocument) []string {
+	if expect.SetupFailure == nil || expect.SetupFailure.Class != missingConsumerClass {
+		return nil
+	}
+	return slices.DeleteFunc(slices.Clone(expect.Consumers), func(c string) bool {
+		return !slices.Contains(expect.SetupFailure.Names, c)
+	})
+}
+
+// checkSetupFailure holds a fixture whose run ends with a setup failure to the shape the expectation
+// schema states: no expectation, and no member that configures or answers a report, because such a
+// run writes no report; and it holds every other fixture to at least one expectation.
+func checkSetupFailure(expect *expectationDocument) []error {
+	if expect.SetupFailure == nil {
+		if len(expect.Expect) == 0 {
+			return []error{fmt.Errorf("%s expect is empty, want at least one expectation in a fixture with no setup_failure", expectFile)}
+		}
+		return nil
+	}
+	var errs []error
+	if len(expect.Expect) != 0 {
+		errs = append(errs, fmt.Errorf("%s holds setup_failure and %d expectations, want none", expectFile, len(expect.Expect)))
+	}
+	if expect.SetupFailure.Class == missingConsumerClass && len(absentConsumers(expect)) == 0 {
+		errs = append(errs, fmt.Errorf("%s holds a %s setup failure whose names %v name none of its consumers %v, want the absent consumer named", expectFile, missingConsumerClass, expect.SetupFailure.Names, expect.Consumers))
+	}
+	reportMembers := map[string]bool{
+		"closed_world":            len(expect.ClosedWorld) != 0,
+		"configured_roots":        len(expect.ConfiguredRoots) != 0,
+		"configured_declarations": len(expect.ConfiguredDeclarations) != 0,
+		"edge_evaluations":        len(expect.EdgeEvaluations) != 0,
+		"type_error_skips":        len(expect.TypeErrorSkips) != 0,
+		"notes":                   len(expect.Notes) != 0,
+		"min_confidence":          expect.MinConfidence != "",
+	}
+	for _, member := range slices.Sorted(maps.Keys(reportMembers)) {
+		if reportMembers[member] {
+			errs = append(errs, fmt.Errorf("%s holds setup_failure and %s, want no member that configures or answers a report", expectFile, member))
+		}
+	}
+	return errs
 }

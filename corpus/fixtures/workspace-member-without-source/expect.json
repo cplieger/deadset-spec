@@ -1,0 +1,15 @@
+{
+  "name": "workspace-member-without-source",
+  "description": "A workspace whose application member imports a library member whose manifest names only built output that no compiler configuration of the member maps back to a source file. The run ends with the setup failure that names the member, and reports nothing.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "setup_failure": {
+    "class": "workspace-member-without-source",
+    "names": [
+      "@example/lib"
+    ]
+  },
+  "expect": []
+}

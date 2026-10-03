@@ -1,0 +1,4 @@
+{
+  "target": { "kind": "application" },
+  "ts": { "component_extensions": ["vue"] }
+}

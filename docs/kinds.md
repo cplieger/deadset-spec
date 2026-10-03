@@ -31,7 +31,11 @@ Confidence is a ceiling on the reachability class, not a second axis. A finding 
 `confidence`, which is that class capped by the kind's `max_class`; both take one value from
 `certain`, `probable` and `possible`, ordered from the strongest (from `contract/kinds.json`,
 `reachability_classes`). Every kind in this contract version declares the ceiling `certain`, so a
-kind whose ceiling is lower states it in its own section.
+kind whose ceiling is lower states it in its own section. A finding about a library's published
+API, a public member of a published type included, is `possible` when the run holds no consumer
+information, and the default `analysis.min_confidence`, `probable`, withholds it; every other
+finding is reported (from `contract/grammar/analysis.md`, "Confidence", and
+`contract/config.schema.json`, `analysis.min_confidence`).
 
 Three fields appear on a row only where they apply, and each section carries them where present.
 `precondition` is a condition the analyzer checks before it reports the kind. `derived_from` names
@@ -73,7 +77,7 @@ From `contract/kinds.json`, row `DS1003`.
 
 ### DS1004 test-only-use
 
-A symbol with zero production references and at least one test reference: an unused-exported, unused-unexported or unused-member candidate whose test reference count is not zero, reported once under this code. A reference from a consumer's test files is a test reference unless the configuration counts consumer tests as production.
+A symbol with zero production references and at least one test reference: an unused-exported, unused-unexported or unused-member candidate whose test reference count is not zero, reported once under this code. A reference from a consumer's test files is a test reference unless the configuration counts consumer tests as production. A reference from test-support code, a package or file that only test code imports, is a test reference, and a declaration of test-support code is never reported under this code.
 
 Derived from `DS1001`, `DS1002` and `DS1003`.
 
@@ -320,7 +324,7 @@ Dead code inside a function body. The six kinds form one issue group with one en
 
 A parameter with no reference inside its function body, on a function whose signature is free to change.
 
-Precondition: The signature must be free, defined as follows: the function is not a method retained by interface satisfaction, is not used as a value, is not a go:linkname or cgo target, and is not a stub whose body is empty or only panics. A parameter its body never names is dead whatever the callers, so a published declaration of a library is reported too, with the fixability the vocabulary gives the kind: the signature change is a breaking change.
+Precondition: The signature must be free, defined as follows: the function is not a method retained by interface satisfaction, is not used as a value, is not a go:linkname or cgo target, is not a function the Go test driver runs (a test, benchmark or fuzz test of a test file, or TestMain), and is not a stub whose body is empty or only panics. A parameter its body never names is dead whatever the callers, so a published declaration of a library is reported too, with the fixability the vocabulary gives the kind: the signature change is a breaking change.
 
 Overlap: in Go `revive unused-parameter`, `gopls unusedparams`, `unparam`; in TypeScript `tsc --noUnusedParameters`, `@typescript-eslint/no-unused-vars`.
 

@@ -1,0 +1,17 @@
+The Go rendering: a command importing a package of its own module whose
+directory a generator writes and which the rendering does not hold.
+
+-- fixture.json --
+{
+  "symbols": {}
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+package main
+
+import "example.com/target/gen"
+
+func main() { println(gen.Version) }

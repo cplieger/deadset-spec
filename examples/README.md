@@ -37,8 +37,10 @@ whose state is `dead`, `stale-suppressions.json` for a run whose suppressions no
 `declared-gaps.json` for a run that declines capabilities the corpus covers,
 `configuration-not-built.json` for a run that derived a configuration from the tree, could not
 build it and dropped it from the matrix, `typescript-configurations.json` for a run whose matrix is
-a set of compiler configurations rather than a set of platforms, and `merged.json` for the report a
-merge writes over two analyzers' reports.
+a set of compiler configurations rather than a set of platforms, with a configuration whose checker
+left questions unanswered and a convention row it applied, `setup-records.json` for a run that
+skipped a function holding a type error, classified test-support code and carries a note, and
+`merged.json` for the report a merge writes over two analyzers' reports.
 
 Every finding inside a report here is also an instance of the finding schema on its own, and every
 count in `totals` is the count of the array it describes.

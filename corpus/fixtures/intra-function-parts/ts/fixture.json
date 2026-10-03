@@ -1,0 +1,13 @@
+{
+  "symbols": {
+    "UnreadParameter": { "file": "target/main.ts", "line": 2 },
+    "ReadParameter": { "file": "target/main.ts", "line": 7 },
+    "DroppedResult": { "file": "target/main.ts", "line": 12 },
+    "ReadResult": { "file": "target/main.ts", "line": 17 },
+    "UnreachableStatement": { "file": "target/main.ts", "line": 25 },
+    "DeadStore": { "file": "target/main.ts", "line": 30 },
+    "LiveStore": { "file": "target/main.ts", "line": 31 },
+    "ReachableCase": { "file": "target/main.ts", "line": 38 },
+    "UnreachableCase": { "file": "target/main.ts", "line": 40 }
+  }
+}

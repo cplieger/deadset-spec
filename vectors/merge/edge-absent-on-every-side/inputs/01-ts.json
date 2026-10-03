@@ -1,6 +1,6 @@
 {
-  "schema_version": "6.0.0",
-  "contract_version": "4.0.0",
+  "schema_version": "7.0.0",
+  "contract_version": "5.0.0",
   "analyzer": {
     "name": "deadset-ts",
     "version": "1.0.0",
@@ -8,8 +8,7 @@
       "ts"
     ],
     "schema_versions_accepted": [
-      "6.0.0",
-      "6.1.0"
+      "7.0.0"
     ],
     "conformance": {
       "corpus_version": "1.0.0",
@@ -54,6 +53,10 @@
       "matched": 2
     }
   ],
+  "type_error_skips": [],
+  "notes": [],
+  "unanswered_questions": [],
+  "conventions_applied": [],
   "totals": {
     "findings": 0,
     "by_severity": {

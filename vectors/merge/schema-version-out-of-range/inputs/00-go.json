@@ -86,6 +86,10 @@
       "matched": 3
     }
   ],
+  "type_error_skips": [],
+  "notes": [],
+  "unanswered_questions": [],
+  "conventions_applied": [],
   "totals": {
     "findings": 1,
     "by_severity": {

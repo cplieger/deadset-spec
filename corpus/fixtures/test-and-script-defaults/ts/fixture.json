@@ -1,0 +1,9 @@
+{
+  "symbols": {
+    "inSpec": { "file": "target/catalog.ts", "line": 2 },
+    "inTests": { "file": "target/catalog.ts", "line": 7 },
+    "inMocks": { "file": "target/catalog.ts", "line": 12 },
+    "production": { "file": "target/catalog.ts", "line": 17 },
+    "seed": { "file": "target/scripts/seed.ts", "line": 2 }
+  }
+}

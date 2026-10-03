@@ -1,13 +1,13 @@
 {
-  "schema_version": "6.0.0",
-  "contract_version": "4.0.0",
+  "schema_version": "7.0.0",
+  "contract_version": "5.0.0",
   "analyzer": {
     "name": "deadset-go",
     "version": "1.0.0",
     "languages": ["go"],
-    "schema_versions_accepted": ["6.0.0", "6.1.0"],
+    "schema_versions_accepted": ["7.0.0"],
     "conformance": {
-      "corpus_version": "2.0.0",
+      "corpus_version": "2.1.0",
       "result": "pass",
       "digest": "sha256:38e1d6dd6a720d1e0ac5e25106ae8473a3e99d09c9dc1c170f567147833da193"
     }
@@ -48,6 +48,10 @@
   "declared_gaps": [],
   "excluded_by_cgo": [],
   "test_file_rules": [{ "rule": "go-test-suffix", "matched": 61 }],
+  "type_error_skips": [],
+  "notes": [],
+  "unanswered_questions": [],
+  "conventions_applied": [],
   "totals": {
     "findings": 0,
     "by_severity": { "allow": 0, "warn": 0, "deny": 0 },

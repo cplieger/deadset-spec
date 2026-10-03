@@ -31,6 +31,8 @@ Parse `template.tmpl`. Where it does not parse, or uses a form the subset leaves
 | `integers-print-in-decimal` | A report integer above a million prints as its decimal digits in an action, under `%d`, `%v` and `%s`, and as an operand of `print`. | rendered |
 | `length-in-bytes` | `len` counts the UTF-8 bytes of a string, seven for a string holding one two-byte character, the elements of an array and the members of an object. | rendered |
 | `member-the-document-lacks` | A field naming a member the object does not carry fails the rendering, after a member it does carry was printed. | 3 |
+| `nil-as-a-command` | `nil` written as the command of an action. A constant `nil` is an operand of a function alone, so the rendering fails after the text before it was read. | 3 |
+| `nil-as-an-argument` | `nil` as an operand of `print` and of `printf` under `%v` prints as `<nil>`, and `print` puts one space between it and an integer. | rendered |
 | `number-with-a-fraction` | A number constant with a fraction is refused at parse. | 2 |
 | `octal-escape` | An octal escape in an interpreted string is refused at parse. | 2 |
 | `print-spacing` | `print` puts one space between two operands neither of which is a string and none beside a string; `println` separates every operand and ends with a line feed; a pipeline passes its value as the last argument. | rendered |

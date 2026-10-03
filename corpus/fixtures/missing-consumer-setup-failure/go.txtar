@@ -1,0 +1,19 @@
+The Go rendering: a library module whose one declared consumer has no
+directory in the rendering.
+
+-- fixture.json --
+{
+  "symbols": {}
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/lib.go --
+// Package target exports one function its declared consumer would call.
+package target
+
+// Label is exported and only the absent consumer could reference it.
+func Label() string {
+	return "target"
+}

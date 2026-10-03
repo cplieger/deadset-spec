@@ -115,7 +115,7 @@
       }
     },
     "reachability_class": {
-      "description": "What the analysis knows about the subject's callers, drawn from the reachability_classes field of contract/kinds.json: certain where every reference is visible, probable where a consumer is configured and not loaded, possible where no consumer information exists.",
+      "description": "What the analysis knows about the subject's callers, drawn from the reachability_classes field of contract/kinds.json: certain where every reference is visible, probable where a consumer is configured and not loaded, possible where no consumer information exists. The last two apply to a subject of a library's published API alone, a public member of a type the published API names included, because outside programs can reference only that; a library's internals, and every subject of an application, are certain.",
       "type": "string",
       "enum": ["certain", "probable", "possible"]
     },

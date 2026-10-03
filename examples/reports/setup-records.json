@@ -1,0 +1,51 @@
+{
+  "schema_version": "7.0.0",
+  "contract_version": "5.0.0",
+  "analyzer": {
+    "name": "deadset-go",
+    "version": "1.0.0",
+    "languages": ["go"],
+    "schema_versions_accepted": ["7.0.0"],
+    "conformance": {
+      "corpus_version": "2.1.0",
+      "result": "pass",
+      "digest": "sha256:38e1d6dd6a720d1e0ac5e25106ae8473a3e99d09c9dc1c170f567147833da193"
+    }
+  },
+  "target": { "kind": "application", "root": ".", "identity": "example.com/app" },
+  "configurations": [{ "id": "linux-amd64", "os": "linux", "arch": "amd64", "tags": [] }],
+  "configurations_not_built": [],
+  "consumers": { "declared": 0, "loaded": [], "unavailable": [] },
+  "findings": [],
+  "edge_evaluations": [],
+  "stale_suppressions": [],
+  "declared_gaps": [],
+  "excluded_by_cgo": [],
+  "test_file_rules": [
+    { "rule": "go-test-suffix", "matched": 61 },
+    { "rule": "test-support", "matched": 2 }
+  ],
+  "type_error_skips": [
+    { "path": "internal/store/legacy.go", "line": 9, "message": "undefined: openLegacy" }
+  ],
+  "notes": [
+    {
+      "kind": "published-package",
+      "path": "client",
+      "key": "roots.patterns",
+      "message": "no package of the target imports client; name its published declarations in roots.patterns if outside programs import it"
+    }
+  ],
+  "unanswered_questions": [],
+  "conventions_applied": [],
+  "totals": {
+    "findings": 0,
+    "by_severity": { "allow": 0, "warn": 0, "deny": 0 },
+    "deletable_lines": 0,
+    "suppressions_in_effect": 6,
+    "reasons_recorded": 6,
+    "stale_suppressions": 0,
+    "pending": 0,
+    "omitted": 0
+  }
+}
