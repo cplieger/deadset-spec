@@ -7,7 +7,7 @@
     "languages": ["go", "ts"],
     "schema_versions_accepted": ["7.0.0"],
     "conformance": {
-      "corpus_version": "2.1.0",
+      "corpus_version": "2.1.1",
       "result": "pass",
       "digest": "sha256:d3b1eac654f8f4a17e430f846ba6b2a00cf35e39609f8275b75295da63b3f725"
     }

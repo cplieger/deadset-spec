@@ -237,6 +237,7 @@ var (
 	errEntryAlsoBound  = errors.New("configured declaration a manifest or configured_roots binds as well")
 	errNoFile          = errors.New("manifest entry has no file")
 	errNoLine          = errors.New("manifest entry has no line")
+	errSharedPosition  = errors.New("manifest binds two names to one file and line")
 	errDuplicateTxtar  = errors.New("txtar section declared twice")
 
 	errNoModule  = errors.New("go rendering module file declares no module path")
@@ -531,10 +532,21 @@ func resolveExpectations(expect *expectationDocument, manifest manifestDocument)
 			positions[row.Symbol] = symbolPosition{File: entry.File, Line: *entry.Line}
 		}
 	}
+	at := map[symbolPosition]string{}
 	for _, name := range slices.Sorted(maps.Keys(manifest.Symbols)) {
 		if !expected[name] {
 			errs = append(errs, fmt.Errorf("%w: %q", errOrphanSymbol, name))
 		}
+		entry := manifest.Symbols[name]
+		if entry.File == "" || entry.Line == nil {
+			continue
+		}
+		pos := symbolPosition{File: entry.File, Line: *entry.Line}
+		if other, taken := at[pos]; taken {
+			errs = append(errs, fmt.Errorf("%w: %q and %q at %s:%d", errSharedPosition, other, name, pos.File, pos.Line))
+			continue
+		}
+		at[pos] = name
 	}
 	for _, name := range slices.Sorted(maps.Keys(expect.ConfiguredRoots)) {
 		if !expected[name] {
@@ -1801,6 +1813,14 @@ func TestCheckFixtureRefuses(t *testing.T) {
 				m["corpus/fixtures/planted/ts/fixture.json"].Data = []byte(`{"symbols":{"DeadExport":{"file":"target/lib.ts","line":1}}}`)
 			},
 			wantMsg: errUnboundSymbol.Error() + `: "UsedByConsumer"`,
+		},
+		{
+			name: "manifest_binds_two_names_to_one_line",
+			mutate: func(m fstest.MapFS) {
+				m["corpus/fixtures/planted/ts/fixture.json"].Data = bytes.Replace(m["corpus/fixtures/planted/ts/fixture.json"].Data,
+					[]byte(`"line":2`), []byte(`"line":1`), 1)
+			},
+			wantMsg: errSharedPosition.Error(),
 		},
 		{
 			name:    "manifest_names_a_file_the_rendering_lacks",
