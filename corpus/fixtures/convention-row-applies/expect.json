@@ -1,0 +1,29 @@
+{
+  "name": "convention-row-applies",
+  "description": "A convention row applies when a manifest declares its enabling package and the installed manifest names a version in the row's range: the files its entry globs name are roots, a file beside them that nothing imports is reported, and the report lists the row it applied. The fixture assumes the analyzer carries a row named next for the package next whose range holds the installed version and whose entry globs name app/page.ts.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "conventions_applied": [
+    {
+      "name": "next",
+      "package": "next",
+      "version": "16.999.0",
+      "manifest": "package.json"
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "Page",
+      "report": "none"
+    },
+    {
+      "symbol": "Orphan",
+      "report": "DS1502",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    }
+  ]
+}

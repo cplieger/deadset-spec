@@ -1,0 +1,29 @@
+{
+  "name": "convention-exclude-globs",
+  "description": "A file a row's entry glob names and its exclude glob names as well is no root, so it is reported as a file nothing imports, while the page beside it is a root. The fixture assumes the analyzer carries a row named astro for the package astro, holding the installed version in its range, whose entry globs name the files below src/pages and whose exclude globs name a file there whose name starts with an underscore.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "conventions_applied": [
+    {
+      "name": "astro",
+      "package": "astro",
+      "version": "7.999.0",
+      "manifest": "package.json"
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "Index",
+      "report": "none"
+    },
+    {
+      "symbol": "Draft",
+      "report": "DS1502",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "name": "narrowing-through-an-exported-signature",
+  "description": "A library whose consumer set the fixture declares complete, so its published packages are a closed world. A type that the result of an exported function or method of its package names is not reported as a candidate for unexporting when code outside the package references that function or method, and not as a candidate for moving behind an internal boundary when code outside the target module calls it, because the caller holds values of the type. A type only its own file references, which no exported signature names, is reported as a candidate for unexporting, and a type only another package of the module names, which no exported signature names, is reported as a candidate for moving behind an internal boundary.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "library",
+  "consumers": [
+    "consumer"
+  ],
+  "closed_world": [
+    "consumers"
+  ],
+  "expect": [
+    {
+      "symbol": "Reference",
+      "report": "none"
+    },
+    {
+      "symbol": "Document",
+      "report": "none"
+    },
+    {
+      "symbol": "Load",
+      "report": "none"
+    },
+    {
+      "symbol": "Own",
+      "report": "none"
+    },
+    {
+      "symbol": "Helper",
+      "report": "DS1101",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type",
+      "details": {
+        "narrower_visibility": "file"
+      }
+    },
+    {
+      "symbol": "Handle",
+      "report": "none"
+    },
+    {
+      "symbol": "Open",
+      "report": "none"
+    },
+    {
+      "symbol": "Shared",
+      "report": "DS1102",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type",
+      "details": {
+        "narrower_visibility": "module"
+      }
+    },
+    {
+      "symbol": "Reached",
+      "report": "none"
+    }
+  ]
+}

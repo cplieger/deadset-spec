@@ -1,0 +1,33 @@
+{
+  "name": "convention-options-of-a-required-call",
+  "description": "A top-level declaration that binds the result of require with the row's module binds as an import of that module does: a destructured exported name under a local name is the row's function, and a plain binding is a namespace through which the function is called. The options of both calls are read, so the root file of each directory they name is a root and the one in the default directory is reported as a file nothing imports. The fixture assumes the analyzer carries a row named remix for the package @remix-run/dev, holding the installed version in its range, whose entry globs name root.ts below an app directory that defaults to app and that the appDirectory option of a vitePlugin call in vite.config.cjs moves.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "conventions_applied": [
+    {
+      "name": "remix",
+      "package": "@remix-run/dev",
+      "version": "2.999.0",
+      "manifest": "package.json"
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "MovedRoot",
+      "report": "none"
+    },
+    {
+      "symbol": "SecondRoot",
+      "report": "none"
+    },
+    {
+      "symbol": "DefaultRoot",
+      "report": "DS1502",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    }
+  ]
+}

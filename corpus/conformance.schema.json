@@ -49,7 +49,7 @@
             "pattern": "^[A-Za-z_][A-Za-z0-9_]*(\\.[A-Za-z_][A-Za-z0-9_]*)*$"
           },
           "capability": {
-            "description": "The capability declined: an issue-kind code from the code field of a live row in contract/kinds.json, or an exemption class from the class field of contract/exemptions.json. It must be a capability the named expectations exercise; a gap naming a capability no expectation in the fixture exercises covers nothing.",
+            "description": "The capability declined: an issue-kind code from the code field of a live row in contract/kinds.json, an exemption class from the class field of contract/exemptions.json, or a capability a fixture-level member exercises as corpus.json's runner block names it, the name of a convention row among them. It must be a capability the named expectations exercise; a gap naming a capability no expectation in the fixture exercises covers nothing.",
             "type": "string",
             "pattern": "^(DS[0-9]{4}|[a-z][a-z0-9]*(-[a-z0-9]+)*)$"
           },

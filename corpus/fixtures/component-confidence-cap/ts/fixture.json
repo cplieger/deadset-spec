@@ -1,0 +1,10 @@
+{
+  "symbols": {
+    "Published": { "file": "target/catalog.ts", "line": 4 },
+    "TestPublished": { "file": "target/catalog.test.ts", "line": 3 },
+    "Live": { "file": "target/catalog.ts", "line": 9 },
+    "Internal": { "file": "target/internal.ts", "line": 4 },
+    "Kept": { "file": "target/internal.ts", "line": 9 },
+    "TestInternal": { "file": "target/internal.test.ts", "line": 3 }
+  }
+}

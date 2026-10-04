@@ -1,0 +1,6 @@
+{
+  "symbols": {
+    "Scan.members": { "file": "target/scan.ts", "line": 2 },
+    "Scan.total": { "file": "target/scan.ts", "line": 3 }
+  }
+}

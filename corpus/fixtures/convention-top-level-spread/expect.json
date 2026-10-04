@@ -1,0 +1,16 @@
+{
+  "name": "convention-top-level-spread",
+  "description": "A default export that spreads another object into itself is not read, because the spread may set the property, so the run ends with the convention-not-literal setup failure naming the configuration file and the property. The fixture assumes the analyzer carries a row named react-router for the package @react-router/dev, holding the installed version in its range, whose entry globs name root.ts below an app directory that defaults to app and that the appDirectory property of react-router.config.ts moves.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "setup_failure": {
+    "class": "convention-not-literal",
+    "names": [
+      "react-router.config.ts",
+      "appDirectory"
+    ]
+  },
+  "expect": []
+}

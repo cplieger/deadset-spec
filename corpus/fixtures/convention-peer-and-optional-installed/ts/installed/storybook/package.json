@@ -1,0 +1,8 @@
+{
+  "name": "storybook",
+  "version": "10.999.0",
+  "private": true,
+  "bin": {
+    "storybook": "./cli.js"
+  }
+}

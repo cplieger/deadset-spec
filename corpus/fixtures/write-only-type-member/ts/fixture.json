@@ -1,0 +1,10 @@
+{
+  "symbols": {
+    "Entry.key": { "file": "target/types.ts", "line": 2 },
+    "Entry.note": { "file": "target/types.ts", "line": 3 },
+    "Entry.tag": { "file": "target/types.ts", "line": 4 },
+    "Entry.spare": { "file": "target/types.ts", "line": 5 },
+    "Row.id": { "file": "target/types.ts", "line": 9 },
+    "Row.source": { "file": "target/types.ts", "line": 10 }
+  }
+}

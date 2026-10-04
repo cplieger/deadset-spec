@@ -1,0 +1,38 @@
+The Go rendering: one command that hands a map to a struct, stores into it
+through the struct's field and reads it back through its own variable. Nothing
+imports anything outside the standard library, so the rendering loads with no
+network access.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Scan.members": { "file": "target/scan.go", "line": 4 },
+    "Scan.total": { "file": "target/scan.go", "line": 5 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/scan.go --
+package main
+
+type scan struct {
+	members map[string]int
+	total   int
+}
+
+func newScan(members map[string]int) *scan { return &scan{members: members} }
+
+func (s *scan) add(key string) {
+	s.members[key] = len(key)
+	s.total = len(key)
+}
+-- target/main.go --
+package main
+
+func main() {
+	members := map[string]int{}
+	newScan(members).add("alpha")
+	println(len(members))
+}

@@ -1,0 +1,15 @@
+{
+  "name": "convention-package-not-installed",
+  "description": "An enabling package declared as a dependency whose installed manifest the analysis cannot find ends the run with the missing-module setup failure, naming the package. The fixture assumes the analyzer carries a row for the package next.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "setup_failure": {
+    "class": "missing-module",
+    "names": [
+      "next"
+    ]
+  },
+  "expect": []
+}

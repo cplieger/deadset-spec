@@ -1,0 +1,6 @@
+{
+  "symbols": {
+    "Matcher": { "file": "target/src/params/slug.ts", "line": 1 },
+    "Beside": { "file": "target/src/params.ts", "line": 1 }
+  }
+}

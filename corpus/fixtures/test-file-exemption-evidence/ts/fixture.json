@@ -1,0 +1,6 @@
+{
+  "symbols": {
+    "Sample.Name": { "file": "target/record.ts", "line": 4 },
+    "Draft.Name": { "file": "target/record.ts", "line": 10 }
+  }
+}

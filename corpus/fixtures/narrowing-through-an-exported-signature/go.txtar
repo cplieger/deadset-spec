@@ -1,0 +1,97 @@
+The Go rendering: a library module whose published package api calls an
+exported function and an exported method of an internal package, and whose
+second published package svc names a type of api. The consumer module calls one
+exported function of each published package and names none of their types.
+Nothing imports anything outside the standard library, so the rendering loads
+with no network access.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Reference": { "file": "target/internal/edges/edges.go", "line": 5 },
+    "Document": { "file": "target/internal/edges/edges.go", "line": 8 },
+    "Load": { "file": "target/internal/edges/edges.go", "line": 11 },
+    "Own": { "file": "target/internal/edges/edges.go", "line": 14 },
+    "Helper": { "file": "target/internal/edges/edges.go", "line": 17 },
+    "Handle": { "file": "target/api/api.go", "line": 7 },
+    "Open": { "file": "target/api/api.go", "line": 12 },
+    "Shared": { "file": "target/api/api.go", "line": 15 },
+    "Reached": { "file": "target/svc/svc.go", "line": 7 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/internal/edges/edges.go --
+// Package edges is internal to the module.
+package edges
+
+// Reference is the result of Own, which package api calls.
+type Reference struct{ ID int }
+
+// Document is the result of Load, which package api calls.
+type Document struct{ refs []Reference }
+
+// Load is called by package api.
+func Load() *Document { return &Document{refs: []Reference{{ID: helperID()}}} }
+
+// Own is called by package api.
+func (d *Document) Own() Reference { return d.refs[0] }
+
+// Helper is named by this file alone and by no exported signature.
+type Helper struct{ n int }
+
+func helperID() int { return Helper{n: 4}.n }
+-- target/api/api.go --
+// Package api is the target's published package.
+package api
+
+import "example.com/target/internal/edges"
+
+// Handle is the result of Open, which the consumer calls.
+type Handle struct {
+	ID int
+}
+
+// Open is called by the consumer.
+func Open() *Handle { return &Handle{ID: edges.Load().Own().ID} }
+
+// Shared is named by package svc and by no exported signature.
+type Shared struct {
+	N int
+}
+-- target/svc/svc.go --
+// Package svc is a second published package of the target.
+package svc
+
+import "example.com/target/api"
+
+// Reached is called by the consumer.
+func Reached() int {
+	var h *api.Handle = api.Open()
+	return h.ID + api.Shared{N: 1}.N
+}
+-- consumer/go.mod --
+module example.com/consumer
+
+go 1.27.0
+
+require example.com/target v0.0.0
+
+replace example.com/target => ../target
+-- consumer/main.go --
+// Command consumer calls one exported function of each published package of
+// the target and names none of their types.
+package main
+
+import (
+	"example.com/target/api"
+	"example.com/target/svc"
+)
+
+func main() {
+	if api.Open().ID+svc.Reached() == 0 {
+		panic("the target answered zero")
+	}
+}

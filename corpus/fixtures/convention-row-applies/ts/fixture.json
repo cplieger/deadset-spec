@@ -1,0 +1,6 @@
+{
+  "symbols": {
+    "Page": { "file": "target/app/page.ts", "line": 1 },
+    "Orphan": { "file": "target/lib/orphan.ts", "line": 1 }
+  }
+}

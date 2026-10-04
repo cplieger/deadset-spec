@@ -1,0 +1,40 @@
+{
+  "name": "template-field-member-kinds",
+  "description": "A member whose name a component file's markup holds is retained by the template-field class whatever its kind, an enum member and a static class member included, while the enum member and the static method no block and no markup names are reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Tone.Loud",
+      "report": "none",
+      "retained_by": [
+        "template-field"
+      ]
+    },
+    {
+      "symbol": "Tone.Quiet",
+      "report": "DS1302",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "enum-member",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Model.caption",
+      "report": "none",
+      "retained_by": [
+        "template-field"
+      ]
+    },
+    {
+      "symbol": "Model.spare",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

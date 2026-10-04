@@ -1,0 +1,65 @@
+The Go rendering: a library module with one published package and one package
+under internal, each holding a function only a test file of that package calls,
+an external test file for the published package.
+Nothing imports anything outside the standard library, so the rendering loads
+with no network access.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Published": { "file": "target/catalog/catalog.go", "line": 7 },
+    "TestPublished": { "file": "target/catalog/catalog_test.go", "line": 9 },
+    "Live": { "file": "target/catalog/catalog.go", "line": 10 },
+    "Internal": { "file": "target/internal/helper/helper.go", "line": 5 },
+    "Kept": { "file": "target/internal/helper/helper.go", "line": 8 },
+    "TestInternal": { "file": "target/internal/helper/helper_test.go", "line": 5 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/catalog/catalog.go --
+// Package catalog is the library's published package.
+package catalog
+
+import "example.com/target/internal/helper"
+
+// Published is called by the package's test file alone.
+func Published() int { return 1 }
+
+// Live is called by nothing in the library, and it calls the internal package.
+func Live() int { return helper.Kept() }
+-- target/catalog/catalog_test.go --
+package catalog_test
+
+import (
+	"testing"
+
+	"example.com/target/catalog"
+)
+
+func TestPublished(t *testing.T) {
+	if catalog.Published() != 1 {
+		t.Error("Published is not 1")
+	}
+}
+-- target/internal/helper/helper.go --
+// Package helper is internal to the library, so no outside program can import it.
+package helper
+
+// Internal is called by the package's test file alone.
+func Internal() int { return 2 }
+
+// Kept is called by the published package.
+func Kept() int { return 3 }
+-- target/internal/helper/helper_test.go --
+package helper
+
+import "testing"
+
+func TestInternal(t *testing.T) {
+	if Internal() != 2 {
+		t.Error("Internal is not 2")
+	}
+}

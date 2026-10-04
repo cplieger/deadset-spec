@@ -1,0 +1,32 @@
+{
+  "name": "configuration-module-outside-the-program",
+  "description": "A configuration file no compiler configuration includes is read all the same, and so is a file it imports by a relative specifier: an import of a dependency in the imported file is a use of the dependency, so that dependency is reported under no code, while a development dependency nothing imports is reported. A relative specifier resolves to the file it names, to a TypeScript file whose extension stands for the JavaScript extension the specifier writes, and to a directory's index file.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "LintPreset",
+      "report": "none"
+    },
+    {
+      "symbol": "ListedPreset",
+      "report": "none"
+    },
+    {
+      "symbol": "TypedPreset",
+      "report": "none"
+    },
+    {
+      "symbol": "UnusedKit",
+      "report": "DS1601",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "dependency",
+      "details": {
+        "dependency_class": "dev-dependency"
+      }
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "name": "convention-peer-and-optional-installed",
+  "description": "An enabling package declared as a peer dependency or as an optional dependency applies its row when it is installed, as one declared in the other two sections does. The fixture assumes the analyzer carries a row named next for the package next naming app/page.ts and a row named storybook for the package storybook naming button.stories.ts, each holding the installed version in its range.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "conventions_applied": [
+    {
+      "name": "next",
+      "package": "next",
+      "version": "16.999.0",
+      "manifest": "package.json"
+    },
+    {
+      "name": "storybook",
+      "package": "storybook",
+      "version": "10.999.0",
+      "manifest": "package.json"
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "Page",
+      "report": "none"
+    },
+    {
+      "symbol": "Story",
+      "report": "none"
+    },
+    {
+      "symbol": "Orphan",
+      "report": "DS1502",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    }
+  ]
+}

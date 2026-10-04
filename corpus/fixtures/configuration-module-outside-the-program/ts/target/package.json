@@ -1,0 +1,13 @@
+{
+  "name": "@example/target",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/main.ts",
+  "devDependencies": {
+    "@example/lint-preset": "1.0.0",
+    "@example/listed-preset": "1.0.0",
+    "@example/typed-preset": "1.0.0",
+    "@example/unused-kit": "1.0.0"
+  }
+}

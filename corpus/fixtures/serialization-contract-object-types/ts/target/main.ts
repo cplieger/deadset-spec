@@ -5,4 +5,4 @@ import { count, emit, log, look } from "./wire.js";
 emit({ id: 1, inner: { label: "a" }, meta: { at: "now" } });
 log({ line: "started" });
 look();
-count({ title: "a" });
+count(JSON.parse("{}") as Parameters<typeof count>[0]);

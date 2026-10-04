@@ -1,0 +1,6 @@
+{
+  "symbols": {
+    "Index": { "file": "target/src/pages/index.ts", "line": 1 },
+    "Draft": { "file": "target/src/pages/_draft.ts", "line": 1 }
+  }
+}

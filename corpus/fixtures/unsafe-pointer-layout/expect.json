@@ -1,0 +1,66 @@
+{
+  "name": "unsafe-pointer-layout",
+  "description": "A conversion between a pointer and unsafe.Pointer reads and writes every field the pointed-to type lays out, through nested struct and array fields, and so does a struct type that declares a structs.HostLayout field, so none of those fields is reported. A field of a type reached only through a pointer field is not laid out by the conversion and is reported, and so is an unread field of a struct type no conversion reaches.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "status.length",
+      "report": "none"
+    },
+    {
+      "symbol": "status.next",
+      "report": "none"
+    },
+    {
+      "symbol": "status.nested",
+      "report": "none"
+    },
+    {
+      "symbol": "status.items",
+      "report": "none"
+    },
+    {
+      "symbol": "inner.depth",
+      "report": "none"
+    },
+    {
+      "symbol": "item.flag",
+      "report": "none"
+    },
+    {
+      "symbol": "other.hidden",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "header.magic",
+      "report": "none"
+    },
+    {
+      "symbol": "hosted.width",
+      "report": "none"
+    },
+    {
+      "symbol": "hosted.height",
+      "report": "none"
+    },
+    {
+      "symbol": "plain.unread",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "plain.shown",
+      "report": "none"
+    }
+  ]
+}

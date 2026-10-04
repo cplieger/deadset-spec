@@ -1,0 +1,7 @@
+{
+  "symbols": {
+    "Page": { "file": "target/app/page.ts", "line": 1 },
+    "Orphan": { "file": "target/lib/orphan.ts", "line": 1 },
+    "Story": { "file": "target/button.stories.ts", "line": 1 }
+  }
+}

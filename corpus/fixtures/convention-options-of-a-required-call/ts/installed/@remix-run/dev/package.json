@@ -1,0 +1,9 @@
+{
+  "name": "@remix-run/dev",
+  "version": "2.999.0",
+  "private": true,
+  "bin": {
+    "remix": "./cli.js"
+  },
+  "types": "./index.d.ts"
+}

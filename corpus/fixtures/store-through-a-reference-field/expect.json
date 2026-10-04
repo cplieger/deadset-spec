@@ -1,0 +1,21 @@
+{
+  "name": "store-through-a-reference-field",
+  "description": "A store through the value a field or member holds reads that field, because the store lands in storage another holder of the same value reads: a field holding a map the constructor receives and an element store fills is reported under no code. A field the program assigns and never reads beside it is reported as write-only.",
+  "languages": [
+    "go",
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Scan.members",
+      "report": "none"
+    },
+    {
+      "symbol": "Scan.total",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "convention-property-not-literal",
+  "description": "A property a row reads whose value is a template literal with a substitution is not a literal, so the run ends with the convention-not-literal setup failure naming the configuration file and the property. The fixture assumes the analyzer carries a row named react-router for the package @react-router/dev, holding the installed version in its range, whose entry globs name root.ts below an app directory that defaults to app and that the appDirectory property of react-router.config.ts moves.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "setup_failure": {
+    "class": "convention-not-literal",
+    "names": [
+      "react-router.config.ts",
+      "appDirectory"
+    ]
+  },
+  "expect": []
+}

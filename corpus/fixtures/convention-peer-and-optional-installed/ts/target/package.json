@@ -1,0 +1,12 @@
+{
+  "name": "@example/target",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "peerDependencies": {
+    "next": "16.999.0"
+  },
+  "optionalDependencies": {
+    "storybook": "10.999.0"
+  }
+}

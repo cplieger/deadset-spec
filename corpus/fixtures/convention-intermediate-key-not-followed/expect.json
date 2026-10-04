@@ -1,0 +1,16 @@
+{
+  "name": "convention-intermediate-key-not-followed",
+  "description": "A key along a property's path whose value names a top-level constant is not read through the constant's declaration, so the run ends with the convention-not-literal setup failure naming the configuration file and the property. The fixture assumes the analyzer carries a row named nuxt for the package nuxt, holding the installed version in its range, whose pages directory the dir.pages property of nuxt.config.ts moves.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "setup_failure": {
+    "class": "convention-not-literal",
+    "names": [
+      "nuxt.config.ts",
+      "dir.pages"
+    ]
+  },
+  "expect": []
+}

@@ -1,5 +1,5 @@
 {
   "name": "component-extension-without-a-full-stop",
-  "description": "A repository configuration naming a component extension without its leading full stop. The run is refused naming the key, because an extension is a full stop followed by letters and digits, and a value read as the end of a file name would match a file that only ends with the same letters.",
+  "description": "A repository configuration naming a component extension without its leading full stop. The run is refused, naming the entry by its key and its index, because an extension is a full stop followed by letters and digits, and a value read as the end of a file name would match a file that only ends with the same letters.",
   "covers": ["component-extension-without-a-full-stop"]
 }

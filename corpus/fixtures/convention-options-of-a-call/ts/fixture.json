@@ -1,0 +1,7 @@
+{
+  "symbols": {
+    "MovedRoot": { "file": "target/src/app/root.ts", "line": 1 },
+    "DefaultRoot": { "file": "target/app/root.ts", "line": 1 },
+    "OtherRoot": { "file": "target/elsewhere/root.ts", "line": 1 }
+  }
+}

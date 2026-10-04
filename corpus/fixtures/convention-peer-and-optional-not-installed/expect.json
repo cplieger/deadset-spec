@@ -1,0 +1,45 @@
+{
+  "name": "convention-peer-and-optional-not-installed",
+  "description": "An enabling package declared only as a peer dependency or only as an optional dependency and not installed applies no row and raises no setup failure, so the run reports the files the rows would name as files nothing imports, and the uninstalled peer dependency as a dependency nothing needs. The fixture assumes the analyzer carries rows for the packages next and storybook.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Page",
+      "report": "DS1502",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "Story",
+      "report": "DS1502",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "Orphan",
+      "report": "DS1502",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "NextPeer",
+      "report": "DS1601",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "dependency",
+      "details": {
+        "dependency_class": "peer-dependency"
+      }
+    },
+    {
+      "symbol": "StorybookOptional",
+      "report": "none"
+    }
+  ]
+}

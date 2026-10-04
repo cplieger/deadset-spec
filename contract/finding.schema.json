@@ -120,7 +120,7 @@
       "enum": ["certain", "probable", "possible"]
     },
     "confidence": {
-      "description": "What the report claims: the reachability class capped by the max_class of the kind's row in contract/kinds.json, so it is never the higher of the two. It is the value a configured minimum confidence filters on and the value a text line renders in brackets.",
+      "description": "What the report claims: the reachability class capped by the max_class of the kind's row in contract/kinds.json and, for a finding whose component is a dead component, by the lowest such value among that component's root members, as grammar/analysis.md states, so it is never higher than any of them. It is the value a configured minimum confidence filters on and the value a text line renders in brackets.",
       "type": "string",
       "enum": ["certain", "probable", "possible"]
     },

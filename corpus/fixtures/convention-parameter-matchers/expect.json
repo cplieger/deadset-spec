@@ -1,0 +1,29 @@
+{
+  "name": "convention-parameter-matchers",
+  "description": "A row's entry globs may name the files of a directory and not a file beside it of the same stem: the parameter matcher in the params directory is a root, while a params file beside the directory is reported as a file nothing imports. The fixture assumes the analyzer carries a row named sveltekit for the package @sveltejs/kit, holding the installed version in its range, whose entry globs name the route files below src/routes and every file directly below src/params.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "conventions_applied": [
+    {
+      "name": "sveltekit",
+      "package": "@sveltejs/kit",
+      "version": "2.999.0",
+      "manifest": "package.json"
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "Matcher",
+      "report": "none"
+    },
+    {
+      "symbol": "Beside",
+      "report": "DS1502",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    }
+  ]
+}

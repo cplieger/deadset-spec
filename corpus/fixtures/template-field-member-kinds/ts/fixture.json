@@ -1,0 +1,8 @@
+{
+  "symbols": {
+    "Tone.Loud": { "file": "target/tone.ts", "line": 3 },
+    "Tone.Quiet": { "file": "target/tone.ts", "line": 5 },
+    "Model.caption": { "file": "target/model.ts", "line": 3 },
+    "Model.spare": { "file": "target/model.ts", "line": 6 }
+  }
+}

@@ -8,11 +8,11 @@ The vocabulary is closed. A conformance expectation naming a class this file doe
 
 An exemption's evidence site decides which run records it. A production sweep counts no reference from a test file, so under it an exemption whose evidence site is in a test file does not hold, for every class in this file.
 
-A conversion, an encoder or template destination, a directive, a generated-file clause or a matching text in a test file retains nothing for production. A reference from a test file makes nothing live for production in the same way, and the symbol is reported under the code its production references select. A run that counts test references records the exemption.
+A conversion, an encoder or template destination, a directive, a generated-file clause or a matching text in a test file retains nothing for production. It counts as a test reference to each symbol it would retain, as a reference from a test file does. So a symbol that production code never references and that only such evidence retains is reported as test-only use rather than under an unused code. A run that counts test references records the exemption.
 
 Every exemption an analyzer records names the site its evidence was found at, so a maintainer can go and read that evidence for every class and not only for the text-matching ones. Each also carries one clause of detail naming the relation and the thing it relates to, such as `satisfies io.Writer` or `named by {{.Title}}`.
 
-A class whose evidence is a type relation names the conversion or the consumer site. A class whose evidence is a text match names the position of the matching text. The generated-file class names the package clause of the generated file. The assembly and plugin class names the assembly directive, or, where the evidence is the shape of the package, the package clause of the file that declares the symbol. The detail is display text, and the class name is the machine-readable half.
+A class whose evidence is a type relation names the conversion or the consumer site. A class whose evidence is a text match names the position of the matching text. The generated-file class names the package clause of a generated Go file and the first line of a generated TypeScript file. The assembly and plugin class names the assembly directive, or, where the evidence is the shape of the package, the package clause of the file that declares the symbol. The detail is display text, and the class name is the machine-readable half.
 
 This page states every class, one section each. The fields:
 
@@ -31,7 +31,7 @@ The two differ at run time. `private` is a compile-time constraint only. A `priv
 | `format-verb-contract` | `go` | `certain` |
 | `errors-duck-typing` | `go` | `certain` |
 | `enum-group` | `go`, `ts` | `certain` |
-| `generated-file` | `go` | `certain` |
+| `generated-file` | `go`, `ts` | `certain` |
 | `linkname-cgo-asm-plugin` | `go` | `certain` |
 | `template-field` | `go`, `ts` | `possible` |
 | `reflective-lookup` | `go`, `ts` | `possible` |
@@ -112,6 +112,10 @@ Retains: Every declaration in the file.
 
 Mechanism in Go: A file is generated when it carries the standard Go generated-code header: a line matching `^// Code generated .* DO NOT EDIT\.$` that appears before the first non-comment, non-blank text of the file, which is the rule `go/ast.IsGenerated` implements. When generated files are configured as included, each finding in one carries `generated: true` and `fixability: none`.
 
+Mechanism in TypeScript: A file is generated when it is below a directory that an applied convention row names as generated, as grammar/analysis.md states. Retain every declaration in the file, recording the file's first line with a detail naming the row. When generated files are configured as included, each finding in one carries `generated: true` and `fixability: none`.
+
+TypeScript visibility: retains a member declared `private`, and never a member declared with a `#private` name.
+
 From `contract/exemptions.json`, class `generated-file`.
 
 ### linkname-cgo-asm-plugin
@@ -128,7 +132,7 @@ From `contract/exemptions.json`, class `linkname-cgo-asm-plugin`.
 
 This class applies where the project configures template directories or holds a component file. There, a member whose name appears in a template, or in a component file's markup, as a field or method reference is retained at the lowest confidence. The exemption names the template site that matched. Where the language's template grammar has action delimiters, the project configures the pair the scan reads, and the grammar's own pair stands where the project configures none. The evidence is a text match, not a type relation. This is therefore a weak class, and it applies only where the project asked for it or holds markup no other rule reads.
 
-Retains: The field or method whose name the template references, on any type.
+Retains: The member of any kind whose name the template references, on any type, an enum member and a static member included.
 
 Mechanism in Go: Scan every file under the configured template directories, parsed with the action delimiters the configuration sets in `analysis.template_delimiters` and with the `text/template` delimiters `{{` and `}}` where it sets none, and retain every exported field and method whose name appears as a field or method reference in any form the template grammar records: a field reference on the dot, on a variable, or on the result of a parenthesized pipeline or of a call, at every position of a chain, so that `.Page.Title` names `Page` and `Title`. Record the template file and line.
 

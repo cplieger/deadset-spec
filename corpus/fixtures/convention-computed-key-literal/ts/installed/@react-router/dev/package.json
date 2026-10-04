@@ -1,0 +1,8 @@
+{
+  "name": "@react-router/dev",
+  "version": "8.999.0",
+  "private": true,
+  "bin": {
+    "react-router": "./cli.js"
+  }
+}

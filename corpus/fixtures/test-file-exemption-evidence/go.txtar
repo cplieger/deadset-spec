@@ -1,0 +1,50 @@
+The Go rendering: one command whose test file encodes a value of one of its two
+struct types. Nothing imports anything outside the standard library, so the
+rendering loads with no network access.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Sample.Name": { "file": "target/record.go", "line": 6 },
+    "Draft.Name": { "file": "target/record.go", "line": 12 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/record.go --
+package main
+
+// sample is encoded by the test file alone.
+type sample struct {
+	id   int
+	Name string
+}
+
+// draft is encoded by nothing.
+type draft struct {
+	id    int
+	Title string
+}
+
+func newSample() sample { return sample{id: 1} }
+
+func newDraft() draft { return draft{id: 2} }
+-- target/main.go --
+package main
+
+func main() { println(newSample().id + newDraft().id) }
+-- target/record_test.go --
+package main
+
+import (
+	"encoding/json"
+	"testing"
+)
+
+func TestSampleEncodes(t *testing.T) {
+	if _, err := json.Marshal(newSample()); err != nil {
+		t.Fatal(err)
+	}
+}
