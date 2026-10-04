@@ -1,0 +1,83 @@
+The Go rendering: a command calling one function of a package, and a second
+package that only test files import, the first package's external test file and
+the second package's own test file. Nothing imports anything outside the
+standard library, so the rendering loads with no network access.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Live": { "file": "target/catalog/catalog.go", "line": 4 },
+    "Unused": { "file": "target/catalog/catalog.go", "line": 7 },
+    "Detached": { "file": "target/testsupport/testsupport.go", "line": 4 },
+    "Sink": { "file": "target/testsupport/testsupport.go", "line": 7 },
+    "Drain": { "file": "target/testsupport/testsupport.go", "line": 12 },
+    "TestDetached": { "file": "target/testsupport/testsupport_test.go", "line": 5 },
+    "fixture": { "file": "target/catalog/catalog_test.go", "line": 15 },
+    "TestDrain": { "file": "target/catalog/catalog_test.go", "line": 17 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+package main
+
+import "example.com/target/catalog"
+
+func main() { println(catalog.Live()) }
+-- target/catalog/catalog.go --
+package catalog
+
+// Live is called by the command.
+func Live() int { return 1 }
+
+// Unused is called by nothing.
+func Unused() int { return 2 }
+-- target/testsupport/testsupport.go --
+package testsupport
+
+// Detached is called by tests and by a test-file helper.
+func Detached() int { return 7 }
+
+// Sink is the parameter type of Drain, which only tests call.
+type Sink interface {
+	Put(v int)
+}
+
+// Drain puts one value into the sink a test hands it.
+func Drain(s Sink) { s.Put(1) }
+-- target/testsupport/testsupport_test.go --
+package testsupport
+
+import "testing"
+
+func TestDetached(t *testing.T) {
+	if Detached() != 7 {
+		t.Error("Detached is not 7")
+	}
+}
+-- target/catalog/catalog_test.go --
+package catalog_test
+
+import (
+	"testing"
+
+	"example.com/target/testsupport"
+)
+
+// recorder counts what Drain puts into it.
+type recorder struct{ n int }
+
+func (r *recorder) Put(v int) { r.n += v }
+
+// fixture is a test-file helper that calls test-support code alone.
+func fixture() int { return testsupport.Detached() }
+
+func TestDrain(t *testing.T) {
+	r := &recorder{}
+	testsupport.Drain(r)
+	if r.n+fixture() != 8 {
+		t.Errorf("drained %d", r.n)
+	}
+}

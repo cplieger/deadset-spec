@@ -1,0 +1,47 @@
+{
+  "name": "test-support-helper-use",
+  "description": "A test whose references reach only test-support code and test-file code is not a test of dead code, because test-support code is test code: it is live while test code references it, and it is no target declaration a production sweep judges. So the test, the test-file helper beside it, the test-support function both call and the interface test-support code takes as a parameter type are reported under no code, while a production function nothing references is reported.",
+  "languages": [
+    "go",
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Live",
+      "report": "none"
+    },
+    {
+      "symbol": "Unused",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Detached",
+      "report": "none"
+    },
+    {
+      "symbol": "Sink",
+      "report": "none"
+    },
+    {
+      "symbol": "Drain",
+      "report": "none"
+    },
+    {
+      "symbol": "TestDetached",
+      "report": "none"
+    },
+    {
+      "symbol": "fixture",
+      "report": "none"
+    },
+    {
+      "symbol": "TestDrain",
+      "report": "none"
+    }
+  ]
+}

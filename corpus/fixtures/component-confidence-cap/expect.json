@@ -1,0 +1,56 @@
+{
+  "name": "component-confidence-cap",
+  "description": "A library analyzed with no consumer declared and every finding asked for. A published function only a test calls is reported as test-only use at possible, and the test that calls it alone is reported as a test of dead code at possible too, though its own reachability class is certain, because a finding about a member of a dead component carries no higher confidence than the component's root members. An internal function only its test calls, and that test, are reported at certain, and a published function nothing calls is reported at possible while the internal function it calls is not reported.",
+  "languages": [
+    "go",
+    "ts"
+  ],
+  "target_kind": "library",
+  "min_confidence": "possible",
+  "expect": [
+    {
+      "symbol": "Published",
+      "report": "DS1004",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "TestPublished",
+      "report": "DS1005",
+      "confidence": "possible",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Live",
+      "report": "DS1001",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Internal",
+      "report": "DS1004",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Kept",
+      "report": "none"
+    },
+    {
+      "symbol": "TestInternal",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

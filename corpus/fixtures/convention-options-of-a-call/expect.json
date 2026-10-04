@@ -1,0 +1,36 @@
+{
+  "name": "convention-options-of-a-call",
+  "description": "A property a row reads as an option of a call is read from the first argument of each call to the row's function imported from the row's module, under any local name. The options of another function's calls in the same file are not read, so a literal there moves nothing and a value that is not a literal there raises no failure. The fixture assumes the analyzer carries a row named remix for the package @remix-run/dev, holding the installed version in its range, whose entry globs name root.ts below an app directory that defaults to app and that the appDirectory option of a vitePlugin call in vite.config.ts moves.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "conventions_applied": [
+    {
+      "name": "remix",
+      "package": "@remix-run/dev",
+      "version": "2.999.0",
+      "manifest": "package.json"
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "MovedRoot",
+      "report": "none"
+    },
+    {
+      "symbol": "DefaultRoot",
+      "report": "DS1502",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "OtherRoot",
+      "report": "DS1502",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    }
+  ]
+}

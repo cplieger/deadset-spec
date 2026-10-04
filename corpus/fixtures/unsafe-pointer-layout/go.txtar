@@ -1,0 +1,93 @@
+The Go rendering: one command that converts pointers to two struct types to and
+from unsafe.Pointer, and holds a struct type that declares a host-layout field.
+Nothing imports anything outside the standard library, so the rendering loads
+with no network access.
+
+-- fixture.json --
+{
+  "symbols": {
+    "status.length": { "file": "target/layout.go", "line": 22 },
+    "status.next": { "file": "target/layout.go", "line": 25 },
+    "status.nested": { "file": "target/layout.go", "line": 23 },
+    "status.items": { "file": "target/layout.go", "line": 24 },
+    "inner.depth": { "file": "target/layout.go", "line": 9 },
+    "item.flag": { "file": "target/layout.go", "line": 13 },
+    "other.hidden": { "file": "target/layout.go", "line": 17 },
+    "header.magic": { "file": "target/layout.go", "line": 30 },
+    "hosted.width": { "file": "target/layout.go", "line": 36 },
+    "hosted.height": { "file": "target/layout.go", "line": 37 },
+    "plain.unread": { "file": "target/layout.go", "line": 42 },
+    "plain.shown": { "file": "target/layout.go", "line": 43 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/layout.go --
+package main
+
+import (
+	"structs"
+	"unsafe"
+)
+
+type inner struct {
+	depth uint32
+}
+
+type item struct {
+	flag uint8
+}
+
+type other struct {
+	hidden int
+}
+
+// status is laid out for code that reads memory: its address leaves as a number.
+type status struct {
+	length uint32
+	nested inner
+	items  [2]item
+	next   *other
+}
+
+// header is read from a byte buffer through unsafe.Pointer.
+type header struct {
+	magic uint32
+}
+
+// hosted declares that its layout is the host's.
+type hosted struct {
+	_      structs.HostLayout
+	width  int32
+	height int32
+}
+
+// plain reaches no conversion.
+type plain struct {
+	unread int
+	shown  int
+}
+
+func statusAddress() uintptr {
+	var s status
+	return uintptr(unsafe.Pointer(&s))
+}
+
+func headerOf(buf []byte) *header { return (*header)(unsafe.Pointer(&buf[0])) }
+
+func newHosted() hosted { return hosted{width: 1} }
+
+func shownOf() int {
+	p := plain{shown: 3}
+	return p.shown
+}
+-- target/main.go --
+package main
+
+import "unsafe"
+
+func main() {
+	println(statusAddress() != 0, headerOf(make([]byte, 8)) != nil, unsafe.Sizeof(newHosted()), shownOf())
+}

@@ -1,0 +1,29 @@
+{
+  "name": "convention-default-export-through-a-specifier",
+  "description": "A default export written as an export specifier naming a top-level constant is read through to the constant's initializer, and a template literal with no substitution is a literal, so the property moves the directory. The fixture assumes the analyzer carries a row named react-router for the package @react-router/dev, holding the installed version in its range, whose entry globs name root.ts below an app directory that defaults to app and that the appDirectory property of react-router.config.ts moves.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "conventions_applied": [
+    {
+      "name": "react-router",
+      "package": "@react-router/dev",
+      "version": "8.999.0",
+      "manifest": "package.json"
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "MovedRoot",
+      "report": "none"
+    },
+    {
+      "symbol": "DefaultRoot",
+      "report": "DS1502",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    }
+  ]
+}

@@ -202,6 +202,39 @@
         }
       }
     },
+    "conventions_applied": {
+      "description": "The convention rows the analyzer must list in the report's conventions_applied array, exhaustive: one entry per row applied, naming the row, its enabling package, the version the installed manifest names and the declaring manifest relative to the target root, as contract/report.schema.json spells them. An entry the array holds that no entry here names fails the analyzer, and a fixture that omits the member expects the array empty. A row is data of the analyzer that carries it, so a fixture naming one states the row it assumes the analyzer carries: the name, the enabling package and a version in the row's range. The member is named only by a fixture that lists one language, and it is optional and never empty.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "package", "version", "manifest"],
+        "properties": {
+          "name": {
+            "description": "The row's name, as ts.disabled_conventions spells it.",
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$"
+          },
+          "package": {
+            "description": "The enabling package the row names.",
+            "type": "string",
+            "minLength": 1
+          },
+          "version": {
+            "description": "The enabling package's version as its installed manifest names it.",
+            "type": "string",
+            "minLength": 1
+          },
+          "manifest": {
+            "description": "The manifest that declares the enabling package, relative to the target root.",
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
     "setup_failure": {
       "description": "The setup failure the run must end with, in place of a report: the analyzer must exit with the failure code contract/exit-codes.json names, write no finding, and print on standard error a line that starts with \"setup failure: \", the class and \": \", and contains every string names lists. A fixture that carries the member carries an empty expect array, because a run that ends this way answers no expectation, and no other member that configures or answers a report. Under the class missing-consumer, every name that is also an entry of consumers is a consumer the renderings hold no directory for, and at least one name is. The member is optional.",
       "type": "object",

@@ -1,0 +1,25 @@
+{
+  "name": "test-file-exemption-evidence",
+  "description": "Exemption evidence in a test file retains nothing for production and counts as a test reference. A member no production code names, which a test file's serializer call alone would retain, is reported as test-only use rather than as an unused member, while the same member of a type no serializer receives is reported as an unused member.",
+  "languages": [
+    "go",
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Sample.Name",
+      "report": "DS1004",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Draft.Name",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

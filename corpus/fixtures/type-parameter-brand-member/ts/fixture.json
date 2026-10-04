@@ -1,0 +1,9 @@
+{
+  "symbols": {
+    "Handle.project": { "file": "target/handles.ts", "line": 4 },
+    "Handle.id": { "file": "target/handles.ts", "line": 3 },
+    "Note.label": { "file": "target/handles.ts", "line": 10 },
+    "Ledger.claims": { "file": "target/handles.ts", "line": 16 },
+    "Ledger.total": { "file": "target/handles.ts", "line": 15 }
+  }
+}

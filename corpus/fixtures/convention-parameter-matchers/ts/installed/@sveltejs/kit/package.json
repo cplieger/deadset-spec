@@ -1,0 +1,8 @@
+{
+  "name": "@sveltejs/kit",
+  "version": "2.999.0",
+  "private": true,
+  "bin": {
+    "svelte-kit": "./cli.js"
+  }
+}

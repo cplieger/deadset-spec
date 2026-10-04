@@ -1,0 +1,37 @@
+{
+  "name": "convention-generated-directory",
+  "description": "A file below a directory an applied row names as one its framework generates is a generated file, so the declaration in it nothing uses is retained by the generated-file class, while the same declaration in a file the project writes is reported. The fixture assumes the analyzer carries a row named nuxt for the package nuxt, holding the installed version in its range, whose entry globs name the files below the pages directory and which names .nuxt as a generated directory.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "conventions_applied": [
+    {
+      "name": "nuxt",
+      "package": "nuxt",
+      "version": "4.999.0",
+      "manifest": "package.json"
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "RouteName",
+      "report": "none"
+    },
+    {
+      "symbol": "UnusedGenerated",
+      "report": "none",
+      "retained_by": [
+        "generated-file"
+      ]
+    },
+    {
+      "symbol": "UnusedWritten",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "variable",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

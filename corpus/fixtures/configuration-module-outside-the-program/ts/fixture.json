@@ -1,0 +1,8 @@
+{
+  "symbols": {
+    "LintPreset": { "file": "target/package.json", "line": 8 },
+    "ListedPreset": { "file": "target/package.json", "line": 9 },
+    "TypedPreset": { "file": "target/package.json", "line": 10 },
+    "UnusedKit": { "file": "target/package.json", "line": 11 }
+  }
+}

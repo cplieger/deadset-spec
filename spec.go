@@ -16,7 +16,7 @@ var Contract embed.FS
 // Corpus holds the corpus/ tree: the conformance fixtures and expectation
 // files every analyzer passes before it releases.
 //
-//go:embed corpus
+//go:embed all:corpus
 var Corpus embed.FS
 
 // Vectors holds the vectors/ tree: the published merge, configuration,

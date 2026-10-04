@@ -1,0 +1,47 @@
+{
+  "name": "write-only-type-member",
+  "description": "A property of an object literal writes the member its contextual type declares under that name, whether or not the compiler checks the literal for excess properties. A type member a literal annotated with its type writes and production code never reads is reported as write-only, so is one a callback's literal writes through a type argument, and so is one only a test file reads; a member nothing writes or reads is reported as an unused member, and the members production code reads are reported under no code.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Entry.key",
+      "report": "none"
+    },
+    {
+      "symbol": "Entry.note",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member"
+    },
+    {
+      "symbol": "Entry.tag",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member"
+    },
+    {
+      "symbol": "Entry.spare",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Row.id",
+      "report": "none"
+    },
+    {
+      "symbol": "Row.source",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member"
+    }
+  ]
+}

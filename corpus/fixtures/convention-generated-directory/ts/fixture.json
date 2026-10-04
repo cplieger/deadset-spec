@@ -1,0 +1,7 @@
+{
+  "symbols": {
+    "RouteName": { "file": "target/.nuxt/routes.ts", "line": 2 },
+    "UnusedGenerated": { "file": "target/.nuxt/routes.ts", "line": 4 },
+    "UnusedWritten": { "file": "target/util.ts", "line": 3 }
+  }
+}

@@ -11,6 +11,7 @@ import (
 	"reflect"
 	"regexp"
 	"slices"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -611,16 +612,17 @@ func TestConfigVectorNullCaseHoldsANullAtAKeyWithADefault(t *testing.T) {
 }
 
 // TestConfigVectorComponentExtensionCaseHoldsAnExtensionThePatternRefuses pins the input the
-// case exists for: the key its refusal names is an array whose items carry a pattern, and the
-// case writes that key with exactly one element the pattern refuses, so only the pattern
-// refuses the document.
+// case exists for: the refusal names one entry of an array whose items carry a pattern, and the
+// case writes that key with exactly one element the pattern refuses, the entry named, so only
+// the pattern refuses the document.
 func TestConfigVectorComponentExtensionCaseHoldsAnExtensionThePatternRefuses(t *testing.T) {
 	dir := caseCovering(t, "component-extension-without-a-full-stop")
-	names := refusalNames(t, dir)
-	section, key, ok := strings.Cut(names, ".")
-	if !ok {
-		t.Fatalf("Setup: the refusal names %q, want a dotted path to one key", names)
+	entry := regexp.MustCompile(`^([a-z_]+\.[a-z_]+)\[([0-9]+)\]$`).FindStringSubmatch(refusalNames(t, dir))
+	if entry == nil {
+		t.Fatalf("Setup: the refusal names %q, want one entry of a key, as key[index]", refusalNames(t, dir))
 	}
+	names, index := entry[1], entry[2]
+	section, key, _ := strings.Cut(names, ".")
 	items, _ := lookupKey(t, walkSchema(loadConfigSchema(t)), names).node["items"].(map[string]any)
 	pattern, _ := items["pattern"].(string)
 	if pattern == "" {
@@ -640,13 +642,13 @@ func TestConfigVectorComponentExtensionCaseHoldsAnExtensionThePatternRefuses(t *
 		t.Fatalf("Setup: decoding %s in %s/%s/%s: %v", names, configVectorsDir, dir, vectorRepositoryFile, err)
 	}
 	var refused []string
-	for _, element := range written {
+	for i, element := range written {
 		if !shape.MatchString(element) {
-			refused = append(refused, element)
+			refused = append(refused, strconv.Itoa(i))
 		}
 	}
-	if len(refused) != 1 {
-		t.Errorf("%s/%s/%s writes %s as %q, of which %q the pattern %q refuses, want exactly one refused element", configVectorsDir, dir, vectorRepositoryFile, names, written, refused, pattern)
+	if len(refused) != 1 || refused[0] != index {
+		t.Errorf("%s/%s/%s writes %s as %q, of which the entries %q the pattern %q refuses, want exactly one refused entry, the entry %s the refusal names", configVectorsDir, dir, vectorRepositoryFile, names, written, refused, pattern, index)
 	}
 }
 

@@ -1,0 +1,37 @@
+{
+  "name": "type-parameter-brand-member",
+  "description": "A member nothing writes or reads whose type is the only use of a type parameter of its declaring interface is a brand, and it is reported under no code, because deleting it leaves the parameter phantom and lets one instantiation stand for another. An optional member nothing writes or reads whose type names no type parameter is reported as an unused member, and a member an object literal writes and nothing reads is reported as write-only, though its type is the only use of a type parameter too.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Handle.project",
+      "report": "none"
+    },
+    {
+      "symbol": "Handle.id",
+      "report": "none"
+    },
+    {
+      "symbol": "Note.label",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Ledger.claims",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member"
+    },
+    {
+      "symbol": "Ledger.total",
+      "report": "none"
+    }
+  ]
+}

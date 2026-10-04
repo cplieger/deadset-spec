@@ -1,0 +1,24 @@
+{
+  "name": "convention-row-out-of-range",
+  "description": "A declared enabling package whose installed manifest names a version outside every range of the rows for it applies no row, so the file a row's entry globs would name is reported as a file nothing imports. The fixture assumes the analyzer's rows for the package next hold no range containing the installed version.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Page",
+      "report": "DS1502",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "Orphan",
+      "report": "DS1502",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    }
+  ]
+}

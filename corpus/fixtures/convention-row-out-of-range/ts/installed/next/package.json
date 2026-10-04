@@ -1,0 +1,8 @@
+{
+  "name": "next",
+  "version": "999.0.0",
+  "private": true,
+  "bin": {
+    "next": "./cli.js"
+  }
+}

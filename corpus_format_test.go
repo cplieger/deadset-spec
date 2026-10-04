@@ -107,6 +107,7 @@ type expectationDocument struct {
 	Expect                 []expectationRow                 `json:"expect"`
 	TypeErrorSkips         []string                         `json:"type_error_skips"`
 	Notes                  []expectedNote                   `json:"notes"`
+	ConventionsApplied     []expectedConvention             `json:"conventions_applied"`
 	SetupFailure           *expectedSetupFailure            `json:"setup_failure"`
 	MinConfidence          string                           `json:"min_confidence"`
 }
@@ -115,6 +116,15 @@ type expectationDocument struct {
 type expectedNote struct {
 	Kind string `json:"kind"`
 	Path string `json:"path"`
+}
+
+// expectedConvention mirrors one conventions_applied entry: the row, its enabling
+// package, the installed version and the declaring manifest.
+type expectedConvention struct {
+	Name     string `json:"name"`
+	Package  string `json:"package"`
+	Version  string `json:"version"`
+	Manifest string `json:"manifest"`
 }
 
 // expectedSetupFailure mirrors the setup_failure member: the class the run ends with and the
@@ -715,6 +725,7 @@ func checkFixture(fsys fs.FS, dir string) error {
 		return fmt.Errorf("%s: %w", expectFile, err)
 	}
 	errs := checkSetupFailure(&expect)
+	errs = append(errs, checkConventionsLanguage(&expect)...)
 	if expect.Name != path.Base(dir) {
 		errs = append(errs, fmt.Errorf("%s name = %q, want the directory name %q", expectFile, expect.Name, path.Base(dir)))
 	}
@@ -3357,6 +3368,7 @@ func checkSetupFailure(expect *expectationDocument) []error {
 		"edge_evaluations":        len(expect.EdgeEvaluations) != 0,
 		"type_error_skips":        len(expect.TypeErrorSkips) != 0,
 		"notes":                   len(expect.Notes) != 0,
+		"conventions_applied":     len(expect.ConventionsApplied) != 0,
 		"min_confidence":          expect.MinConfidence != "",
 	}
 	for _, member := range slices.Sorted(maps.Keys(reportMembers)) {
@@ -3365,4 +3377,13 @@ func checkSetupFailure(expect *expectationDocument) []error {
 		}
 	}
 	return errs
+}
+
+// checkConventionsLanguage holds a fixture naming conventions_applied to the one language the
+// expectation schema allows it, because a convention row is data of one language's analyzer.
+func checkConventionsLanguage(expect *expectationDocument) []error {
+	if len(expect.ConventionsApplied) == 0 || len(expect.Languages) == 1 {
+		return nil
+	}
+	return []error{fmt.Errorf("%s holds conventions_applied and lists the languages %v, want exactly one language", expectFile, expect.Languages)}
 }
