@@ -87,8 +87,8 @@
     "providers.analyzers": "repository: repository.json",
     "ts.test_files": "repository: repository.json",
     "ts.entry_files": "repository: repository.json",
-    "ts.component_extensions": "default",
-    "ts.disabled_conventions": "default",
+    "ts.component_extensions": "repository: repository.json",
+    "ts.disabled_conventions": "repository: repository.json",
     "ts.injection_registrations": "repository: repository.json",
     "ts.lifecycle_contracts": "repository: repository.json",
     "ts.serializers": "repository: repository.json"

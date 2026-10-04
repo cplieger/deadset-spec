@@ -42,6 +42,8 @@
   "ts": {
     "test_files": ["**/*.test.ts"],
     "entry_files": ["src/cli.ts"],
+    "component_extensions": [".vue", ".svelte", ".astro"],
+    "disabled_conventions": [],
     "injection_registrations": [
       { "module": "@example/container", "name": "Container.bind" },
       { "module": "@example/container", "name": "Module" }
