@@ -9,7 +9,7 @@
     "go"
   ],
   "conformance": {
-    "corpus_version": "2.1.0",
+    "corpus_version": "2.1.1",
     "result": "pass",
     "digest": "sha256:cbf2fb667d665d638407a6248aadf286ce96fe7b1627aa081e856846871a6e66"
   }

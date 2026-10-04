@@ -1,6 +1,9 @@
 // scaled names a label its body never reads, which the compiler options make an
 // error.
-function scaled(value: number, label: string): number {
+function scaled(
+  value: number,
+  label: string,
+): number {
   return value * 2;
 }
 

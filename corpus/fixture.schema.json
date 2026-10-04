@@ -17,7 +17,7 @@
       }
     },
     "symbols": {
-      "description": "The binding table, keyed by logical name exactly as the expectation file spells it. Each value is the position of that subject in this rendering. It is empty for a fixture whose run ends with a setup failure, which names no subject.",
+      "description": "The binding table, keyed by logical name exactly as the expectation file spells it. Each value is the position of that subject in this rendering, and no two subjects share a file and a line, because a finding is matched to its subject by that position. It is empty for a fixture whose run ends with a setup failure, which names no subject.",
       "type": "object",
       "propertyNames": {
         "pattern": "^[A-Za-z_][A-Za-z0-9_]*(\\.[A-Za-z_][A-Za-z0-9_]*)*$"
