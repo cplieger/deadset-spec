@@ -101,7 +101,7 @@ A fixture ships one rendering per language. A Go rendering is one [`go.txtar`](h
 
 ## Contributing
 
-Issues and pull requests are welcome. The general guidelines live in [cplieger/.github](https://github.com/cplieger/.github/blob/main/CONTRIBUTING.md).
+See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Disclaimer
 
