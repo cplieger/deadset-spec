@@ -22,32 +22,32 @@ import (
 	"os"
 )
 
-// Event is encoded, and its payload holds whatever value NewEvent is given.
-type Event struct {
+// event is encoded, and its payload holds whatever value newEvent is given.
+type event struct {
 	Payload any    `json:"payload"`
 	Kind    string `json:"kind"`
 }
 
-// Started reaches the encoder through the payload of an event.
-type Started struct {
+// started reaches the encoder through the payload of an event.
+type started struct {
 	ID string `json:"id"`
 }
 
-// Stopped is built and never stored in an event.
-type Stopped struct {
+// stopped is built and never stored in an event.
+type stopped struct {
 	ID string `json:"id"`
 }
 
-// NewEvent stores its payload in the event it returns.
-func NewEvent(kind string, payload any) Event { return Event{Kind: kind, Payload: payload} }
+// newEvent stores its payload in the event it returns.
+func newEvent(kind string, payload any) event { return event{Kind: kind, Payload: payload} }
 
 func main() {
-	data, err := json.Marshal(NewEvent("started", Started{}))
+	data, err := json.Marshal(newEvent("started", started{}))
 	if err != nil {
 		panic(err)
 	}
 	if _, err := os.Stdout.Write(data); err != nil {
 		panic(err)
 	}
-	println(len([]Stopped{{}}))
+	println(len([]stopped{{}}))
 }

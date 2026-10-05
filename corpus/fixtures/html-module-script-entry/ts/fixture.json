@@ -5,6 +5,7 @@
     "about": { "file": "target/pages/about.ts", "line": 2 },
     "legacy": { "file": "target/src/legacy.ts", "line": 2 },
     "panel": { "file": "target/src/panel.ts", "line": 2 },
-    "orphan": { "file": "target/src/orphan.ts", "line": 1 }
+    "orphan": { "file": "target/src/orphan.ts", "line": 1 },
+    "orphanExport": { "file": "target/src/orphan.ts", "line": 2 }
   }
 }

@@ -17,15 +17,15 @@ go 1.27.0
 // Command target prints the name of the settings it loads.
 package main
 
-// Mode is named by the annotation of one write-only field alone.
-type Mode int
+// mode is named by the annotation of one write-only field alone.
+type mode int
 
-// Settings is built, and its name is read.
-type Settings struct {
-	Mode Mode
+// settings is built, and its name is read.
+type settings struct {
+	Mode mode
 	Name string
 }
 
-func load() Settings { return Settings{Name: "app", Mode: 1} }
+func load() settings { return settings{Name: "app", Mode: 1} }
 
 func main() { println(load().Name) }

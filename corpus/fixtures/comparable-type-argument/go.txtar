@@ -19,20 +19,20 @@ package main
 
 import "slices"
 
-// Point is compared through a generic comparison of its slices.
-type Point struct {
+// point is compared through a generic comparison of its slices.
+type point struct {
 	X int
 	Y int
 }
 
-// Tag is built and never compared or read.
-type Tag struct {
+// tag is built and never compared or read.
+type tag struct {
 	Name string
 }
 
 func main() {
-	a := []Point{{X: 1}}
-	b := []Point{{X: 1}}
-	tags := []Tag{{Name: "x"}}
+	a := []point{{X: 1}}
+	b := []point{{X: 1}}
+	tags := []tag{{Name: "x"}}
 	println(slices.Equal(a, b), len(tags))
 }

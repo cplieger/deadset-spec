@@ -23,19 +23,19 @@ package main
 
 import "example.com/store"
 
-// Repo is handed to a package the analysis does not hold the code of.
-type Repo struct {
+// repo is handed to a package the analysis does not hold the code of.
+type repo struct {
 	Name string `db:"name"`
 }
 
 // TableName satisfies an interface the store package declares.
-func (r *Repo) TableName() string { return "repos" }
+func (r *repo) TableName() string { return "repos" }
 
 // ResetName satisfies no interface the store package can name.
-func (r *Repo) ResetName() { r.Name = "" }
+func (r *repo) ResetName() { r.Name = "" }
 
 func main() {
-	if err := store.Save(&Repo{Name: "target"}); err != nil {
+	if err := store.Save(&repo{Name: "target"}); err != nil {
 		panic(err)
 	}
 }

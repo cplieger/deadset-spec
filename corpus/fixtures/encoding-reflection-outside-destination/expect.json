@@ -22,7 +22,7 @@
     },
     {
       "symbol": "Repo.ResetName",
-      "report": "DS1003",
+      "report": "DS1103",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "method",
