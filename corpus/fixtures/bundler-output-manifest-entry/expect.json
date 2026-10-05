@@ -1,0 +1,21 @@
+{
+  "name": "bundler-output-manifest-entry",
+  "description": "A library whose manifest's export target is build output no compiler configuration maps back to its source. A configuration file's string that names a source file without a leading ./ roots it, and the target reads back by name to that rooted file, so the class it re-exports is published API: the class's public member nothing calls is reported at possible, as a member of a published type is, and not at certain.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "library",
+  "min_confidence": "possible",
+  "expect": [
+    {
+      "symbol": "Widget",
+      "report": "none"
+    },
+    {
+      "symbol": "Widget.render",
+      "report": "DS1003",
+      "confidence": "possible",
+      "reachability_class": "possible"
+    }
+  ]
+}

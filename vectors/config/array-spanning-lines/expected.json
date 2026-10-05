@@ -1,5 +1,5 @@
 {
-  "contract_version": "5.2.0",
+  "contract_version": "5.3.0",
   "target": { "kind": "library" },
   "analysis": {
     "languages": [],
@@ -36,7 +36,7 @@
   },
   "go": {},
   "ts": {
-    "test_files": ["**/*.test.{ts,tsx,mts,cts}", "**/*.spec.*", "**/__tests__/**", "**/__mocks__/**"],
+    "test_files": ["**/*.test.{ts,tsx,mts,cts}", "**/*.test-d.{ts,tsx,mts,cts}", "**/*.spec-d.{ts,tsx,mts,cts}", "**/*.spec.*", "**/__tests__/**", "**/__mocks__/**", "**/test-d/**"],
     "entry_files": [],
     "component_extensions": [".vue", ".svelte", ".astro"],
     "disabled_conventions": [],

@@ -1,0 +1,6 @@
+{
+  "symbols": {
+    "Widget": { "file": "target/src/widget.ts", "line": 2 },
+    "Widget.render": { "file": "target/src/widget.ts", "line": 4 }
+  }
+}

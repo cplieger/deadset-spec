@@ -1,0 +1,61 @@
+The Go rendering: a command handing a record to a dependency module that
+declares an interface the record satisfies through one of its two methods.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Repo.Name": { "file": "target/main.go", "line": 8 },
+    "Repo.TableName": { "file": "target/main.go", "line": 12 },
+    "Repo.ResetName": { "file": "target/main.go", "line": 15 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+
+require example.com/store v0.0.0
+
+replace example.com/store => ../store
+-- target/main.go --
+// Command target saves one repository record.
+package main
+
+import "example.com/store"
+
+// Repo is handed to a package the analysis does not hold the code of.
+type Repo struct {
+	Name string `db:"name"`
+}
+
+// TableName satisfies an interface the store package declares.
+func (r *Repo) TableName() string { return "repos" }
+
+// ResetName satisfies no interface the store package can name.
+func (r *Repo) ResetName() { r.Name = "" }
+
+func main() {
+	if err := store.Save(&Repo{Name: "target"}); err != nil {
+		panic(err)
+	}
+}
+-- store/go.mod --
+module example.com/store
+
+go 1.27.0
+-- store/store.go --
+// Package store saves records.
+package store
+
+// Tabler names the table a record is saved in.
+type Tabler interface {
+	TableName() string
+}
+
+// Save writes a record to the table it names.
+func Save(record any) error {
+	if t, ok := record.(Tabler); ok && t.TableName() == "" {
+		return nil
+	}
+	return nil
+}

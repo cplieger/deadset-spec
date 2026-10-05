@@ -1,0 +1,32 @@
+{
+  "name": "encoding-reflection-outside-destination",
+  "description": "A struct value passed as an interface-typed argument to a package outside the analyzed program keeps its fields and the methods by which it satisfies an interface that package can name, which the encoding-reflection class retains, and no other exported method, so a method that satisfies no such interface and that nothing calls is reported.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Repo.Name",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "Repo.TableName",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "Repo.ResetName",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 {
   "name": "deadset-ts",
   "version": "3.12.0",
-  "contract_version": "5.2.0",
+  "contract_version": "5.3.0",
   "schema_versions_accepted": [
     "7.0.0"
   ],

@@ -1,0 +1,32 @@
+{
+  "name": "generated-file-typescript-header",
+  "description": "A TypeScript file whose leading comments carry the generated-code header line or the @generated tag is a generated file, so a declaration of it no source names is retained by the generated-file class under the default that excludes generated files. The same header in a comment after the file's first token marks nothing, and the declaration below it is reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "unusedRequest",
+      "report": "none",
+      "retained_by": [
+        "generated-file"
+      ]
+    },
+    {
+      "symbol": "unusedMessage",
+      "report": "none",
+      "retained_by": [
+        "generated-file"
+      ]
+    },
+    {
+      "symbol": "lateHelper",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

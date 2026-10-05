@@ -1,0 +1,11 @@
+{
+  "symbols": {
+    "Live": { "file": "target/codec.ts", "line": 2 },
+    "Encode": { "file": "target/codec.ts", "line": 7 },
+    "Decode": { "file": "target/codec.ts", "line": 12 },
+    "Fixture": { "file": "target/support/fixtures.ts", "line": 4 },
+    "Check": { "file": "target/support/fixtures.ts", "line": 9 },
+    "TestEncode": { "file": "target/codec.test.ts", "line": 4 },
+    "TestDecode": { "file": "target/codec.test.ts", "line": 10 }
+  }
+}

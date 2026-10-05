@@ -1,0 +1,42 @@
+{
+  "name": "test-support-helper-chain",
+  "description": "Code that only tests reach is test code however many helpers lie between it and the test. A helper a test calls and a helper only that helper calls are live, and the default minimum confidence withholds what is reported about them, a production function only the second helper calls is reported as test-only use in a component of its own, because a reference from test-support code is a test reference, and a helper function nothing calls is reported under the unused code its visibility selects. In the Go rendering nothing imports the first helper package, which its own test file uses.",
+  "languages": [
+    "go",
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Live",
+      "report": "none"
+    },
+    {
+      "symbol": "Seed",
+      "report": "DS1004",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting",
+      "component": {
+        "root": true
+      }
+    },
+    {
+      "symbol": "NewService",
+      "report": "none"
+    },
+    {
+      "symbol": "Open",
+      "report": "none"
+    },
+    {
+      "symbol": "Unused",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

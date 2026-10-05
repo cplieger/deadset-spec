@@ -1,0 +1,20 @@
+{
+  "name": "convention-disabled-row",
+  "description": "A convention row the configuration disables does not apply although the manifest declares its enabling package: the file its entry globs name is no root and is reported as never imported, and the report lists no applied row. The fixture assumes the analyzer carries a row named next for the package next whose range holds the installed version and whose entry globs name app/page.ts.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "disabled_conventions": [
+    "next"
+  ],
+  "expect": [
+    {
+      "symbol": "Page",
+      "report": "DS1502",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    }
+  ]
+}

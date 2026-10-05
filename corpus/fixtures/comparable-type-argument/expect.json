@@ -1,0 +1,25 @@
+{
+  "name": "comparable-type-argument",
+  "description": "A struct type that instantiates a type parameter constrained by comparable is compared as an operand of == is, so a generic comparison of its slices reads every field, the one nothing writes included. A field of a struct that no comparison and no other code reads, written by a composite literal, is reported as write-only.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Point.X",
+      "report": "none"
+    },
+    {
+      "symbol": "Point.Y",
+      "report": "none"
+    },
+    {
+      "symbol": "Tag.Name",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field"
+    }
+  ]
+}

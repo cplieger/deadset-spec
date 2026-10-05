@@ -1,0 +1,5 @@
+{
+  "name": "@vitest/coverage-istanbul",
+  "version": "5.999.0",
+  "private": true
+}

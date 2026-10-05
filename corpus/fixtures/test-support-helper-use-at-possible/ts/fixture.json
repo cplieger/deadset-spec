@@ -1,0 +1,14 @@
+{
+  "symbols": {
+    "Live": { "file": "target/catalog.ts", "line": 2 },
+    "Unused": { "file": "target/catalog.ts", "line": 7 },
+    "Detached": { "file": "target/support/detached.ts", "line": 2 },
+    "Sink": { "file": "target/support/detached.ts", "line": 7 },
+    "Sink.Put": { "file": "target/support/detached.ts", "line": 8 },
+    "Drain": { "file": "target/support/detached.ts", "line": 12 },
+    "Spare": { "file": "target/support/detached.ts", "line": 17 },
+    "TestDetached": { "file": "target/support/detached.test.ts", "line": 3 },
+    "fixture": { "file": "target/catalog.test.ts", "line": 4 },
+    "TestDrain": { "file": "target/catalog.test.ts", "line": 8 }
+  }
+}

@@ -1,0 +1,53 @@
+The Go rendering: a command encoding an event whose payload field is typed any,
+filled by a constructor with a value of one struct type, beside a struct type
+declared the same way that no event holds.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Started.ID": { "file": "target/main.go", "line": 17 },
+    "Stopped.ID": { "file": "target/main.go", "line": 22 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target writes one encoded event.
+package main
+
+import (
+	"encoding/json"
+	"os"
+)
+
+// Event is encoded, and its payload holds whatever value NewEvent is given.
+type Event struct {
+	Payload any    `json:"payload"`
+	Kind    string `json:"kind"`
+}
+
+// Started reaches the encoder through the payload of an event.
+type Started struct {
+	ID string `json:"id"`
+}
+
+// Stopped is built and never stored in an event.
+type Stopped struct {
+	ID string `json:"id"`
+}
+
+// NewEvent stores its payload in the event it returns.
+func NewEvent(kind string, payload any) Event { return Event{Kind: kind, Payload: payload} }
+
+func main() {
+	data, err := json.Marshal(NewEvent("started", Started{}))
+	if err != nil {
+		panic(err)
+	}
+	if _, err := os.Stdout.Write(data); err != nil {
+		panic(err)
+	}
+	println(len([]Stopped{{}}))
+}

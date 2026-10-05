@@ -1,0 +1,59 @@
+{
+  "name": "type-test-files",
+  "description": "A file whose name carries the .test-d or the .spec-d qualifier and a file under a test-d directory are test files by the default test-file patterns, so a function only they call is reported as test-only use rather than as an unused export, a declaration of them whose every reference is to such a function is reported as a test of dead code, and none of those files is reported as never imported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "add",
+      "report": "none"
+    },
+    {
+      "symbol": "subtract",
+      "report": "DS1004",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "multiply",
+      "report": "DS1004",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "divide",
+      "report": "DS1004",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "difference",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "variable",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "product",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "variable",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "quotient",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "variable",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

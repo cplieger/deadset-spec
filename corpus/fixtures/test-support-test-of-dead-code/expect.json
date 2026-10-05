@@ -1,0 +1,67 @@
+{
+  "name": "test-support-test-of-dead-code",
+  "description": "Test-support code is no target symbol when a test of dead code is judged. A test that calls a test-support function and a production function only it calls is reported as a test of dead code, in that function's component, and so is a test-support function that calls another test-support function and a production function only it calls. A test that calls only test-support code is not reported, the default minimum confidence withholds what is reported about the test-support function both callers share, and each production function that only test code calls is reported as test-only use.",
+  "languages": [
+    "go",
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Live",
+      "report": "none"
+    },
+    {
+      "symbol": "Encode",
+      "report": "DS1004",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting",
+      "component": {
+        "root": true
+      }
+    },
+    {
+      "symbol": "TestEncode",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting",
+      "component": {
+        "root": true
+      }
+    },
+    {
+      "symbol": "Decode",
+      "report": "DS1004",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting",
+      "component": {
+        "root": true
+      }
+    },
+    {
+      "symbol": "Check",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting",
+      "component": {
+        "root": true
+      }
+    },
+    {
+      "symbol": "Fixture",
+      "report": "none"
+    },
+    {
+      "symbol": "TestDecode",
+      "report": "none"
+    }
+  ]
+}

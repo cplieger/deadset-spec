@@ -1,0 +1,25 @@
+{
+  "name": "write-only-cascade-type",
+  "description": "A type whose one use is the annotation of a member reported as write-only falls with that member, so the finding about the member names it and no finding is reported about the type itself; the member that is read is reported under no code.",
+  "languages": [
+    "go",
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Settings.mode",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    },
+    {
+      "symbol": "Mode",
+      "report": "none"
+    },
+    {
+      "symbol": "Settings.name",
+      "report": "none"
+    }
+  ]
+}

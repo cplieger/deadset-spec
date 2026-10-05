@@ -1,0 +1,36 @@
+{
+  "name": "convention-dependency-short-name",
+  "description": "An applied convention row's property whose value names a package by a short name uses the dependency the row's package name stands for with that value, so the coverage provider the configuration selects is used and the provider it does not select is reported. The fixture assumes the analyzer carries a row named vitest for the package vitest whose range holds the installed version, whose entry globs name vitest.config.ts, and which reads test.coverage.provider from that file as the short name of the package @vitest/coverage-{}.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "conventions_applied": [
+    {
+      "name": "vitest",
+      "package": "vitest",
+      "version": "5.999.0",
+      "manifest": "package.json"
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "CoverageV8",
+      "report": "none"
+    },
+    {
+      "symbol": "CoverageIstanbul",
+      "report": "DS1601",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "dependency",
+      "details": {
+        "dependency_class": "dev-dependency"
+      }
+    },
+    {
+      "symbol": "Vitest",
+      "report": "none"
+    }
+  ]
+}

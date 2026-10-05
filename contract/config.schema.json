@@ -44,7 +44,7 @@
           "x-owner": "orchestrator"
         },
         "min_confidence": {
-          "description": "The lowest reachability class a finding must reach to be reported. probable, the default, omits the findings about a library's published API, a member of a type the published API names included, when the run holds no consumer information, and reports every other finding; possible reports every finding; certain reports only findings whose every caller is in the analyzed graph. The dial is the one place a library's published API is withheld: no kind carries a default that depends on the target kind. When the minimum withholds a root finding, it withholds with it every finding whose component.id names the root's component, whatever confidence those findings carry: every other root member of the component, the other root members of the root's own cycle among them, and every symbol that falls with a root, which is dead only through it.",
+          "description": "The lowest reachability class a finding must reach to be reported. probable, the default, omits the DS1004 and DS1201 findings about test-support code that test code references, which are possible in every target kind, and the findings about a library's published API, a member of a type the published API names included, when the run holds no consumer information, and reports every other finding; possible reports every finding; certain reports only findings whose every caller is in the analyzed graph. The dial is the one place a library's published API is withheld: no kind carries a default that depends on the target kind. When the minimum withholds a root finding, it withholds with it every finding whose component.id names the root's component, whatever confidence those findings carry: every other root member of the component, the other root members of the root's own cycle among them, and every symbol that falls with a root, which is dead only through it.",
           "type": "string",
           "enum": ["certain", "probable", "possible"],
           "default": "probable",
@@ -413,7 +413,7 @@
       "x-owner": "ts-analyzer",
       "properties": {
         "test_files": {
-          "description": "Glob patterns, relative to the target root, naming the files classified as test files. The default is the naming the common TypeScript test runners share: a file whose name carries a .test or a .spec qualifier, and every file under a __tests__ or a __mocks__ directory; a project whose tests are named otherwise sets its own so that a symbol only its tests reach is reported as test-only use. A file no pattern names is still test code when it is test-support code, which grammar/analysis.md defines.",
+          "description": "Glob patterns, relative to the target root, naming the files classified as test files. The default is the naming the common TypeScript test runners share: a file whose name carries a .test or a .spec qualifier or the .test-d or .spec-d qualifier of a type test, and every file under a __tests__, a __mocks__ or a test-d directory; a project whose tests are named otherwise sets its own so that a symbol only its tests reach is reported as test-only use. A file no pattern names is still test code when it is test-support code, which grammar/analysis.md defines.",
           "type": "array",
           "uniqueItems": true,
           "minItems": 1,
@@ -421,7 +421,7 @@
             "type": "string",
             "minLength": 1
           },
-          "default": ["**/*.test.{ts,tsx,mts,cts}", "**/*.spec.*", "**/__tests__/**", "**/__mocks__/**"],
+          "default": ["**/*.test.{ts,tsx,mts,cts}", "**/*.test-d.{ts,tsx,mts,cts}", "**/*.spec-d.{ts,tsx,mts,cts}", "**/*.spec.*", "**/__tests__/**", "**/__mocks__/**", "**/test-d/**"],
           "x-owner": "ts-analyzer"
         },
         "entry_files": {

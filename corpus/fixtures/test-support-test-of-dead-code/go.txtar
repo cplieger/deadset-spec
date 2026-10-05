@@ -1,0 +1,70 @@
+The Go rendering: a command calling one function of a package, and a second
+package that only the first package's external test file imports. One test
+calls test-support code and a function of the first package, and a second test
+calls only test-support code. Nothing imports anything outside the standard
+library, so the rendering loads with no network access.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Live": { "file": "target/codec/codec.go", "line": 4 },
+    "Encode": { "file": "target/codec/codec.go", "line": 7 },
+    "Decode": { "file": "target/codec/codec.go", "line": 10 },
+    "Fixture": { "file": "target/testsupport/testsupport.go", "line": 6 },
+    "Check": { "file": "target/testsupport/testsupport.go", "line": 9 },
+    "TestEncode": { "file": "target/codec/codec_test.go", "line": 10 },
+    "TestDecode": { "file": "target/codec/codec_test.go", "line": 16 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+package main
+
+import "example.com/target/codec"
+
+func main() { println(codec.Live()) }
+-- target/codec/codec.go --
+package codec
+
+// Live is called by the command.
+func Live() int { return 1 }
+
+// Encode is called by a test alone.
+func Encode() int { return 2 }
+
+// Decode is called by test-support code alone.
+func Decode() int { return 3 }
+-- target/testsupport/testsupport.go --
+package testsupport
+
+import "example.com/target/codec"
+
+// Fixture is called by a test and by Check.
+func Fixture() int { return 4 }
+
+// Check calls Fixture and a production function only it calls.
+func Check() int { return codec.Decode() + Fixture() }
+-- target/codec/codec_test.go --
+package codec_test
+
+import (
+	"testing"
+
+	"example.com/target/codec"
+	"example.com/target/testsupport"
+)
+
+func TestEncode(t *testing.T) {
+	if codec.Encode()+testsupport.Fixture() != 6 {
+		t.Error("Encode and Fixture do not add up to 6")
+	}
+}
+
+func TestDecode(t *testing.T) {
+	if testsupport.Check() != 7 {
+		t.Error("Check is not 7")
+	}
+}

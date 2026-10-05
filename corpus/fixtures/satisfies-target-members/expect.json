@@ -1,0 +1,29 @@
+{
+  "name": "satisfies-target-members",
+  "description": "A property of an object literal a satisfies expression checks writes the member of the checked type, and a read of that property through the literal's own type reads the member. A member written and read that way is reported under no code, one the literal writes and nothing reads is reported as write-only, and one nothing writes or reads is reported as an unused member.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Row.label",
+      "report": "none"
+    },
+    {
+      "symbol": "Row.key",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member"
+    },
+    {
+      "symbol": "Row.spare",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

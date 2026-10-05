@@ -1,0 +1,38 @@
+The Go rendering: a command comparing two slices of a struct type through
+slices.Equal, beside a struct type whose one field is written and never read.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Point.X": { "file": "target/main.go", "line": 8 },
+    "Point.Y": { "file": "target/main.go", "line": 9 },
+    "Tag.Name": { "file": "target/main.go", "line": 14 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target compares two slices of points and counts its tags.
+package main
+
+import "slices"
+
+// Point is compared through a generic comparison of its slices.
+type Point struct {
+	X int
+	Y int
+}
+
+// Tag is built and never compared or read.
+type Tag struct {
+	Name string
+}
+
+func main() {
+	a := []Point{{X: 1}}
+	b := []Point{{X: 1}}
+	tags := []Tag{{Name: "x"}}
+	println(slices.Equal(a, b), len(tags))
+}

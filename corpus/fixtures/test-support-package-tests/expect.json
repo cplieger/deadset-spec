@@ -1,0 +1,39 @@
+{
+  "name": "test-support-package-tests",
+  "description": "A package only its own tests use is test-support code in both Go test styles, a test file of the package itself and an external test package. The default minimum confidence withholds what is reported about a function of it a test calls, the test is not a test of dead code, and a function of it nothing calls is reported under the unused code its visibility selects in a component of its own.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Total",
+      "report": "none"
+    },
+    {
+      "symbol": "TestTotal",
+      "report": "none"
+    },
+    {
+      "symbol": "Count",
+      "report": "none"
+    },
+    {
+      "symbol": "TestCount",
+      "report": "none"
+    },
+    {
+      "symbol": "Unused",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting",
+      "component": {
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 1
+      }
+    }
+  ]
+}

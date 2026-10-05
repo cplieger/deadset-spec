@@ -1,0 +1,26 @@
+{
+  "name": "module-url-load",
+  "description": "A URL a source file builds from a relative string literal and its own module URL loads the file it names, as an import for its effects would: the file is not reported and its top level runs, so a function its top level calls is live, while an export of it that nothing imports is reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "started",
+      "report": "none"
+    },
+    {
+      "symbol": "boot",
+      "report": "none"
+    },
+    {
+      "symbol": "handle",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+The Go rendering: a library returning options with one field it sets itself,
+and the consumer module that sets the other field.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Options.label": { "file": "target/options.go", "line": 6 },
+    "Options.note": { "file": "target/options.go", "line": 7 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/options.go --
+// Package target returns the options a caller adjusts.
+package target
+
+// Options holds the settings a caller passes on.
+type Options struct {
+	Label string
+	Note  string
+}
+
+// Defaults returns the options with a note set.
+func Defaults() *Options { return &Options{Note: "default"} }
+-- consumer/go.mod --
+module example.com/consumer
+
+go 1.27.0
+
+require example.com/target v0.0.0
+
+replace example.com/target => ../target
+-- consumer/main.go --
+// Command consumer sets a label on the target's options.
+package main
+
+import "example.com/target"
+
+func main() {
+	options := target.Defaults()
+	options.Label = "consumer"
+}

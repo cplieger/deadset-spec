@@ -1,0 +1,42 @@
+{
+  "name": "test-support-interface-fake",
+  "description": "A reference is a name that resolves to the declaration, so a call through an interface method references no implementation of it. A fake package or file that only a test imports is test-support code although production code calls, through an interface, the method its type implements. The fake's constructor a test calls and its method are live, and the default minimum confidence withholds what is reported about them, a production function only that method calls is reported as test-only use, because a reference from test-support code is a test reference, and a function of the fake nothing calls is reported under the unused code its visibility selects.",
+  "languages": [
+    "go",
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Total",
+      "report": "none"
+    },
+    {
+      "symbol": "Seed",
+      "report": "DS1004",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting",
+      "component": {
+        "root": true
+      }
+    },
+    {
+      "symbol": "New",
+      "report": "none"
+    },
+    {
+      "symbol": "Get",
+      "report": "none"
+    },
+    {
+      "symbol": "Unused",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

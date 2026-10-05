@@ -1,0 +1,57 @@
+{
+  "name": "test-support-helper-chain-at-possible",
+  "description": "The helper chain of test-support-helper-chain analyzed with every finding asked for. A helper a test calls and a helper only that helper calls are reported as test-only use at possible, each in a component of its own, a production function only the second helper calls is reported as test-only use at certain in a component of its own, and a helper function nothing calls is reported at certain, while the test that calls the first helper is not a test of dead code.",
+  "languages": [
+    "go",
+    "ts"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "expect": [
+    {
+      "symbol": "Live",
+      "report": "none"
+    },
+    {
+      "symbol": "Seed",
+      "report": "DS1004",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting",
+      "component": {
+        "root": true
+      }
+    },
+    {
+      "symbol": "NewService",
+      "report": "DS1004",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting",
+      "component": {
+        "root": true
+      }
+    },
+    {
+      "symbol": "Open",
+      "report": "DS1004",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting",
+      "component": {
+        "root": true
+      }
+    },
+    {
+      "symbol": "Unused",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

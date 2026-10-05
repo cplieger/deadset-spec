@@ -1,0 +1,9 @@
+{
+  "symbols": {
+    "Total": { "file": "target/store.ts", "line": 14 },
+    "Seed": { "file": "target/store.ts", "line": 19 },
+    "New": { "file": "target/fake/fake.ts", "line": 12 },
+    "Get": { "file": "target/fake/fake.ts", "line": 6 },
+    "Unused": { "file": "target/fake/fake.ts", "line": 17 }
+  }
+}

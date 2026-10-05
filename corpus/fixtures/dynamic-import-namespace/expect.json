@@ -1,0 +1,38 @@
+{
+  "name": "dynamic-import-namespace",
+  "description": "A dynamic import's namespace object that escapes, here the import call passed as an argument, references every export of the module it loads. One the program reads a property of references that export alone, and an import whose result nothing uses references none, so the exports never read are reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "home",
+      "report": "none"
+    },
+    {
+      "symbol": "about",
+      "report": "none"
+    },
+    {
+      "symbol": "used",
+      "report": "none"
+    },
+    {
+      "symbol": "spare",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "dropped",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}
