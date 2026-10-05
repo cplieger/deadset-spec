@@ -1,0 +1,6 @@
+{
+  "symbols": {
+    "Alert.onclick": { "file": "target/main.ts", "line": 3 },
+    "Alert.label": { "file": "target/main.ts", "line": 4 }
+  }
+}

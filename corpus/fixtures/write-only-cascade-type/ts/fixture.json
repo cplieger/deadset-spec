@@ -1,0 +1,7 @@
+{
+  "symbols": {
+    "Settings.mode": { "file": "target/main.ts", "line": 6 },
+    "Mode": { "file": "target/main.ts", "line": 2 },
+    "Settings.name": { "file": "target/main.ts", "line": 7 }
+  }
+}

@@ -1,0 +1,60 @@
+The Go rendering: a command importing nothing, a package under an internal
+directory that nothing imports and that only its own test file uses, and a
+package that only its external test file imports. Nothing imports anything
+outside the standard library, so the rendering loads with no network access.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Total": { "file": "target/internal/ledger/ledger.go", "line": 4 },
+    "TestTotal": { "file": "target/internal/ledger/ledger_test.go", "line": 5 },
+    "Count": { "file": "target/tally/tally.go", "line": 4 },
+    "Unused": { "file": "target/tally/tally.go", "line": 7 },
+    "TestCount": { "file": "target/tally/tally_test.go", "line": 9 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+package main
+
+func main() { println("ready") }
+-- target/internal/ledger/ledger.go --
+package ledger
+
+// Total is called by this package's own test alone.
+func Total() int { return 4 }
+-- target/internal/ledger/ledger_test.go --
+package ledger
+
+import "testing"
+
+func TestTotal(t *testing.T) {
+	if Total() != 4 {
+		t.Error("Total is not 4")
+	}
+}
+-- target/tally/tally.go --
+package tally
+
+// Count is called by this package's external test alone.
+func Count() int { return 5 }
+
+// Unused is called by nothing.
+func Unused() int { return 6 }
+-- target/tally/tally_test.go --
+package tally_test
+
+import (
+	"testing"
+
+	"example.com/target/tally"
+)
+
+func TestCount(t *testing.T) {
+	if tally.Count() != 5 {
+		t.Error("Count is not 5")
+	}
+}

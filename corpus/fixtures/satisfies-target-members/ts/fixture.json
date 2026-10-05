@@ -1,0 +1,7 @@
+{
+  "symbols": {
+    "Row.label": { "file": "target/main.ts", "line": 4 },
+    "Row.key": { "file": "target/main.ts", "line": 3 },
+    "Row.spare": { "file": "target/main.ts", "line": 5 }
+  }
+}

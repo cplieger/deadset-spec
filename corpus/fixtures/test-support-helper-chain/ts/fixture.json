@@ -1,0 +1,9 @@
+{
+  "symbols": {
+    "Live": { "file": "target/catalog.ts", "line": 2 },
+    "Seed": { "file": "target/catalog.ts", "line": 7 },
+    "NewService": { "file": "target/support/service.ts", "line": 4 },
+    "Open": { "file": "target/support/store.ts", "line": 4 },
+    "Unused": { "file": "target/support/store.ts", "line": 9 }
+  }
+}

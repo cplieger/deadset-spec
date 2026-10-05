@@ -1,0 +1,7 @@
+{
+  "symbols": {
+    "Entry.name": { "file": "target/main.ts", "line": 3 },
+    "Entry.size": { "file": "target/main.ts", "line": 4 },
+    "Entry.note": { "file": "target/main.ts", "line": 5 }
+  }
+}

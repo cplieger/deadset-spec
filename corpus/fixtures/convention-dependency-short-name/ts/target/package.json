@@ -1,0 +1,12 @@
+{
+  "name": "@example/target",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./main.ts",
+  "devDependencies": {
+    "@vitest/coverage-istanbul": "5.999.0",
+    "@vitest/coverage-v8": "5.999.0",
+    "vitest": "5.999.0"
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "name": "test-support-package-tests-at-possible",
+  "description": "The packages of test-support-package-tests analyzed with every finding asked for. A function of test-support code a test calls is reported as test-only use at possible in a component minted for it alone, which removes no line, in both Go test styles, the test is not a test of dead code, and a function nothing calls is reported at certain in a component whose deletion removes its line.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "expect": [
+    {
+      "symbol": "Total",
+      "report": "DS1004",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting",
+      "component": {
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 0
+      }
+    },
+    {
+      "symbol": "TestTotal",
+      "report": "none"
+    },
+    {
+      "symbol": "Count",
+      "report": "DS1004",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting",
+      "component": {
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 0
+      }
+    },
+    {
+      "symbol": "TestCount",
+      "report": "none"
+    },
+    {
+      "symbol": "Unused",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting",
+      "component": {
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 1
+      }
+    }
+  ]
+}

@@ -165,9 +165,29 @@
       }
     },
     "min_confidence": {
-      "description": "The minimum confidence the runner sets in analysis.min_confidence before analysing this fixture, as contract/config.schema.json declares that key. A runner leaves the key at its default where the member is absent, so a fixture that omits it is answered under the default, which withholds the findings about a library's published API when the run holds no consumer information. It is the fixture's declaration rather than any expectation's, for the reason closed_world states.",
+      "description": "The minimum confidence the runner sets in analysis.min_confidence before analysing this fixture, as contract/config.schema.json declares that key. A runner leaves the key at its default where the member is absent, so a fixture that omits it is answered under the default, which withholds the DS1004 and DS1201 findings about test-support code that test code references, and the findings about a library's published API when the run holds no consumer information. It is the fixture's declaration rather than any expectation's, for the reason closed_world states.",
       "type": "string",
       "enum": ["certain", "probable", "possible"]
+    },
+    "entry_files": {
+      "description": "The patterns the runner sets in ts.entry_files before analysing this fixture, as contract/config.schema.json declares that key: glob patterns relative to the target root. A runner leaves the key at its default where the member is absent. A pattern spells the TypeScript rendering's own layout, so the member is named only by a fixture that lists the ts language alone. It is the fixture's declaration rather than any expectation's, for the reason closed_world states. The member is optional and never empty.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "disabled_conventions": {
+      "description": "The convention row names the runner sets in ts.disabled_conventions before analysing this fixture, as contract/config.schema.json declares that key. A runner leaves the key at its default where the member is absent. A row is data of the TypeScript analyzer that carries it, so the member is named only by a fixture that lists the ts language alone, and a fixture naming a row states the row it assumes the analyzer carries, as conventions_applied does. It is the fixture's declaration rather than any expectation's, for the reason closed_world states. The member is optional and never empty.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$"
+      }
     },
     "type_error_skips": {
       "description": "The type errors the analyzer must list in the report's type_error_skips array, exhaustive: one logical name per entry, each mapped through the rendering's manifest to the file and the line of the error's position. A record the array holds that no name resolves to fails the analyzer, and a fixture that omits the member expects the array empty. The compiler's message is not compared, because it is the compiler's wording rather than the analysis's. The member is optional and never empty.",

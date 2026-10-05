@@ -1,0 +1,37 @@
+{
+  "name": "html-module-script-entry",
+  "description": "An HTML file below the target root roots the file a module script's src attribute names, read against the manifest's directory for a value starting with a single slash and against the page's directory otherwise, and each file an import of an inline module script names by a specifier starting with a slash, ./ or ../. A module script inside an HTML comment roots its file too, because no markup is parsed. A source file no page, import or manifest names is reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "start",
+      "report": "none"
+    },
+    {
+      "symbol": "widget",
+      "report": "none"
+    },
+    {
+      "symbol": "about",
+      "report": "none"
+    },
+    {
+      "symbol": "legacy",
+      "report": "none"
+    },
+    {
+      "symbol": "panel",
+      "report": "none"
+    },
+    {
+      "symbol": "orphan",
+      "report": "DS1502",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    }
+  ]
+}

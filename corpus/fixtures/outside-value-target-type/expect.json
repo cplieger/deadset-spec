@@ -1,0 +1,21 @@
+{
+  "name": "outside-value-target-type",
+  "description": "A value whose type the compiler's library declares reaches a position typed by an object type of the target, so the code outside the analysis that holds the value reads each member of the target's type its own type declares: the member the target writes and the platform reads is reported under no code, while a member the platform's type does not declare, written and never read, is reported as write-only.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Alert.onclick",
+      "report": "none"
+    },
+    {
+      "symbol": "Alert.label",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member"
+    }
+  ]
+}

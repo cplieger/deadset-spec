@@ -1,0 +1,36 @@
+{
+  "name": "convention-entry-files-beside-a-row",
+  "description": "The entry files the configuration names are roots beside an applied convention row's: the row's route file and the configured script are not reported, a file neither names is reported as never imported, and the report lists the row it applied. The fixture assumes the analyzer carries a row named next for the package next whose range holds the installed version and whose entry globs name app/page.ts.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "entry_files": [
+    "scripts/*.ts"
+  ],
+  "conventions_applied": [
+    {
+      "name": "next",
+      "package": "next",
+      "version": "16.999.0",
+      "manifest": "package.json"
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "Page",
+      "report": "none"
+    },
+    {
+      "symbol": "Seed",
+      "report": "none"
+    },
+    {
+      "symbol": "Orphan",
+      "report": "DS1502",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    }
+  ]
+}

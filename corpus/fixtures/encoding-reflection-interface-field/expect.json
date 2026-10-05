@@ -1,0 +1,24 @@
+{
+  "name": "encoding-reflection-interface-field",
+  "description": "An encoder walking a value reaches through an interface-typed field to the types the program stores in it, a value passed to a function that stores its interface-typed parameter in the field included, so the stored type's field is retained by the encoding-reflection class. A field of a struct type never stored there is reported as an unused member.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Started.ID",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "Stopped.ID",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

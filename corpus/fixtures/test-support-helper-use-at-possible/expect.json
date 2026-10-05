@@ -1,0 +1,84 @@
+{
+  "name": "test-support-helper-use-at-possible",
+  "description": "The test-support code of test-support-helper-use and one more interface, analyzed with every finding asked for. Each declaration of test-support code that test code references is reported at possible, in a component of its own, under the code a production declaration with the same references carries: the function a test and a test-file helper call and the function a test calls are reported as test-only use, and the interface one of them takes as a parameter type is reported as an unused interface whose member falls with it. An interface of test-support code nothing references is reported at certain as an unused interface, as a production one is. The tests and the test-file helper are not tests of dead code, and a production function nothing references is reported at certain.",
+  "languages": [
+    "go",
+    "ts"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "expect": [
+    {
+      "symbol": "Live",
+      "report": "none"
+    },
+    {
+      "symbol": "Unused",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Detached",
+      "report": "DS1004",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting",
+      "component": {
+        "root": true
+      }
+    },
+    {
+      "symbol": "Sink",
+      "report": "DS1201",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "interface",
+      "liveness_relation": "reference-counting",
+      "component": {
+        "root": true
+      }
+    },
+    {
+      "symbol": "Sink.Put",
+      "report": "none"
+    },
+    {
+      "symbol": "Drain",
+      "report": "DS1004",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting",
+      "component": {
+        "root": true
+      }
+    },
+    {
+      "symbol": "Spare",
+      "report": "DS1201",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "interface",
+      "liveness_relation": "reference-counting",
+      "component": {
+        "root": true
+      }
+    },
+    {
+      "symbol": "TestDetached",
+      "report": "none"
+    },
+    {
+      "symbol": "fixture",
+      "report": "none"
+    },
+    {
+      "symbol": "TestDrain",
+      "report": "none"
+    }
+  ]
+}

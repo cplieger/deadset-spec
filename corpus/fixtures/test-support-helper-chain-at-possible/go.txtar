@@ -1,0 +1,61 @@
+The Go rendering: a command calling one function of a package, a helper package
+under an internal directory that nothing imports and that only its own test file
+uses, and a second helper package that only the first one imports. The second
+helper calls a second function of the first package. Nothing imports anything
+outside the standard library, so the rendering loads with no network access.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Live": { "file": "target/catalog/catalog.go", "line": 4 },
+    "Seed": { "file": "target/catalog/catalog.go", "line": 7 },
+    "NewService": { "file": "target/internal/apitest/apitest.go", "line": 6 },
+    "Open": { "file": "target/teststore/teststore.go", "line": 6 },
+    "Unused": { "file": "target/teststore/teststore.go", "line": 9 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+package main
+
+import "example.com/target/catalog"
+
+func main() { println(catalog.Live()) }
+-- target/catalog/catalog.go --
+package catalog
+
+// Live is called by the command.
+func Live() int { return 1 }
+
+// Seed is called by the second helper package alone.
+func Seed() int { return 2 }
+-- target/internal/apitest/apitest.go --
+package apitest
+
+import "example.com/target/teststore"
+
+// NewService is called by this package's own test.
+func NewService() int { return teststore.Open() + 1 }
+-- target/internal/apitest/apitest_test.go --
+package apitest
+
+import "testing"
+
+func TestNewService(t *testing.T) {
+	if NewService() != 4 {
+		t.Error("NewService is not 4")
+	}
+}
+-- target/teststore/teststore.go --
+package teststore
+
+import "example.com/target/catalog"
+
+// Open is called by the first helper package alone, and calls a live function beside the one only it calls.
+func Open() int { return catalog.Seed() + catalog.Live() }
+
+// Unused is called by nothing.
+func Unused() int { return 5 }

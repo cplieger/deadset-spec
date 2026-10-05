@@ -1,0 +1,20 @@
+{
+  "name": "configuration-imports-a-manifest",
+  "description": "A configuration module that imports the package manifest by a relative specifier reaches no file, so the manifest's strings are not read as configuration and a dependency only the manifest names, here as a keyword, is reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "UnusedTool",
+      "report": "DS1601",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "dependency",
+      "details": {
+        "dependency_class": "dev-dependency"
+      }
+    }
+  ]
+}

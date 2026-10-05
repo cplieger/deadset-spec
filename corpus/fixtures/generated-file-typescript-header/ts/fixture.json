@@ -1,0 +1,7 @@
+{
+  "symbols": {
+    "unusedRequest": { "file": "target/wire.ts", "line": 9 },
+    "unusedMessage": { "file": "target/schema_pb.ts", "line": 7 },
+    "lateHelper": { "file": "target/late.ts", "line": 7 }
+  }
+}

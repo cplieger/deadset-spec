@@ -1,0 +1,11 @@
+{
+  "symbols": {
+    "add": { "file": "target/math.ts", "line": 2 },
+    "subtract": { "file": "target/math.ts", "line": 7 },
+    "multiply": { "file": "target/math.ts", "line": 12 },
+    "divide": { "file": "target/math.ts", "line": 17 },
+    "difference": { "file": "target/math.test-d.ts", "line": 4 },
+    "product": { "file": "target/test-d/math.ts", "line": 4 },
+    "quotient": { "file": "target/math.spec-d.ts", "line": 4 }
+  }
+}

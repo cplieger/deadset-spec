@@ -1,0 +1,31 @@
+The Go rendering: a command loading settings whose mode field is written by a
+composite literal and read by nothing, and whose type nothing else names.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Settings.mode": { "file": "target/main.go", "line": 9 },
+    "Mode": { "file": "target/main.go", "line": 5 },
+    "Settings.name": { "file": "target/main.go", "line": 10 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target prints the name of the settings it loads.
+package main
+
+// Mode is named by the annotation of one write-only field alone.
+type Mode int
+
+// Settings is built, and its name is read.
+type Settings struct {
+	Mode Mode
+	Name string
+}
+
+func load() Settings { return Settings{Name: "app", Mode: 1} }
+
+func main() { println(load().Name) }

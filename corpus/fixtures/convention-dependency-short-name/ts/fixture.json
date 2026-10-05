@@ -1,0 +1,7 @@
+{
+  "symbols": {
+    "CoverageIstanbul": { "file": "target/package.json", "line": 8 },
+    "CoverageV8": { "file": "target/package.json", "line": 9 },
+    "Vitest": { "file": "target/package.json", "line": 10 }
+  }
+}

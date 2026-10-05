@@ -1,0 +1,8 @@
+{
+  "symbols": {
+    "HelperUnread": { "file": "target/codec.test.ts", "line": 4 },
+    "DeadHelperUnread": { "file": "target/codec.test.ts", "line": 9 },
+    "FirstStore": { "file": "target/codec.test.ts", "line": 14 },
+    "testLive": { "file": "target/codec.test.ts", "line": 13 }
+  }
+}

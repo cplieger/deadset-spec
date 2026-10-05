@@ -110,6 +110,8 @@ type expectationDocument struct {
 	ConventionsApplied     []expectedConvention             `json:"conventions_applied"`
 	SetupFailure           *expectedSetupFailure            `json:"setup_failure"`
 	MinConfidence          string                           `json:"min_confidence"`
+	EntryFiles             []string                         `json:"entry_files"`
+	DisabledConventions    []string                         `json:"disabled_conventions"`
 }
 
 // expectedNote mirrors one notes entry: the note's kind and the directory it names.
@@ -726,6 +728,7 @@ func checkFixture(fsys fs.FS, dir string) error {
 	}
 	errs := checkSetupFailure(&expect)
 	errs = append(errs, checkConventionsLanguage(&expect)...)
+	errs = append(errs, checkTypeScriptKeysLanguage(&expect)...)
 	if expect.Name != path.Base(dir) {
 		errs = append(errs, fmt.Errorf("%s name = %q, want the directory name %q", expectFile, expect.Name, path.Base(dir)))
 	}
@@ -1884,6 +1887,30 @@ func TestCheckFixtureRefuses(t *testing.T) {
 					"-- dep/go.mod --\nmodule example.test/dep\n"...)
 			},
 			wantMsg: errNoDependencyRequire.Error() + `: target/go.mod names no require of "example.test/dep"`,
+		},
+		{
+			name: "entry_files_in_a_two_language_fixture",
+			mutate: func(m fstest.MapFS) {
+				m["corpus/fixtures/planted/expect.json"].Data = bytes.Replace(m["corpus/fixtures/planted/expect.json"].Data, []byte(`"expect":`), []byte(`"entry_files":["lib.ts"],"expect":`), 1)
+			},
+			wantMsg: `holds entry_files and lists the languages [go ts], want ts alone`,
+		},
+		{
+			name: "disabled_conventions_in_a_two_language_fixture",
+			mutate: func(m fstest.MapFS) {
+				m["corpus/fixtures/planted/expect.json"].Data = bytes.Replace(m["corpus/fixtures/planted/expect.json"].Data, []byte(`"expect":`), []byte(`"disabled_conventions":["next"],"expect":`), 1)
+			},
+			wantMsg: `holds disabled_conventions and lists the languages [go ts], want ts alone`,
+		},
+		{
+			name: "setup_failure_beside_runner_keys",
+			mutate: func(m fstest.MapFS) {
+				m["corpus/fixtures/planted/expect.json"].Data = []byte(`{"name":"planted","description":"A planted fixture.","languages":["ts"],"target_kind":"application",` +
+					`"setup_failure":{"class":"missing-module","names":["lib"]},"entry_files":["lib.ts"],"disabled_conventions":["next"],"expect":[]}`)
+				delete(m, "corpus/fixtures/planted/go.txtar")
+			},
+			wantMsg: `holds setup_failure and disabled_conventions, want no member that configures or answers a report` +
+				"\n" + expectFile + ` holds setup_failure and entry_files, want no member that configures or answers a report`,
 		},
 		{
 			name: "expectation_carries_an_undeclared_field",
@@ -3370,6 +3397,8 @@ func checkSetupFailure(expect *expectationDocument) []error {
 		"notes":                   len(expect.Notes) != 0,
 		"conventions_applied":     len(expect.ConventionsApplied) != 0,
 		"min_confidence":          expect.MinConfidence != "",
+		"entry_files":             len(expect.EntryFiles) != 0,
+		"disabled_conventions":    len(expect.DisabledConventions) != 0,
 	}
 	for _, member := range slices.Sorted(maps.Keys(reportMembers)) {
 		if reportMembers[member] {
@@ -3386,4 +3415,21 @@ func checkConventionsLanguage(expect *expectationDocument) []error {
 		return nil
 	}
 	return []error{fmt.Errorf("%s holds conventions_applied and lists the languages %v, want exactly one language", expectFile, expect.Languages)}
+}
+
+// checkTypeScriptKeysLanguage holds a fixture that sets ts.entry_files or ts.disabled_conventions
+// to the TypeScript rendering alone, because a pattern spells that rendering's layout and a row is
+// data of the TypeScript analyzer.
+func checkTypeScriptKeysLanguage(expect *expectationDocument) []error {
+	if slices.Equal(expect.Languages, []string{"ts"}) {
+		return nil
+	}
+	var errs []error
+	if len(expect.EntryFiles) != 0 {
+		errs = append(errs, fmt.Errorf("%s holds entry_files and lists the languages %v, want ts alone", expectFile, expect.Languages))
+	}
+	if len(expect.DisabledConventions) != 0 {
+		errs = append(errs, fmt.Errorf("%s holds disabled_conventions and lists the languages %v, want ts alone", expectFile, expect.Languages))
+	}
+	return errs
 }

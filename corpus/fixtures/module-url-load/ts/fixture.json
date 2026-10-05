@@ -1,0 +1,7 @@
+{
+  "symbols": {
+    "started": { "file": "target/main.ts", "line": 3 },
+    "boot": { "file": "target/worker.ts", "line": 2 },
+    "handle": { "file": "target/worker.ts", "line": 7 }
+  }
+}

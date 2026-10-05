@@ -1,0 +1,52 @@
+The Go rendering: a command decoding a settings document and reading two of its
+three fields, one of whose types decodes itself and declares a method nothing
+calls.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Settings.Name": { "file": "target/main.go", "line": 11 },
+    "Settings.Theme": { "file": "target/main.go", "line": 12 },
+    "Level.UnmarshalJSON": { "file": "target/main.go", "line": 20 },
+    "Level.Describe": { "file": "target/main.go", "line": 26 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target reads a settings document from standard input.
+package main
+
+import (
+	"encoding/json"
+	"os"
+)
+
+// Settings is decoded, and only its name and its level are read.
+type Settings struct {
+	Name  string `json:"name"`
+	Theme string `json:"theme"`
+	Level Level  `json:"level"`
+}
+
+// Level decodes itself from a document.
+type Level int
+
+// UnmarshalJSON is called by the decoder.
+func (l *Level) UnmarshalJSON(data []byte) error {
+	*l = Level(len(data))
+	return nil
+}
+
+// Describe is called by nothing.
+func (l Level) Describe() string { return "level" }
+
+func main() {
+	var s Settings
+	if err := json.NewDecoder(os.Stdin).Decode(&s); err != nil {
+		panic(err)
+	}
+	println(s.Name, int(s.Level))
+}

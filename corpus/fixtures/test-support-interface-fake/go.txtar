@@ -1,0 +1,76 @@
+The Go rendering: a command passing a production implementation of an interface
+to a function that calls through the interface, and a fake package that only an
+external test file imports, whose type implements the same interface and whose
+method calls a production function nothing else calls. Nothing imports anything
+outside the standard library, so the rendering loads with no network access.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Total": { "file": "target/store/store.go", "line": 15 },
+    "Seed": { "file": "target/store/store.go", "line": 18 },
+    "New": { "file": "target/fake/fake.go", "line": 9 },
+    "Get": { "file": "target/fake/fake.go", "line": 12 },
+    "Unused": { "file": "target/fake/fake.go", "line": 15 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+package main
+
+import "example.com/target/store"
+
+func main() { println(store.Total(store.Disk{})) }
+-- target/store/store.go --
+package store
+
+// Store is the interface production code reads through.
+type Store interface {
+	Get(key string) int
+}
+
+// Disk is the implementation the command passes.
+type Disk struct{}
+
+// Get returns the length of the key.
+func (Disk) Get(key string) int { return len(key) }
+
+// Total reads through the interface.
+func Total(s Store) int { return s.Get("a") + 1 }
+
+// Seed is called by the fake's method alone.
+func Seed() int { return 2 }
+-- target/fake/fake.go --
+package fake
+
+import "example.com/target/store"
+
+// Memory implements store.Store for tests.
+type Memory struct{ n int }
+
+// New is called by a test.
+func New(n int) Memory { return Memory{n: n} }
+
+// Get is called through the interface alone, and calls a live method beside the function only it calls.
+func (m Memory) Get(key string) int { return store.Seed() + store.Disk{}.Get(key) + m.n }
+
+// Unused is called by nothing.
+func Unused() int { return 3 }
+-- target/store/store_test.go --
+package store_test
+
+import (
+	"testing"
+
+	"example.com/target/fake"
+	"example.com/target/store"
+)
+
+func TestTotal(t *testing.T) {
+	if store.Total(fake.New(4)) != 8 {
+		t.Error("Total is not 8")
+	}
+}

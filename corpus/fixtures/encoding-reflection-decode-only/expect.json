@@ -1,0 +1,36 @@
+{
+  "name": "encoding-reflection-decode-only",
+  "description": "A decoder fills fields through reflection, which is neither a read nor a write, so a field of a decoded type that only the decoder fills and nothing reads is reported as an unused member. The decoder resolves its own decoding method by name, which the encoding-reflection class retains, and no other method of the decoded type, so a method nothing calls is reported.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Settings.Name",
+      "report": "none"
+    },
+    {
+      "symbol": "Settings.Theme",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Level.UnmarshalJSON",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "Level.Describe",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

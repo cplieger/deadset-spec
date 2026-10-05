@@ -78,7 +78,7 @@ A kind enters the vocabulary only when it passes two tests. What it reports must
 
 ## The conformance corpus
 
-`corpus/` holds 89 fixture projects. For each one, an `expect.json` file names in language-neutral terms what an analyzer must and must not report for each issue kind and each exemption class. Of these, 24 apply to both languages, 28 to Go only and 37 to TypeScript only. Every analyzer runs the corpus before each of its releases.
+`corpus/` holds 117 fixture projects. For each one, an `expect.json` file names in language-neutral terms what an analyzer must and must not report for each issue kind and each exemption class. Of these, 31 apply to both languages, 34 to Go only and 52 to TypeScript only. Every analyzer runs the corpus before each of its releases.
 
 An analyzer records each capability it does not implement as a declared gap in its committed `conformance.json`, and its runner writes `conformance-results.json`. Both follow the schemas in `corpus/`. An expectation that is neither answered nor declared fails the analyzer. Where two analyzers answer the same expectation, they must agree on the code, the confidence and what a suppression does. Before any analysis, the product that runs the analyzers, such as deadset, reads the describe document each analyzer prints about itself. It runs an analyzer only when that document records a corpus result of `pass`.
 

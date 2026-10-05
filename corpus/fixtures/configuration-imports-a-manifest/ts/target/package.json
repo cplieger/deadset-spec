@@ -1,0 +1,13 @@
+{
+  "name": "@example/target",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./main.ts",
+  "keywords": [
+    "example-unused-tool"
+  ],
+  "devDependencies": {
+    "example-unused-tool": "1.0.0"
+  }
+}

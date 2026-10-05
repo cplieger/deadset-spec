@@ -1,0 +1,9 @@
+{
+  "symbols": {
+    "home": { "file": "target/routes.ts", "line": 2 },
+    "about": { "file": "target/routes.ts", "line": 7 },
+    "used": { "file": "target/widgets.ts", "line": 2 },
+    "spare": { "file": "target/widgets.ts", "line": 7 },
+    "dropped": { "file": "target/effects.ts", "line": 2 }
+  }
+}
