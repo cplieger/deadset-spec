@@ -24,27 +24,27 @@ import (
 	"os"
 )
 
-// Settings is decoded, and only its name and its level are read.
-type Settings struct {
+// settings is decoded, and only its name and its level are read.
+type settings struct {
 	Name  string `json:"name"`
 	Theme string `json:"theme"`
-	Level Level  `json:"level"`
+	Level level  `json:"level"`
 }
 
-// Level decodes itself from a document.
-type Level int
+// level decodes itself from a document.
+type level int
 
 // UnmarshalJSON is called by the decoder.
-func (l *Level) UnmarshalJSON(data []byte) error {
-	*l = Level(len(data))
+func (l *level) UnmarshalJSON(data []byte) error {
+	*l = level(len(data))
 	return nil
 }
 
 // Describe is called by nothing.
-func (l Level) Describe() string { return "level" }
+func (level) Describe() string { return "level" }
 
 func main() {
-	var s Settings
+	var s settings
 	if err := json.NewDecoder(os.Stdin).Decode(&s); err != nil {
 		panic(err)
 	}
