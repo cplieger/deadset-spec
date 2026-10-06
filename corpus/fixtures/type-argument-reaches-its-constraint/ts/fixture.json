@@ -1,0 +1,7 @@
+{
+  "symbols": {
+    "Sizer.Size": { "file": "target/shape.ts", "line": 3 },
+    "Box.Size": { "file": "target/shape.ts", "line": 8 },
+    "Total": { "file": "target/shape.ts", "line": 14 }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "name": "@example/target",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./main.ts",
+  "devDependencies": {
+    "@stryker-mutator/core": "9.999.0",
+    "@stryker-mutator/jest-runner": "9.999.0",
+    "@stryker-mutator/vitest-runner": "9.999.0"
+  }
+}

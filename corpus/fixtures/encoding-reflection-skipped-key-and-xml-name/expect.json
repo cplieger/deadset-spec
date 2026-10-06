@@ -1,0 +1,45 @@
+{
+  "name": "encoding-reflection-skipped-key-and-xml-name",
+  "description": "An encoder does not read a field whose tag gives it the key -, so such a field nothing else reads is reported, while a field whose tag names the key - with a comma is read and retained. An XML decoder compares the XMLName field with the element's name, so that field is retained, while another field only the decoder fills is reported.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "record.ID",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "record.Secret",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field"
+    },
+    {
+      "symbol": "record.Dash",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "feed.XMLName",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "feed.Title",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field"
+    }
+  ]
+}

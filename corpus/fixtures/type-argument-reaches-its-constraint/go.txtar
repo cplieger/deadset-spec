@@ -1,0 +1,43 @@
+The Go rendering: a generic function whose type parameter's constraint is an
+interface, and a type the command passes to it as a type argument.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Sizer.Size": { "file": "target/shape/shape.go", "line": 5 },
+    "Box.Size": { "file": "target/shape/shape.go", "line": 12 },
+    "Total": { "file": "target/shape/shape.go", "line": 15 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+package main
+
+import "example.com/target/shape"
+
+func main() { println(shape.Total(shape.Box{})) }
+-- target/shape/shape.go --
+package shape
+
+// Sizer reports a size.
+type Sizer interface {
+	Size() int
+}
+
+// Box is passed as a type argument and never converted to Sizer.
+type Box struct{ width int }
+
+// Size returns the width.
+func (b Box) Size() int { return b.width }
+
+// Total adds the sizes of its values, calling Size through the constraint.
+func Total[S Sizer](values ...S) int {
+	sum := 0
+	for _, v := range values {
+		sum += v.Size()
+	}
+	return sum
+}

@@ -1,0 +1,24 @@
+{
+  "name": "consumer-test-write",
+  "description": "A write in a consumer's test file counts as a read in the run that counts test references and as no read in a production sweep under the default consumer_tests setting, so a library member only a consumer's test file writes is reported as test-only use.",
+  "languages": [
+    "go",
+    "ts"
+  ],
+  "target_kind": "library",
+  "consumers": [
+    "consumer"
+  ],
+  "expect": [
+    {
+      "symbol": "Options.label",
+      "report": "DS1004",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    },
+    {
+      "symbol": "Defaults",
+      "report": "none"
+    }
+  ]
+}

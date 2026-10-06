@@ -1,0 +1,31 @@
+{
+  "name": "encoding-reflection-outside-collection",
+  "description": "A slice, an array or a map of a struct type passed as an interface-typed argument to a package outside the analyzed program reaches the struct type, so the fields of the type a slice of pointers holds and of the type a map holds as its value are retained by the encoding-reflection class, while a field of a struct type never handed over is reported.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "repo.Name",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "account.ID",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "draft.Title",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field"
+    }
+  ]
+}

@@ -12,7 +12,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/cplieger/deadset-spec/v5"
+	"github.com/cplieger/deadset-spec/v6"
 )
 
 const kindsPath = "contract/kinds.json"
@@ -510,5 +510,25 @@ func TestKindsNoLiveRowDeclaresAClassBelowCertain(t *testing.T) {
 				t.Errorf("Kind(%s).max_class = %q, want %q", k.Code, k.MaxClass, "certain")
 			}
 		})
+	}
+}
+
+// TestKindsPublicTextsHoldNoSemicolon pins that every text an analyzer copies
+// into its output, a range's description and a live kind's rule and
+// precondition, is written as plain sentences with no semicolon, because
+// reports, SARIF rule descriptors and explanations show it to users verbatim.
+func TestKindsPublicTextsHoldNoSemicolon(t *testing.T) {
+	doc := loadKinds(t)
+	for _, r := range doc.Ranges {
+		if strings.Contains(r.Description, ";") {
+			t.Errorf("Range(%s).description = %q, want no semicolon", r.Start, r.Description)
+		}
+	}
+	for _, k := range doc.Kinds {
+		for field, text := range map[string]string{"rule": k.Rule, "precondition": k.Precondition} {
+			if strings.Contains(text, ";") {
+				t.Errorf("Kind(%s).%s = %q, want no semicolon", k.Code, field, text)
+			}
+		}
 	}
 }

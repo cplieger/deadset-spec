@@ -1,5 +1,5 @@
 {
-  "contract_version": "5.3.0",
+  "contract_version": "6.0.0",
   "target": { "kind": "library" },
   "analysis": {
     "languages": [],

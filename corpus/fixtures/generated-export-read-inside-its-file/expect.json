@@ -1,0 +1,23 @@
+{
+  "name": "generated-export-read-inside-its-file",
+  "description": "An export of a generated file that only the file itself reads, in a generated file only a test imports, is reported under no code at the default minimum confidence.",
+  "languages": [
+    "go",
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "ArbitraryEntry",
+      "report": "none"
+    },
+    {
+      "symbol": "ArbitraryList",
+      "report": "none"
+    },
+    {
+      "symbol": "Live",
+      "report": "none"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "name": "test-file-registered-callback-parts",
+  "description": "A part written in a test file's top-level statements, in a callback the file registers with a runner, belongs to the file, which the test runner loads, so it is judged in the run that counts test references: a local the callback writes and never reads is reported as a dead store, and the local it reads is reported under no code.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Unused",
+      "report": "DS1807",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "store",
+      "details": {
+        "overlap": [
+          "eslint no-useless-assignment",
+          "@typescript-eslint/no-unused-vars"
+        ]
+      }
+    },
+    {
+      "symbol": "Value",
+      "report": "none"
+    },
+    {
+      "symbol": "register",
+      "report": "none"
+    },
+    {
+      "symbol": "live",
+      "report": "none"
+    }
+  ]
+}

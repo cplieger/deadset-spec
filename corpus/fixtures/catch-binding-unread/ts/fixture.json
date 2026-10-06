@@ -1,0 +1,7 @@
+{
+  "symbols": {
+    "Unread": { "file": "target/main.ts", "line": 6 },
+    "Read": { "file": "target/main.ts", "line": 15 },
+    "NoBinding": { "file": "target/main.ts", "line": 24 }
+  }
+}

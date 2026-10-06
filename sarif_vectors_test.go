@@ -19,7 +19,7 @@ import (
 	"unicode/utf16"
 	"unicode/utf8"
 
-	spec "github.com/cplieger/deadset-spec/v5"
+	spec "github.com/cplieger/deadset-spec/v6"
 )
 
 // sarifVectorsDir holds one directory per published SARIF case.
@@ -123,8 +123,40 @@ func (r *sarifRenderer) renderSARIF(document []byte, inputs [][]byte) (map[strin
 		return nil, err
 	}
 	log["runs"] = runs
-	log["properties"] = map[string]any{"totals": rep.Totals}
+	log["properties"] = sarifProperties(rep.Totals)
 	return log, nil
+}
+
+// sarifProperties is the properties bag of a run or of a merged log: the totals
+// unchanged, and the withheld line text-line.md defines where a count of
+// totals.withheld is not 0.
+func sarifProperties(totals any) map[string]any {
+	properties := map[string]any{"totals": totals}
+	if line := withheldLine(totals); line != "" {
+		properties["withheld"] = line
+	}
+	return properties
+}
+
+// withheldLine renders the line text-line.md defines from a report's totals: each
+// confidence whose withheld count is not 0, from probable to possible, and the
+// setting that shows them all. It is empty where every count is 0.
+func withheldLine(totals any) string {
+	counts, _ := totals.(map[string]any)["withheld"].(map[string]any)
+	var named []string
+	lowest := ""
+	for _, level := range withheldLevels {
+		n, _ := counts[level].(float64)
+		if n == 0 {
+			continue
+		}
+		named = append(named, strconv.Itoa(int(n))+" "+level)
+		lowest = level
+	}
+	if len(named) == 0 {
+		return ""
+	}
+	return "withheld by analysis.min_confidence: " + strings.Join(named, ", ") + ", shown with analysis.min_confidence set to " + lowest
 }
 
 // mergedRuns is one run per merged_from entry in bytewise order of name, then the
@@ -211,7 +243,7 @@ func (r *sarifRenderer) run(name, version string, languages []string, totals any
 		"columnKind":         "utf16CodeUnits",
 		"originalUriBaseIds": map[string]any{"%SRCROOT%": map[string]any{"description": map[string]any{"text": sarifRootDescription}}},
 		"results":            results,
-		"properties":         map[string]any{"totals": totals},
+		"properties":         sarifProperties(totals),
 	}, nil
 }
 
@@ -773,10 +805,13 @@ func TestSARIFVectorsCoverTheMappingsCases(t *testing.T) {
 		if strings.Contains(document, `"id":100,`) && !strings.Contains(document, `"id":101,`) {
 			seen["a capped related-location list"] = true
 		}
+		if strings.Contains(document, `"withheld":"withheld by analysis.min_confidence: `) {
+			seen["a withheld line"] = true
+		}
 	}
 	wants := []string{
 		"an analyzer's run", "a merged log with the merge's own run", "a merged log without the merge's own run",
-		"a failed rendering", "a colon in a first segment", "a capped related-location list",
+		"a failed rendering", "a colon in a first segment", "a capped related-location list", "a withheld line",
 	}
 	for _, want := range wants {
 		if !seen[want] {
@@ -832,6 +867,7 @@ func TestSARIFReproductionRefuses(t *testing.T) {
 		{name: "a_run_carrying_the_merged_totals", dir: "merged-runs-and-totals", file: "inputs/01-go.json", old: `"reasons_recorded": 1`, replacement: `"reasons_recorded": 0`},
 		{name: "a_failed_rendering_written", dir: "record-naming-no-run", file: "report.json", old: `"deadset-rs"`, replacement: `"deadset-ts"`},
 		{name: "a_line_fingerprint_changed", dir: "line-fingerprints", file: "sources.json", old: `"y\ny\n`, replacement: `"y\nz\n`},
+		{name: "a_withheld_line_naming_a_zero_count", dir: "withheld-line", file: "report.json", old: `"probable": 2`, replacement: `"probable": 0`},
 	}
 	kinds := sarifKinds(t)
 	for _, tc := range tests {

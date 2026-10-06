@@ -1,0 +1,46 @@
+{
+  "name": "decode-only-wrapper",
+  "description": "A function that only decodes into its argument, a method of a module outside the analyzed program that hands its argument to a standard decoder and to nothing else, is a decoding destination: it reads no field of the decoded type and resolves no method of it but the decoding ones, so a field only it fills and a method nothing calls are reported. A method that also prints its argument is a destination outside the analyzed program, which reads every field and resolves the methods its package can name.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "settings.Name",
+      "report": "none"
+    },
+    {
+      "symbol": "settings.Theme",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field"
+    },
+    {
+      "symbol": "settings.String",
+      "report": "DS1103",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method"
+    },
+    {
+      "symbol": "profile.Name",
+      "report": "none"
+    },
+    {
+      "symbol": "profile.Email",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "profile.String",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    }
+  ]
+}

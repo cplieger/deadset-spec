@@ -1,0 +1,53 @@
+{
+  "name": "module-declarations-by-import",
+  "description": "A declare module declaration is live while an import of the program names its module: a wildcard declaration by the pattern its specifier matches, an ambient module by its name, and an augmentation by the file both resolve to. One no import names is reported whole, and the members of a live one are judged by their own references, so an augmentation member nothing reads is reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "SvgModule",
+      "report": "none"
+    },
+    {
+      "symbol": "WasmModule",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "namespace",
+      "component": {
+        "root": true
+      }
+    },
+    {
+      "symbol": "RoutesModule",
+      "report": "none"
+    },
+    {
+      "symbol": "LegacyModule",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "namespace",
+      "component": {
+        "root": true
+      }
+    },
+    {
+      "symbol": "RegistryAugmentation",
+      "report": "none"
+    },
+    {
+      "symbol": "Registry.extra",
+      "report": "none"
+    },
+    {
+      "symbol": "Registry.unused",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member"
+    }
+  ]
+}

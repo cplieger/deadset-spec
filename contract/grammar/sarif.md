@@ -14,7 +14,7 @@ The mapping is written against [GitHub's supported-properties table](https://doc
 }
 ```
 
-`$schema` is the OASIS URI of the 2.1.0 errata01 schema, fixed so that two producers write the same value; GitHub accepts any 2.1.0 schema URI. `version` is `2.1.0`. `runs` holds one run per analyzer report. A merged document adds `properties.totals`, the merged report's `totals`, described below.
+`$schema` is the OASIS URI of the 2.1.0 errata01 schema, fixed so that two producers write the same value; GitHub accepts any 2.1.0 schema URI. `version` is `2.1.0`. `runs` holds one run per analyzer report. A merged document adds `properties.totals`, the merged report's `totals`, and `properties.withheld`, the withheld line of those totals where one is written, both described below.
 
 The document is one JSON text as [RFC 8259](https://www.rfc-editor.org/rfc/rfc8259) defines it, encoded as UTF-8 with no byte order mark. This page fixes the document's value and not its bytes: two documents for one report are the same SARIF when they decode to equal JSON values, an object's members compared by name in any order, an array's elements in order and a string after its escapes are read, so a producer writes any escape RFC 8259 permits, U+2028 and U+2029 written raw or as `\u2028` and `\u2029` alike. A product writes the same bytes for the same report on every run.
 
@@ -36,7 +36,8 @@ GitHub accepts at most 20 runs per file, 25,000 results per run (it displays the
 | `columnKind` | The SARIF name of the unit `finding.schema.json` fixes for `position.column`: `utf16CodeUnits` when the schema counts UTF-16 code units, `unicodeCodePoints` when it counts code points. SARIF admits no third value and requires the property on every run that holds a result (section 3.14.27), so the schema's unit is one of these two. GitHub does not read it. It is emitted because an absent `columnKind` defaults to `unicodeCodePoints`, and a producer counting UTF-16 code units would then mislabel every column after a character outside the Basic Multilingual Plane. |
 | `originalUriBaseIds` | `{ "%SRCROOT%": { "description": { "text": "The target root." } } }`, in every run, an analyzer's and the merge's alike, wherever the product ran. The entry declares the base identifier every location uses and deliberately omits `uri`: SARIF section 3.14.14 permits the omission for exactly this case, producing deterministic output with no machine path in it. GitHub does not read it. |
 | `results[]` | One result per finding, then one per stale suppression, [below](#the-results). A run that holds no record carries an empty array. |
-| `properties.totals` | The `totals` object of the report the run's tool wrote, unchanged: in a merged document, an input report's run carries that input report's `totals` and the merge's own run the merged report's. GitHub does not read it. It is the place a reader of the file sees `suppressions_in_effect`, `reasons_recorded` and `omitted`, the counts that describe what this document does not contain. |
+| `properties.totals` | The `totals` object of the report the run's tool wrote, unchanged: in a merged document, an input report's run carries that input report's `totals` and the merge's own run the merged report's. GitHub does not read it. It is the place a reader of the file sees `suppressions_in_effect`, `reasons_recorded`, `omitted` and `withheld`, the counts that describe what this document does not contain. |
+| `properties.withheld` | The withheld line [`text-line.md`](text-line.md) defines, rendered from the same `totals`, as a string. Emitted only where a count of `totals.withheld` is not 0, so a run whose minimum withheld nothing carries no such member. GitHub does not read it. It tells a reader of the file in one line how many findings the minimum confidence withheld and the setting that shows them. |
 
 Not emitted on the run: `invocations` (GitHub reads its working directory only to relativize absolute URIs, and every URI here is already relative; the array would otherwise carry the command line and the machine path), `artifacts`, `versionControlProvenance` (the analyzer reads no version control), `taxonomies`, `translations` and `policies`.
 
@@ -70,7 +71,7 @@ Not emitted on a rule: `helpUri` and `help.markdown` (GitHub shows `help.text` w
 | `locations[]` | Exactly one location, the finding's `position`, [below](#the-location). GitHub reads only the first location of a result; SARIF allows more, and this format never has a second. |
 | `relatedLocations[]` | The positions the finding names beyond its own, [below](#related-locations). Absent when the finding names none. |
 | `partialFingerprints` | The two keys [below](#partial-fingerprints). |
-| `properties` | Every field of the finding this page has not mapped above, under its schema name and with its value unchanged; a merged finding's `analyzer` is mapped by the run that holds the result. At schema version 7.0.0 that is `language`, `symbol`, `reachability_class`, `confidence`, `liveness_relation`, `test_only`, `generated`, `component`, `retained_by`, `configurations`, `consumers_loaded`, `fixability` and `details`. A field the finding omits is absent from the bag, never written as a null or as an empty value. GitHub does not read the bag; it serves other SARIF consumers, a codemod and a reader of the file, and it changes nothing about the alert GitHub shows. |
+| `properties` | Every field of the finding this page has not mapped above, under its schema name and with its value unchanged; a merged finding's `analyzer` is mapped by the run that holds the result. At schema version 8.0.0 that is `language`, `symbol`, `reachability_class`, `confidence`, `liveness_relation`, `test_only`, `generated`, `component`, `retained_by`, `configurations`, `consumers_loaded`, `fixability` and `details`. A field the finding omits is absent from the bag, never written as a null or as an empty value. GitHub does not read the bag; it serves other SARIF consumers, a codemod and a reader of the file, and it changes nothing about the alert GitHub shows. |
 
 Not emitted on a result: `kind` (the default `fail` is right for every result), `rule` (a `ruleId` with a `ruleIndex` locates the descriptor), `fixes` (the report is the interface for an edit, and no product edits source in this version), `codeFlows`, `stacks`, `taxa`, `baselineState`, `rank`, `occurrenceCount`, and `suppressions`, whose omission has [its own section](#the-omitted-suppression).
 
@@ -206,6 +207,7 @@ One row per property this mapping emits, with the row of GitHub's supported-prop
 | `version` | sarifLog `version`, Required |
 | `runs[]` | sarifLog `runs[]`, Required |
 | `properties.totals` | none; in a merged document, carries the merged report's totals for a reader of the file |
+| `properties.withheld` | none; in a merged document, the merged report's withheld line for a reader of the file |
 | `runs[].tool.driver` | run `tool.driver`, Required |
 | `runs[].tool.driver.name` | toolComponent `name`, Required |
 | `runs[].tool.driver.version` | toolComponent `version`, Optional; not used when `semanticVersion` is present |
@@ -223,6 +225,7 @@ One row per property this mapping emits, with the row of GitHub's supported-prop
 | `runs[].columnKind` | none; required by SARIF section 3.14.27 on a run with results |
 | `runs[].originalUriBaseIds` | none; declares `%SRCROOT%` for validators and other consumers |
 | `runs[].properties.totals` | none; carries the report's totals for a reader of the file |
+| `runs[].properties.withheld` | none; the withheld line for a reader of the file |
 | `runs[].results[]` | run `results[]`, Required |
 | `results[].ruleId` | result `ruleId`, Optional |
 | `results[].ruleIndex` | result `ruleIndex`, Optional |
@@ -251,5 +254,5 @@ One row per property this mapping emits, with the row of GitHub's supported-prop
 - [`kinds.json`](../kinds.json): every rule's `code`, `name`, `rule`, `precondition`, `default_severity` and `max_class`.
 - `symbol-ref.md`: the reference `deadsetSymbolRef/v1` digests.
 - [`merge.md`](merge.md): the order of results and the `DS1705` finding the merge run carries.
-- [`text-line.md`](text-line.md): the same sequence of findings and stale suppressions, rendered one per line.
+- [`text-line.md`](text-line.md): the same sequence of findings and stale suppressions, rendered one per line, and the withheld line.
 - [`exit-codes.json`](../exit-codes.json): the code that accompanies a document, including code 4 for a report the merge has not resolved.

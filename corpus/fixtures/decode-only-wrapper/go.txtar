@@ -1,0 +1,103 @@
+The Go rendering: a command that decodes two documents through a dependency
+module's decoder, and the dependency, whose one method only decodes into its
+argument and whose other method also prints it. The dependency is a local module
+the target requires and replaces, so the rendering loads with no network access.
+
+-- fixture.json --
+{
+  "symbols": {
+    "settings.Name": { "file": "target/main.go", "line": 12 },
+    "settings.Theme": { "file": "target/main.go", "line": 13 },
+    "settings.String": { "file": "target/main.go", "line": 17 },
+    "profile.Name": { "file": "target/main.go", "line": 21 },
+    "profile.Email": { "file": "target/main.go", "line": 22 },
+    "profile.String": { "file": "target/main.go", "line": 26 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+
+require example.com/jsonwrap v0.0.0
+
+replace example.com/jsonwrap => ../jsonwrap
+-- target/main.go --
+// Command target reads two documents from standard input.
+package main
+
+import (
+	"os"
+
+	"example.com/jsonwrap"
+)
+
+// settings is decoded through a method that only decodes, and only its name is read.
+type settings struct {
+	Name  string `json:"name"`
+	Theme string `json:"theme"`
+}
+
+// String is called by nothing.
+func (s settings) String() string { return "settings" }
+
+// profile is decoded through a method that also prints it, and only its name is read.
+type profile struct {
+	Name  string `json:"name"`
+	Email string `json:"email"`
+}
+
+// String is called by the printing it is handed to.
+func (p profile) String() string { return "profile" }
+
+func main() {
+	var s settings
+	var p profile
+	d := jsonwrap.NewDecoder(os.Stdin)
+	if err := d.Decode(&s); err != nil {
+		panic(err)
+	}
+	if err := d.DecodeAndPrint(&p); err != nil {
+		panic(err)
+	}
+	println(s.Name, p.Name)
+}
+-- jsonwrap/go.mod --
+module example.com/jsonwrap
+
+go 1.27.0
+-- jsonwrap/jsonwrap.go --
+// Package jsonwrap decodes documents from a reader.
+package jsonwrap
+
+import (
+	"encoding/json"
+	"errors"
+	"fmt"
+	"io"
+)
+
+// Decoder decodes one document after another from a reader.
+type Decoder struct {
+	dec *json.Decoder
+}
+
+// NewDecoder returns a Decoder reading r.
+func NewDecoder(r io.Reader) *Decoder { return &Decoder{dec: json.NewDecoder(r)} }
+
+// Decode decodes the next document into v and does nothing else with it.
+func (d *Decoder) Decode(v any) error {
+	if d.dec == nil {
+		return errors.New("jsonwrap: no reader")
+	}
+	return d.dec.Decode(v)
+}
+
+// DecodeAndPrint decodes the next document into v and prints it.
+func (d *Decoder) DecodeAndPrint(v any) error {
+	if err := d.dec.Decode(v); err != nil {
+		return err
+	}
+	fmt.Println(v)
+	return nil
+}

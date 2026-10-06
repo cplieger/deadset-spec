@@ -1,0 +1,13 @@
+{
+  "symbols": {
+    "Store.get": { "file": "target/store.ts", "line": 3 },
+    "Store.reset": { "file": "target/store.ts", "line": 4 },
+    "Memory.get": { "file": "target/store.ts", "line": 11 },
+    "Memory.reset": { "file": "target/store.ts", "line": 16 },
+    "Disk.get": { "file": "target/store.ts", "line": 25 },
+    "Disk.reset": { "file": "target/store.ts", "line": 30 },
+    "Clearer.reset": { "file": "target/store.ts", "line": 44 },
+    "Cache.get": { "file": "target/store.ts", "line": 52 },
+    "Cache.reset": { "file": "target/store.ts", "line": 56 }
+  }
+}

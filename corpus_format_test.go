@@ -17,7 +17,7 @@ import (
 	"testing"
 	"testing/fstest"
 
-	"github.com/cplieger/deadset-spec/v5"
+	"github.com/cplieger/deadset-spec/v6"
 )
 
 const (
@@ -110,6 +110,7 @@ type expectationDocument struct {
 	ConventionsApplied     []expectedConvention             `json:"conventions_applied"`
 	SetupFailure           *expectedSetupFailure            `json:"setup_failure"`
 	MinConfidence          string                           `json:"min_confidence"`
+	ConsumerTests          string                           `json:"consumer_tests"`
 	EntryFiles             []string                         `json:"entry_files"`
 	DisabledConventions    []string                         `json:"disabled_conventions"`
 }
@@ -729,6 +730,7 @@ func checkFixture(fsys fs.FS, dir string) error {
 	errs := checkSetupFailure(&expect)
 	errs = append(errs, checkConventionsLanguage(&expect)...)
 	errs = append(errs, checkTypeScriptKeysLanguage(&expect)...)
+	errs = append(errs, checkConsumerTestsNamesAConsumer(&expect)...)
 	if expect.Name != path.Base(dir) {
 		errs = append(errs, fmt.Errorf("%s name = %q, want the directory name %q", expectFile, expect.Name, path.Base(dir)))
 	}
@@ -1887,6 +1889,13 @@ func TestCheckFixtureRefuses(t *testing.T) {
 					"-- dep/go.mod --\nmodule example.test/dep\n"...)
 			},
 			wantMsg: errNoDependencyRequire.Error() + `: target/go.mod names no require of "example.test/dep"`,
+		},
+		{
+			name: "consumer_tests_without_a_consumer",
+			mutate: func(m fstest.MapFS) {
+				m["corpus/fixtures/planted/expect.json"].Data = bytes.Replace(m["corpus/fixtures/planted/expect.json"].Data, []byte(`"consumers":["consumer"],`), []byte(`"consumer_tests":"production",`), 1)
+			},
+			wantMsg: `holds consumer_tests and names no consumer`,
 		},
 		{
 			name: "entry_files_in_a_two_language_fixture",
@@ -3397,6 +3406,7 @@ func checkSetupFailure(expect *expectationDocument) []error {
 		"notes":                   len(expect.Notes) != 0,
 		"conventions_applied":     len(expect.ConventionsApplied) != 0,
 		"min_confidence":          expect.MinConfidence != "",
+		"consumer_tests":          expect.ConsumerTests != "",
 		"entry_files":             len(expect.EntryFiles) != 0,
 		"disabled_conventions":    len(expect.DisabledConventions) != 0,
 	}
@@ -3415,6 +3425,15 @@ func checkConventionsLanguage(expect *expectationDocument) []error {
 		return nil
 	}
 	return []error{fmt.Errorf("%s holds conventions_applied and lists the languages %v, want exactly one language", expectFile, expect.Languages)}
+}
+
+// checkConsumerTestsNamesAConsumer holds a fixture setting consumer_tests to one that names a
+// consumer, because the setting decides only how a consumer's test file counts.
+func checkConsumerTestsNamesAConsumer(expect *expectationDocument) []error {
+	if expect.ConsumerTests == "" || len(expect.Consumers) != 0 {
+		return nil
+	}
+	return []error{fmt.Errorf("%s holds consumer_tests and names no consumer, want a consumer whose test files the setting counts", expectFile)}
 }
 
 // checkTypeScriptKeysLanguage holds a fixture that sets ts.entry_files or ts.disabled_conventions

@@ -1,0 +1,9 @@
+{
+  "symbols": {
+    "Mutated": { "file": "target/src/mutated.ts", "line": 1 },
+    "Covered": { "file": "target/src/covered.ts", "line": 1 },
+    "Excluded": { "file": "target/src/excluded.ts", "line": 1 },
+    "Setup": { "file": "target/src/setup.ts", "line": 1 },
+    "Named": { "file": "target/src/named.ts", "line": 1 }
+  }
+}

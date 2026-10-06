@@ -1,0 +1,55 @@
+{
+  "name": "release-tags-with-consumers",
+  "description": "A declaration a release tag makes published API is live while a loaded consumer uses it. When every declared consumer loads and none uses a tagged declaration, it is reported at certain, as an untagged one is.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "library",
+  "consumers": [
+    "consumer"
+  ],
+  "expect": [
+    {
+      "symbol": "Entry",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    },
+    {
+      "symbol": "Helper",
+      "report": "none"
+    },
+    {
+      "symbol": "Tagged",
+      "report": "none"
+    },
+    {
+      "symbol": "Preview",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    },
+    {
+      "symbol": "Preview.render",
+      "report": "none"
+    },
+    {
+      "symbol": "Experimental",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    },
+    {
+      "symbol": "Untagged",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    },
+    {
+      "symbol": "Hidden",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    }
+  ]
+}

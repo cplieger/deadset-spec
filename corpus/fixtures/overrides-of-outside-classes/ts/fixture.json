@@ -1,0 +1,9 @@
+{
+  "symbols": {
+    "Greeting.render": { "file": "target/main.ts", "line": 5 },
+    "Greeting.shout": { "file": "target/main.ts", "line": 10 },
+    "Leaf.connected": { "file": "target/main.ts", "line": 19 },
+    "Orphan": { "file": "target/main.ts", "line": 25 },
+    "Orphan.render": { "file": "target/main.ts", "line": 26 }
+  }
+}

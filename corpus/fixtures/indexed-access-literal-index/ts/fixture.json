@@ -1,0 +1,10 @@
+{
+  "symbols": {
+    "ListUsers": { "file": "target/operations.ts", "line": 3 },
+    "GetUser": { "file": "target/operations.ts", "line": 4 },
+    "RenameUser": { "file": "target/operations.ts", "line": 5 },
+    "SuspendUser": { "file": "target/operations.ts", "line": 6 },
+    "RemoveUser": { "file": "target/operations.ts", "line": 7 },
+    "DeleteUser": { "file": "target/operations.ts", "line": 8 }
+  }
+}

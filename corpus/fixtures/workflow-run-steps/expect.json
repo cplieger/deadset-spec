@@ -1,0 +1,36 @@
+{
+  "name": "workflow-run-steps",
+  "description": "A source file a workflow step's run command names by its path from the target root is a root, on a single-line command and in a block scalar, with or without a leading ./. A path built from an expression names no file, and a path under a key other than run is not read, so both files are reported as never imported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Check",
+      "report": "none"
+    },
+    {
+      "symbol": "Report",
+      "report": "none"
+    },
+    {
+      "symbol": "Release",
+      "report": "none"
+    },
+    {
+      "symbol": "Lint",
+      "report": "DS1502",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "Upload",
+      "report": "DS1502",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    }
+  ]
+}

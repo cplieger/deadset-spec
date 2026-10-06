@@ -1,0 +1,7 @@
+{
+  "symbols": {
+    "ArbitraryEntry": { "file": "target/wire/types.ts", "line": 4 },
+    "ArbitraryList": { "file": "target/wire/types.ts", "line": 9 },
+    "Live": { "file": "target/catalog.ts", "line": 2 }
+  }
+}

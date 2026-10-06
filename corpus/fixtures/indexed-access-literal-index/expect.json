@@ -1,0 +1,37 @@
+{
+  "name": "indexed-access-literal-index",
+  "description": "An indexed-access type whose index is a literal type, or a union of literal types, references each member of the indexed type a literal names. Where the index is a type parameter, each call references the member the type argument it fixes names, whether the call writes that type argument or the compiler infers it, so the one member no index names is reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "ListUsers",
+      "report": "none"
+    },
+    {
+      "symbol": "RenameUser",
+      "report": "none"
+    },
+    {
+      "symbol": "SuspendUser",
+      "report": "none"
+    },
+    {
+      "symbol": "GetUser",
+      "report": "none"
+    },
+    {
+      "symbol": "RemoveUser",
+      "report": "none"
+    },
+    {
+      "symbol": "DeleteUser",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member"
+    }
+  ]
+}

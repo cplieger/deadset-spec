@@ -1,0 +1,10 @@
+{
+  "symbols": {
+    "Store.Find": { "file": "target/store.ts", "line": 3 },
+    "Plain.Find": { "file": "target/store.ts", "line": 8 },
+    "newEncrypted": { "file": "target/store.ts", "line": 23 },
+    "Encrypted": { "file": "target/store.ts", "line": 14 },
+    "Encrypted.Find": { "file": "target/store.ts", "line": 17 },
+    "Use": { "file": "target/store.ts", "line": 28 }
+  }
+}

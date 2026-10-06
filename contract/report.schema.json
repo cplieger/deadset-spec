@@ -687,7 +687,7 @@
       }
     },
     "totals": {
-      "description": "The counts a summary line prints, so a reader compares them without counting records. A merge recomputes every one of them over the merged arrays.",
+      "description": "The counts a summary line prints, so a reader compares them without counting records. A merge recomputes each of them over the merged arrays, except the counts grammar/merge.md sums over the input reports because no merged array holds what they count.",
       "type": "object",
       "additionalProperties": false,
       "required": [
@@ -698,7 +698,8 @@
         "reasons_recorded",
         "stale_suppressions",
         "pending",
-        "omitted"
+        "omitted",
+        "withheld"
       ],
       "properties": {
         "findings": {
@@ -758,6 +759,33 @@
           "description": "How many findings the configured maximum finding count kept out of findings and out of every output rendered from it. A truncation a reader cannot see is what this count exists to prevent.",
           "type": "integer",
           "minimum": 0
+        },
+        "withheld": {
+          "description": "How many findings analysis.min_confidence withheld, per confidence: the findings a run with the minimum set to possible would count in findings at that confidence that this run does not, so lowering the minimum to a level shows the findings counted at that level and every level above it. A finding a suppression would bind at that minimum is not counted, and neither is one whose severity is allow. Every count is 0 under the minimum possible. A merge sums each count over its input reports, because no merged array holds the findings counted.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "certain",
+            "probable",
+            "possible"
+          ],
+          "properties": {
+            "certain": {
+              "description": "How many findings at the confidence certain the minimum withheld: always 0, because no minimum withholds a certain finding.",
+              "type": "integer",
+              "minimum": 0
+            },
+            "probable": {
+              "description": "How many findings at the confidence probable the minimum withheld, which is 0 unless the minimum is certain.",
+              "type": "integer",
+              "minimum": 0
+            },
+            "possible": {
+              "description": "How many findings at the confidence possible the minimum withheld.",
+              "type": "integer",
+              "minimum": 0
+            }
+          }
         }
       }
     }

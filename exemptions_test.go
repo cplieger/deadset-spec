@@ -8,9 +8,10 @@ import (
 	"path"
 	"regexp"
 	"slices"
+	"strings"
 	"testing"
 
-	"github.com/cplieger/deadset-spec/v5"
+	"github.com/cplieger/deadset-spec/v6"
 )
 
 const exemptionsPath = "contract/exemptions.json"
@@ -274,5 +275,23 @@ func TestCorpusRetainedByResolves(t *testing.T) {
 func TestRetainedByRejectsMalformedExpectation(t *testing.T) {
 	if _, err := retainedBy([]byte(`{"expect":[`)); err == nil {
 		t.Errorf("retainedBy(truncated document) = nil error, want a decode error")
+	}
+}
+
+// TestExemptionsPublicTextsHoldNoSemicolon pins that every text an analyzer
+// copies into its output, a class's rule, what it retains and each mechanism,
+// is written as plain sentences with no semicolon, because explanations and
+// the retained-symbol listing show it to users verbatim.
+func TestExemptionsPublicTextsHoldNoSemicolon(t *testing.T) {
+	for _, class := range loadExemptions(t).Exemptions {
+		texts := map[string]string{"rule": class.Rule, "retains": class.Retains}
+		for lang, text := range class.Mechanism {
+			texts["mechanism["+lang+"]"] = text
+		}
+		for field, text := range texts {
+			if strings.Contains(text, ";") {
+				t.Errorf("Class(%s).%s = %q, want no semicolon", class.Class, field, text)
+			}
+		}
 	}
 }

@@ -1,0 +1,29 @@
+{
+  "name": "test-support-effect-import",
+  "description": "A file only a test imports for its effects is test-support code, because the import is a chain that starts at the test: the file is not reported as never imported, and a declaration of it that its own top level references is reported at the reachability class possible.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "expect": [
+    {
+      "symbol": "setupFile",
+      "report": "none"
+    },
+    {
+      "symbol": "seed",
+      "report": "DS1004",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "function",
+      "component": {
+        "root": true
+      }
+    },
+    {
+      "symbol": "live",
+      "report": "none"
+    }
+  ]
+}

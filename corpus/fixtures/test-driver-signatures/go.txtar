@@ -1,6 +1,8 @@
-The Go rendering: one package whose test file holds a test, a benchmark, a fuzz
-test and TestMain, none of which reads its parameter, a helper the test calls
-with a parameter it never reads, and a helper nothing calls with the same shape.
+The Go rendering: one package whose test file holds a test, a benchmark, an
+example, a fuzz test and TestMain, none of which reads its parameter, a helper
+the test calls with a parameter it never reads, and a helper nothing calls with
+the same shape, its parameters on a line of their own, and an init function and
+a blank declaration nothing references.
 
 -- fixture.json --
 {
@@ -9,8 +11,12 @@ with a parameter it never reads, and a helper nothing calls with the same shape.
     "BenchmarkParameter": { "file": "target/catalog/catalog_test.go", "line": 13 },
     "FuzzParameter": { "file": "target/catalog/catalog_test.go", "line": 15 },
     "MainParameter": { "file": "target/catalog/catalog_test.go", "line": 5 },
-    "HelperUnread": { "file": "target/catalog/catalog_test.go", "line": 18 },
-    "DeadHelperUnread": { "file": "target/catalog/catalog_test.go", "line": 21 }
+    "ExampleLive": { "file": "target/catalog/catalog_test.go", "line": 17 },
+    "HelperUnread": { "file": "target/catalog/catalog_test.go", "line": 20 },
+    "DeadHelper": { "file": "target/catalog/catalog_test.go", "line": 23 },
+    "DeadHelperUnread": { "file": "target/catalog/catalog_test.go", "line": 24 },
+    "TestFileInit": { "file": "target/catalog/catalog_test.go", "line": 30 },
+    "TestFileBlank": { "file": "target/catalog/catalog_test.go", "line": 33 }
   }
 }
 -- target/go.mod --
@@ -45,8 +51,20 @@ func BenchmarkLive(b *testing.B) { _ = Live(2) }
 
 func FuzzLive(f *testing.F) { _ = Live(3) }
 
+func ExampleLive() { println(Live(4)) }
+
 // helper is called by a test and never reads its second parameter.
 func helper(n, unread int) int { return n }
 
 // deadHelper is called by nothing and never reads its second parameter.
-func deadHelper(n, unread int) int { return Live(n) }
+func deadHelper(
+	n, unread int,
+) int {
+	return Live(n)
+}
+
+// init runs when the test binary loads the package.
+func init() { _ = Live(5) }
+
+// The blank declaration runs when the test binary loads the package.
+var _ = Live(6)

@@ -6,7 +6,7 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/cplieger/deadset-spec/v5"
+	"github.com/cplieger/deadset-spec/v6"
 )
 
 const (
@@ -148,10 +148,11 @@ func TestReportSchemaProperties(t *testing.T) {
 			at:   "properties/totals",
 			want: []string{
 				"by_severity", "deletable_lines", "findings", "omitted", "pending",
-				"reasons_recorded", "stale_suppressions", "suppressions_in_effect",
+				"reasons_recorded", "stale_suppressions", "suppressions_in_effect", "withheld",
 			},
 		},
 		{name: "by_severity", at: "properties/totals/properties/by_severity", want: []string{"allow", "deny", "warn"}},
+		{name: "withheld", at: "properties/totals/properties/withheld", want: []string{"certain", "possible", "probable"}},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -237,10 +238,11 @@ func TestReportSchemaRequiredMembers(t *testing.T) {
 			at:   "properties/totals",
 			want: []string{
 				"findings", "by_severity", "deletable_lines", "suppressions_in_effect",
-				"reasons_recorded", "stale_suppressions", "pending", "omitted",
+				"reasons_recorded", "stale_suppressions", "pending", "omitted", "withheld",
 			},
 		},
 		{name: "by_severity", at: "properties/totals/properties/by_severity", want: []string{"allow", "warn", "deny"}},
+		{name: "withheld", at: "properties/totals/properties/withheld", want: []string{"certain", "probable", "possible"}},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {

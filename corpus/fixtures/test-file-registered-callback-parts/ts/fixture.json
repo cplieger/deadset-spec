@@ -1,0 +1,8 @@
+{
+  "symbols": {
+    "Unused": { "file": "target/catalog.test.ts", "line": 13 },
+    "Value": { "file": "target/catalog.test.ts", "line": 14 },
+    "register": { "file": "target/catalog.test.ts", "line": 5 },
+    "live": { "file": "target/catalog.ts", "line": 2 }
+  }
+}

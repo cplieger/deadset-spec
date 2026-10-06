@@ -1,0 +1,33 @@
+The Go rendering: a command that hands a value to reflect.ValueOf and calls no
+method through the reflect package.
+
+-- fixture.json --
+{
+  "symbols": {
+    "sample.Name": { "file": "target/main.go", "line": 9 },
+    "sample.Describe": { "file": "target/main.go", "line": 13 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target counts the fields of a value through reflection.
+package main
+
+import "reflect"
+
+// sample is handed to reflect.ValueOf, and the program finds no method through
+// reflection.
+type sample struct {
+	Name string
+}
+
+// Describe is called by nothing.
+func (s sample) Describe() string { return "sample" }
+
+func main() {
+	v := reflect.ValueOf(sample{})
+	println(v.NumField())
+}

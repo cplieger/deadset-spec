@@ -1,0 +1,8 @@
+{
+  "name": "@stryker-mutator/core",
+  "version": "9.999.0",
+  "private": true,
+  "bin": {
+    "stryker": "./bin/stryker.js"
+  }
+}

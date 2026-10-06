@@ -1,0 +1,31 @@
+{
+  "name": "catch-binding-unread",
+  "description": "The binding of a catch clause is a local variable the clause writes when it catches, so a binding the clause's block never reads is reported as a dead store at the binding, while a binding the block reads, and a clause written with no binding, are reported under no code.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Unread",
+      "report": "DS1807",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "store",
+      "details": {
+        "overlap": [
+          "eslint no-useless-assignment",
+          "@typescript-eslint/no-unused-vars"
+        ]
+      }
+    },
+    {
+      "symbol": "Read",
+      "report": "none"
+    },
+    {
+      "symbol": "NoBinding",
+      "report": "none"
+    }
+  ]
+}

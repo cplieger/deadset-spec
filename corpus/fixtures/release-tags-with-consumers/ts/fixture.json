@@ -1,0 +1,12 @@
+{
+  "symbols": {
+    "Entry": { "file": "target/index.ts", "line": 4 },
+    "Helper": { "file": "target/internal.ts", "line": 4 },
+    "Tagged": { "file": "target/internal.ts", "line": 12 },
+    "Preview": { "file": "target/internal.ts", "line": 17 },
+    "Preview.render": { "file": "target/internal.ts", "line": 19 },
+    "Experimental": { "file": "target/internal.ts", "line": 25 },
+    "Untagged": { "file": "target/internal.ts", "line": 28 },
+    "Hidden": { "file": "target/internal.ts", "line": 33 }
+  }
+}

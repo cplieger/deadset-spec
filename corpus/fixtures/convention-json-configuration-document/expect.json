@@ -1,0 +1,36 @@
+{
+  "name": "convention-json-configuration-document",
+  "description": "The document of a JSON configuration file is its default export, so an applied convention row reads its properties there as it reads a module's default export: the test runner the Stryker configuration selects by its short name is used, and the runner it does not select is reported. The fixture assumes the analyzer carries a row named stryker for the package @stryker-mutator/core whose range holds the installed version and which reads testRunner from stryker.config.json as the short name of the package @stryker-mutator/{}-runner.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "conventions_applied": [
+    {
+      "name": "stryker",
+      "package": "@stryker-mutator/core",
+      "version": "9.999.0",
+      "manifest": "package.json"
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "StrykerCore",
+      "report": "none"
+    },
+    {
+      "symbol": "VitestRunner",
+      "report": "none"
+    },
+    {
+      "symbol": "JestRunner",
+      "report": "DS1601",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "dependency",
+      "details": {
+        "dependency_class": "dev-dependency"
+      }
+    }
+  ]
+}

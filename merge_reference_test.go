@@ -16,7 +16,7 @@ import (
 	"testing"
 	"testing/fstest"
 
-	"github.com/cplieger/deadset-spec/v5"
+	"github.com/cplieger/deadset-spec/v6"
 )
 
 // This file is the merge contract/grammar/merge.md states, run over each published case's
@@ -871,9 +871,13 @@ func mergedTotals(inputs []mergeInput, findings, stale []*jsonValue) *jsonValue 
 		deletable += n
 	}
 	inEffect, reasons := 0, 0
+	withheld := map[string]int{}
 	for _, in := range inputs {
 		inEffect += in.report.at("totals", "suppressions_in_effect").num()
 		reasons += in.report.at("totals", "reasons_recorded").num()
+		for _, level := range withheldLevels {
+			withheld[level] += in.report.at("totals", "withheld", level).num()
+		}
 	}
 	return jsonObjectOf(
 		"findings", jsonNumberOf(len(findings)),
@@ -884,8 +888,13 @@ func mergedTotals(inputs []mergeInput, findings, stale []*jsonValue) *jsonValue 
 		"stale_suppressions", jsonNumberOf(len(stale)),
 		"pending", jsonNumberOf(0),
 		"omitted", jsonNumberOf(0),
+		"withheld", jsonObjectOf("certain", jsonNumberOf(withheld["certain"]), "probable", jsonNumberOf(withheld["probable"]), "possible", jsonNumberOf(withheld["possible"])),
 	)
 }
+
+// withheldLevels are the confidence levels totals.withheld counts, in the order the
+// report schema lists them.
+var withheldLevels = []string{"certain", "probable", "possible"}
 
 // loadReferenceCase reads one case as the reference merge takes it: the input reports in
 // file-name order, the accepted versions and the caller's facts.

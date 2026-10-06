@@ -1,0 +1,8 @@
+{
+  "name": "prettier",
+  "version": "3.999.0",
+  "private": true,
+  "bin": {
+    "prettier": "./bin.js"
+  }
+}

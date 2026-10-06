@@ -1,0 +1,8 @@
+{
+  "name": "vitest",
+  "version": "5.999.0",
+  "private": true,
+  "bin": {
+    "vitest": "./cli.js"
+  }
+}

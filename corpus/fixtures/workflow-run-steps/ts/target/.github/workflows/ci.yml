@@ -1,0 +1,19 @@
+name: ci
+on: push
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        tool: [lint]
+    steps:
+      - uses: actions/checkout@v4
+      - run: node scripts/check.ts
+      - name: Report
+        run: |
+          node scripts/report.ts --out "$RUNNER_TEMP/report.txt"
+          ./scripts/release.ts
+      - run: node scripts/${{ matrix.tool }}.ts
+      - uses: actions/upload-artifact@v4
+        with:
+          path: scripts/upload.ts

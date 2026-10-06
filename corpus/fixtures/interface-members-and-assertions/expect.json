@@ -1,6 +1,6 @@
 {
   "name": "interface-members-and-assertions",
-  "description": "An interface no declaration names as a type is reported, and the concrete type that satisfies it stays live through its own method. An interface a function takes as a parameter type is not reported, the method a call site invokes through it is not reported, and the method nothing invokes through it is. A compile-time assertion whose interface nothing else names as a type is reported, the interface's own method is reported beside it because the assertion is not a call, and the concrete method that satisfies the interface is not reported.",
+  "description": "An interface no declaration names as a type is reported, and the concrete type that satisfies it stays live through its own method. An interface a function takes as a parameter type is not reported, the method a call site invokes through it is not reported, and the method nothing invokes through it is. A compile-time assertion whose interface nothing else names as a type is reported, the interface's own method is reported beside it because the assertion is not a call, and the concrete method that implements that uncalled method is reported as a member of its component, so the three delete together.",
   "languages": ["go"],
   "target_kind": "application",
   "expect": [
@@ -34,7 +34,10 @@
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "interface-method",
-      "liveness_relation": "reference-counting"
+      "liveness_relation": "reference-counting",
+      "component": {
+        "root": true
+      }
     },
     {
       "symbol": "Assertion",
@@ -45,7 +48,14 @@
     },
     {
       "symbol": "AssertedMethod",
-      "report": "none"
+      "report": "DS1103",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method",
+      "liveness_relation": "reachability",
+      "component": {
+        "root": false
+      }
     }
   ]
 }

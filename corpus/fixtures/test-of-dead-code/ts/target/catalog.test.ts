@@ -1,7 +1,7 @@
 import { deadOne, deadTwo, live } from "./catalog.js";
 
-// A test file under the default test-file pattern. A runner evaluates it as a
-// module and calls neither test by name, so no declaration references either.
+// A test file under the default test-file pattern. A runner loads it and calls
+// what it registers or exports, so no declaration references either test.
 
 export function testDeadOnly(): void {
   assertSum(deadOne() + deadTwo(), 3);

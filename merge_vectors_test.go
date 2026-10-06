@@ -16,7 +16,7 @@ import (
 	"testing"
 	"testing/fstest"
 
-	"github.com/cplieger/deadset-spec/v5"
+	"github.com/cplieger/deadset-spec/v6"
 )
 
 const (
@@ -125,6 +125,7 @@ type mergeEvaluation struct {
 }
 
 type mergeTotals struct {
+	Withheld          map[string]int `json:"withheld"`
 	BySeverity        map[string]int `json:"by_severity"`
 	Findings          int            `json:"findings"`
 	StaleSuppressions int            `json:"stale_suppressions"`
@@ -168,6 +169,14 @@ var mergeShapes = []mergeShape{
 	{
 		name:  "two reports with no edges",
 		holds: func(c mergeCase) bool { return len(c.inputs) >= 2 && len(c.evaluations()) == 0 },
+	},
+	{
+		name: "two reports that each withheld findings below the minimum confidence",
+		holds: func(c mergeCase) bool {
+			return c.expected != nil && len(c.inputs) >= 2 && !slices.ContainsFunc(c.inputs, func(r mergeReport) bool {
+				return r.Totals.Withheld["probable"]+r.Totals.Withheld["possible"] == 0
+			})
+		},
 	},
 	{
 		name:  "a pending finding whose pair is live and a finding that falls with it",
@@ -1373,7 +1382,7 @@ const (
 		`"test_file_rules": [{"rule": "go-test-file", "matched": 0}], ` +
 		`"type_error_skips": [], "notes": [], "unanswered_questions": [], "conventions_applied": [], ` +
 		`"totals": {"findings": 1, "by_severity": {"allow": 0, "warn": 0, "deny": 1}, "deletable_lines": 1, ` +
-		`"suppressions_in_effect": 0, "reasons_recorded": 0, "stale_suppressions": 0, "pending": 0, "omitted": 0}}` + "\n"
+		`"suppressions_in_effect": 0, "reasons_recorded": 0, "stale_suppressions": 0, "pending": 0, "omitted": 0, "withheld": {"certain": 0, "probable": 0, "possible": 0}}}` + "\n"
 	mergePlantedTSReport = `{"schema_version": "1.0.0", "contract_version": "1.0.0", ` +
 		`"analyzer": {"name": "deadset-ts", "version": "1.0.0", "languages": ["ts"], "schema_versions_accepted": ["1.0.0"], ` +
 		`"conformance": {"corpus_version": "1.0.0", "result": "pass", "digest": "` + mergePlantedTSDigest + `"}}, ` +
@@ -1384,7 +1393,7 @@ const (
 		`"test_file_rules": [{"rule": "ts-test-pattern", "matched": 0}], ` +
 		`"type_error_skips": [], "notes": [], "unanswered_questions": [], "conventions_applied": [], ` +
 		`"totals": {"findings": 1, "by_severity": {"allow": 0, "warn": 0, "deny": 1}, "deletable_lines": 1, ` +
-		`"suppressions_in_effect": 0, "reasons_recorded": 0, "stale_suppressions": 0, "pending": 0, "omitted": 0}}` + "\n"
+		`"suppressions_in_effect": 0, "reasons_recorded": 0, "stale_suppressions": 0, "pending": 0, "omitted": 0, "withheld": {"certain": 0, "probable": 0, "possible": 0}}}` + "\n"
 
 	// mergePlantedMergedReport is what the merge returns over those two reports: both findings in
 	// canonical order, both live evaluations ordered by edge and then by side, and recomputed
@@ -1403,7 +1412,7 @@ const (
 		`"test_file_rules": [{"rule": "go-test-file", "matched": 0}, {"rule": "ts-test-pattern", "matched": 0}], ` +
 		`"type_error_skips": [], "notes": [], "unanswered_questions": [], "conventions_applied": [], ` +
 		`"totals": {"findings": 2, "by_severity": {"allow": 0, "warn": 0, "deny": 2}, "deletable_lines": 2, ` +
-		`"suppressions_in_effect": 0, "reasons_recorded": 0, "stale_suppressions": 0, "pending": 0, "omitted": 0}}` + "\n"
+		`"suppressions_in_effect": 0, "reasons_recorded": 0, "stale_suppressions": 0, "pending": 0, "omitted": 0, "withheld": {"certain": 0, "probable": 0, "possible": 0}}}` + "\n"
 )
 
 // mergePlantedCaller is the planted case's caller.json: the merging product the planted merged
@@ -1525,6 +1534,10 @@ func mergeShapeCases() []mergeCase {
 	return []mergeCase{
 		{dir: "one-report", accepted: "1.0.0", exit: mergeCleanExit, expected: merged, inputs: []mergeReport{goReport()}},
 		{dir: "no-edges", accepted: "1.0.0", exit: mergeCleanExit, expected: merged, inputs: []mergeReport{goReport(), tsReport()}},
+		mergedCase("withheld-counts-summed", func(a, b, m *mergeReport) {
+			a.Totals.Withheld, b.Totals.Withheld = map[string]int{"possible": 2}, map[string]int{"probable": 1}
+			m.Totals.Withheld = map[string]int{"probable": 1, "possible": 2}
+		}),
 		{dir: "pair-live", accepted: "1.0.0", exit: mergeCleanExit, expected: merged, inputs: []mergeReport{
 			withMember(goReport(goRoot)), tsReport(evaluation("used_by", mergeStateLive)),
 		}},

@@ -1,0 +1,7 @@
+{
+  "symbols": {
+    "PrettierConfig": { "file": "target/package.json", "line": 8 },
+    "UnreadConfig": { "file": "target/package.json", "line": 9 },
+    "Prettier": { "file": "target/package.json", "line": 10 }
+  }
+}

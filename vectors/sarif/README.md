@@ -32,3 +32,4 @@ Write every file of `sources.json` under an empty directory, at its path, as the
 | `path-segments-encoded` | Each path segment percent-encoded byte by byte: a colon in the first segment written `%3A` and in a later one as itself, a space, a two-byte character, `,`, `(`, `)` and `%` encoded, the characters the page keeps written as themselves, and a message link naming the path unencoded. | rendered |
 | `record-naming-no-run` | A merged record whose `analyzer` names no `merged_from` entry fails the rendering. | 3 |
 | `related-locations-capped` | A finding with 101 write positions carries the first 100 as related locations and links each of them. | rendered |
+| `withheld-line` | A report whose minimum confidence withheld findings at two confidences carries the withheld line in `properties.withheld` beside the totals it is rendered from. | rendered |

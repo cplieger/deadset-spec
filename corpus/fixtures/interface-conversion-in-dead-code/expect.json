@@ -1,0 +1,51 @@
+{
+  "name": "interface-conversion-in-dead-code",
+  "description": "A conversion to an interface retains the methods it reaches as a use by the declaration that holds it, so a conversion inside a dead function keeps nothing alive: the type only that function builds falls with it, and its method falls with the type, while the method a live conversion reaches stays retained.",
+  "languages": [
+    "go",
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Store.Find",
+      "report": "none"
+    },
+    {
+      "symbol": "Plain.Find",
+      "report": "none",
+      "retained_by": [
+        "interface-satisfaction"
+      ]
+    },
+    {
+      "symbol": "newEncrypted",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting",
+      "component": {
+        "root": true
+      }
+    },
+    {
+      "symbol": "Encrypted",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reachability",
+      "component": {
+        "root": false
+      }
+    },
+    {
+      "symbol": "Encrypted.Find",
+      "report": "none"
+    },
+    {
+      "symbol": "Use",
+      "report": "none"
+    }
+  ]
+}

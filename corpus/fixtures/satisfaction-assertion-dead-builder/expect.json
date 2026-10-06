@@ -1,0 +1,62 @@
+{
+  "name": "satisfaction-assertion-dead-builder",
+  "description": "A satisfaction assertion keeps no method of a type only dead code builds: the assertion is then no root, so the type falls with the dead function that builds it, its method falls with the type, and the assertion goes with them. The assertion of a type live code builds is a root and retains the method that satisfies the interface, though no conversion of the program reaches it.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "NewSealed",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting",
+      "component": {
+        "root": true
+      }
+    },
+    {
+      "symbol": "Sealed",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type",
+      "liveness_relation": "reachability",
+      "component": {
+        "root": false
+      }
+    },
+    {
+      "symbol": "Sealed.Find",
+      "report": "none"
+    },
+    {
+      "symbol": "SealedAssertion",
+      "report": "none"
+    },
+    {
+      "symbol": "Cached",
+      "report": "none"
+    },
+    {
+      "symbol": "Cached.Find",
+      "report": "none",
+      "retained_by": [
+        "interface-satisfaction"
+      ]
+    },
+    {
+      "symbol": "CachedAssertion",
+      "report": "none"
+    },
+    {
+      "symbol": "Plain.Find",
+      "report": "none",
+      "retained_by": [
+        "interface-satisfaction"
+      ]
+    }
+  ]
+}

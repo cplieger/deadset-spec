@@ -1,0 +1,65 @@
+The Go rendering: a library module with a published package, an internal
+package and a command, each holding an exported function only its own package
+calls.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Format": { "file": "target/target.go", "line": 7 },
+    "Prefix": { "file": "target/prefix.go", "line": 4 },
+    "Open": { "file": "target/internal/store/store.go", "line": 5 },
+    "Normalize": { "file": "target/internal/store/normalize.go", "line": 6 },
+    "Run": { "file": "target/cmd/tool/run.go", "line": 6 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/target.go --
+// Package target formats records for other programs.
+package target
+
+import "example.com/target/internal/store"
+
+// Format formats the record name names.
+func Format(name string) string { return Prefix() + store.Open(name) }
+-- target/prefix.go --
+package target
+
+// Prefix is the text every formatted record starts with.
+func Prefix() string { return "record: " }
+-- target/internal/store/store.go --
+// Package store opens records for the target package.
+package store
+
+// Open opens the record name names.
+func Open(name string) string { return Normalize(name) }
+-- target/internal/store/normalize.go --
+package store
+
+import "strings"
+
+// Normalize trims the white space around name.
+func Normalize(name string) string { return strings.TrimSpace(name) }
+-- target/cmd/tool/main.go --
+// Command tool prints one formatted record.
+package main
+
+import "os"
+
+func main() {
+	os.Stdout.WriteString(Run(os.Args[1:]) + "\n")
+}
+-- target/cmd/tool/run.go --
+package main
+
+import "example.com/target"
+
+// Run formats the first argument.
+func Run(args []string) string {
+	if len(args) == 0 {
+		return ""
+	}
+	return target.Format(args[0])
+}

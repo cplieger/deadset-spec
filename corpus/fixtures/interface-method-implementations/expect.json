@@ -1,0 +1,71 @@
+{
+  "name": "interface-method-implementations",
+  "description": "An interface method no call site invokes through the interface is reported, and each method that implements it and that nothing else keeps is reported as well, as a member of the interface method's dead component, so the two delete together. The implementations of the method a call site invokes stay retained by the conversions, and an implementation a direct call reaches is reported under no code. A method that implements both the uncalled method and a method of a second interface that a call site invokes stays retained by the second interface's conversions.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Store.Get",
+      "report": "none"
+    },
+    {
+      "symbol": "Store.Reset",
+      "report": "DS1203",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "interface-method",
+      "component": {
+        "root": true
+      }
+    },
+    {
+      "symbol": "Memory.Get",
+      "report": "none",
+      "retained_by": [
+        "interface-satisfaction"
+      ]
+    },
+    {
+      "symbol": "Memory.Reset",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method",
+      "liveness_relation": "reachability",
+      "component": {
+        "root": false
+      }
+    },
+    {
+      "symbol": "Disk.Get",
+      "report": "none",
+      "retained_by": [
+        "interface-satisfaction"
+      ]
+    },
+    {
+      "symbol": "Disk.Reset",
+      "report": "none"
+    },
+    {
+      "symbol": "Clearer.Reset",
+      "report": "none"
+    },
+    {
+      "symbol": "Cache.Get",
+      "report": "none",
+      "retained_by": [
+        "interface-satisfaction"
+      ]
+    },
+    {
+      "symbol": "Cache.Reset",
+      "report": "none",
+      "retained_by": [
+        "interface-satisfaction"
+      ]
+    }
+  ]
+}

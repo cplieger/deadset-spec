@@ -1,0 +1,23 @@
+{
+  "name": "consumer-test-write-counted-as-production",
+  "description": "Where the configuration counts consumer tests as production, a write in a consumer's test file counts as a read in the production sweep too, so a library member only a consumer's test file writes is reported under no code.",
+  "languages": [
+    "go",
+    "ts"
+  ],
+  "target_kind": "library",
+  "consumers": [
+    "consumer"
+  ],
+  "expect": [
+    {
+      "symbol": "Options.label",
+      "report": "none"
+    },
+    {
+      "symbol": "Defaults",
+      "report": "none"
+    }
+  ],
+  "consumer_tests": "production"
+}
