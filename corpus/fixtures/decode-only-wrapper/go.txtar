@@ -39,7 +39,7 @@ type settings struct {
 }
 
 // String is called by nothing.
-func (s settings) String() string { return "settings" }
+func (settings) String() string { return "settings" }
 
 // profile is decoded through a method that also prints it, and only its name is read.
 type profile struct {
