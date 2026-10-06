@@ -25,7 +25,7 @@ type sample struct {
 }
 
 // Describe is called by nothing.
-func (s sample) Describe() string { return "sample" }
+func (sample) Describe() string { return "sample" }
 
 func main() {
 	v := reflect.ValueOf(sample{})
