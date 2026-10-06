@@ -1,0 +1,59 @@
+The Go rendering: a package whose test file holds a test, a helper nothing
+calls, a helper only that helper calls, and a type nothing names. The helper
+nothing calls also calls the live function and a production function nothing
+else calls.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Live": { "file": "target/catalog/catalog.go", "line": 4 },
+    "Spare": { "file": "target/catalog/catalog.go", "line": 7 },
+    "TestLive": { "file": "target/catalog/catalog_test.go", "line": 5 },
+    "unusedHelper": { "file": "target/catalog/catalog_test.go", "line": 12 },
+    "checkedLive": { "file": "target/catalog/catalog_test.go", "line": 17 },
+    "fixtureCase": { "file": "target/catalog/catalog_test.go", "line": 22 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+package main
+
+import "example.com/target/catalog"
+
+func main() { println(catalog.Live()) }
+-- target/catalog/catalog.go --
+package catalog
+
+// Live is called by the command and by the test.
+func Live() int { return 1 }
+
+// Spare is called by the test-file helper nothing calls, and by nothing else.
+func Spare() int { return 2 }
+-- target/catalog/catalog_test.go --
+package catalog
+
+import "testing"
+
+func TestLive(t *testing.T) {
+	if Live() != 1 {
+		t.Error("Live is not 1")
+	}
+}
+
+// unusedHelper is called by nothing.
+func unusedHelper() int {
+	return checkedLive() + Spare() + Live()
+}
+
+// checkedLive is called by unusedHelper alone.
+func checkedLive() int {
+	return Live()
+}
+
+// fixtureCase is a type nothing names.
+type fixtureCase struct {
+	name string
+}

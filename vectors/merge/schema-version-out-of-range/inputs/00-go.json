@@ -102,6 +102,11 @@
     "reasons_recorded": 0,
     "stale_suppressions": 0,
     "pending": 0,
-    "omitted": 0
+    "omitted": 0,
+    "withheld": {
+      "certain": 0,
+      "probable": 0,
+      "possible": 0
+    }
   }
 }

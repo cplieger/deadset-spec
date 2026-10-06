@@ -1,0 +1,21 @@
+{
+  "name": "module-url-own-declaration",
+  "description": "A new URL expression resolved against import.meta.url loads the file its string names only where URL names no declaration of the target, so a file named through the target's own URL class is reported as never imported, while a file named through the global URL is loaded.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Worker",
+      "report": "DS1502",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "Task",
+      "report": "none"
+    }
+  ]
+}

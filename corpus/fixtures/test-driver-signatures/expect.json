@@ -1,6 +1,6 @@
 {
   "name": "test-driver-signatures",
-  "description": "A parameter of a function the Go test driver runs is fixed by the driver, so a test, a benchmark, a fuzz test and TestMain that never read theirs are not reported. A test-file helper a test calls is judged like any function and its unread parameter is reported, and a test-file helper nothing calls is not judged, so its unread parameter is not.",
+  "description": "A parameter of a function the Go test driver runs is fixed by the driver, so a test, a benchmark, an example, a fuzz test and TestMain that never read theirs are not reported, and none of them is reported as unreferenced. A test-file helper a test calls is judged like any function and its unread parameter is reported, and a test-file helper nothing calls is reported whole as an unreferenced declaration, so its unread parameter is not. A test file's init function and blank declaration are roots, as they are in production code, and neither is reported as unreferenced.",
   "languages": [
     "go"
   ],
@@ -23,6 +23,18 @@
       "report": "none"
     },
     {
+      "symbol": "ExampleLive",
+      "report": "none"
+    },
+    {
+      "symbol": "TestFileInit",
+      "report": "none"
+    },
+    {
+      "symbol": "TestFileBlank",
+      "report": "none"
+    },
+    {
       "symbol": "HelperUnread",
       "report": "DS1801",
       "confidence": "certain",
@@ -34,6 +46,17 @@
           "gopls unusedparams",
           "unparam"
         ]
+      }
+    },
+    {
+      "symbol": "DeadHelper",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting",
+      "component": {
+        "root": true
       }
     },
     {

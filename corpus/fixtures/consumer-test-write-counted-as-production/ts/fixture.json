@@ -1,0 +1,6 @@
+{
+  "symbols": {
+    "Options.label": { "file": "target/options.ts", "line": 3 },
+    "Defaults": { "file": "target/options.ts", "line": 7 }
+  }
+}

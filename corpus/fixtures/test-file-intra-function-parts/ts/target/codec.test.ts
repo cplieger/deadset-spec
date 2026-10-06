@@ -6,7 +6,10 @@ function helper(n: number, unread: number): number {
 }
 
 // deadHelper is a test-file helper nothing calls, with the same shape.
-function deadHelper(n: number, unread: number): number {
+function deadHelper(
+  n: number,
+  unread: number,
+): number {
   return live(n);
 }
 

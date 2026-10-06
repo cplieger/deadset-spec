@@ -1,0 +1,6 @@
+{
+  "symbols": {
+    "Loaded": { "file": "target/src/loaded.ts", "line": 1 },
+    "After": { "file": "target/src/after.ts", "line": 1 }
+  }
+}

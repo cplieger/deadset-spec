@@ -1,0 +1,120 @@
+{
+  "name": "callback-parameters-after-used",
+  "description": "A function used as a value may be passed more arguments than it declares, so a callback's unread parameter is reported only when no parameter after it is read, while an unread parameter before the last read one is not. A function whose signature is free has every unread parameter reported, and no name exempts a parameter, so one whose name starts with an underscore is reported too. A parameter that destructures its argument is judged by the names it binds: each unread name is reported whatever follows it, except a name beside a rest element of the same object pattern, while the rest element's own name is judged as any other, and the pattern counts as read when any name it binds is read. A rest parameter is judged as the last parameter, and a this parameter receives no argument and is never reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Unused",
+      "report": "DS1801",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "parameter",
+      "details": {
+        "overlap": [
+          "tsc --noUnusedParameters",
+          "@typescript-eslint/no-unused-vars"
+        ]
+      }
+    },
+    {
+      "symbol": "First",
+      "report": "none"
+    },
+    {
+      "symbol": "Second",
+      "report": "none"
+    },
+    {
+      "symbol": "Third",
+      "report": "DS1801",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "parameter",
+      "details": {
+        "overlap": [
+          "tsc --noUnusedParameters",
+          "@typescript-eslint/no-unused-vars"
+        ]
+      }
+    },
+    {
+      "symbol": "Value",
+      "report": "DS1801",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "parameter",
+      "details": {
+        "overlap": [
+          "tsc --noUnusedParameters",
+          "@typescript-eslint/no-unused-vars"
+        ]
+      }
+    },
+    {
+      "symbol": "Skipped",
+      "report": "none"
+    },
+    {
+      "symbol": "Kept",
+      "report": "none"
+    },
+    {
+      "symbol": "PatternNameUnread",
+      "report": "DS1801",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "parameter",
+      "details": {
+        "overlap": [
+          "tsc --noUnusedParameters",
+          "@typescript-eslint/no-unused-vars"
+        ]
+      }
+    },
+    {
+      "symbol": "BeforeReadPattern",
+      "report": "none"
+    },
+    {
+      "symbol": "RestSibling",
+      "report": "none"
+    },
+    {
+      "symbol": "RestUnreadInPattern",
+      "report": "DS1801",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "parameter",
+      "details": {
+        "overlap": [
+          "tsc --noUnusedParameters",
+          "@typescript-eslint/no-unused-vars"
+        ]
+      }
+    },
+    {
+      "symbol": "RestUnread",
+      "report": "DS1801",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "parameter",
+      "details": {
+        "overlap": [
+          "tsc --noUnusedParameters",
+          "@typescript-eslint/no-unused-vars"
+        ]
+      }
+    },
+    {
+      "symbol": "BeforeReadRest",
+      "report": "none"
+    },
+    {
+      "symbol": "ThisParameter",
+      "report": "none"
+    }
+  ]
+}

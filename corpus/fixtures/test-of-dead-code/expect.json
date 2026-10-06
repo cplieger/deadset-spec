@@ -1,6 +1,6 @@
 {
   "name": "test-of-dead-code",
-  "description": "A test whose every referenced declaration of the target is dead is reported, and the test beside it that also references a live declaration is reported under no code. The two declarations the first test references carry the test-only code, and the helper both tests share is reported under no code because a declaration of a test file whose only references are from test files is not a candidate of the unused kinds. The reported test shares a cycle with each declaration it references, and no other declaration of a test file belongs to their component, so all three are its root members.",
+  "description": "A test whose every referenced declaration of the target is dead is reported, and the test beside it that also references a live declaration is reported under no code. The two declarations the first test references carry the test-only code, and the helper both tests share is reported under no code because the live test references it. The reported test shares a cycle with each declaration it references, and no other declaration of a test file belongs to their component, so all three are its root members.",
   "languages": ["go", "ts"],
   "target_kind": "application",
   "expect": [

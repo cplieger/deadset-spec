@@ -1,6 +1,6 @@
 {
   "name": "test-file-intra-function-parts",
-  "description": "The parts of a TypeScript test file's declarations are judged in the run that counts test references, as Go's are: a test-file helper a test calls has its unread parameter reported, and a test's store nothing reads before the next one is reported. A test-file helper nothing calls is not judged, so its unread parameter is not reported.",
+  "description": "The parts of a TypeScript test file's declarations are judged in the run that counts test references, as Go's are: a test-file helper a test calls has its unread parameter reported, and a test's store nothing reads before the next one is reported. A test-file helper nothing calls is reported whole as an unreferenced declaration, so its unread parameter is not reported.",
   "languages": [
     "ts"
   ],
@@ -20,6 +20,17 @@
       }
     },
     {
+      "symbol": "DeadHelper",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting",
+      "component": {
+        "root": true
+      }
+    },
+    {
       "symbol": "DeadHelperUnread",
       "report": "none"
     },
@@ -31,7 +42,8 @@
       "symbol_kind": "store",
       "details": {
         "overlap": [
-          "eslint no-useless-assignment"
+          "eslint no-useless-assignment",
+          "@typescript-eslint/no-unused-vars"
         ]
       }
     },

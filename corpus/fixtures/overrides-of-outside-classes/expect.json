@@ -1,0 +1,39 @@
+{
+  "name": "overrides-of-outside-classes",
+  "description": "A method that overrides a member of a class a dependency declares, directly or through a class of the target, is called by code outside the analysis, so it is live while its class is. A method that overrides nothing is reported when nothing calls it, and the override in a class nothing builds falls with that class.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Greeting.render",
+      "report": "none"
+    },
+    {
+      "symbol": "Greeting.shout",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method"
+    },
+    {
+      "symbol": "Leaf.connected",
+      "report": "none"
+    },
+    {
+      "symbol": "Orphan",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "class",
+      "component": {
+        "root": true
+      }
+    },
+    {
+      "symbol": "Orphan.render",
+      "report": "none"
+    }
+  ]
+}

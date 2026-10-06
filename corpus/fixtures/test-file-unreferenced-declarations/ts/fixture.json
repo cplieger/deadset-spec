@@ -1,0 +1,10 @@
+{
+  "symbols": {
+    "Live": { "file": "target/catalog.ts", "line": 2 },
+    "Spare": { "file": "target/catalog.ts", "line": 7 },
+    "TestLive": { "file": "target/catalog.test.ts", "line": 4 },
+    "unusedHelper": { "file": "target/catalog.test.ts", "line": 11 },
+    "checkedLive": { "file": "target/catalog.test.ts", "line": 16 },
+    "fixtureCase": { "file": "target/catalog.test.ts", "line": 21 }
+  }
+}

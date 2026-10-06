@@ -1,0 +1,63 @@
+{
+  "name": "test-file-unreferenced-declarations",
+  "description": "A declaration of a test file that nothing references is reported under the code a production declaration of the same shape carries, and a test-file declaration only such a declaration references falls with it, while the test the runner calls is a root and is reported under no code. The helper nothing calls also calls a live production declaration, so it is no test of dead code. The production declarations the dead helpers reach stay out of the helpers' component: the live one is live through the command, and one only the unreferenced helper calls is reported under the test-only code as the root of a component of its own, the helper's call counting as a test reference.",
+  "languages": [
+    "go",
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Live",
+      "report": "none"
+    },
+    {
+      "symbol": "Spare",
+      "report": "DS1004",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting",
+      "component": {
+        "root": true
+      }
+    },
+    {
+      "symbol": "TestLive",
+      "report": "none"
+    },
+    {
+      "symbol": "unusedHelper",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting",
+      "component": {
+        "root": true
+      }
+    },
+    {
+      "symbol": "checkedLive",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reachability",
+      "component": {
+        "root": false
+      }
+    },
+    {
+      "symbol": "fixtureCase",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type",
+      "liveness_relation": "reference-counting",
+      "component": {
+        "root": true
+      }
+    }
+  ]
+}

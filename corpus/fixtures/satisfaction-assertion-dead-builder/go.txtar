@@ -1,0 +1,66 @@
+The Go rendering: an interface the command calls through, two types that a
+compile-time assertion binds to it, one built only by a function nothing calls
+and one built by the command, and the implementation the command converts.
+
+-- fixture.json --
+{
+  "symbols": {
+    "NewSealed": { "file": "target/store/store.go", "line": 23 },
+    "Sealed": { "file": "target/store/store.go", "line": 15 },
+    "Sealed.Find": { "file": "target/store/store.go", "line": 18 },
+    "SealedAssertion": { "file": "target/store/store.go", "line": 20 },
+    "Cached": { "file": "target/store/store.go", "line": 27 },
+    "Cached.Find": { "file": "target/store/store.go", "line": 30 },
+    "CachedAssertion": { "file": "target/store/store.go", "line": 32 },
+    "Plain.Find": { "file": "target/store/store.go", "line": 12 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+package main
+
+import "example.com/target/store"
+
+func main() {
+	c := &store.Cached{Name: "c"}
+	println(store.Use(store.Plain{}), c.Name)
+}
+-- target/store/store.go --
+package store
+
+// Store finds a value by name.
+type Store interface {
+	Find(name string) string
+}
+
+// Plain is the store the command converts to Store.
+type Plain struct{}
+
+// Find returns the name it is given.
+func (Plain) Find(name string) string { return name }
+
+// Sealed is built by NewSealed alone, and nothing calls NewSealed.
+type Sealed struct{ key string }
+
+// Find prefixes the name with the key.
+func (s *Sealed) Find(name string) string { return s.key + name }
+
+var _ Store = (*Sealed)(nil)
+
+// NewSealed returns a Sealed store.
+func NewSealed() *Sealed { return &Sealed{key: "k"} }
+
+// Cached is built by the command and never converted to Store, so the
+// assertion alone states that it satisfies the interface.
+type Cached struct{ Name string }
+
+// Find appends the name to the cached one.
+func (c *Cached) Find(name string) string { return c.Name + name }
+
+var _ Store = (*Cached)(nil)
+
+// Use finds one name through the interface.
+func Use(s Store) string { return s.Find("x") }

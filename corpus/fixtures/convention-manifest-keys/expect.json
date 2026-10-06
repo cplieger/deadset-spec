@@ -1,0 +1,36 @@
+{
+  "name": "convention-manifest-keys",
+  "description": "A package a string names under a manifest key of an applied convention row, a member of package.json the row's tool reads its configuration from, is a used dependency. A string under a member no applied row names is no use, so that dependency is reported. The fixture assumes the analyzer carries a row named prettier for the package prettier whose manifest keys hold prettier, its range holding the installed version.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "conventions_applied": [
+    {
+      "name": "prettier",
+      "package": "prettier",
+      "version": "3.999.0",
+      "manifest": "package.json"
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "PrettierConfig",
+      "report": "none"
+    },
+    {
+      "symbol": "UnreadConfig",
+      "report": "DS1601",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "dependency",
+      "details": {
+        "dependency_class": "dev-dependency"
+      }
+    },
+    {
+      "symbol": "Prettier",
+      "report": "none"
+    }
+  ]
+}

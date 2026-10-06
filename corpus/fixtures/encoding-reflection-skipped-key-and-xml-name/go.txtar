@@ -1,0 +1,51 @@
+The Go rendering: a command that encodes a record carrying the two forms of a
+tag naming the key -, and decodes a feed carrying an XMLName field.
+
+-- fixture.json --
+{
+  "symbols": {
+    "record.ID": { "file": "target/main.go", "line": 12 },
+    "record.Secret": { "file": "target/main.go", "line": 13 },
+    "record.Dash": { "file": "target/main.go", "line": 14 },
+    "feed.XMLName": { "file": "target/main.go", "line": 19 },
+    "feed.Title": { "file": "target/main.go", "line": 20 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target encodes one record and decodes one feed.
+package main
+
+import (
+	"encoding/json"
+	"encoding/xml"
+	"os"
+)
+
+// record is encoded, and nothing reads its fields by name.
+type record struct {
+	ID     string `json:"id"`
+	Secret string `json:"-"`
+	Dash   string `json:"-,"`
+}
+
+// feed is decoded from an XML document, and nothing reads its fields by name.
+type feed struct {
+	XMLName xml.Name `xml:"feed"`
+	Title   string   `xml:"title"`
+}
+
+func main() {
+	data, err := json.Marshal(record{})
+	if err != nil {
+		panic(err)
+	}
+	var f feed
+	if err := xml.NewDecoder(os.Stdin).Decode(&f); err != nil {
+		panic(err)
+	}
+	println(len(data))
+}

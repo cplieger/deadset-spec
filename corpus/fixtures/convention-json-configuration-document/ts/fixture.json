@@ -1,0 +1,7 @@
+{
+  "symbols": {
+    "StrykerCore": { "file": "target/package.json", "line": 8 },
+    "JestRunner": { "file": "target/package.json", "line": 9 },
+    "VitestRunner": { "file": "target/package.json", "line": 10 }
+  }
+}

@@ -1,0 +1,82 @@
+The Go rendering: an interface whose second method nothing calls through it,
+two implementations, and a command that calls one implementation's second method
+directly. A third implementation's second method also implements the method of a
+second interface that a call site invokes.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Store.Get": { "file": "target/store/store.go", "line": 5 },
+    "Store.Reset": { "file": "target/store/store.go", "line": 6 },
+    "Memory.Get": { "file": "target/store/store.go", "line": 13 },
+    "Memory.Reset": { "file": "target/store/store.go", "line": 16 },
+    "Disk.Get": { "file": "target/store/store.go", "line": 22 },
+    "Disk.Reset": { "file": "target/store/store.go", "line": 25 },
+    "Clearer.Reset": { "file": "target/store/store.go", "line": 32 },
+    "Cache.Get": { "file": "target/store/store.go", "line": 40 },
+    "Cache.Reset": { "file": "target/store/store.go", "line": 43 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+package main
+
+import "example.com/target/store"
+
+func main() {
+	d := store.Disk{}
+	d.Reset()
+	c := store.Cache{}
+	store.Clear(c)
+	println(store.Read(store.Memory{}, "a") + store.Read(d, "b") + store.Read(c, "c"))
+}
+-- target/store/store.go --
+package store
+
+// Store keeps values by key.
+type Store interface {
+	Get(key string) int
+	Reset()
+}
+
+// Memory keeps values in a map.
+type Memory struct{ values map[string]int }
+
+// Get returns the value under a key.
+func (m Memory) Get(key string) int { return m.values[key] }
+
+// Reset clears the map. Nothing calls it, through Store or directly.
+func (m Memory) Reset() { clear(m.values) }
+
+// Disk keeps values in a file.
+type Disk struct{ path string }
+
+// Get returns the length of the key and of the path.
+func (d Disk) Get(key string) int { return len(key) + len(d.path) }
+
+// Reset is called directly by the command.
+func (d Disk) Reset() { println(d.path) }
+
+// Read reads one value through the interface.
+func Read(s Store, key string) int { return s.Get(key) }
+
+// Clearer clears what it holds.
+type Clearer interface {
+	Reset()
+}
+
+// Cache keeps values in a map. Its Reset implements both Store.Reset, which
+// nothing calls, and Clearer.Reset, which Clear calls.
+type Cache struct{ values map[string]int }
+
+// Get returns the value under a key.
+func (c Cache) Get(key string) int { return c.values[key] }
+
+// Reset clears the map.
+func (c Cache) Reset() { clear(c.values) }
+
+// Clear clears a value through the interface.
+func Clear(c Clearer) { c.Reset() }

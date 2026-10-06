@@ -1,0 +1,57 @@
+{
+  "name": "release-tags-published-api",
+  "description": "In a library, an exported declaration whose documentation comment holds the release tag @public, @beta or @alpha is published API although no manifest entry reaches it, so with no consumer information an unused one is reported at possible, its members falling with it. An untagged declaration, and one tagged @internal, stay the library's internals and are reported at certain.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "library",
+  "min_confidence": "possible",
+  "expect": [
+    {
+      "symbol": "Entry",
+      "report": "DS1001",
+      "confidence": "possible",
+      "reachability_class": "possible"
+    },
+    {
+      "symbol": "Helper",
+      "report": "none"
+    },
+    {
+      "symbol": "Tagged",
+      "report": "DS1001",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "Preview",
+      "report": "DS1001",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "class"
+    },
+    {
+      "symbol": "Preview.render",
+      "report": "none"
+    },
+    {
+      "symbol": "Experimental",
+      "report": "DS1001",
+      "confidence": "possible",
+      "reachability_class": "possible"
+    },
+    {
+      "symbol": "Untagged",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    },
+    {
+      "symbol": "Hidden",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    }
+  ]
+}

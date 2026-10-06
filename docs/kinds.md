@@ -13,7 +13,7 @@ The columns of every table below, each the field of the same name in the kind's 
 
 Confidence is a ceiling on the reachability class, not a second axis. A finding carries a `reachability_class`, which is what the analysis knows about the symbol's callers, and a `confidence`, which is that class capped by the kind's `max_class`. Both take one value from `certain`, `probable` and `possible`, ordered from the strongest. The source is `contract/kinds.json`, `reachability_classes`.
 
-Every kind in this contract version declares the ceiling `certain`, so a kind whose ceiling is lower states it in its own section. A finding about a library's published API, a public member of a published type included, is `possible` when the run holds no consumer information. So is any `DS1004` or `DS1201` finding about test-support code that test code references. The default `analysis.min_confidence`, `probable`, withholds both and reports the rest.
+Every kind in this contract version declares the ceiling `certain`, so a kind whose ceiling is lower states it in its own section. A finding about a library's published API, a public member of a published type included, is `possible` when the run holds no consumer information. So is any `DS1004` or `DS1201` finding about test-support code that test code references. The default `analysis.min_confidence`, `probable`, withholds both and reports the rest. The report counts the findings it withheld at each level. The text and SARIF outputs name those counts in one line, with the setting that shows them.
 
 A finding about a member of a dead component is also capped by the lowest confidence among the component's root members. So every finding of one component carries one confidence. The sources are `contract/grammar/analysis.md`, "Confidence", and `contract/config.schema.json`, `analysis.min_confidence`.
 
@@ -87,9 +87,11 @@ Symbols that are alive but more visible than their references require. From `con
 
 ### DS1101 unnecessary-export
 
-An exported symbol whose every reference is inside the symbol's own package or module, reported as a candidate for unexporting. The subject is a package-level declaration or a method, and three subjects are excluded: an interface method, whose exportedness is the contract of the interface that declares it; a struct field, which an encoder reads by name; and a method that satisfies an interface some symbol uses as a type, which cannot be unexported without its type ceasing to satisfy that interface. The finding names the narrower visibility the references support. A declared cross-language edge counts as an out-of-package reference; where the edge's other side is unknown to the analyzer the finding is emitted pending.
+An exported symbol whose every reference is inside the symbol's own package or module, reported as a candidate for unexporting. The subject is a package-level declaration or a method. Three subjects are excluded. An interface method is excluded because its exportedness is the contract of the interface that declares it. A struct field is excluded because an encoder reads it by name. A method that satisfies an interface some symbol uses as a type is excluded because it cannot be unexported without its type ceasing to satisfy that interface. The finding names the narrower visibility the references support. A declared cross-language edge counts as an out-of-package reference. Where the edge's other side is unknown to the analyzer, the finding is emitted pending.
 
-Precondition: Closed world only. Reported always for a main package and an internal/ directory tree, and for a published package only when the configuration declares the consumer set complete and every declared consumer loads. A library with no consumer loaded and no complete consumer set declared gets this finding on its internal/ tree and its main packages and never on its published API. A symbol the rule of DS1301 holds for is not reported under this code, whatever severity the configuration gives DS1301, because the write-only finding names the defect to fix first.
+Precondition: Closed world only. A Go main package, and an internal/ directory tree for importers outside its parent, are closed worlds whatever the configuration declares, because no other program can import them. So this finding is reported there always. A published package is a closed world only when the configuration declares the consumer set complete and every declared consumer loads. A library with no consumer loaded and no complete consumer set declared gets this finding on its internal/ tree and its main packages and never on its published API.
+
+A symbol the rule of DS1301 holds for is not reported under this code, whatever severity the configuration gives DS1301, because the write-only finding names the defect to fix first.
 
 An exported function or method may name a type of its own package in a parameter or a result. When code outside the package references that function or method, the type is not reported. The caller holds values of the type, and unexporting it would leave an exported signature naming a type its callers cannot name.
 
@@ -97,7 +99,7 @@ From `contract/kinds.json`, row `DS1101`.
 
 ### DS1102 unnecessary-exposure
 
-An exported symbol of a non-internal package whose every reference is inside the target module, reported as a candidate for relocation behind an internal boundary. The subject is a package-level declaration or a method, and three subjects are excluded: an interface method, whose exportedness is the contract of the interface that declares it; a struct field, which an encoder reads by name; and a method that satisfies an interface some symbol uses as a type, which cannot be unexported without its type ceasing to satisfy that interface. The finding names the narrower visibility the references support. A declared cross-language edge counts as an out-of-package reference; where the edge's other side is unknown to the analyzer the finding is emitted pending.
+An exported symbol of a non-internal package whose every reference is inside the target module, reported as a candidate for relocation behind an internal boundary. The subject is a package-level declaration or a method. Three subjects are excluded. An interface method is excluded because its exportedness is the contract of the interface that declares it. A struct field is excluded because an encoder reads it by name. A method that satisfies an interface some symbol uses as a type is excluded because it cannot be unexported without its type ceasing to satisfy that interface. The finding names the narrower visibility the references support. A declared cross-language edge counts as an out-of-package reference. Where the edge's other side is unknown to the analyzer, the finding is emitted pending.
 
 Precondition: Closed world only. Reported always for a main package and an internal/ directory tree, and for a published package only when the configuration declares the consumer set complete and every declared consumer loads. A library with no consumer loaded and no complete consumer set declared gets this finding on its internal/ tree and its main packages and never on its published API. A symbol the rule of DS1301 holds for is not reported under this code, whatever severity the configuration gives DS1301, because the write-only finding names the defect to fix first.
 
@@ -139,7 +141,7 @@ From `contract/kinds.json`, row `DS1201`.
 
 ### DS1203 uncalled-interface-method
 
-An interface method that no call site invokes or selects through the interface, whatever the number of implementations. The finding names the concrete implementations and their positions.
+An interface method that no call site invokes or selects through the interface, whatever the number of implementations. The finding names the concrete implementations and their positions. Each method that implements it and that nothing else keeps is reported under the code its own references select. Such a method counts as referenced by the interface method alone, so it belongs to this finding's dead component, whose root member is the interface method.
 
 Precondition: In Go, every method of an interface that declares an unexported method is exempt. That is the sum-type shape, whose method set exists to restrict the implementors, and a TypeScript interface cannot take it because it declares no member less visible than itself. Also exempt, in both languages, is every marker method, an interface method whose every implementation carries an empty body.
 
@@ -229,7 +231,7 @@ A directly declared dependency that no import in the target needs. On the Go sid
 
 Precondition: On the Go side the rule is exactly the semantics of `go mod tidy -diff`. A requirement marked indirect is never reported, because it exists to pin a transitive version and removing it changes the build list.
 
-On the TypeScript side the import closure is the files of the run's projects, and three more dependencies are needed. The first is a dependency whose installed manifest declares a command, because a command is run by name rather than imported. The second is a dependency that the installed manifest of a needed dependency declares as a peer and does not mark optional. The third is, to a fixpoint, the required peers of every dependency so held.
+On the TypeScript side the import closure is the files of the run's projects, and four more dependencies are needed. The first is a dependency whose installed manifest declares a command, because a command is run by name rather than imported. The second is a dependency that the installed manifest of a needed dependency declares as a peer and does not mark optional. The third is, to a fixpoint, the required peers of every dependency so held. The fourth is a dependency a string names under a `package.json` member that an applied convention row reads its tool's configuration from.
 
 An installed manifest is the package's manifest in the nearest node_modules directory at or above the target, and a dependency with none is decided by the import closure alone.
 
@@ -264,7 +266,7 @@ From `contract/kinds.json`, row `DS1701`.
 
 ### DS1702 unscoped-ignore-entry
 
-An ignore-file entry or a baseline row that names a symbol and no file path. The entry is reported rather than matched, so a bare name cannot mask a match anywhere else in the project; the inline directive is scoped by its position and cannot be unscoped.
+An ignore-file entry or a baseline row that names a symbol and no file path. The entry is reported rather than matched, so a bare name cannot mask a match anywhere else in the project. The inline directive is scoped by its position and cannot be unscoped.
 
 From `contract/kinds.json`, row `DS1702`.
 
@@ -319,6 +321,10 @@ Precondition: The signature must be free. A free signature belongs to a function
 
 A parameter its body never names is dead whatever the callers. A published declaration of a library is therefore reported too, with the fixability the vocabulary gives the kind, because the signature change is a breaking change.
 
+In TypeScript a caller may pass a function used as a value more arguments than it declares. In such a function, an unread parameter is reported only when the body reads no parameter after it. No name exempts a parameter, so a TypeScript parameter whose name starts with `_` is judged as any other. A Go parameter named `_` declares no name and is never reported.
+
+A TypeScript parameter that destructures its argument is judged name by name. Each name the body never reads is reported wherever the parameter stands, because removing it moves no argument. A name beside a rest element of an object pattern is kept, because removing it changes what the rest element holds. The pattern counts as read when the body reads any name it binds. A rest parameter is judged as the last parameter, and a `this` parameter receives no argument and is never reported.
+
 Overlap in Go: `revive unused-parameter`, `gopls unusedparams`, `unparam`. Overlap in TypeScript: `tsc --noUnusedParameters`, `@typescript-eslint/no-unused-vars`.
 
 From `contract/kinds.json`, row `DS1801`.
@@ -355,7 +361,9 @@ From `contract/kinds.json`, row `DS1805`.
 
 A write to a local variable with no read before the next write to it or the end of its scope, computed on the same read-and-write classification the write-only-symbol kind uses. The finding names the write position.
 
-Overlap in Go: `ineffassign`, `wastedassign`, `staticcheck SA4006`. Overlap in TypeScript: `eslint no-useless-assignment`.
+Precondition: In TypeScript the binding of a catch clause is a local variable the clause writes when it catches. A binding the clause's block never reads is a dead store, positioned at the binding, because the clause behaves the same with no binding.
+
+Overlap in Go: `ineffassign`, `wastedassign`, `staticcheck SA4006`. Overlap in TypeScript: `eslint no-useless-assignment`, `@typescript-eslint/no-unused-vars`.
 
 From `contract/kinds.json`, row `DS1807`.
 

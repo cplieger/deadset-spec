@@ -1,0 +1,9 @@
+{
+  "symbols": {
+    "Check": { "file": "target/scripts/check.ts", "line": 1 },
+    "Report": { "file": "target/scripts/report.ts", "line": 1 },
+    "Release": { "file": "target/scripts/release.ts", "line": 1 },
+    "Lint": { "file": "target/scripts/lint.ts", "line": 1 },
+    "Upload": { "file": "target/scripts/upload.ts", "line": 1 }
+  }
+}

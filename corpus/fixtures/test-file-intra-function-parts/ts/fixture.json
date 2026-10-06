@@ -1,8 +1,9 @@
 {
   "symbols": {
     "HelperUnread": { "file": "target/codec.test.ts", "line": 4 },
-    "DeadHelperUnread": { "file": "target/codec.test.ts", "line": 9 },
-    "FirstStore": { "file": "target/codec.test.ts", "line": 14 },
-    "testLive": { "file": "target/codec.test.ts", "line": 13 }
+    "DeadHelper": { "file": "target/codec.test.ts", "line": 9 },
+    "DeadHelperUnread": { "file": "target/codec.test.ts", "line": 11 },
+    "FirstStore": { "file": "target/codec.test.ts", "line": 17 },
+    "testLive": { "file": "target/codec.test.ts", "line": 16 }
   }
 }

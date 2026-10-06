@@ -1,0 +1,6 @@
+{
+  "symbols": {
+    "Worker": { "file": "target/worker.ts", "line": 1 },
+    "Task": { "file": "target/task.ts", "line": 1 }
+  }
+}

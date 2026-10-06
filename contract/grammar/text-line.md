@@ -77,7 +77,15 @@ catalog.go:213:1: suppression go://example.com/app#Catalog.ResolveAlias: inline 
 
 The text reporter writes the report's `findings` in their report order, which is the canonical key `merge.md` defines, `(path, line, column, code, symbol.ref, analyzer.name)`; then the report's `stale_suppressions` in their report order. Where a sort by size is configured, the reporter orders findings by `component.deletable_lines` descending, then `symbol.size_lines` descending, then the canonical key, and stale suppressions follow unchanged. Where a maximum finding count is configured, the reporter writes the first lines in that order up to the maximum and then reports the number omitted.
 
-Finding lines go to standard output. The summary, the omitted count, the deletable-line total, the remediation text and every load error are not finding lines, and none of them matches the expression below, so a filter on the expression yields exactly the finding lines. No timestamp, duration or host detail appears in the output, and two runs over an unchanged tree write the same bytes.
+Where a count of the report's `totals.withheld` is not 0, the reporter writes one line after the finding lines and the stale suppressions, naming each such count with its confidence, from `probable` to `possible`, and the setting that shows them all, the minimum set to the lowest confidence the line names:
+
+```text
+withheld by analysis.min_confidence: 2 probable, 5 possible, shown with analysis.min_confidence set to possible
+```
+
+The line names a confidence only where its count is not 0, so a run under the default minimum that withheld 5 findings writes `withheld by analysis.min_confidence: 5 possible, shown with analysis.min_confidence set to possible`. A run whose counts are all 0 writes no such line.
+
+Finding lines go to standard output. The summary, the omitted count, the withheld line, the deletable-line total, the remediation text and every load error are not finding lines, and none of them matches the expression below, so a filter on the expression yields exactly the finding lines. No timestamp, duration or host detail appears in the output, and two runs over an unchanged tree write the same bytes.
 
 ## The expression
 
@@ -126,9 +134,10 @@ catalog.go:214:6: method (*Catalog).ResolveAlias: exported method has no referen
 catalog.go:0:6: method (*Catalog).ResolveAlias: exported method has no reference [probable] (DS1001)
 DS1001: catalog.go:214:6: method (*Catalog).ResolveAlias: exported method has no reference [probable]
 catalog.go:214:6: method (*Catalog).ResolveAlias: exported method has no reference [probable] (DS1001) 
+withheld by analysis.min_confidence: 2 probable, 5 possible, shown with analysis.min_confidence set to possible
 ```
 
-In order: no column; no colon after the column and no confidence; no confidence; the code outside parentheses; a confidence outside the vocabulary; a code outside the `DS` code space; a zero line number; the code before the position; a trailing space after the closing parenthesis.
+In order: no column; no colon after the column and no confidence; no confidence; the code outside parentheses; a confidence outside the vocabulary; a code outside the `DS` code space; a zero line number; the code before the position; a trailing space after the closing parenthesis; the withheld line.
 
 ## A filter for a shell
 

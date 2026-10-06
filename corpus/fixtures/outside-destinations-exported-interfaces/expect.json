@@ -1,0 +1,52 @@
+{
+  "name": "outside-destinations-exported-interfaces",
+  "description": "A value passed to an outside function keeps the methods by which it satisfies an exported interface of the callee's package, of its import closure, or of an outside package of the build that imports the callee's package, and no method only an unexported interface requires. A value a method returns as an interface-typed result, where the method implements an exported interface declared outside the program, is passed to that interface's callers and keeps its fields and the same methods.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "record.Label",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "record.Describe",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "record.Name",
+      "report": "DS1103",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method"
+    },
+    {
+      "symbol": "service.Addr",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "service.Label",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "service.Name",
+      "report": "DS1103",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method"
+    }
+  ]
+}

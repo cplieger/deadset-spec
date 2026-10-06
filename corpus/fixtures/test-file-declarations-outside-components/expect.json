@@ -1,6 +1,6 @@
 {
   "name": "test-file-declarations-outside-components",
-  "description": "A declaration of a test file belongs to a dead component only when it is reported as a test of dead code, so a production declaration only tests reach is its component's root member whatever the test files hold. A test of dead code and the production declaration it calls are root members together, whether the test is a test function or a helper; a helper a live test calls, or a helper nothing calls that also calls a live declaration, is reported under no code and makes no production declaration a non-root.",
+  "description": "A production declaration only tests reach is its component's root member whatever the test files hold, unless a test of dead code calls it. A test of dead code and the production declaration it calls are root members together, whether the test is a test function or a helper. A helper a live test calls is reported under no code, and a helper nothing calls that also calls a live declaration is reported as unreferenced while the production declaration it calls stays out of its component, so neither makes a production declaration a non-root.",
   "languages": ["go", "ts"],
   "target_kind": "application",
   "expect": [
@@ -83,6 +83,14 @@
         "root": true
       }
     },
-    { "symbol": "formatBoth", "report": "none" }
+    {
+      "symbol": "formatBoth",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting",
+      "component": { "root": true }
+    }
   ]
 }

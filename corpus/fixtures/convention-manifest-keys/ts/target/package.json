@@ -1,0 +1,16 @@
+{
+  "name": "@example/target",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./main.ts",
+  "devDependencies": {
+    "@example/prettier-config": "1.0.0",
+    "@example/unread-config": "1.0.0",
+    "prettier": "3.999.0"
+  },
+  "prettier": "@example/prettier-config",
+  "unread": {
+    "extends": "@example/unread-config"
+  }
+}

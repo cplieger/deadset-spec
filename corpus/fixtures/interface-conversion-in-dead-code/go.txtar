@@ -1,0 +1,50 @@
+The Go rendering: an interface the command calls through, the implementation the
+command converts to it, and a second implementation only an uncalled function
+converts.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Store.Find": { "file": "target/store/store.go", "line": 5 },
+    "Plain.Find": { "file": "target/store/store.go", "line": 12 },
+    "newEncrypted": { "file": "target/store/store.go", "line": 21 },
+    "Encrypted": { "file": "target/store/store.go", "line": 15 },
+    "Encrypted.Find": { "file": "target/store/store.go", "line": 18 },
+    "Use": { "file": "target/store/store.go", "line": 24 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+package main
+
+import "example.com/target/store"
+
+func main() { println(store.Use(store.Plain{})) }
+-- target/store/store.go --
+package store
+
+// Store finds a value by name.
+type Store interface {
+	Find(name string) string
+}
+
+// Plain is the store the command converts to Store.
+type Plain struct{}
+
+// Find returns the name it is given.
+func (Plain) Find(name string) string { return name }
+
+// encrypted is built by newEncrypted alone.
+type encrypted struct{ key string }
+
+// Find prefixes the name with the key.
+func (e *encrypted) Find(name string) string { return e.key + name }
+
+// newEncrypted converts an encrypted store to Store, and nothing calls it.
+func newEncrypted() Store { return &encrypted{key: "k"} }
+
+// Use finds one name through the interface.
+func Use(s Store) string { return s.Find("x") }

@@ -1,15 +1,15 @@
 {
   "name": "deadset-go",
   "version": "1.21.0",
-  "contract_version": "5.3.0",
+  "contract_version": "6.0.0",
   "schema_versions_accepted": [
-    "7.0.0"
+    "8.0.0"
   ],
   "languages": [
     "go"
   ],
   "conformance": {
-    "corpus_version": "3.0.0",
+    "corpus_version": "4.0.0",
     "result": "pass",
     "digest": "sha256:cbf2fb667d665d638407a6248aadf286ce96fe7b1627aa081e856846871a6e66"
   }

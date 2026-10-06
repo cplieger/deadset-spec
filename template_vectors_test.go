@@ -16,7 +16,7 @@ import (
 	"text/template/parse"
 	"unicode/utf8"
 
-	spec "github.com/cplieger/deadset-spec/v5"
+	spec "github.com/cplieger/deadset-spec/v6"
 )
 
 // templateVectorsDir holds one directory per published template case.

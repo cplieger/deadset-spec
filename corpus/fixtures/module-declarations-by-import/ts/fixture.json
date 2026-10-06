@@ -1,0 +1,11 @@
+{
+  "symbols": {
+    "SvgModule": { "file": "target/shims.d.ts", "line": 3 },
+    "WasmModule": { "file": "target/shims.d.ts", "line": 8 },
+    "RoutesModule": { "file": "target/shims.d.ts", "line": 13 },
+    "LegacyModule": { "file": "target/shims.d.ts", "line": 17 },
+    "RegistryAugmentation": { "file": "target/main.ts", "line": 6 },
+    "Registry.extra": { "file": "target/main.ts", "line": 8 },
+    "Registry.unused": { "file": "target/main.ts", "line": 9 }
+  }
+}

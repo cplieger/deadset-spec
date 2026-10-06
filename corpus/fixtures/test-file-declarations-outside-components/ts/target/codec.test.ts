@@ -1,7 +1,7 @@
 import { decode, encode, format, live, parse } from "./codec.js";
 
-// A test file under the default test-file pattern. A runner evaluates it as a
-// module and calls each exported test by name.
+// A test file under the default test-file pattern. A runner loads it and calls
+// what it registers or exports.
 
 // encodeAll is a test-file helper that nothing calls.
 function encodeAll(): number {

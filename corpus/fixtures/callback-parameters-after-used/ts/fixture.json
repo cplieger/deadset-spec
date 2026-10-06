@@ -1,0 +1,18 @@
+{
+  "symbols": {
+    "Unused": { "file": "target/main.ts", "line": 7 },
+    "First": { "file": "target/main.ts", "line": 18 },
+    "Second": { "file": "target/main.ts", "line": 19 },
+    "Third": { "file": "target/main.ts", "line": 20 },
+    "Value": { "file": "target/main.ts", "line": 26 },
+    "Skipped": { "file": "target/main.ts", "line": 31 },
+    "Kept": { "file": "target/main.ts", "line": 32 },
+    "PatternNameUnread": { "file": "target/main.ts", "line": 39 },
+    "BeforeReadPattern": { "file": "target/main.ts", "line": 46 },
+    "RestSibling": { "file": "target/main.ts", "line": 55 },
+    "RestUnreadInPattern": { "file": "target/main.ts", "line": 64 },
+    "RestUnread": { "file": "target/main.ts", "line": 71 },
+    "BeforeReadRest": { "file": "target/main.ts", "line": 77 },
+    "ThisParameter": { "file": "target/main.ts", "line": 83 }
+  }
+}

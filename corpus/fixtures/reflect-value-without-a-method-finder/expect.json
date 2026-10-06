@@ -1,0 +1,24 @@
+{
+  "name": "reflect-value-without-a-method-finder",
+  "description": "A value handed to a function of reflect other than a method-reaching call has its fields retained by the encoding-reflection class and no method, so in a program that finds no method through reflection a method nothing calls is reported.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "sample.Name",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "sample.Describe",
+      "report": "DS1103",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method"
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "symbols": {
+    "setupFile": { "file": "target/support/setup.ts", "line": 1 },
+    "seed": { "file": "target/support/setup.ts", "line": 2 },
+    "live": { "file": "target/catalog.ts", "line": 2 }
+  }
+}

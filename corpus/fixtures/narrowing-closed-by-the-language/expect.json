@@ -1,0 +1,42 @@
+{
+  "name": "narrowing-closed-by-the-language",
+  "description": "A library analyzed under the open world, with no consumer declared, still has two parts no other program can import: its main packages and its internal/ tree. An exported function only its own package calls is reported there as a candidate for unexporting, while one in the published package is not, because an outside program may call it.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "library",
+  "expect": [
+    {
+      "symbol": "Format",
+      "report": "none"
+    },
+    {
+      "symbol": "Prefix",
+      "report": "none"
+    },
+    {
+      "symbol": "Open",
+      "report": "none"
+    },
+    {
+      "symbol": "Normalize",
+      "report": "DS1101",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "details": {
+        "narrower_visibility": "package"
+      }
+    },
+    {
+      "symbol": "Run",
+      "report": "DS1101",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "details": {
+        "narrower_visibility": "package"
+      }
+    }
+  ]
+}

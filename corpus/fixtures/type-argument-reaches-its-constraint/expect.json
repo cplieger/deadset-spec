@@ -1,0 +1,26 @@
+{
+  "name": "type-argument-reaches-its-constraint",
+  "description": "A type argument is a value that reaches its type parameter's constraint, so the method by which the type satisfies a constraint the generic code calls through is retained by the interface-satisfaction class, though no conversion to the interface exists.",
+  "languages": [
+    "go",
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Sizer.Size",
+      "report": "none"
+    },
+    {
+      "symbol": "Box.Size",
+      "report": "none",
+      "retained_by": [
+        "interface-satisfaction"
+      ]
+    },
+    {
+      "symbol": "Total",
+      "report": "none"
+    }
+  ]
+}

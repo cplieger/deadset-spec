@@ -1,0 +1,132 @@
+The Go rendering: a command that registers one value with a host module and
+serves another through a plugin interface the host declares. The host is a local
+module the target requires and replaces, so the rendering loads with no network
+access, and its describe package imports the host's own package.
+
+-- fixture.json --
+{
+  "symbols": {
+    "record.Label": { "file": "target/main.go", "line": 13 },
+    "record.Describe": { "file": "target/main.go", "line": 16 },
+    "record.Name": { "file": "target/main.go", "line": 19 },
+    "service.Addr": { "file": "target/main.go", "line": 23 },
+    "service.Label": { "file": "target/main.go", "line": 27 },
+    "service.Name": { "file": "target/main.go", "line": 30 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+
+require example.com/plugin v0.0.0
+
+replace example.com/plugin => ../plugin
+-- target/main.go --
+// Command target serves a plugin to its host.
+package main
+
+import (
+	"example.com/plugin"
+	"example.com/plugin/describe"
+)
+
+// record is registered with the host.
+type record struct{}
+
+// Label satisfies an exported interface of the callee's package.
+func (record) Label() string { return "record" }
+
+// Describe satisfies an exported interface of a package that imports the callee's package.
+func (record) Describe() string { return "a record" }
+
+// Name satisfies only an unexported interface of the callee's package.
+func (record) Name() string { return "record" }
+
+// service is the value the plugin serves.
+type service struct {
+	Addr string
+}
+
+// Label satisfies an exported interface of the plugin interface's package.
+func (service) Label() string { return "service" }
+
+// Name satisfies only an unexported interface of that package.
+func (service) Name() string { return "service" }
+
+// impl is the plugin the host serves.
+type impl struct{}
+
+// Server returns the value the host serves.
+func (impl) Server() (any, error) { return &service{}, nil }
+
+func main() {
+	plugin.Register(&record{})
+	if err := plugin.Serve(impl{}); err != nil {
+		panic(err)
+	}
+	println(describe.Version())
+}
+-- plugin/go.mod --
+module example.com/plugin
+
+go 1.27.0
+-- plugin/plugin.go --
+// Package plugin serves values to a host process.
+package plugin
+
+// Plugin is implemented by a value the host serves.
+type Plugin interface {
+	// Server returns the value the host serves by reflection.
+	Server() (any, error)
+}
+
+// Labeler names a value in the host's listing.
+type Labeler interface {
+	Label() string
+}
+
+// namer names a value in the host's own diagnostics.
+type namer interface {
+	Name() string
+}
+
+// Serve serves the value p returns.
+func Serve(p Plugin) error {
+	v, err := p.Server()
+	if err != nil {
+		return err
+	}
+	if n, ok := v.(namer); ok {
+		_ = n.Name()
+	}
+	return nil
+}
+
+// Register records v in the host's table.
+func Register(v any) {
+	if l, ok := v.(Labeler); ok {
+		_ = l.Label()
+	}
+}
+-- plugin/describe/describe.go --
+// Package describe describes the values the plugin package serves.
+package describe
+
+import "example.com/plugin"
+
+// Describer describes a value in the host's help output.
+type Describer interface {
+	Describe() string
+}
+
+// Version is the version of the description format.
+func Version() string { return "1" }
+
+// Of describes p.
+func Of(p plugin.Plugin) string {
+	if d, ok := p.(Describer); ok {
+		return d.Describe()
+	}
+	return ""
+}

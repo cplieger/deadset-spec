@@ -1,0 +1,53 @@
+{
+  "name": "convention-selection-keys",
+  "description": "A string at a selection key of an applied convention row, a key that only selects files to mutate or to cover, roots no file, so a file only such keys name is reported as never imported, in a JSON configuration file as in a module one. A key that loads a file still roots it, and a string in the configuration of a tool no applied row describes roots the file it names. The fixture assumes the analyzer carries a row named stryker for the package @stryker-mutator/core whose selection keys hold mutate read from stryker.config.json, and a row named vitest for the package vitest whose selection keys hold test.coverage.include and test.coverage.exclude read from vitest.config.ts, each range holding the installed version.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "conventions_applied": [
+    {
+      "name": "stryker",
+      "package": "@stryker-mutator/core",
+      "version": "9.999.0",
+      "manifest": "package.json"
+    },
+    {
+      "name": "vitest",
+      "package": "vitest",
+      "version": "5.999.0",
+      "manifest": "package.json"
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "Mutated",
+      "report": "DS1502",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "Covered",
+      "report": "DS1502",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "Excluded",
+      "report": "DS1502",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "Setup",
+      "report": "none"
+    },
+    {
+      "symbol": "Named",
+      "report": "none"
+    }
+  ]
+}

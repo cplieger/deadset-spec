@@ -1,0 +1,68 @@
+The Go rendering: a command that hands a slice and a map of its record types
+to a dependency module's function taking an interface-typed argument. The
+dependency is a local module the target requires and replaces, so the rendering
+loads with no network access.
+
+-- fixture.json --
+{
+  "symbols": {
+    "repo.Name": { "file": "target/main.go", "line": 8 },
+    "account.ID": { "file": "target/main.go", "line": 13 },
+    "draft.Title": { "file": "target/main.go", "line": 18 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+
+require example.com/store v0.0.0
+
+replace example.com/store => ../store
+-- target/main.go --
+// Command target saves records through a package outside the analyzed program.
+package main
+
+import "example.com/store"
+
+// repo is handed to the store inside a slice of pointers.
+type repo struct {
+	Name string `db:"name"`
+}
+
+// account is handed to the store as a map value.
+type account struct {
+	ID string `db:"id"`
+}
+
+// draft is built and never handed to the store.
+type draft struct {
+	Title string `db:"title"`
+}
+
+func main() {
+	if err := store.Save([]*repo{{Name: "target"}}); err != nil {
+		panic(err)
+	}
+	if err := store.Save(map[string]account{"a": {ID: "1"}}); err != nil {
+		panic(err)
+	}
+	println(len([]draft{{}}))
+}
+-- store/go.mod --
+module example.com/store
+
+go 1.27.0
+-- store/store.go --
+// Package store saves records.
+package store
+
+import "errors"
+
+// Save writes the records it is given.
+func Save(records any) error {
+	if records == nil {
+		return errors.New("store: nothing to save")
+	}
+	return nil
+}

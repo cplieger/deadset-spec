@@ -1,0 +1,21 @@
+{
+  "name": "html-module-script-end",
+  "description": "An inline module script of an HTML file ends at the next </script> end tag, so an import its content holds roots the file it names, while an import written after the end tag roots nothing and the file it names is reported as never imported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Loaded",
+      "report": "none"
+    },
+    {
+      "symbol": "After",
+      "report": "DS1502",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    }
+  ]
+}
