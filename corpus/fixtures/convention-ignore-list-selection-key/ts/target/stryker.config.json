@@ -1,0 +1,8 @@
+{
+  "mutate": [
+    "src/imported.ts"
+  ],
+  "ignorePatterns": [
+    "src/ignored.ts"
+  ]
+}

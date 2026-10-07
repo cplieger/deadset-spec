@@ -356,7 +356,7 @@ func (r *sarifRenderer) findingResult(found sarifRecord, index map[string]int) (
 	}
 	symbol, _ := found["symbol"].(map[string]any)
 	ref, _ := symbol["ref"].(string)
-	related, err := relatedOf(found, ref)
+	related, err := relatedOf(found, ref, at.Path)
 	if err != nil {
 		return nil, err
 	}
@@ -425,8 +425,9 @@ type relatedLocation struct {
 }
 
 // relatedOf is the implementations, the write positions and the other component
-// members a finding names, in that order, the first hundred.
-func relatedOf(found sarifRecord, own string) ([]relatedLocation, error) {
+// members a finding names, in that order, the first hundred. The finding's own
+// declaration is the member with its reference and its path.
+func relatedOf(found sarifRecord, ownRef, ownPath string) ([]relatedLocation, error) {
 	var related []relatedLocation
 	details, _ := found["details"].(map[string]any)
 	implementations, _ := details["implementations"].([]any)
@@ -450,12 +451,12 @@ func relatedOf(found sarifRecord, own string) ([]relatedLocation, error) {
 	members, _ := component["members"].([]any)
 	for _, one := range members {
 		entry, _ := one.(map[string]any)
-		if entry["ref"] == own {
-			continue
-		}
 		at, err := positionOf(entry["position"])
 		if err != nil {
 			return nil, err
+		}
+		if entry["ref"] == ownRef && at.Path == ownPath {
+			continue
 		}
 		related = append(related, relatedLocation{"member", at})
 	}

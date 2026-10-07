@@ -1,0 +1,11 @@
+{
+  "description": "One row naming the default export alias of the virtual:theme block.",
+  "baseline": [
+    {
+      "code": "DS1001",
+      "symbol": "ts://@example/target/shims.d.ts#'virtual:theme'.default:alias",
+      "path": "shims.d.ts",
+      "reason": "recorded by an earlier run"
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "name": "overrides-of-outside-class-properties",
+  "description": "An accessor or a property, static or not, that overrides a member of a class a dependency declares is read by the dependency's code, so it is live while its class is. A static property that overrides nothing is reported when nothing reads it, and an override in a class nothing builds falls with that class.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Card.styles",
+      "report": "none"
+    },
+    {
+      "symbol": "Card.properties",
+      "report": "none"
+    },
+    {
+      "symbol": "Card.renderRoot",
+      "report": "none"
+    },
+    {
+      "symbol": "Card.label",
+      "report": "none"
+    },
+    {
+      "symbol": "Card.palette",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "class-member"
+    },
+    {
+      "symbol": "Orphan",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "class",
+      "component": {
+        "root": true
+      }
+    },
+    {
+      "symbol": "Orphan.styles",
+      "report": "none"
+    }
+  ]
+}

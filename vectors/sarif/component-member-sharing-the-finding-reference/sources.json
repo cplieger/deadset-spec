@@ -1,0 +1,7 @@
+{
+  "description": "Two packages of one name, each holding src/hooks.ts, so one reference spells a declaration of each.",
+  "files": {
+    "examples/a/src/hooks.ts": "export function setup(): string {\n  return \"a\" + suffix;\n}\n\nconst suffix = \"!\";\n",
+    "examples/b/src/hooks.ts": "export function setup(): string {\n  return \"b\";\n}\n"
+  }
+}

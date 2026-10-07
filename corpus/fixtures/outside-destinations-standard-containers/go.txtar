@@ -1,0 +1,68 @@
+The Go rendering: a command that stores one value in a sync.Map, one in an
+atomic.Value and one in a context, and reads each back.
+
+-- fixture.json --
+{
+  "symbols": {
+    "status.String": { "file": "target/main.go", "line": 15 },
+    "entry.Status": { "file": "target/main.go", "line": 19 },
+    "role.Name": { "file": "target/main.go", "line": 24 },
+    "role.String": { "file": "target/main.go", "line": 28 },
+    "key.ID": { "file": "target/main.go", "line": 32 },
+    "tracer.String": { "file": "target/main.go", "line": 39 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target keeps values in the standard containers.
+package main
+
+import (
+	"context"
+	"fmt"
+	"sync"
+	"sync/atomic"
+)
+
+// status is the type of a field of a value stored in a sync.Map.
+type status int
+
+// String implements no interface of package sync.
+func (status) String() string { return "status" }
+
+// entry is stored in a sync.Map.
+type entry struct {
+	Status status
+}
+
+// role is stored in an atomic.Value.
+type role struct {
+	Name string
+}
+
+// String implements no interface of package sync/atomic.
+func (role) String() string { return "role" }
+
+// key is the key of a context value, which the context compares.
+type key struct {
+	ID int
+}
+
+// tracer is the value of a context value.
+type tracer struct{}
+
+// String implements an unexported interface of package context, which prints the value.
+func (tracer) String() string { return "tracer" }
+
+func main() {
+	var statuses sync.Map
+	statuses.Store("ready", entry{Status: 1})
+	var current atomic.Value
+	current.Store(role{})
+	ctx := context.WithValue(context.Background(), key{ID: 1}, tracer{})
+	_, found := statuses.Load("ready")
+	fmt.Println(found, current.Load() != nil, ctx.Value(key{ID: 1}) != nil)
+}

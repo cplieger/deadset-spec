@@ -1,0 +1,11 @@
+{
+  "symbols": {
+    "Card.styles": { "file": "target/main.ts", "line": 5 },
+    "Card.properties": { "file": "target/main.ts", "line": 7 },
+    "Card.renderRoot": { "file": "target/main.ts", "line": 9 },
+    "Card.label": { "file": "target/main.ts", "line": 13 },
+    "Card.palette": { "file": "target/main.ts", "line": 16 },
+    "Orphan": { "file": "target/main.ts", "line": 20 },
+    "Orphan.styles": { "file": "target/main.ts", "line": 21 }
+  }
+}

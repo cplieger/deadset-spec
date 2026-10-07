@@ -1,0 +1,6 @@
+{
+  "symbols": {
+    "SvgModule": { "file": "target/src/shims.d.ts", "line": 2 },
+    "PngModule": { "file": "target/src/shims.d.ts", "line": 7 }
+  }
+}

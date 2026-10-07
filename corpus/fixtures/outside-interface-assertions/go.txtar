@@ -1,0 +1,126 @@
+The Go rendering: a command that converts a value to an interface a host module
+declares and hands it to the host, which asserts further interfaces on it. The
+host is a local module the target requires and replaces, so the rendering loads
+with no network access, and its base package is one the host imports.
+
+-- fixture.json --
+{
+  "symbols": {
+    "recorder.Write": { "file": "target/main.go", "line": 10 },
+    "recorder.Flush": { "file": "target/main.go", "line": 13 },
+    "recorder.Reset": { "file": "target/main.go", "line": 16 },
+    "recorder.SetDeadline": { "file": "target/main.go", "line": 19 },
+    "recorder.Close": { "file": "target/main.go", "line": 22 },
+    "recorder.Label": { "file": "target/main.go", "line": 25 },
+    "recorder.Spare": { "file": "target/main.go", "line": 28 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+
+require example.com/host v0.0.0
+
+replace example.com/host => ../host
+-- target/main.go --
+// Command target writes through the host.
+package main
+
+import "example.com/host"
+
+// recorder is handed to the host as a host.Writer.
+type recorder struct{}
+
+// Write is the method host.Writer requires.
+func (*recorder) Write(p []byte) (int, error) { return len(p), nil }
+
+// Flush implements an exported interface of the package that declares host.Writer.
+func (*recorder) Flush() {}
+
+// Reset implements an unexported interface of that package.
+func (*recorder) Reset() {}
+
+// SetDeadline implements an interface type literal that package writes.
+func (*recorder) SetDeadline(int) error { return nil }
+
+// Close implements an exported interface of a package that package imports.
+func (*recorder) Close() error { return nil }
+
+// Label implements only an unexported interface of a package that package imports.
+func (*recorder) Label() string { return "recorder" }
+
+// Spare implements no interface.
+func (*recorder) Spare() string { return "spare" }
+
+func main() {
+	var w host.Writer = &recorder{}
+	if err := host.Serve(w); err != nil {
+		panic(err)
+	}
+}
+-- host/go.mod --
+module example.com/host
+
+go 1.27.0
+-- host/host.go --
+// Package host writes through a value its caller hands it.
+package host
+
+import "example.com/host/base"
+
+// Writer is the interface a caller hands the host a value through.
+type Writer interface {
+	Write(p []byte) (int, error)
+}
+
+// Flusher is an exported interface the host asserts on a Writer.
+type Flusher interface {
+	Flush()
+}
+
+// resetter is an unexported interface the host asserts on a Writer.
+type resetter interface {
+	Reset()
+}
+
+// Serve writes to w and calls what else w implements.
+func Serve(w Writer) error {
+	if f, ok := w.(Flusher); ok {
+		f.Flush()
+	}
+	if r, ok := w.(resetter); ok {
+		r.Reset()
+	}
+	if d, ok := w.(interface{ SetDeadline(int) error }); ok {
+		if err := d.SetDeadline(0); err != nil {
+			return err
+		}
+	}
+	if c, ok := w.(base.Closer); ok {
+		defer c.Close()
+	}
+	base.Describe(w)
+	_, err := w.Write(nil)
+	return err
+}
+-- host/base/base.go --
+// Package base holds the interfaces the host builds on.
+package base
+
+// Closer is an exported interface of a package the host imports.
+type Closer interface {
+	Close() error
+}
+
+// labeler is an unexported interface of a package the host imports.
+type labeler interface {
+	Label() string
+}
+
+// Describe calls Label where v implements it.
+func Describe(v any) {
+	if l, ok := v.(labeler); ok {
+		_ = l.Label()
+	}
+}

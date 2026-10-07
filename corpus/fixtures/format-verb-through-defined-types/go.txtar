@@ -1,0 +1,65 @@
+The Go rendering: a command that prints one value whose exported fields hold
+types with an Error method, one directly, one through a defined struct type and
+one through a struct type with no name, beside an unexported field.
+
+-- fixture.json --
+{
+  "symbols": {
+    "level.Error": { "file": "target/main.go", "line": 10 },
+    "code.Error": { "file": "target/main.go", "line": 16 },
+    "tag.Error": { "file": "target/main.go", "line": 22 },
+    "hidden.Error": { "file": "target/main.go", "line": 28 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target prints one event.
+package main
+
+import "fmt"
+
+// level is the type of an exported field of the printed value.
+type level int
+
+// Error is called when the printed value's exported field is formatted.
+func (level) Error() string { return "level" }
+
+// code is the type of an exported field of a defined struct type the printed value holds.
+type code int
+
+// Error is called when that nested field is formatted.
+func (code) Error() string { return "code" }
+
+// tag is the type of an exported field of a struct type with no name.
+type tag int
+
+// Error is called when that field is formatted.
+func (tag) Error() string { return "tag" }
+
+// hidden is the type of an unexported field, which is printed without a method call.
+type hidden int
+
+// Error is never called, because the field holding a hidden is unexported.
+func (hidden) Error() string { return "hidden" }
+
+// detail is a defined struct type an exported field holds.
+type detail struct {
+	Code code
+}
+
+// event is printed.
+type event struct {
+	Level  level
+	Detail detail
+	Meta   struct{ Tag tag }
+	note   hidden
+}
+
+func main() {
+	e := event{Level: 1, Detail: detail{Code: 2}, Meta: struct{ Tag tag }{Tag: 3}, note: 4}
+	fmt.Println(e)
+	println(e.Level, e.Detail.Code, e.Meta.Tag, e.note)
+}

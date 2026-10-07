@@ -22,8 +22,9 @@ Write every file of `sources.json` under an empty directory, at its path, as the
 
 | Case | What it establishes | Outcome |
 | --- | --- | --- |
+| `component-member-sharing-the-finding-reference` | A component member whose reference is the finding's own but whose path is another, a declaration of a second package of the same name, is a related location, and only the member with both the finding's reference and its path is left out. | rendered |
 | `findings-and-a-stale-suppression` | An analyzer's run: its rules, a finding, a finding whose write positions become related locations linked from the message, and a stale suppression at its own site with no `properties` and a region ending on its own line. | rendered |
-| `implementations-and-component-members` | Related locations in their order: an interface's implementations, then the members of a component listed in full, the finding's own symbol left out. | rendered |
+| `implementations-and-component-members` | Related locations in their order: an interface's implementations, then the members of a component listed in full, the finding's own declaration left out. | rendered |
 | `line-fingerprints` | `primaryLocationLineHash` over the page's five-line file, over two hundred identical lines where the counter and the sentinel enter the windows, and over CR LF, CR then a space then LF, and CR CR LF line ends. | rendered |
 | `line-past-the-end` | A finding on a line past the file's last fails the rendering. | 3 |
 | `merged-runs-and-totals` | A merged log: one run per `merged_from` entry in bytewise order of name, each with its input report's languages and totals, the merge's own run for the record that names no analyzer, and the merged totals under the log's `properties.totals`. | rendered |

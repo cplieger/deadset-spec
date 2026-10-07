@@ -1,0 +1,7 @@
+{
+  "symbols": {
+    "ShimDefault": { "file": "target/shims.d.ts", "line": 5 },
+    "ShimComponent": { "file": "target/shims.d.ts", "line": 3 },
+    "ShimMeta": { "file": "target/shims.d.ts", "line": 4 }
+  }
+}

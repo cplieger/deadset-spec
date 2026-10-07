@@ -83,7 +83,7 @@ Where a count of the report's `totals.withheld` is not 0, the reporter writes on
 withheld by analysis.min_confidence: 2 probable, 5 possible, shown with analysis.min_confidence set to possible
 ```
 
-The line names a confidence only where its count is not 0, so a run under the default minimum that withheld 5 findings writes `withheld by analysis.min_confidence: 5 possible, shown with analysis.min_confidence set to possible`. A run whose counts are all 0 writes no such line.
+The line names a confidence only where its count is not 0, so a run under the default minimum that withheld 5 findings writes `withheld by analysis.min_confidence: 5 possible, shown with analysis.min_confidence set to possible`. A run whose counts are all 0 writes no such line. The line never names `certain`, because a minimum never withholds a certain finding, so a run whose only count that is not 0 is `certain` writes no such line either.
 
 Finding lines go to standard output. The summary, the omitted count, the withheld line, the deletable-line total, the remediation text and every load error are not finding lines, and none of them matches the expression below, so a filter on the expression yields exactly the finding lines. No timestamp, duration or host detail appears in the output, and two runs over an unchanged tree write the same bytes.
 

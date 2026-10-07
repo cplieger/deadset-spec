@@ -1,6 +1,6 @@
 {
   "name": "outside-destinations-exported-interfaces",
-  "description": "A value passed to an outside function keeps the methods by which it satisfies an exported interface of the callee's package, of its import closure, or of an outside package of the build that imports the callee's package, and no method only an unexported interface requires. A value a method returns as an interface-typed result, where the method implements an exported interface declared outside the program, is passed to that interface's callers and keeps its fields and the same methods.",
+  "description": "A value passed to an outside function keeps the methods by which it satisfies an exported interface of the callee's package, of its import closure, or of an outside package of the build that imports the callee's package, and no method only an unexported interface of a package the callee's package imports requires. A value a method returns as an interface-typed result, where the method implements an exported interface declared outside the program, is passed to that interface's callers and keeps its fields and the same methods.",
   "languages": [
     "go"
   ],

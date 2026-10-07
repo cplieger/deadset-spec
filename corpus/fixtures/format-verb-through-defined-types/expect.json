@@ -1,0 +1,38 @@
+{
+  "name": "format-verb-through-defined-types",
+  "description": "A formatting function prints the exported fields of the value it formats at any depth, through the fields of a defined struct type and of a struct type with no name, and calls the Error or String method of each field's type, so those methods are retained. A method of the type of an unexported field is reported, because the field is printed without a method call.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "level.Error",
+      "report": "none",
+      "retained_by": [
+        "format-verb-contract"
+      ]
+    },
+    {
+      "symbol": "code.Error",
+      "report": "none",
+      "retained_by": [
+        "format-verb-contract"
+      ]
+    },
+    {
+      "symbol": "tag.Error",
+      "report": "none",
+      "retained_by": [
+        "format-verb-contract"
+      ]
+    },
+    {
+      "symbol": "hidden.Error",
+      "report": "DS1103",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method"
+    }
+  ]
+}

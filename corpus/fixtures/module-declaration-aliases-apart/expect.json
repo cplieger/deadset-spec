@@ -1,0 +1,29 @@
+{
+  "name": "module-declaration-aliases-apart",
+  "description": "An export alias inside a declare module block carries the block in its reference, so the default aliases of two blocks in one file are two references. A baseline row naming one of them binds that alias alone: its finding is withheld, and the other block's unread default alias is reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "ThemeDefault",
+      "report": "none"
+    },
+    {
+      "symbol": "IconsDefault",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "export-alias"
+    },
+    {
+      "symbol": "ThemeVersion",
+      "report": "none"
+    },
+    {
+      "symbol": "IconsCount",
+      "report": "none"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "name": "module-declaration-component-import",
+  "description": "An import that names a module declaration by its pattern references each member it imports from the declaration, the default member for a default import, even where its specifier resolves to a component file. A member of the declaration no import names is judged by its own references.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "ShimDefault",
+      "report": "none"
+    },
+    {
+      "symbol": "ShimComponent",
+      "report": "none"
+    },
+    {
+      "symbol": "ShimMeta",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "variable"
+    }
+  ]
+}

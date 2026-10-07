@@ -1,0 +1,29 @@
+{
+  "name": "convention-ignore-list-selection-key",
+  "description": "A key that lists files a tool ignores is a selection key, so a string there roots no file, and a file only that key names is reported as never imported. The fixture assumes the analyzer carries a row named stryker for the package @stryker-mutator/core whose selection keys hold mutate and ignorePatterns read from stryker.config.json, its range holding the installed version.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "conventions_applied": [
+    {
+      "name": "stryker",
+      "package": "@stryker-mutator/core",
+      "version": "9.999.0",
+      "manifest": "package.json"
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "Ignored",
+      "report": "DS1502",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "Imported",
+      "report": "none"
+    }
+  ]
+}
