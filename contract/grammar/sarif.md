@@ -104,7 +104,7 @@ A result carries a related location for every position the finding names beyond 
 
 1. Each entry of `details.implementations`, in report order, with `message.text` `implementation` (the `DS12xx` kinds).
 2. Each entry of `details.write_positions`, in report order, with `message.text` `write` (`DS1301` and `DS1807`).
-3. Each member of the finding's component other than the finding's own symbol, in the order the report lists them, with `message.text` `member`, when the finding carries the member list; it does so when the cascade output is set to full, under the field `finding.schema.json` names for it, and a finding without the list contributes no related location here.
+3. Each member of the finding's component other than the finding's own declaration, the member whose reference and path are both the finding's own, in the order the report lists them, with `message.text` `member`, when the finding carries the member list; it does so when the cascade output is set to full, under the field `finding.schema.json` names for it, and a finding without the list contributes no related location here.
 
 Each related location is a `location` object with `id` (the 1-based number), `physicalLocation` in the shape above, and `message.text` as listed. At most 100 related locations are emitted, the first 100 in that order; GitHub rejects a result with more than 1,000 locations and includes 100 of them, and the JSON report stays complete whatever the cap removes.
 

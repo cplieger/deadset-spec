@@ -1,0 +1,59 @@
+{
+  "name": "outside-interface-assertions",
+  "description": "A value converted to an interface a package outside the program declares is held by code outside the analysis, which may assert another interface on it. So the value keeps the methods by which it implements an interface that package declares, exported or not, or an interface type literal its code writes, or an exported interface of a package it imports. A method only an unexported interface of an imported package requires, and a method no interface requires, are reported.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "recorder.Write",
+      "report": "none",
+      "retained_by": [
+        "interface-satisfaction"
+      ]
+    },
+    {
+      "symbol": "recorder.Flush",
+      "report": "none",
+      "retained_by": [
+        "interface-satisfaction"
+      ]
+    },
+    {
+      "symbol": "recorder.Reset",
+      "report": "none",
+      "retained_by": [
+        "interface-satisfaction"
+      ]
+    },
+    {
+      "symbol": "recorder.SetDeadline",
+      "report": "none",
+      "retained_by": [
+        "interface-satisfaction"
+      ]
+    },
+    {
+      "symbol": "recorder.Close",
+      "report": "none",
+      "retained_by": [
+        "interface-satisfaction"
+      ]
+    },
+    {
+      "symbol": "recorder.Label",
+      "report": "DS1103",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method"
+    },
+    {
+      "symbol": "recorder.Spare",
+      "report": "DS1103",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method"
+    }
+  ]
+}

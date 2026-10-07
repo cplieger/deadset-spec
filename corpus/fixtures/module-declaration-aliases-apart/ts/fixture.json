@@ -1,0 +1,8 @@
+{
+  "symbols": {
+    "ThemeDefault": { "file": "target/shims.d.ts", "line": 5 },
+    "IconsDefault": { "file": "target/shims.d.ts", "line": 11 },
+    "ThemeVersion": { "file": "target/shims.d.ts", "line": 4 },
+    "IconsCount": { "file": "target/shims.d.ts", "line": 10 }
+  }
+}

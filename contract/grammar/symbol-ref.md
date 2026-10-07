@@ -108,6 +108,8 @@ ts://@example/app/src/features/tabs/index.ts#TabStrip
 
 When no manifest at or above the file carries a `name`, the package component is a single dot and the path is relative to the target root: `ts://./src/wire.ts#ServerEvent`. The two cannot collide, because an npm package name never starts with a dot ([validate-npm-package-name](https://github.com/npm/validate-npm-package-name)). An npm name also never contains `#`, `:`, whitespace or `*`, and contains `/` only after a leading `@scope`, which is what lets the package component be split from the path and lets a pattern's wildcard stay unambiguous.
 
+Two packages of one name below the target root that each hold a file at one path spell a declaration of each with one reference. Such a reference names every declaration it spells. An edge side naming it names each of them and is present where one of them is, and an entry of a configuration key that names a declaration names each of them and matches where one of them does. An ignore-file entry and a baseline row carry the path of the file they bind, so each binds the declaration at that path alone.
+
 The path names a source file, never an import specifier, so the extension is always present and is one of `.ts`, `.tsx`, `.mts`, `.cts`, `.d.ts`, `.d.mts`, `.d.cts`, `.js`, `.jsx`, `.mjs` or `.cjs`. The reference names the declaring file rather than a package entry point, because a module-local declaration that is not exported has no entry-point path at all, and `DS1002` reports exactly those. The `package.json` itself is a scope for one form only, the dependency form below.
 
 A JavaScript file is scoped and spelled exactly as a TypeScript file, under the `ts` prefix: `ts://@example/app/scripts/build.mjs#bundle`.
@@ -127,7 +129,7 @@ A module-level declaration is one component: a function, class, interface, type 
 
 A default export is spelled `default`, its export name: `export default class App {}` is `#default`, and so is the anonymous `export default class {}`. The local name, `App`, is `symbol.name` where one exists. A module has at most one default export, so the spelling is unambiguous.
 
-An export specifier creates an alias symbol distinct from the declaration it names, and the analysis reports the two separately: a re-export nothing imports is a finding on the alias while the declaration behind it may be live. The alias is spelled by its exported name followed by `:alias`: `TabStrip:alias` for `export { TabStrip } from './features/tabs'`, `Strip:alias` for `export { TabStrip as Strip }`, `default:alias` for `export default App;` written as a statement, and `ns:alias` for `export * as ns from './m'`. The selector is what keeps `const a = 1; export { a };` apart, where the module holds a local `a` and an export alias `a` with one name. The alias is marked rather than the local, because the unexported local is the more frequent subject and reads better unmarked. An exported name that is not an identifier, `export { x as 'my-name' }`, is a quoted component with the selector: `'my-name':alias`.
+An export specifier creates an alias symbol distinct from the declaration it names, and the analysis reports the two separately: a re-export nothing imports is a finding on the alias while the declaration behind it may be live. The alias is spelled by its exported name followed by `:alias`: `TabStrip:alias` for `export { TabStrip } from './features/tabs'`, `Strip:alias` for `export { TabStrip as Strip }`, `default:alias` for `export default App;` written as a statement, and `ns:alias` for `export * as ns from './m'`. The selector is what keeps `const a = 1; export { a };` apart, where the module holds a local `a` and an export alias `a` with one name. The alias is marked rather than the local, because the unexported local is the more frequent subject and reads better unmarked. An exported name that is not an identifier, `export { x as 'my-name' }`, is a quoted component with the selector: `'my-name':alias`. An export specifier inside a `declare module` block, an ambient module declaration or a module augmentation, creates its alias inside that block, so the block's own component comes first: `'*.vue'.default:alias` for `export default component;` inside `declare module '*.vue' { }`. The aliases two such blocks of one file declare under one exported name are therefore two references.
 
 ### Members
 
@@ -225,7 +227,7 @@ Each row is anchored, `^` to `$`, and is the whole reference. The corpus names t
 | go | `replace` | `^go://GO_PATH#GO_PATH(?:@GO_VERSION)?:replace$` |
 | ts | `module` | `^ts://TS_PACKAGE/TS_FILE#$` |
 | ts | `module-level`, `default-export` | `^ts://TS_PACKAGE/TS_FILE#TS_HEAD$` |
-| ts | `alias` | `^ts://TS_PACKAGE/TS_FILE#TS_HEAD:alias$` |
+| ts | `alias` | `^ts://TS_PACKAGE/TS_FILE#(?:TS_QUOTED\.)?TS_HEAD:alias$` |
 | ts | `class-member`, `private-member`, `interface-member`, `type-member`, `enum-member`, `namespace-member`, `computed-member` | `^ts://TS_PACKAGE/TS_FILE#TS_HEAD(?:\.TS_MEMBER)+$` |
 | ts | `static-member` | `^ts://TS_PACKAGE/TS_FILE#TS_HEAD(?:\.TS_MEMBER)+:static$` |
 | ts | `type-parameter` | `^ts://TS_PACKAGE/TS_FILE#TS_HEAD(?:\.TS_MEMBER)*(?::static)?<TS_IDENT>$` |
@@ -264,7 +266,7 @@ ts module-level, default-export
 ^ts://(?:@[A-Za-z0-9._-]+/)?[A-Za-z0-9._-]+/(?:[^/#\r\n]+/)*[^/#\r\n]+(?:(?:\.d)?\.[mc]?ts|\.tsx|\.[mc]?js|\.jsx)#(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*')$
 
 ts alias
-^ts://(?:@[A-Za-z0-9._-]+/)?[A-Za-z0-9._-]+/(?:[^/#\r\n]+/)*[^/#\r\n]+(?:(?:\.d)?\.[mc]?ts|\.tsx|\.[mc]?js|\.jsx)#(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*'):alias$
+^ts://(?:@[A-Za-z0-9._-]+/)?[A-Za-z0-9._-]+/(?:[^/#\r\n]+/)*[^/#\r\n]+(?:(?:\.d)?\.[mc]?ts|\.tsx|\.[mc]?js|\.jsx)#(?:'(?:[^'\\\r\n]|\\['\\nr])*'\.)?(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*'):alias$
 
 ts class-member, private-member, interface-member, type-member, enum-member, namespace-member, computed-member
 ^ts://(?:@[A-Za-z0-9._-]+/)?[A-Za-z0-9._-]+/(?:[^/#\r\n]+/)*[^/#\r\n]+(?:(?:\.d)?\.[mc]?ts|\.tsx|\.[mc]?js|\.jsx)#(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*')(?:\.(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|#(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*'|\[[^\]\r\n\t ]+\]))+$

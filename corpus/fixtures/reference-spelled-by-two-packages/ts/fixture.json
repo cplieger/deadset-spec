@@ -1,0 +1,7 @@
+{
+  "symbols": {
+    "First.body": { "file": "target/examples/a/index.ts", "line": 5 },
+    "Second.body": { "file": "target/examples/b/index.ts", "line": 5 },
+    "Unsent.body": { "file": "target/unsent.ts", "line": 3 }
+  }
+}

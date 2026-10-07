@@ -1,7 +1,8 @@
 The Go rendering: a command that registers one value with a host module and
 serves another through a plugin interface the host declares. The host is a local
 module the target requires and replaces, so the rendering loads with no network
-access, and its describe package imports the host's own package.
+access, its describe package imports the host's own package, and the host's own
+package imports its diag package.
 
 -- fixture.json --
 {
@@ -40,7 +41,7 @@ func (record) Label() string { return "record" }
 // Describe satisfies an exported interface of a package that imports the callee's package.
 func (record) Describe() string { return "a record" }
 
-// Name satisfies only an unexported interface of the callee's package.
+// Name satisfies only an unexported interface of a package the callee's package imports.
 func (record) Name() string { return "record" }
 
 // service is the value the plugin serves.
@@ -51,7 +52,7 @@ type service struct {
 // Label satisfies an exported interface of the plugin interface's package.
 func (service) Label() string { return "service" }
 
-// Name satisfies only an unexported interface of that package.
+// Name satisfies only an unexported interface of a package that package imports.
 func (service) Name() string { return "service" }
 
 // impl is the plugin the host serves.
@@ -75,6 +76,8 @@ go 1.27.0
 // Package plugin serves values to a host process.
 package plugin
 
+import "example.com/plugin/diag"
+
 // Plugin is implemented by a value the host serves.
 type Plugin interface {
 	// Server returns the value the host serves by reflection.
@@ -86,20 +89,13 @@ type Labeler interface {
 	Label() string
 }
 
-// namer names a value in the host's own diagnostics.
-type namer interface {
-	Name() string
-}
-
 // Serve serves the value p returns.
 func Serve(p Plugin) error {
 	v, err := p.Server()
 	if err != nil {
 		return err
 	}
-	if n, ok := v.(namer); ok {
-		_ = n.Name()
-	}
+	diag.Note(v)
 	return nil
 }
 
@@ -129,4 +125,19 @@ func Of(p plugin.Plugin) string {
 		return d.Describe()
 	}
 	return ""
+}
+-- plugin/diag/diag.go --
+// Package diag reports on the values the plugin package serves.
+package diag
+
+// namer names a value in the host's own diagnostics.
+type namer interface {
+	Name() string
+}
+
+// Note names v in the diagnostics where v implements namer.
+func Note(v any) {
+	if n, ok := v.(namer); ok {
+		_ = n.Name()
+	}
 }

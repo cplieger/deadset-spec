@@ -1,0 +1,97 @@
+The Go rendering: a command that passes a value to a schema module outside the
+program, whose package asserts its own unexported interface and an interface
+type literal on the value, and whose text package, which it imports, asserts an
+exported and an unexported interface. The schema module is a local module the
+target requires and replaces, so the rendering loads with no network access.
+
+-- fixture.json --
+{
+  "symbols": {
+    "config.JSONSchema": { "file": "target/main.go", "line": 10 },
+    "config.JSONSchemaExtend": { "file": "target/main.go", "line": 13 },
+    "config.Describe": { "file": "target/main.go", "line": 16 },
+    "config.String": { "file": "target/main.go", "line": 19 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+
+require example.com/schema v0.0.0
+
+replace example.com/schema => ../schema
+-- target/main.go --
+// Command target prints the schema of its configuration.
+package main
+
+import "example.com/schema"
+
+// config is passed to the schema package.
+type config struct{}
+
+// JSONSchema implements an unexported interface of the callee's package.
+func (config) JSONSchema() string { return "{}" }
+
+// JSONSchemaExtend implements an interface type literal the callee's package writes.
+func (config) JSONSchemaExtend(s string) string { return s }
+
+// Describe implements an exported interface of a package the callee's package imports.
+func (config) Describe() string { return "config" }
+
+// String implements only an unexported interface of that imported package.
+func (config) String() string { return "config" }
+
+func main() {
+	println(schema.Reflect(config{}))
+}
+-- schema/go.mod --
+module example.com/schema
+
+go 1.27.0
+-- schema/schema.go --
+// Package schema builds a schema from a value by reflection.
+package schema
+
+import "example.com/schema/text"
+
+// customSchema is an unexported interface the package asserts on a value.
+type customSchema interface {
+	JSONSchema() string
+}
+
+// Reflect builds the schema of v.
+func Reflect(v any) string {
+	out := text.Title(v)
+	if c, ok := v.(customSchema); ok {
+		out += c.JSONSchema()
+	}
+	if e, ok := v.(interface{ JSONSchemaExtend(string) string }); ok {
+		out = e.JSONSchemaExtend(out)
+	}
+	return out
+}
+-- schema/text/text.go --
+// Package text renders the parts of a schema.
+package text
+
+// Describer is an exported interface of a package the schema package imports.
+type Describer interface {
+	Describe() string
+}
+
+// stringer is an unexported interface of that package.
+type stringer interface {
+	String() string
+}
+
+// Title renders the title of v.
+func Title(v any) string {
+	if d, ok := v.(Describer); ok {
+		return d.Describe()
+	}
+	if s, ok := v.(stringer); ok {
+		return s.String()
+	}
+	return ""
+}

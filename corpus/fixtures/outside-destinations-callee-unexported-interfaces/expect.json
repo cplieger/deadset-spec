@@ -1,0 +1,38 @@
+{
+  "name": "outside-destinations-callee-unexported-interfaces",
+  "description": "A value passed to a function outside the program keeps the methods by which it implements an interface the callee's own package declares, exported or not, or an interface type literal that package writes, as well as an exported interface of a package the callee's package imports. An unexported interface of an imported package does not count, so a method only such an interface requires is reported.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "config.JSONSchema",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "config.JSONSchemaExtend",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "config.Describe",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "config.String",
+      "report": "DS1103",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method"
+    }
+  ]
+}

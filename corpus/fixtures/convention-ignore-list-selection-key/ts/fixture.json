@@ -1,0 +1,6 @@
+{
+  "symbols": {
+    "Ignored": { "file": "target/src/ignored.ts", "line": 1 },
+    "Imported": { "file": "target/src/imported.ts", "line": 1 }
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "name": "outside-destinations-standard-containers",
+  "description": "A standard container stores a value and hands it back to the program unchanged, so a value passed to a method of sync.Map, to a method of atomic.Value or to context.WithValue keeps no field and only the methods by which it implements an interface of the container's own package. A key the container compares has every field read, as a map key does.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "status.String",
+      "report": "DS1103",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method"
+    },
+    {
+      "symbol": "entry.Status",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field"
+    },
+    {
+      "symbol": "role.Name",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field"
+    },
+    {
+      "symbol": "role.String",
+      "report": "DS1103",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method"
+    },
+    {
+      "symbol": "key.ID",
+      "report": "none"
+    },
+    {
+      "symbol": "tracer.String",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    }
+  ]
+}

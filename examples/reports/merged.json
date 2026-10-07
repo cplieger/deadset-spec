@@ -1,13 +1,13 @@
 {
   "schema_version": "8.0.0",
-  "contract_version": "6.0.0",
+  "contract_version": "6.1.0",
   "analyzer": {
     "name": "deadset",
     "version": "1.0.0",
     "languages": ["go", "ts"],
     "schema_versions_accepted": ["8.0.0"],
     "conformance": {
-      "corpus_version": "4.0.0",
+      "corpus_version": "4.1.0",
       "result": "pass",
       "digest": "sha256:d3b1eac654f8f4a17e430f846ba6b2a00cf35e39609f8275b75295da63b3f725"
     }

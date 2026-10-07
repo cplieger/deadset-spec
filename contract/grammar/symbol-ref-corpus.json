@@ -483,6 +483,21 @@
     "example": "export default App;"
   },
   {
+    "input": "ts://@example/app/src/shims.d.ts#'*.vue'.default:alias",
+    "language": "ts",
+    "form": "alias",
+    "accepted": true,
+    "reason": "An export specifier inside a declare module block creates its alias inside that block, so the block's component comes first and two blocks of one file keep their aliases apart.",
+    "example": "declare module '*.vue' { const component: object; export default component; }"
+  },
+  {
+    "input": "ts://@example/app/src/wire.ts#Wire.default:alias",
+    "language": "ts",
+    "form": "alias",
+    "accepted": false,
+    "reason": "Only a declare module block, whose name is a string, holds an export specifier, so an identifier never comes before an alias."
+  },
+  {
     "input": "ts://@example/app/src/features/tabs/index.ts#TabStrip.cachedLayout",
     "language": "ts",
     "form": "class-member",
