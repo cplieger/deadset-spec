@@ -1,1 +1,1 @@
-export const name = "ignored";
+console.log("ignored");

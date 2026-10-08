@@ -5,7 +5,7 @@
       "code": "DS1001",
       "symbol": "ts://@example/target/shims.d.ts#'virtual:theme'.default:alias",
       "path": "shims.d.ts",
-      "reason": "recorded by an earlier run"
+      "reason": "recorded by deadset-ts 1.0.0"
     }
   ]
 }
