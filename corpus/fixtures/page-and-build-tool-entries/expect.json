@@ -1,0 +1,33 @@
+{
+  "name": "page-and-build-tool-entries",
+  "description": "A classic script element of an HTML entry file roots the file its src attribute names, as a module script does, and a configuration file a build tool reads by name roots the source file a string of it names, its entry option among them. A source file neither names is reported, with the declaration inside it.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "start",
+      "report": "none"
+    },
+    {
+      "symbol": "track",
+      "report": "none"
+    },
+    {
+      "symbol": "orphan",
+      "report": "DS1502",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "orphanExport",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "variable",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

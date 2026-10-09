@@ -491,6 +491,21 @@
     "example": "declare module '*.vue' { const component: object; export default component; }"
   },
   {
+    "input": "ts://@example/app/src/shims.d.ts#'lodash'.default:alias",
+    "language": "ts",
+    "form": "alias",
+    "accepted": true,
+    "reason": "The block's component before an alias is quoted whatever the module name, so a module name that is an identifier is quoted too.",
+    "example": "declare module 'lodash' { const lodash: object; export default lodash; }"
+  },
+  {
+    "input": "ts://@example/app/src/shims.d.ts#lodash.default:alias",
+    "language": "ts",
+    "form": "alias",
+    "accepted": false,
+    "reason": "A block's component before an alias is always quoted, so an unquoted module name never comes before an alias, though the module declaration itself is spelled unquoted."
+  },
+  {
     "input": "ts://@example/app/src/wire.ts#Wire.default:alias",
     "language": "ts",
     "form": "alias",

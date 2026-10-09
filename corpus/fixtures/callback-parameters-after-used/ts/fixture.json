@@ -13,6 +13,8 @@
     "RestUnreadInPattern": { "file": "target/main.ts", "line": 64 },
     "RestUnread": { "file": "target/main.ts", "line": 71 },
     "BeforeReadRest": { "file": "target/main.ts", "line": 77 },
-    "ThisParameter": { "file": "target/main.ts", "line": 83 }
+    "ThisParameter": { "file": "target/main.ts", "line": 83 },
+    "DeclaredPatternUnread": { "file": "target/main.ts", "line": 96 },
+    "DeclaredRestSibling": { "file": "target/main.ts", "line": 105 }
   }
 }

@@ -1,0 +1,30 @@
+{
+  "name": "namespace-object-read-whole",
+  "description": "A namespace import passed as an argument references every export of its module, because the code it reaches may read any of them, while one the program reads a property of references that export alone, so the export never read is reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "decodeA",
+      "report": "none"
+    },
+    {
+      "symbol": "decodeB",
+      "report": "none"
+    },
+    {
+      "symbol": "used",
+      "report": "none"
+    },
+    {
+      "symbol": "spare",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

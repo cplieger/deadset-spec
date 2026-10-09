@@ -1,0 +1,8 @@
+{
+  "symbols": {
+    "decodeA": { "file": "target/decoders.ts", "line": 2 },
+    "decodeB": { "file": "target/decoders.ts", "line": 7 },
+    "used": { "file": "target/named.ts", "line": 2 },
+    "spare": { "file": "target/named.ts", "line": 7 }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "name": "encoding-reflection-argument-literals",
+  "description": "An encoder's argument that is a composite literal reaches the type of each value the literal writes into an interface-typed position, a map value and a slice element among them, at any depth of the literals it nests, so those types keep their exported fields. A value written into an interface-typed position of a literal no encoder is handed reaches nothing, so a field only that literal writes is reported as written and never read.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "repo.Name",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "repo.Stars",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "item.ID",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "draft.Text",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    }
+  ]
+}

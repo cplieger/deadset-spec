@@ -1,0 +1,35 @@
+{
+  "name": "test-file-outside-every-configuration",
+  "description": "A test file the test-file patterns name that no configuration of a derived matrix holds is analyzed in the configuration of the nearest compiler configuration file at or above it, as a file that configuration's file list names, because the test runner compiles it with those options. Its references count as test references and its parts are judged, so a production function only it calls is reported as test-only use and a local it never reads is reported as a dead store.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "live",
+      "report": "none"
+    },
+    {
+      "symbol": "forTests",
+      "report": "DS1004",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Unused",
+      "report": "DS1807",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "store",
+      "details": {
+        "overlap": [
+          "eslint no-useless-assignment",
+          "@typescript-eslint/no-unused-vars"
+        ]
+      }
+    }
+  ]
+}

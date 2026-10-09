@@ -1,0 +1,27 @@
+{
+  "name": "consumer-conversion-satisfies",
+  "description": "A conversion a loaded consumer writes is a conversion of the program, so a library method that implements an interface the consumer converts the method's type to is retained by interface satisfaction, an unexported method that seals the interface among them. A method of a type nothing converts to the interface is reported.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "library",
+  "consumers": [
+    "consumer"
+  ],
+  "expect": [
+    {
+      "symbol": "Counter.registerInto",
+      "report": "none",
+      "retained_by": [
+        "interface-satisfaction"
+      ]
+    },
+    {
+      "symbol": "Gauge.registerInto",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method"
+    }
+  ]
+}

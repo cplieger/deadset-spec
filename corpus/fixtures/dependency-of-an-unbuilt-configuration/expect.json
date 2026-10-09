@@ -1,0 +1,21 @@
+{
+  "name": "dependency-of-an-unbuilt-configuration",
+  "description": "A dependency of a manifest whose source sits only in a configuration the analysis derived and could not build is reported at possible, because the source that may import it was not analyzed. The configuration is dropped from the matrix and the run analyzes the configurations left.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "expect": [
+    {
+      "symbol": "GhostLib",
+      "report": "DS1601",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "dependency",
+      "details": {
+        "dependency_class": "dependency"
+      }
+    }
+  ]
+}

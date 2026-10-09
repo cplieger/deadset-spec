@@ -1,0 +1,8 @@
+{
+  "symbols": {
+    "MetaResolved": { "file": "target/package.json", "line": 8 },
+    "NeverResolved": { "file": "target/package.json", "line": 9 },
+    "RequireResolved": { "file": "target/package.json", "line": 10 },
+    "SubpathResolved": { "file": "target/package.json", "line": 11 }
+  }
+}

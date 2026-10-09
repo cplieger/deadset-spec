@@ -1,0 +1,60 @@
+{
+  "name": "convention-package-keys",
+  "description": "A string under a package key of an applied convention row, a member of the row's configuration file whose strings name the packages its tool loads, uses the dependency it names by the dependency's name or by that name, a colon and a name, so the builder package and the polyfill an Angular workspace file names are used. The string uses no peer the named package requires, so a required peer nothing else uses is reported, and a string under a member no package key names is no use. The fixture assumes the analyzer carries a row named angular for the package @angular/build, its range holding the installed version, whose package keys read from angular.json include builder and polyfills and not prefix.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "conventions_applied": [
+    {
+      "name": "angular",
+      "package": "@angular/build",
+      "version": "20.999.0",
+      "manifest": "package.json"
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "Compiler",
+      "report": "DS1601",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "dependency",
+      "details": {
+        "dependency_class": "dependency"
+      }
+    },
+    {
+      "symbol": "ZoneJs",
+      "report": "none"
+    },
+    {
+      "symbol": "AngularBuild",
+      "report": "none"
+    },
+    {
+      "symbol": "AngularCli",
+      "report": "none"
+    },
+    {
+      "symbol": "CompilerCli",
+      "report": "DS1601",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "dependency",
+      "details": {
+        "dependency_class": "dev-dependency"
+      }
+    },
+    {
+      "symbol": "UnreadPrefix",
+      "report": "DS1601",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "dependency",
+      "details": {
+        "dependency_class": "dev-dependency"
+      }
+    }
+  ]
+}

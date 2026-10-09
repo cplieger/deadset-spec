@@ -1,0 +1,78 @@
+{
+  "name": "signature-fixed-by-an-outside-interface",
+  "description": "A method whose name and signature are those of a method of an exported interface type declared by a package outside the target that the import closure holds has a signature that interface fixes, whether or not the program converts the method's type to it: its unread parameter and its result every call drops are not reported, and it is not narrowed. A method of the same shape under a name no such interface declares is reported under each of those codes, and so is the dropped result of a method whose name and signature only an exported interface of the target declares, an interface nothing uses.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "WriteTo.count",
+      "report": "none"
+    },
+    {
+      "symbol": "Save.count",
+      "report": "DS1803",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "result",
+      "details": {
+        "overlap": [
+          "unparam"
+        ]
+      }
+    },
+    {
+      "symbol": "ReadFrom.r",
+      "report": "none"
+    },
+    {
+      "symbol": "Load.r",
+      "report": "DS1801",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "parameter",
+      "details": {
+        "overlap": [
+          "revive unused-parameter",
+          "gopls unusedparams",
+          "unparam"
+        ]
+      }
+    },
+    {
+      "symbol": "fault.String",
+      "report": "none"
+    },
+    {
+      "symbol": "fault.Detail",
+      "report": "DS1101",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method",
+      "details": {
+        "narrower_visibility": "file"
+      }
+    },
+    {
+      "symbol": "Archiver",
+      "report": "DS1201",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "interface",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Archive.count",
+      "report": "DS1803",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "result",
+      "details": {
+        "overlap": [
+          "unparam"
+        ]
+      }
+    }
+  ]
+}

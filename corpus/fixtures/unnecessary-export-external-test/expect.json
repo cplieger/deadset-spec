@@ -1,0 +1,40 @@
+{
+  "name": "unnecessary-export-external-test",
+  "description": "A reference from an external test package, a test file whose package clause names its directory's package with the suffix _test, is a reference from outside the package, because that test builds as another package and needs the export. So an export such a test names is not reported as narrowable, one only such a test names is reported as test-only use, and one only its own package names is reported as narrowable.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Config",
+      "report": "none"
+    },
+    {
+      "symbol": "Default",
+      "report": "none"
+    },
+    {
+      "symbol": "Local",
+      "report": "DS1101",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "details": {
+        "narrower_visibility": "file"
+      }
+    },
+    {
+      "symbol": "Load",
+      "report": "none"
+    },
+    {
+      "symbol": "Fixture",
+      "report": "DS1004",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

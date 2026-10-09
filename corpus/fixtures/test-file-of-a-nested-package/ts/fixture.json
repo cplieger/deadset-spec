@@ -1,0 +1,9 @@
+{
+  "symbols": {
+    "live": { "file": "target/src/codec.ts", "line": 2 },
+    "forTests": { "file": "target/src/codec.ts", "line": 7 },
+    "testSum": { "file": "target/fixtures/entry-package/src/sum.test.ts", "line": 3 },
+    "Unused": { "file": "target/test/codec.test.ts", "line": 4 },
+    "Ignored": { "file": "target/fixtures/entry-package/src/sum.test.ts", "line": 4 }
+  }
+}

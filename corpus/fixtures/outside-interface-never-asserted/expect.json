@@ -1,0 +1,59 @@
+{
+  "name": "outside-interface-never-asserted",
+  "description": "A value converted to an interface a package outside the program declares keeps, beside the methods that interface requires, only the methods by which it implements an interface a type assertion or a type switch case in that package's source names. A method only an interface that package declares and never asserts requires is reported, exported or not, and so is a method only an exported interface of a package it imports requires when that package's source never asserts it. A value converted to io.Writer keeps the methods of the interfaces the io package asserts, and its Read method, which io.Reader requires and the io package never asserts, is reported.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "recorder.Write",
+      "report": "none",
+      "retained_by": [
+        "interface-satisfaction"
+      ]
+    },
+    {
+      "symbol": "recorder.Flush",
+      "report": "none",
+      "retained_by": [
+        "interface-satisfaction"
+      ]
+    },
+    {
+      "symbol": "recorder.WriteString",
+      "report": "none",
+      "retained_by": [
+        "interface-satisfaction"
+      ]
+    },
+    {
+      "symbol": "recorder.Close",
+      "report": "DS1103",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method"
+    },
+    {
+      "symbol": "recorder.Size",
+      "report": "DS1103",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method"
+    },
+    {
+      "symbol": "recorder.Reset",
+      "report": "DS1103",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method"
+    },
+    {
+      "symbol": "recorder.Read",
+      "report": "DS1103",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method"
+    }
+  ]
+}

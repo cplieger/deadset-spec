@@ -4,6 +4,9 @@
   "private": true,
   "type": "module",
   "main": "./main.ts",
+  "scripts": {
+    "lint": "script-tool --check"
+  },
   "dependencies": {
     "unused-runtime": "1.0.0",
     "used-runtime": "1.0.0"
@@ -13,6 +16,7 @@
     "host-peer": "1.0.0",
     "host-plugin": "1.0.0",
     "optional-peer": "1.0.0",
+    "script-tool": "1.0.0",
     "unused-dev": "1.0.0"
   },
   "peerDependencies": {

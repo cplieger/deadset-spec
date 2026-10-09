@@ -16,7 +16,7 @@ import (
 	"testing"
 	"testing/fstest"
 
-	"github.com/cplieger/deadset-spec/v6"
+	"github.com/cplieger/deadset-spec/v7"
 )
 
 // This file is the merge contract/grammar/merge.md states, run over each published case's

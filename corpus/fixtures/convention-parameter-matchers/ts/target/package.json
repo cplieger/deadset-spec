@@ -5,5 +5,8 @@
   "type": "module",
   "devDependencies": {
     "@sveltejs/kit": "2.999.0"
+  },
+  "scripts": {
+    "prepare": "svelte-kit sync"
   }
 }

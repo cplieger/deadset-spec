@@ -1,0 +1,7 @@
+{
+  "symbols": {
+    "Processor.cookies": { "file": "target/main.ts", "line": 7 },
+    "LambdaProcessor.cookies": { "file": "target/main.ts", "line": 12 },
+    "LambdaProcessor.spare": { "file": "target/main.ts", "line": 16 }
+  }
+}

@@ -1,0 +1,121 @@
+The Go rendering: a command and a package of its internal tree, whose methods
+share the shapes of io.WriterTo, io.ReaderFrom and fmt.Stringer, each beside a
+method of the same shape under another name, and a method of the shape of an
+unused exported interface the package declares itself. Nothing imports anything outside
+the standard library, so the rendering loads with no network access.
+
+-- fixture.json --
+{
+  "symbols": {
+    "WriteTo.count": { "file": "target/internal/state/state.go", "line": 19 },
+    "Save.count": { "file": "target/internal/state/state.go", "line": 25 },
+    "ReadFrom.r": { "file": "target/internal/state/state.go", "line": 31 },
+    "Load.r": { "file": "target/internal/state/state.go", "line": 36 },
+    "fault.String": { "file": "target/internal/state/state.go", "line": 48 },
+    "fault.Detail": { "file": "target/internal/state/state.go", "line": 51 },
+    "Archiver": { "file": "target/internal/state/state.go", "line": 63 },
+    "Archive.count": { "file": "target/internal/state/state.go", "line": 68 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target uses a package of its internal tree.
+package main
+
+import (
+	"fmt"
+	"os"
+
+	"example.com/target/internal/state"
+)
+
+func main() {
+	s := state.New()
+	if _, err := s.WriteTo(os.Stdout); err != nil {
+		os.Exit(1)
+	}
+	if _, err := s.Save(os.Stdout); err != nil {
+		os.Exit(1)
+	}
+	if _, err := s.Archive(os.Stdout); err != nil {
+		os.Exit(1)
+	}
+	fmt.Println(s.ReadFrom(os.Stdin))
+	fmt.Println(s.Load(os.Stdin))
+	fmt.Println(state.Check())
+}
+-- target/internal/state/state.go --
+// Package state holds methods whose signatures an imported interface fixes.
+package state
+
+import (
+	"errors"
+	"fmt"
+	"io"
+)
+
+// Snapshot is the value New returns.
+type Snapshot struct {
+	n int
+}
+
+// New returns a Snapshot.
+func New() *Snapshot { return &Snapshot{n: 1} }
+
+// WriteTo has the signature io.WriterTo fixes, and every caller drops its count.
+func (s *Snapshot) WriteTo(w io.Writer) (int64, error) {
+	k, err := fmt.Fprint(w, s.n)
+	return int64(k), err
+}
+
+// Save has the same shape, and no interface fixes it.
+func (s *Snapshot) Save(w io.Writer) (int64, error) {
+	k, err := fmt.Fprint(w, s.n)
+	return int64(k), err
+}
+
+// ReadFrom has the signature io.ReaderFrom fixes, and it never reads its reader.
+func (s *Snapshot) ReadFrom(r io.Reader) (int64, error) {
+	return int64(s.n), nil
+}
+
+// Load never reads its reader, and no interface fixes it.
+func (s *Snapshot) Load(r io.Reader) (int64, error) {
+	return int64(s.n), nil
+}
+
+// fault is an error whose methods only this package calls.
+type fault struct {
+	msg string
+}
+
+func (f *fault) Error() string { return f.String() }
+
+// String has the signature fmt.Stringer fixes.
+func (f *fault) String() string { return f.msg }
+
+// Detail has a signature no interface fixes.
+func (f *fault) Detail() string { return f.msg }
+
+// Check returns a fault.
+func Check() error {
+	f := &fault{msg: "x"}
+	if f.Detail() == "" {
+		return errors.New("empty")
+	}
+	return f
+}
+
+// Archiver is an exported interface of the target that nothing uses.
+type Archiver interface {
+	Archive(w io.Writer) (int64, error)
+}
+
+// Archive has the signature Archiver fixes, and every caller drops its count.
+func (s *Snapshot) Archive(w io.Writer) (int64, error) {
+	k, err := fmt.Fprint(w, s.n)
+	return int64(k), err
+}

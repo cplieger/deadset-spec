@@ -1,0 +1,53 @@
+The Go rendering: a command that encodes a map literal holding a struct value
+and a slice literal of another, beside a map literal it never encodes.
+
+-- fixture.json --
+{
+  "symbols": {
+    "repo.Name": { "file": "target/main.go", "line": 12 },
+    "repo.Stars": { "file": "target/main.go", "line": 13 },
+    "item.ID": { "file": "target/main.go", "line": 18 },
+    "draft.Text": { "file": "target/main.go", "line": 23 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target encodes a map whose values its own literals write.
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"os"
+)
+
+// repo is stored into a map value of the encoder's argument.
+type repo struct {
+	Name  string
+	Stars int
+}
+
+// item is stored into an element of a slice literal inside the argument.
+type item struct {
+	ID int
+}
+
+// draft is stored into a map literal no encoder reaches.
+type draft struct {
+	Text string
+}
+
+func main() {
+	out, err := json.Marshal(map[string]any{
+		"repo":  repo{Name: "a"},
+		"items": []any{item{ID: 1}},
+	})
+	if err != nil {
+		os.Exit(1)
+	}
+	scratch := map[string]any{"draft": draft{Text: "t"}}
+	fmt.Println(string(out), len(scratch))
+}
