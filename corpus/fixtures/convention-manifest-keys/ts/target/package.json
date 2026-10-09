@@ -12,5 +12,8 @@
   "prettier": "@example/prettier-config",
   "unread": {
     "extends": "@example/unread-config"
+  },
+  "scripts": {
+    "format": "prettier --check ."
   }
 }

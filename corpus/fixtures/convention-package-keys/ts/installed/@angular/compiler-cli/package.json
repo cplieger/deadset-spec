@@ -1,0 +1,9 @@
+{
+  "name": "@angular/compiler-cli",
+  "version": "20.999.0",
+  "private": true,
+  "main": "./index.js",
+  "peerDependencies": {
+    "@angular/compiler": "20.999.0"
+  }
+}

@@ -11,7 +11,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/cplieger/deadset-spec/v6"
+	"github.com/cplieger/deadset-spec/v7"
 )
 
 // jsonFiles lists every *.json path under fsys, in walk order.
@@ -94,28 +94,55 @@ var modulePathMajor = regexp.MustCompile(`deadset-spec/v[0-9]+\b`)
 // repository: git's own metadata and the directories .gitignore names.
 var modulePathSkipped = []string{".git", ".agents", "__pycache__"}
 
+// goModModulePath reads the module path go.mod's module line declares.
+func goModModulePath(t *testing.T) string {
+	t.Helper()
+	data, err := os.ReadFile("go.mod")
+	if err != nil {
+		t.Fatalf("Setup: os.ReadFile(go.mod): %v", err)
+	}
+	for line := range strings.SplitSeq(string(data), "\n") {
+		if rest, ok := strings.CutPrefix(line, "module "); ok {
+			return strings.TrimSpace(rest)
+		}
+	}
+	t.Fatalf("Setup: go.mod declares no module line")
+	return ""
+}
+
+// moduleMajorSuffix matches the major-version suffix of a module path.
+var moduleMajorSuffix = regexp.MustCompile(`/v[0-9]+$`)
+
+// TestModulePathMajorIsTheContractVersionMajor ties the module path to
+// contract_version: each contract major is published as the module major of the
+// same number, which Go's semantic import versioning spells as a /vN suffix from
+// major 2 and as no suffix below it, so a contract major bump that leaves go.mod
+// behind fails here.
+func TestModulePathMajorIsTheContractVersionMajor(t *testing.T) {
+	module := goModModulePath(t)
+	contract := loadContract(t)
+	major, _, ok := strings.Cut(contract.ContractVersion, ".")
+	if !ok || major == "" {
+		t.Fatalf("Setup: %s contract_version = %q, want a semantic version", contractPath, contract.ContractVersion)
+	}
+	want := ""
+	if major != "0" && major != "1" {
+		want = "/v" + major
+	}
+	if got := moduleMajorSuffix.FindString(module); got != want {
+		t.Errorf("Module(%q) major suffix = %q, want %q, the one %s contract_version %q gives", module, got, want, contractPath, contract.ContractVersion)
+	}
+}
+
 // TestModulePathMajorIsTheOneEveryFileNames ties every file that names a major
 // version of this module's path, prose and examples as much as Go source, to the
 // major go.mod's module line declares, so a major bump that leaves one behind
 // fails here rather than in a consumer's go get.
 func TestModulePathMajorIsTheOneEveryFileNames(t *testing.T) {
-	data, err := os.ReadFile("go.mod")
-	if err != nil {
-		t.Fatalf("Setup: os.ReadFile(go.mod): %v", err)
-	}
-	var module string
-	for line := range strings.SplitSeq(string(data), "\n") {
-		if rest, ok := strings.CutPrefix(line, "module "); ok {
-			module = strings.TrimSpace(rest)
-			break
-		}
-	}
-	if module == "" {
-		t.Fatalf("Setup: go.mod declares no module line")
-	}
+	module := goModModulePath(t)
 	want := modulePathMajor.FindString(module)
 	var named int
-	err = fs.WalkDir(os.DirFS("."), ".", func(p string, d fs.DirEntry, err error) error {
+	err := fs.WalkDir(os.DirFS("."), ".", func(p string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}

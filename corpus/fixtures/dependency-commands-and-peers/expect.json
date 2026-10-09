@@ -1,6 +1,6 @@
 {
   "name": "dependency-commands-and-peers",
-  "description": "A declared dependency nothing imports is reported in each of the three manifest sections, and three are not although nothing imports them: one whose installed manifest declares a command, and one a needed dependency's installed manifest names as a required peer. A peer the needed dependency marks optional is reported as any other unimported dependency is, and the dependencies an import names are not.",
+  "description": "A declared dependency nothing imports, runs or configures is reported in each of the three manifest sections. One whose installed manifest declares a command is used where a script entry runs that command, and reported where nothing does. A peer that a needed dependency's installed manifest requires is reported as any other unimported dependency is, whether the peer is marked optional or not, and the dependencies an import names are not.",
   "languages": [
     "ts"
   ],
@@ -22,11 +22,27 @@
     },
     {
       "symbol": "Command",
+      "report": "DS1601",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "dependency",
+      "details": {
+        "dependency_class": "dev-dependency"
+      }
+    },
+    {
+      "symbol": "ScriptCommand",
       "report": "none"
     },
     {
       "symbol": "RequiredPeer",
-      "report": "none"
+      "report": "DS1601",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "dependency",
+      "details": {
+        "dependency_class": "dev-dependency"
+      }
     },
     {
       "symbol": "PeerHost",

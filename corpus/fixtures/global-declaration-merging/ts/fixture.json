@@ -1,0 +1,7 @@
+{
+  "symbols": {
+    "GlobalBlock": { "file": "target/meta.ts", "line": 1 },
+    "ImportMeta.flag": { "file": "target/meta.ts", "line": 3 },
+    "ImportMeta.unusedFlag": { "file": "target/meta.ts", "line": 4 }
+  }
+}

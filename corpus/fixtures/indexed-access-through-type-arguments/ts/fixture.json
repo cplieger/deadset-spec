@@ -1,0 +1,10 @@
+{
+  "symbols": {
+    "Payloads.open": { "file": "target/main.ts", "line": 5 },
+    "Payloads.close": { "file": "target/main.ts", "line": 6 },
+    "Operations.rename": { "file": "target/main.ts", "line": 22 },
+    "Operations.remove": { "file": "target/main.ts", "line": 23 },
+    "StoreMap.page": { "file": "target/main.ts", "line": 32 },
+    "StoreMap.theme": { "file": "target/main.ts", "line": 33 }
+  }
+}

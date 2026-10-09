@@ -1,6 +1,6 @@
 {
   "name": "module-declaration-outside-the-program",
-  "description": "Only an import in a file a configuration holds names a module declaration, because no compiler run reads the declaration for any other file. A declaration only a test file outside every configuration names is reported whole, while one a file of the program names is live.",
+  "description": "Only an import in a file a configuration holds names a module declaration, because no compiler run reads the declaration for any other file. A declaration only a file outside every configuration names, one no test-file pattern names, is reported whole, while one a file of the program names is live.",
   "languages": [
     "ts"
   ],

@@ -1,0 +1,35 @@
+{
+  "name": "test-support-shared-with-a-live-test",
+  "description": "A declaration of test-support code that a test referencing a live target symbol also references counts as a live target symbol of every test that references it, so a test calling it and a production function only that test calls is no test of dead code. The production function is reported as test-only use, and what is reported about the shared test-support function is withheld at the default minimum confidence.",
+  "languages": [
+    "go",
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Live",
+      "report": "none"
+    },
+    {
+      "symbol": "Dead",
+      "report": "DS1004",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Helper",
+      "report": "none"
+    },
+    {
+      "symbol": "TestLive",
+      "report": "none"
+    },
+    {
+      "symbol": "TestDead",
+      "report": "none"
+    }
+  ]
+}

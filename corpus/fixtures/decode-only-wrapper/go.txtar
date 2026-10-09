@@ -48,7 +48,7 @@ type profile struct {
 }
 
 // String is called by the printing it is handed to.
-func (p profile) String() string { return "profile" }
+func (profile) String() string { return "profile" }
 
 func main() {
 	var s settings

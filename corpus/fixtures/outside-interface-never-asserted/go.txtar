@@ -1,0 +1,118 @@
+The Go rendering: a command that stores a value in a variable of an interface a
+host module declares, and asserts the value as an io.Writer. The host asserts one
+interface on it and declares or imports others it never asserts. The host is a
+local module the target requires and replaces, so the rendering loads with no
+network access, and its base package is one the host imports.
+
+-- fixture.json --
+{
+  "symbols": {
+    "recorder.Write": { "file": "target/main.go", "line": 16 },
+    "recorder.Flush": { "file": "target/main.go", "line": 19 },
+    "recorder.WriteString": { "file": "target/main.go", "line": 22 },
+    "recorder.Close": { "file": "target/main.go", "line": 25 },
+    "recorder.Size": { "file": "target/main.go", "line": 28 },
+    "recorder.Reset": { "file": "target/main.go", "line": 31 },
+    "recorder.Read": { "file": "target/main.go", "line": 34 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+
+require example.com/host v0.0.0
+
+replace example.com/host => ../host
+-- target/main.go --
+// Command target hands the host a writer.
+package main
+
+import (
+	"io"
+
+	"example.com/host"
+)
+
+// recorder is handed to the host as a host.Writer and asserted as an io.Writer.
+type recorder struct{}
+
+var _ io.Writer = (*recorder)(nil)
+
+// Write is the method host.Writer and io.Writer require.
+func (*recorder) Write(p []byte) (int, error) { return len(p), nil }
+
+// Flush implements an interface the host asserts.
+func (*recorder) Flush() {}
+
+// WriteString implements an interface package io asserts.
+func (*recorder) WriteString(s string) (int, error) { return len(s), nil }
+
+// Close implements an exported interface the host declares and never asserts.
+func (*recorder) Close() error { return nil }
+
+// Size implements an unexported interface the host declares and never asserts.
+func (*recorder) Size() int { return 0 }
+
+// Reset implements an exported interface of a package the host imports, which the host never asserts.
+func (*recorder) Reset() {}
+
+// Read implements io.Reader, which package io declares and never asserts.
+func (*recorder) Read([]byte) (int, error) { return 0, nil }
+
+func main() {
+	host.Out = &recorder{}
+	host.Flush()
+}
+-- host/go.mod --
+module example.com/host
+
+go 1.27.0
+-- host/host.go --
+// Package host writes through a value its caller stores in Out.
+package host
+
+import "example.com/host/base"
+
+// Writer is the interface a caller hands the host a value through.
+type Writer interface {
+	Write(p []byte) (int, error)
+}
+
+// Out is the value the host writes through.
+var Out Writer
+
+// Flusher is an exported interface the host asserts on Out.
+type Flusher interface {
+	Flush()
+}
+
+// Closer is an exported interface the host declares and never asserts.
+type Closer interface {
+	Close() error
+}
+
+// sizer is an unexported interface the host declares and never asserts.
+type sizer interface {
+	Size() int
+}
+
+// Flush flushes Out where it implements Flusher.
+func Flush() {
+	if f, ok := Out.(Flusher); ok {
+		f.Flush()
+	}
+}
+
+// Reset resets r, which the host takes as a base.Resetter and never asserts.
+func Reset(r base.Resetter) {
+	r.Reset()
+}
+-- host/base/base.go --
+// Package base holds an interface the host builds on.
+package base
+
+// Resetter is an exported interface of a package the host imports.
+type Resetter interface {
+	Reset()
+}

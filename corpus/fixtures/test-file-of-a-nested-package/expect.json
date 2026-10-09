@@ -1,0 +1,43 @@
+{
+  "name": "test-file-of-a-nested-package",
+  "description": "A test file the test-file patterns name that no configuration of a derived matrix holds joins the configuration of the nearest compiler configuration file at or above it only where its nearest package.json is that configuration file's nearest package.json. A test file of a nested package with a manifest of its own joins none, so its import of a dependency that package declares and nothing installed raises no setup failure, the configuration stays built and no part of that test is judged. The target's own test file joins the configuration, so a local it never reads is reported as a dead store and a production function only it calls is reported as test-only use.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "live",
+      "report": "none"
+    },
+    {
+      "symbol": "forTests",
+      "report": "DS1004",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "testSum",
+      "report": "none"
+    },
+    {
+      "symbol": "Unused",
+      "report": "DS1807",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "store",
+      "details": {
+        "overlap": [
+          "eslint no-useless-assignment",
+          "@typescript-eslint/no-unused-vars"
+        ]
+      }
+    },
+    {
+      "symbol": "Ignored",
+      "report": "none"
+    }
+  ]
+}

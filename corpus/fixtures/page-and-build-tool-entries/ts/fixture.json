@@ -1,0 +1,8 @@
+{
+  "symbols": {
+    "start": { "file": "target/src/boot.ts", "line": 2 },
+    "track": { "file": "target/src/tracker/index.ts", "line": 2 },
+    "orphan": { "file": "target/src/orphan.ts", "line": 1 },
+    "orphanExport": { "file": "target/src/orphan.ts", "line": 2 }
+  }
+}

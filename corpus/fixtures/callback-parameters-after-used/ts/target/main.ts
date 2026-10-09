@@ -88,3 +88,25 @@ const total =
 if (total + scale(2, 3) < 0) {
   throw new Error("the total is negative");
 }
+
+// measure is called by name, so its pattern is judged by the names it binds.
+function measure(
+  {
+    left,
+    right,
+  }: { readonly left: number; readonly right: number },
+): number {
+  return left;
+}
+
+// spread reads its rest element, so the name beside it is not reported.
+function spread(
+  {
+    left: kept,
+    ...rest
+  }: { readonly left: number; readonly right: number },
+): number {
+  return rest.right;
+}
+
+export const measured = measure({ left: 1, right: 2 }) + spread({ left: 1, right: 2 });

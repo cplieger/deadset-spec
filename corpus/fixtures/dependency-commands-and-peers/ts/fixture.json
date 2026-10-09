@@ -1,13 +1,14 @@
 {
   "symbols": {
-    "UnusedRuntime": { "file": "target/package.json", "line": 8 },
-    "UsedRuntime": { "file": "target/package.json", "line": 9 },
-    "Command": { "file": "target/package.json", "line": 12 },
-    "RequiredPeer": { "file": "target/package.json", "line": 13 },
-    "PeerHost": { "file": "target/package.json", "line": 14 },
-    "OptionalPeer": { "file": "target/package.json", "line": 15 },
-    "UnusedDev": { "file": "target/package.json", "line": 16 },
-    "UnusedPeer": { "file": "target/package.json", "line": 19 },
-    "UsedPeer": { "file": "target/package.json", "line": 20 }
+    "UnusedRuntime": { "file": "target/package.json", "line": 11 },
+    "UsedRuntime": { "file": "target/package.json", "line": 12 },
+    "Command": { "file": "target/package.json", "line": 15 },
+    "RequiredPeer": { "file": "target/package.json", "line": 16 },
+    "PeerHost": { "file": "target/package.json", "line": 17 },
+    "OptionalPeer": { "file": "target/package.json", "line": 18 },
+    "ScriptCommand": { "file": "target/package.json", "line": 19 },
+    "UnusedDev": { "file": "target/package.json", "line": 20 },
+    "UnusedPeer": { "file": "target/package.json", "line": 23 },
+    "UsedPeer": { "file": "target/package.json", "line": 24 }
   }
 }

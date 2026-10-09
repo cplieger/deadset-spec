@@ -1,0 +1,30 @@
+{
+  "name": "encoding-reflection-interface-conversion-set",
+  "description": "An encoder's argument whose type is a defined interface type reaches every type the program converts to that interface, so each keeps its exported fields. A type the program converts to any alone is reached by no such argument, so a field only its literal writes is reported as written and never read.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "hello.Name",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "bye.Reason",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "other.Note",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    }
+  ]
+}

@@ -87,7 +87,7 @@ Symbols that are alive but more visible than their references require. From `con
 
 ### DS1101 unnecessary-export
 
-An exported symbol whose every reference is inside the symbol's own package or module, reported as a candidate for unexporting. The subject is a package-level declaration or a method. Three subjects are excluded. An interface method is excluded because its exportedness is the contract of the interface that declares it. A struct field is excluded because an encoder reads it by name. A method that satisfies an interface some symbol uses as a type is excluded because it cannot be unexported without its type ceasing to satisfy that interface. The finding names the narrower visibility the references support. A declared cross-language edge counts as an out-of-package reference. Where the edge's other side is unknown to the analyzer, the finding is emitted pending.
+An exported symbol whose every reference is inside the symbol's own package or module, reported as a candidate for unexporting. The subject is a package-level declaration or a method. Three subjects are excluded. An interface method is excluded because its exportedness is the contract of the interface that declares it. A struct field is excluded because an encoder reads it by name. A method that satisfies an interface some symbol uses as a type is excluded because it cannot be unexported without its type ceasing to satisfy that interface, and so is a method whose name and signature are those of a method of an exported interface type declared by a package outside the target that the import closure holds, because that interface fixes them whether or not the program converts the method's type to it. The finding names the narrower visibility the references support. A declared cross-language edge counts as an out-of-package reference. Where the edge's other side is unknown to the analyzer, the finding is emitted pending. A reference from a Go external test package, a test file whose package clause names its directory's package with the suffix _test, is a reference from outside the package, because that test builds as another package and needs the export.
 
 Precondition: Closed world only. A Go main package, and an internal/ directory tree for importers outside its parent, are closed worlds whatever the configuration declares, because no other program can import them. So this finding is reported there always. A published package is a closed world only when the configuration declares the consumer set complete and every declared consumer loads. A library with no consumer loaded and no complete consumer set declared gets this finding on its internal/ tree and its main packages and never on its published API.
 
@@ -99,7 +99,7 @@ From `contract/kinds.json`, row `DS1101`.
 
 ### DS1102 unnecessary-exposure
 
-An exported symbol of a non-internal package whose every reference is inside the target module, reported as a candidate for relocation behind an internal boundary. The subject is a package-level declaration or a method. Three subjects are excluded. An interface method is excluded because its exportedness is the contract of the interface that declares it. A struct field is excluded because an encoder reads it by name. A method that satisfies an interface some symbol uses as a type is excluded because it cannot be unexported without its type ceasing to satisfy that interface. The finding names the narrower visibility the references support. A declared cross-language edge counts as an out-of-package reference. Where the edge's other side is unknown to the analyzer, the finding is emitted pending.
+An exported symbol of a non-internal package whose every reference is inside the target module, reported as a candidate for relocation behind an internal boundary. The subject is a package-level declaration or a method. Three subjects are excluded. An interface method is excluded because its exportedness is the contract of the interface that declares it. A struct field is excluded because an encoder reads it by name. A method that satisfies an interface some symbol uses as a type is excluded because it cannot be unexported without its type ceasing to satisfy that interface, and so is a method whose name and signature are those of a method of an exported interface type declared by a package outside the target that the import closure holds, because that interface fixes them whether or not the program converts the method's type to it. The finding names the narrower visibility the references support. A declared cross-language edge counts as an out-of-package reference. Where the edge's other side is unknown to the analyzer, the finding is emitted pending. A reference from a Go external test package, a test file whose package clause names its directory's package with the suffix _test, is a reference from outside the package, because that test builds as another package and needs the export.
 
 Precondition: Closed world only. Reported always for a main package and an internal/ directory tree, and for a published package only when the configuration declares the consumer set complete and every declared consumer loads. A library with no consumer loaded and no complete consumer set declared gets this finding on its internal/ tree and its main packages and never on its published API. A symbol the rule of DS1301 holds for is not reported under this code, whatever severity the configuration gives DS1301, because the write-only finding names the defect to fix first.
 
@@ -231,7 +231,11 @@ A directly declared dependency that no import in the target needs. On the Go sid
 
 Precondition: On the Go side the rule is exactly the semantics of `go mod tidy -diff`. A requirement marked indirect is never reported, because it exists to pin a transitive version and removing it changes the build list.
 
-On the TypeScript side the import closure is the files of the run's projects, and four more dependencies are needed. The first is a dependency whose installed manifest declares a command, because a command is run by name rather than imported. The second is a dependency that the installed manifest of a needed dependency declares as a peer and does not mark optional. The third is, to a fixpoint, the required peers of every dependency so held. The fourth is a dependency a string names under a `package.json` member that an applied convention row reads its tool's configuration from.
+On the TypeScript side the import closure is the files of the run's projects, and four more dependencies are needed. The first is a dependency whose command a script entry or a workflow step runs. The second is a dependency a string of a configuration file names. The third is a dependency a string names under a `package.json` member that an applied convention row reads its tool's configuration from. The fourth is a dependency a string names under a configuration file member that an applied row lists as naming the packages its tool loads.
+
+A call of `import.meta.resolve` or `require.resolve` whose argument is a literal specifier needs the dependency the specifier names, as an import of it does.
+
+A command nothing runs keeps no dependency, and neither does a peer another dependency requires, because the package manager installs it. A dependency of a manifest whose source sits only in configurations that were not built is reported at `possible`.
 
 An installed manifest is the package's manifest in the nearest node_modules directory at or above the target, and a dependency with none is decided by the import closure alone.
 
@@ -319,11 +323,15 @@ A parameter with no reference inside its function body, on a function whose sign
 
 Precondition: The signature must be free. A free signature belongs to a function that is not a method retained by interface satisfaction, is not used as a value and is not a go:linkname or cgo target. It is also not a function the Go test driver runs, which is a test, benchmark or fuzz test of a test file, or TestMain, and not a stub whose body is empty or only panics.
 
+A method whose name and signature match an exported interface of a package outside the target is not free either, because that interface fixes them. A function literal held in a variable the program only calls is called by name, so its signature is free.
+
 A parameter its body never names is dead whatever the callers. A published declaration of a library is therefore reported too, with the fixability the vocabulary gives the kind, because the signature change is a breaking change.
 
 In TypeScript a caller may pass a function used as a value more arguments than it declares. In such a function, an unread parameter is reported only when the body reads no parameter after it. No name exempts a parameter, so a TypeScript parameter whose name starts with `_` is judged as any other. A Go parameter named `_` declares no name and is never reported.
 
-A TypeScript parameter that destructures its argument is judged name by name. Each name the body never reads is reported wherever the parameter stands, because removing it moves no argument. A name beside a rest element of an object pattern is kept, because removing it changes what the rest element holds. The pattern counts as read when the body reads any name it binds. A rest parameter is judged as the last parameter, and a `this` parameter receives no argument and is never reported.
+A parameter of a TypeScript callback the compiler types from its context is not reported when it carries a type annotation, which the call's inference may read. Nor is it reported when it is an object pattern, which reads properties of the argument.
+
+Any other TypeScript parameter that destructures its argument is judged name by name. Each name the body never reads is reported wherever the parameter stands, because removing it moves no argument. A name beside a rest element of an object pattern is kept, because removing it changes what the rest element holds. The pattern counts as read when the body reads any name it binds. A rest parameter is judged as the last parameter, and a `this` parameter receives no argument and is never reported.
 
 Overlap in Go: `revive unused-parameter`, `gopls unusedparams`, `unparam`. Overlap in TypeScript: `tsc --noUnusedParameters`, `@typescript-eslint/no-unused-vars`.
 
@@ -331,9 +339,9 @@ From `contract/kinds.json`, row `DS1801`.
 
 ### DS1802 unused-receiver
 
-A named method receiver with no reference inside the method body, on a method whose signature is free to change. Go permits a method with no receiver name, so the fix deletes an identifier and changes no signature.
+A named method receiver with no reference inside the method body. Go permits a method with no receiver name, so the fix deletes an identifier and changes no signature.
 
-Precondition: The same free-signature rule as unused-parameter, applied to the receiver.
+Precondition: None beyond the rule. Deleting a receiver name changes no signature, so a method retained by interface satisfaction, a method used as a value and a stub are reported as any other method is.
 
 Overlap in Go: `revive unused-receiver`. Overlap in TypeScript: `not applicable`.
 

@@ -1,0 +1,30 @@
+{
+  "name": "encoding-reflection-any-relay",
+  "description": "A function of the program that passes its interface-typed parameter to an encoder is itself a destination for each argument a call passes for that parameter, and a composite literal such an argument writes reaches the types of the values it holds, so those types keep their exported fields. A function that stores its parameter and encodes nothing is no destination, so a field only the value handed to it carries is reported as written and never read.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "status.Code",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "user.Name",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "ignored.Level",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+The Go rendering: a library whose interface an unexported method seals, and a
+consumer module that converts one implementing type to it.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Counter.registerInto": { "file": "target/lib.go", "line": 26 },
+    "Gauge.registerInto": { "file": "target/lib.go", "line": 34 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/lib.go --
+// Package target registers metrics through an interface sealed by an unexported method.
+package target
+
+// Metric is sealed by an unexported method.
+type Metric interface {
+	registerInto(r *Registry)
+}
+
+// Registry holds what was registered.
+type Registry struct {
+	names []string
+}
+
+// Register calls the method that seals Metric.
+func (r *Registry) Register(m Metric) { m.registerInto(r) }
+
+// Names returns what was registered.
+func (r *Registry) Names() []string { return r.names }
+
+// Counter is a Metric the consumer registers.
+type Counter struct{}
+
+// NewCounter returns a Counter.
+func NewCounter() *Counter { return &Counter{} }
+
+func (*Counter) registerInto(r *Registry) { r.names = append(r.names, "counter") }
+
+// Gauge is a Metric nothing converts to Metric.
+type Gauge struct{}
+
+// NewGauge returns a Gauge.
+func NewGauge() *Gauge { return &Gauge{} }
+
+func (*Gauge) registerInto(r *Registry) { r.names = append(r.names, "gauge") }
+-- consumer/go.mod --
+module example.com/consumer
+
+go 1.27.0
+
+require example.com/target v0.0.0
+
+replace example.com/target => ../target
+-- consumer/main.go --
+// Command consumer registers a counter.
+package main
+
+import (
+	"fmt"
+
+	"example.com/target"
+)
+
+func main() {
+	r := &target.Registry{}
+	r.Register(target.NewCounter())
+	fmt.Println(r.Names(), target.NewGauge() != nil)
+}

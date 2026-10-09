@@ -1,0 +1,22 @@
+{
+  "name": "function-literal-called-by-name",
+  "description": "A function literal that initializes a variable the program only calls is called by name, so its signature is free and a parameter its body never reads is reported. A function literal passed as an argument is used as a value, so its unread parameter before a read one is not reported.",
+  "languages": [
+    "go",
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "CalledName",
+      "report": "DS1801",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "parameter"
+    },
+    {
+      "symbol": "PassedName",
+      "report": "none"
+    }
+  ]
+}

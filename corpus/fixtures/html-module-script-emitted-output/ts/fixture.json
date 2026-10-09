@@ -1,0 +1,8 @@
+{
+  "symbols": {
+    "start": { "file": "target/static-src/app.ts", "line": 2 },
+    "panel": { "file": "target/static-src/panel.ts", "line": 2 },
+    "orphan": { "file": "target/static-src/orphan.ts", "line": 1 },
+    "orphanExport": { "file": "target/static-src/orphan.ts", "line": 2 }
+  }
+}

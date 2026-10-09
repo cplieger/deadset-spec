@@ -1,0 +1,9 @@
+{
+  "symbols": {
+    "Live": { "file": "target/codec.ts", "line": 2 },
+    "Dead": { "file": "target/codec.ts", "line": 7 },
+    "Helper": { "file": "target/support/helpers.ts", "line": 2 },
+    "TestLive": { "file": "target/codec.test.ts", "line": 4 },
+    "TestDead": { "file": "target/codec.test.ts", "line": 10 }
+  }
+}

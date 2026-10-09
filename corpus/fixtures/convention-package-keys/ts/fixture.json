@@ -1,0 +1,10 @@
+{
+  "symbols": {
+    "Compiler": { "file": "target/package.json", "line": 11 },
+    "ZoneJs": { "file": "target/package.json", "line": 12 },
+    "AngularBuild": { "file": "target/package.json", "line": 15 },
+    "AngularCli": { "file": "target/package.json", "line": 16 },
+    "CompilerCli": { "file": "target/package.json", "line": 17 },
+    "UnreadPrefix": { "file": "target/package.json", "line": 18 }
+  }
+}

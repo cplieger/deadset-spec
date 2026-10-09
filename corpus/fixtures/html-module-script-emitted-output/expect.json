@@ -1,0 +1,33 @@
+{
+  "name": "html-module-script-emitted-output",
+  "description": "A module script whose src names a file a configuration emits roots the source file that emits it, read back through that configuration's root and output directories as the compiler maps them. A relative src is read against the page's own directory, and a src starting with a single slash is read as well against the output directory whose top holds the page. A source file no page and no import names is reported, with the declaration inside it.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "start",
+      "report": "none"
+    },
+    {
+      "symbol": "panel",
+      "report": "none"
+    },
+    {
+      "symbol": "orphan",
+      "report": "DS1502",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "orphanExport",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "variable",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

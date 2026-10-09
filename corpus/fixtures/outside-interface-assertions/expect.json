@@ -1,6 +1,6 @@
 {
   "name": "outside-interface-assertions",
-  "description": "A value converted to an interface a package outside the program declares is held by code outside the analysis, which may assert another interface on it. So the value keeps the methods by which it implements an interface that package declares, exported or not, or an interface type literal its code writes, or an exported interface of a package it imports. A method only an unexported interface of an imported package requires, and a method no interface requires, are reported.",
+  "description": "A value converted to an interface a package outside the program declares is held by code outside the analysis, which may assert another interface on it. So the value keeps the methods by which it implements an interface a type assertion or a type switch case in that package's source names: one that package declares, exported or not, an interface type literal, or an exported interface of a package it imports. A method only an interface another package asserts requires, and a method no interface requires, are reported.",
   "languages": [
     "go"
   ],
