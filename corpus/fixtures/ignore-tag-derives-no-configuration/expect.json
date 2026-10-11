@@ -1,0 +1,14 @@
+{
+  "name": "ignore-tag-derives-no-configuration",
+  "description": "The ignore tag derives no configuration, nor does any other tag of a file built only under it, so a derived matrix holds the host's alone, drops nothing, and lists no type error from the program the tag keeps out of the build. A file built only under the ignore tag is outside the analysis: nothing it declares is reported. The program run by hand roots what it names of the target. Elsewhere the run reports as it always does.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "expect": [
+    { "symbol": "Rows", "report": "none" },
+    { "symbol": "Golden", "report": "none" },
+    { "symbol": "Dump", "report": "none" },
+    { "symbol": "banner", "report": "none" },
+    { "symbol": "Tolerance", "report": "none" },
+    { "symbol": "orphan", "report": "DS1002", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "function", "liveness_relation": "reference-counting", "configurations": ["linux-amd64"] }
+  ]
+}

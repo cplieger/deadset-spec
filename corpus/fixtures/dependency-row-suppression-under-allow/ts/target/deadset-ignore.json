@@ -1,0 +1,23 @@
+{
+  "description": "One entry in effect on a dependency, one under the wrong code, one naming no row.",
+  "ignore": [
+    {
+      "code": "DS1601",
+      "symbol": "ts://@example/target/package.json#adjudicated-tool:dev-dependency",
+      "path": "package.json",
+      "reason": "Run by a workflow outside the repository."
+    },
+    {
+      "code": "DS1001",
+      "symbol": "ts://@example/target/package.json#unadjudicated-tool:dev-dependency",
+      "path": "package.json",
+      "reason": "Names the dependency under a code it is not reported under."
+    },
+    {
+      "code": "DS1601",
+      "symbol": "ts://@example/target/package.json#adjudicated-tool:dependency",
+      "path": "package.json",
+      "reason": "Names the dependency under a section that does not declare it."
+    }
+  ]
+}

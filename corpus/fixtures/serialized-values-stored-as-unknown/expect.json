@@ -1,0 +1,52 @@
+{
+  "name": "serialized-values-stored-as-unknown",
+  "description": "Where the serialization walk meets unknown, it walks each value the program stores there at that value's own type: a value assigned to an index of a Record of unknown, a value an object literal writes into a property typed unknown, a value an array literal of unknown holds and a value assigned to a variable declared unknown, each container then serialized, keep their data members. A value stored in a container of another type that is never serialized keeps nothing, so its member is still reported as written and never read.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "SavedRules",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    },
+    {
+      "symbol": "SavedFallback",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    },
+    {
+      "symbol": "WrappedInner",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    },
+    {
+      "symbol": "ListedValue",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    },
+    {
+      "symbol": "BoxedSize",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    },
+    {
+      "symbol": "KeptNote",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member"
+    }
+  ]
+}

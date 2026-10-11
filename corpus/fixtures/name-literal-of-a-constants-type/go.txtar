@@ -1,0 +1,54 @@
+A main package whose registry spells the name of a defined type an internal package uses only
+itself, and whose constants a generator reads through the type, beside a type of the same shape
+nothing spells.
+
+-- fixture.json --
+{
+  "symbols": {
+    "KindLiteral": { "file": "target/main.go", "line": 9 },
+    "Kind": { "file": "target/internal/wire/wire.go", "line": 5 },
+    "KindA": { "file": "target/internal/wire/wire.go", "line": 8 },
+    "KindB": { "file": "target/internal/wire/wire.go", "line": 9 },
+    "Mode": { "file": "target/internal/wire/wire.go", "line": 12 },
+    "ModeA": { "file": "target/internal/wire/wire.go", "line": 15 },
+    "ModeB": { "file": "target/internal/wire/wire.go", "line": 16 }
+  }
+}
+-- target/go.mod --
+module example.com/app
+
+go 1.27.0
+-- target/main.go --
+package main
+
+import (
+	"fmt"
+
+	"example.com/app/internal/wire"
+)
+
+var registry = map[string]int{"Kind": 1}
+
+func main() {
+	fmt.Println(len(registry), wire.Describe())
+}
+-- target/internal/wire/wire.go --
+package wire
+
+import "fmt"
+
+type Kind int
+
+const (
+	KindA Kind = iota
+	KindB
+)
+
+type Mode int
+
+const (
+	ModeA Mode = iota
+	ModeB
+)
+
+func Describe() string { return fmt.Sprint(KindA, KindB, ModeA, ModeB) }

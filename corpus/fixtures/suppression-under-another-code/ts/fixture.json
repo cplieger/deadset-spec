@@ -1,0 +1,6 @@
+{
+  "symbols": {
+    "WrongCodeDirective": { "file": "target/main.ts", "line": 5 },
+    "Unreached": { "file": "target/main.ts", "line": 6 }
+  }
+}

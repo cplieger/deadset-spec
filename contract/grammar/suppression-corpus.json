@@ -56,6 +56,13 @@
     "reason": "A reason of one no-break space is a reason: whitespace is the space, the tab, the line feed and the carriage return alone, and every other character, U+00A0 included, is text."
   },
   {
+    "input": { "comment": "//deadset:ignore DS1001 -- Reached only through the generated client.", "line_offset": 0 },
+    "kind": "inline",
+    "accepted": true,
+    "rule": "trailing",
+    "reason": "A trailing directive after the code on the line where its declaration begins: it binds that declaration and nothing on the next line."
+  },
+  {
     "input": { "comment": "//deadset:ignore DS1001", "line_offset": -1 },
     "kind": "inline",
     "accepted": false,
@@ -83,13 +90,6 @@
     "rule": "reason-required",
     "reason": "Two codes and no reason: one record per code, each refused and each reported as DS1701, so the directive is two findings at one line.",
     "reports": ["DS1701", "DS1701"]
-  },
-  {
-    "input": { "comment": "//deadset:ignore DS1001 -- Reached only through the generated client.", "line_offset": 0 },
-    "kind": "inline",
-    "accepted": false,
-    "rule": "line-above",
-    "reason": "A trailing directive on the declaration's own line: it binds nothing and is reported as DS1703 (stale-suppression)."
   },
   {
     "input": { "comment": "//deadset:ignore DS1001 -- Reached only through the generated client.", "line_offset": -2 },

@@ -1,0 +1,30 @@
+One main package with two functions nothing calls, under a severity of allow for their code:
+one calls a helper whose parameter is read and which carries a parameter directive, and the
+other carries a directive for its own code.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Dead": { "file": "target/main.go", "line": 5 },
+    "ReadParameterDirective": { "file": "target/main.go", "line": 7 },
+    "Helper": { "file": "target/main.go", "line": 8 },
+    "WithheldDirective": { "file": "target/main.go", "line": 10 },
+    "AlsoDead": { "file": "target/main.go", "line": 11 }
+  }
+}
+-- target/go.mod --
+module example.com/app
+
+go 1.27.0
+-- target/main.go --
+package main
+
+func main() {}
+
+func dead() int { return helper(1) }
+
+//deadset:ignore DS1801 -- Kept for a parameter that is read.
+func helper(v int) int { return v + 1 }
+
+//deadset:ignore DS1002 -- Kept for the next release.
+func alsoDead() int { return 2 }

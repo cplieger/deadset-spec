@@ -1,0 +1,15 @@
+{
+  "symbols": {
+    "Phase.Idle": { "file": "target/phase.ts", "line": 2 },
+    "Phase.Running": { "file": "target/phase.ts", "line": 3 },
+    "Phase.Stopped": { "file": "target/phase.ts", "line": 4 },
+    "Phase.Failed": { "file": "target/phase.ts", "line": 5 },
+    "Phase.Paused": { "file": "target/phase.ts", "line": 6 },
+    "Phase.Closed": { "file": "target/phase.ts", "line": 7 },
+    "Spare": { "file": "target/phase.ts", "line": 10 },
+    "Tier.Base": { "file": "target/phase.ts", "line": 16 },
+    "Tier.Next": { "file": "target/phase.ts", "line": 17 },
+    "Tier.Alias": { "file": "target/phase.ts", "line": 18 },
+    "Tier.Top": { "file": "target/phase.ts", "line": 19 }
+  }
+}

@@ -1,0 +1,59 @@
+The Go rendering: a command, a generator program beside it that only the ignore
+tag builds and that imports the command's table package, and two files of that
+package that the ignore tag builds together with another tag, a platform tag in
+one and a custom tag in the other.
+
+-- fixture.json --
+{
+  "configurations": ["linux-amd64"],
+  "configurations_not_built": [],
+  "symbols": {
+    "Rows": { "file": "target/internal/table/table.go", "line": 3 },
+    "Golden": { "file": "target/internal/table/table.go", "line": 5 },
+    "Dump": { "file": "target/internal/table/dump_linux.go", "line": 5 },
+    "banner": { "file": "target/gen.go", "line": 10 },
+    "orphan": { "file": "target/main.go", "line": 7 },
+    "Tolerance": { "file": "target/internal/table/golden.go", "line": 5 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+package main
+
+import "example.com/target/internal/table"
+
+func main() { println(table.Rows()) }
+
+func orphan() int { return 2 }
+-- target/gen.go --
+//go:build ignore
+
+// The program gen.go is run by hand, with go run gen.go, to print the golden table.
+package main
+
+import "example.com/target/internal/table"
+
+func main() { println(table.Golden(), banner()) }
+
+func banner() string { return "gen" }
+-- target/internal/table/table.go --
+package table
+
+func Rows() int { return 3 }
+
+func Golden() string { return "golden" }
+-- target/internal/table/dump_linux.go --
+//go:build ignore && linux
+
+package table
+
+func Dump() string { return "dump" }
+-- target/internal/table/golden.go --
+//go:build ignore && golden
+
+package table
+
+func Tolerance() int { return 1 }

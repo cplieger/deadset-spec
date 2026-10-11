@@ -1,0 +1,29 @@
+{
+  "name": "values-code-outside-the-target-holds",
+  "description": "An as expression over an object no file of the target declares, a platform global among them, and a new expression through a construct signature no code of the target implements, hand the target a value code outside it holds, so every member of the target's type that value is given is read. An as expression over a decoded value of type any hands over nothing, so a member the target only writes stays reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "DecodedName",
+      "report": "none"
+    },
+    {
+      "symbol": "DecodedSpare",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member"
+    },
+    {
+      "symbol": "ScopeOnconnect",
+      "report": "none"
+    },
+    {
+      "symbol": "ShownOnclick",
+      "report": "none"
+    }
+  ]
+}

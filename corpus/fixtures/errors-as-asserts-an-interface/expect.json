@@ -1,0 +1,21 @@
+{
+  "name": "errors-as-asserts-an-interface",
+  "description": "A call of errors.As whose second argument points to an interface, and a call of errors.AsType instantiated with one, assert that interface on the error they are handed. In the program the assertion converts each type the program converts to error that implements the interface, held by the declaration that converts the type and the one that asserts it together, so a method only an uncalled function asserts falls with that function, and a method only a test asserts is used by tests alone. A type that implements error and the interface but enters only another interface keeps no method on that account. In the source of a package that declares an interface the program converts a value to, such a call is one of the assertions that keep that value's methods, and a value that enters only an interface of a package whose source asserts nothing keeps no method on that account.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "expect": [
+    { "symbol": "busy.Backoff", "report": "none", "retained_by": ["interface-satisfaction"] },
+    { "symbol": "busy.Attempts", "report": "none", "retained_by": ["interface-satisfaction"] },
+    { "symbol": "busy.Remaining", "report": "DS1103", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "method", "liveness_relation": "reachability", "component": { "root": false } },
+    { "symbol": "busy.Spare", "report": "DS1103", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "method" },
+    { "symbol": "budget.Remaining", "report": "none", "retained_by": ["interface-satisfaction"] },
+    { "symbol": "deadQuota", "report": "DS1002", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "function", "liveness_relation": "reference-counting", "component": { "root": true } },
+    { "symbol": "fault.Code", "report": "none", "retained_by": ["interface-satisfaction"] },
+    { "symbol": "fault.Close", "report": "none", "retained_by": ["interface-satisfaction"] },
+    { "symbol": "fault.Flush", "report": "DS1103", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "method" },
+    { "symbol": "recorder.Close", "report": "DS1103", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "method" },
+    { "symbol": "busy.Pause", "report": "DS1004", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "method" },
+    { "symbol": "stamp.Show", "report": "none", "retained_by": ["interface-satisfaction"] },
+    { "symbol": "stamp.Label", "report": "DS1103", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "method" }
+  ]
+}

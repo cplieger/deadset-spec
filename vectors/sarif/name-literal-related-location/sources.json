@@ -1,0 +1,7 @@
+{
+  "description": "The target files the case's results name, by target-relative path.",
+  "files": {
+    "handlers.go": "package app\n\nfunc handler() string {\n\treturn \"ok\"\n}\n",
+    "registry.go": "package app\n\nvar names = []string{\n\t\"main\", \"handler\",\n}\n"
+  }
+}

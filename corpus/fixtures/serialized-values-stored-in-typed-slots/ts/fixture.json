@@ -1,0 +1,28 @@
+{
+  "symbols": {
+    "AliasedNote": {
+      "file": "target/main.ts",
+      "line": 20
+    },
+    "DerivedExtra": {
+      "file": "target/main.ts",
+      "line": 5
+    },
+    "ListedNote": {
+      "file": "target/main.ts",
+      "line": 28
+    },
+    "OtherSpare": {
+      "file": "target/main.ts",
+      "line": 8
+    },
+    "PickedNote": {
+      "file": "target/main.ts",
+      "line": 35
+    },
+    "UnsentNote": {
+      "file": "target/main.ts",
+      "line": 38
+    }
+  }
+}

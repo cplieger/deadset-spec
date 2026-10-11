@@ -1,0 +1,40 @@
+{
+  "name": "suppression-dormancy",
+  "description": "With the unused code of an unexported declaration set to allow, a record that matches a finding the setting withholds is dormant: neither in effect nor stale. A record for an unused parameter on a function whose parameter is read matches no finding and is stale, although its function falls with a component the setting withholds, because dormancy is read from the findings a record matches and never from the component of its symbol.",
+  "languages": [
+    "go",
+    "ts"
+  ],
+  "target_kind": "application",
+  "severity": {
+    "DS1002": "allow"
+  },
+  "suppressions_in_effect": 0,
+  "expect": [
+    {
+      "symbol": "Dead",
+      "report": "none"
+    },
+    {
+      "symbol": "ReadParameterDirective",
+      "report": "DS1703",
+      "confidence": "certain",
+      "symbol_kind": "suppression",
+      "details": {
+        "mechanism": "inline"
+      }
+    },
+    {
+      "symbol": "Helper",
+      "report": "none"
+    },
+    {
+      "symbol": "WithheldDirective",
+      "report": "none"
+    },
+    {
+      "symbol": "AlsoDead",
+      "report": "none"
+    }
+  ]
+}

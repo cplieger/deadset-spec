@@ -1,0 +1,52 @@
+{
+  "name": "encoding-reflection-type-argument-decode",
+  "description": "A type passed as a type argument to a generic declared outside the program, in a package whose own imports name a standard decoder, reaches a decoding destination, so the decoding method of the type a field of it holds is retained: through a generic function reached from a generic of the program, a generic method, a method of a generic type, and a type argument the call infers. A generic whose package imports no decoder, and one whose package imports a decoder only through another package, retain nothing, so those methods stay reported.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "FunctionThroughProgramGeneric",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "GenericMethod",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "GenericTypeMethod",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "NoCodecGeneric",
+      "report": "DS1103",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method"
+    },
+    {
+      "symbol": "InferredTypeArgument",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "CodecInASiblingPackage",
+      "report": "DS1103",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method"
+    }
+  ]
+}

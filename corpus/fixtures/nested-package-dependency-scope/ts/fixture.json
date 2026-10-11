@@ -1,0 +1,24 @@
+{
+  "symbols": {
+    "PinsLeftPad": {
+      "file": "target/pins/package.json",
+      "line": 6
+    },
+    "PinsVitest": {
+      "file": "target/pins/package.json",
+      "line": 5
+    },
+    "RootOnly": {
+      "file": "target/package.json",
+      "line": 9
+    },
+    "RootShared": {
+      "file": "target/package.json",
+      "line": 8
+    },
+    "ScopedShared": {
+      "file": "target/scoped/package.json",
+      "line": 5
+    }
+  }
+}

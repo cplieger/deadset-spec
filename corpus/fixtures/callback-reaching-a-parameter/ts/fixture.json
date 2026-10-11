@@ -1,0 +1,28 @@
+{
+  "symbols": {
+    "AliasedFirst": {
+      "file": "target/main.ts",
+      "line": 17
+    },
+    "AliasedSecond": {
+      "file": "target/main.ts",
+      "line": 18
+    },
+    "InitExtra": {
+      "file": "target/main.ts",
+      "line": 3
+    },
+    "InitUsed": {
+      "file": "target/main.ts",
+      "line": 2
+    },
+    "NamedKept": {
+      "file": "target/main.ts",
+      "line": 9
+    },
+    "NamedSpare": {
+      "file": "target/main.ts",
+      "line": 10
+    }
+  }
+}

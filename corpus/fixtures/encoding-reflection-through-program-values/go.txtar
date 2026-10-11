@@ -1,0 +1,141 @@
+A main package whose types reach encoding/json and reflect only through values of its own: a
+type argument of reflect.TypeFor, a type parameter a generic function of the program decodes
+into, an empty-interface parameter of its own function, an embedded unexported struct, and a
+struct returned as an interface and encoded by the caller, directly or through a table of
+handlers or through a bound method value, beside a struct returned the same way
+and never encoded and one a function literal returns.
+
+-- fixture.json --
+{
+  "symbols": {
+    "ShadowedA": { "file": "target/main.go", "line": 10 },
+    "FlexUnmarshal": { "file": "target/main.go", "line": 17 },
+    "RawMarshal": { "file": "target/main.go", "line": 31 },
+    "OuterInner": { "file": "target/main.go", "line": 40 },
+    "AckID": { "file": "target/main.go", "line": 44 },
+    "UnsentID": { "file": "target/main.go", "line": 58 },
+    "ClosedID": { "file": "target/main.go", "line": 64 },
+    "RepliedOK": { "file": "target/main.go", "line": 73 },
+    "MadeID": { "file": "target/main.go", "line": 93 }
+  }
+}
+-- target/go.mod --
+module example.com/app
+
+go 1.27.0
+-- target/main.go --
+package main
+
+import (
+	"encoding/json"
+	"net/http"
+	"reflect"
+)
+
+type shadowed struct {
+	A string `json:"a"`
+}
+
+type shadow shadowed
+
+type flex int
+
+func (*flex) UnmarshalJSON([]byte) error { return nil }
+
+type request struct {
+	K flex `json:"k"`
+}
+
+func decode[T any](b []byte) (T, error) {
+	var v T
+	err := json.Unmarshal(b, &v)
+	return v, err
+}
+
+type raw []byte
+
+func (r raw) MarshalJSON() ([]byte, error) { return r, nil }
+
+func reencode(from any) ([]byte, error) { return json.Marshal(from) }
+
+type inner struct {
+	X int `json:"x"`
+}
+
+type outer struct {
+	inner
+}
+
+type ack struct {
+	ID string `json:"id"`
+}
+
+func handle() (any, error) { return ack{ID: "x"}, nil }
+
+func route(w http.ResponseWriter) {
+	v, err := handle()
+	if err != nil {
+		return
+	}
+	_ = json.NewEncoder(w).Encode(v)
+}
+
+type unsent struct {
+	ID string `json:"id"`
+}
+
+func drop() any { return unsent{ID: "y"} }
+
+type closed struct {
+	ID string `json:"id"`
+}
+
+func wrap() any {
+	f := func() any { return closed{ID: "z"} }
+	return f
+}
+
+type replied struct {
+	OK bool `json:"ok"`
+}
+
+type handler func() (any, error)
+
+func answer() (any, error) { return replied{OK: true}, nil }
+
+var handlers = map[string]handler{"answer": answer}
+
+func dispatch(name string) {
+	body, err := handlers[name]()
+	if err != nil {
+		return
+	}
+	_, _ = json.Marshal(body)
+}
+
+type provider struct{}
+
+type made struct {
+	ID string `json:"id"`
+}
+
+func (provider) build() any { return made{ID: "m"} }
+
+func viaMethodValue() {
+	makeValue := provider{}.build
+	_, _ = json.Marshal(makeValue())
+}
+
+func main() {
+	viaMethodValue()
+	println(reflect.TypeFor[shadow]().NumField())
+	dispatch("answer")
+	r, err := decode[request](nil)
+	println(r.K, err)
+	b, err := reencode(raw("{}"))
+	println(len(b), err)
+	_, _ = json.Marshal(outer{inner{1}})
+	route(nil)
+	println(drop() != nil)
+	_, _ = json.Marshal(wrap())
+}

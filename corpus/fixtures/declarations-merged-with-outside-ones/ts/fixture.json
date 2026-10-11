@@ -1,0 +1,28 @@
+{
+  "symbols": {
+    "Augmentation": {
+      "file": "target/augment.ts",
+      "line": 1
+    },
+    "Commands": {
+      "file": "target/augment.ts",
+      "line": 2
+    },
+    "Emulate": {
+      "file": "target/augment.ts",
+      "line": 3
+    },
+    "Glob": {
+      "file": "target/env.d.ts",
+      "line": 2
+    },
+    "ImportMeta": {
+      "file": "target/env.d.ts",
+      "line": 1
+    },
+    "Spare": {
+      "file": "target/env.d.ts",
+      "line": 3
+    }
+  }
+}

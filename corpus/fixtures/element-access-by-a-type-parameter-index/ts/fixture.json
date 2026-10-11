@@ -1,0 +1,40 @@
+{
+  "symbols": {
+    "FieldsBody": {
+      "file": "target/main.ts",
+      "line": 14
+    },
+    "FieldsExtra": {
+      "file": "target/main.ts",
+      "line": 15
+    },
+    "FieldsTitle": {
+      "file": "target/main.ts",
+      "line": 13
+    },
+    "LoopedLeft": {
+      "file": "target/main.ts",
+      "line": 24
+    },
+    "LoopedRight": {
+      "file": "target/main.ts",
+      "line": 25
+    },
+    "LoopedSpare": {
+      "file": "target/main.ts",
+      "line": 26
+    },
+    "PayloadClose": {
+      "file": "target/main.ts",
+      "line": 3
+    },
+    "PayloadIdle": {
+      "file": "target/main.ts",
+      "line": 4
+    },
+    "PayloadOpen": {
+      "file": "target/main.ts",
+      "line": 2
+    }
+  }
+}

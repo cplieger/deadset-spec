@@ -1,0 +1,56 @@
+{
+  "name": "directive-above-another-comment",
+  "description": "A directive binds only the declaration that begins on the next line, or on its own line when it trails code there, and a declaration begins on the line of its first token, a decorator included. A directive above a marker comment that sits directly above a constant binds nothing and is stale, and the constant stays reported. A directive above a class's decorator binds the class, and so does one trailing the decorator, while a directive between the decorator and the class keyword binds nothing and is stale beside the class's finding.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "suppressions_in_effect": 2,
+  "expect": [
+    {
+      "symbol": "AboveMarkerDirective",
+      "report": "DS1703",
+      "confidence": "certain",
+      "symbol_kind": "suppression",
+      "details": {
+        "mechanism": "inline"
+      }
+    },
+    {
+      "symbol": "UnderMarker",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting",
+      "symbol_kind": "variable"
+    },
+    {
+      "symbol": "DecoratedAbove",
+      "report": "none"
+    },
+    {
+      "symbol": "DecoratedBetween",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "class"
+    },
+    {
+      "symbol": "BetweenDirective",
+      "report": "DS1703",
+      "confidence": "certain",
+      "symbol_kind": "suppression",
+      "details": {
+        "mechanism": "inline"
+      }
+    },
+    {
+      "symbol": "TrailingOnDecorator",
+      "report": "none"
+    },
+    {
+      "symbol": "DecoratedTrailing",
+      "report": "none"
+    }
+  ]
+}

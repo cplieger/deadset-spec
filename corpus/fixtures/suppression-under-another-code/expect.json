@@ -1,0 +1,25 @@
+{
+  "name": "suppression-under-another-code",
+  "description": "A directive naming a liveness code other than the one its symbol's finding carries is stale, even though its mark keeps the symbol live: an unexported function nothing calls, whose finding is the unexported code, carries a directive for the exported code. The function is not reported and the directive is.",
+  "languages": [
+    "go",
+    "ts"
+  ],
+  "target_kind": "application",
+  "suppressions_in_effect": 0,
+  "expect": [
+    {
+      "symbol": "WrongCodeDirective",
+      "report": "DS1703",
+      "confidence": "certain",
+      "symbol_kind": "suppression",
+      "details": {
+        "mechanism": "inline"
+      }
+    },
+    {
+      "symbol": "Unreached",
+      "report": "none"
+    }
+  ]
+}

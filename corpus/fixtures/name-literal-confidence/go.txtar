@@ -1,0 +1,186 @@
+A main package whose generated table spells the names of declarations in an importable package
+and an internal one, beside declarations of the same shapes whose names only a test file or
+their own declaration spells, and the three spellings that lower nothing.
+
+-- fixture.json --
+{
+  "symbols": {
+    "SpelledLiteral": { "file": "target/main.go", "line": 16 },
+    "SpelledConstLiteral": { "file": "target/main.go", "line": 17 },
+    "SpelledTestedLiteral": { "file": "target/main.go", "line": 18 },
+    "SpelledOldLiteral": { "file": "target/main.go", "line": 19 },
+    "SpelledLocalLiteral": { "file": "target/main.go", "line": 20 },
+    "SpelledExposedLiteral": { "file": "target/main.go", "line": 21 },
+    "SpelledGoneLiteral": { "file": "target/main.go", "line": 22 },
+    "SpelledRootLiteral": { "file": "target/main.go", "line": 23 },
+    "UnusedExported": { "file": "target/api/api.go", "line": 3 },
+    "UnusedExportedTestLiteral": { "file": "target/api/api.go", "line": 5 },
+    "UnusedExportedSelfLiteral": { "file": "target/api/api.go", "line": 7 },
+    "UnusedUnexported": { "file": "target/api/api.go", "line": 9 },
+    "UnusedUnexportedTestLiteral": { "file": "target/api/api.go", "line": 11 },
+    "UnusedUnexportedSelfLiteral": { "file": "target/api/api.go", "line": 13 },
+    "TestOnly": { "file": "target/api/api.go", "line": 15 },
+    "TestOnlyTestLiteral": { "file": "target/api/api.go", "line": 17 },
+    "TestOnlySelfLiteral": { "file": "target/api/api.go", "line": 19 },
+    "Deprecated": { "file": "target/api/api.go", "line": 22 },
+    "DeprecatedTestLiteral": { "file": "target/api/api.go", "line": 25 },
+    "DeprecatedSelfLiteral": { "file": "target/api/api.go", "line": 28 },
+    "LocalOnly": { "file": "target/api/api.go", "line": 30 },
+    "LocalOnlyTestLiteral": { "file": "target/api/api.go", "line": 32 },
+    "LocalOnlySelfLiteral": { "file": "target/api/api.go", "line": 34 },
+    "LocalOnlyMethodLiteral": { "file": "target/api/api.go", "line": 36 },
+    "MethodSpelledLiteral": { "file": "target/api/api.go", "line": 38 },
+    "ModuleOnly": { "file": "target/api/api.go", "line": 40 },
+    "ModuleOnlyTestLiteral": { "file": "target/api/api.go", "line": 42 },
+    "ModuleOnlySelfLiteral": { "file": "target/api/api.go", "line": 44 },
+    "ImportPathControl": { "file": "target/api/api.go", "line": 46 },
+    "TagControl": { "file": "target/api/api.go", "line": 48 },
+    "MemberControl": { "file": "target/api/api.go", "line": 51 },
+    "SpelledRoot": { "file": "target/api/api.go", "line": 55 },
+    "RootHelper": { "file": "target/api/api.go", "line": 57 },
+    "GroupedSibling": { "file": "target/api/api.go", "line": 60 },
+    "GroupedSpeller": { "file": "target/api/api.go", "line": 61 },
+    "GroupedLiteral": { "file": "target/api/api.go", "line": 62 },
+    "Unreachable": { "file": "target/internal/hidden/hidden.go", "line": 3 },
+    "UnreachableTestLiteral": { "file": "target/internal/hidden/hidden.go", "line": 5 },
+    "UnreachableSelfLiteral": { "file": "target/internal/hidden/hidden.go", "line": 7 }
+  }
+}
+-- target/go.mod --
+module example.com/app
+
+go 1.27.0
+-- target/main.go --
+package main
+
+import (
+	"fmt"
+	"sort"
+
+	"example.com/app/api"
+	_ "example.com/app/internal/hidden"
+)
+
+type holder struct {
+	W int `widget`
+}
+
+var generated = map[string]int{
+	"Spelled":        1,
+	"spelledConst":   2,
+	"spelledTested":  3,
+	"spelledOld":     4,
+	"SpelledLocal":   5,
+	"SpelledExposed": 6,
+	"SpelledGone":    7,
+	"spelledRoot":    8,
+}
+
+func main() {
+	keys := make([]string, 0, len(generated))
+	for k := range generated {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	fmt.Println(keys, holder{W: 1}.W, api.SpelledExposed{}, api.TestSpelledExposed{}, api.SelfSpelledExposed{})
+}
+-- target/api/api.go --
+package api
+
+func Spelled() int { return 1 }
+
+func TestSpelled() int { return 2 }
+
+func SelfSpelled() string { return "SelfSpelled" }
+
+const spelledConst = 1
+
+const testSpelledConst = 2
+
+const selfSpelledConst = "selfSpelledConst"
+
+const spelledTested = 3
+
+const testSpelledTested = 4
+
+const selfSpelledTested = "selfSpelledTested"
+
+// Deprecated: Read the registry instead.
+func spelledOld() int { return 1 }
+
+// Deprecated: Read the registry instead.
+func testSpelledOld() int { return 2 }
+
+// Deprecated: Read the registry instead.
+func selfSpelledOld() string { return "selfSpelledOld" }
+
+type SpelledLocal struct{}
+
+type TestSpelledLocal struct{}
+
+type SelfSpelledLocal [len("SelfSpelledLocal")]int
+
+type MethodSpelled struct{}
+
+func (MethodSpelled) name() string { return "MethodSpelled" }
+
+type SpelledExposed struct{}
+
+type TestSpelledExposed struct{}
+
+type SelfSpelledExposed [len("SelfSpelledExposed")]int
+
+var sort int
+
+type widget struct{}
+
+type box struct {
+	Spelled string
+	count   int
+}
+
+func spelledRoot() int { return rootHelper() }
+
+func rootHelper() int { return 1 }
+
+const (
+	groupedSibling = 1
+	groupedSpeller = len(
+		"groupedSibling")
+)
+-- target/api/use.go --
+package api
+
+func init() {
+	_ = SpelledLocal{}
+	_ = TestSpelledLocal{}
+	_ = SelfSpelledLocal{}
+	println(MethodSpelled{}.name())
+	println(box{count: 1}.count)
+}
+-- target/api/api_test.go --
+package api
+
+import "testing"
+
+func TestNames(t *testing.T) {
+	if spelledTested+testSpelledTested == 0 || len(selfSpelledTested) == 0 || (box{count: 1}).count == 0 {
+		t.Fatal("zero")
+	}
+	for _, name := range []string{
+		"TestSpelled", "testSpelledConst", "testSpelledTested", "testSpelledOld",
+		"TestSpelledLocal", "TestSpelledExposed", "TestSpelledGone",
+	} {
+		if name == "" {
+			t.Fatal("empty")
+		}
+	}
+}
+-- target/internal/hidden/hidden.go --
+package hidden
+
+func SpelledGone() int { return 1 }
+
+func TestSpelledGone() int { return 2 }
+
+func SelfSpelledGone() string { return "SelfSpelledGone" }

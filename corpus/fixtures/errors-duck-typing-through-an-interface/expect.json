@@ -1,0 +1,12 @@
+{
+  "name": "errors-duck-typing-through-an-interface",
+  "description": "A type whose value enters an interface of the program's own that the program converts to error, directly or through a further interface, is reachable as an error, so its Unwrap method is retained by the errors-duck-typing class. The conversion counts only while the declaration holding it is live: a value that enters an interface whose only conversion to error an uncalled function holds keeps no Unwrap, which falls with that function.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "expect": [
+    { "symbol": "refused.Unwrap", "report": "none", "retained_by": ["errors-duck-typing"] },
+    { "symbol": "banned.Unwrap", "report": "none", "retained_by": ["errors-duck-typing"] },
+    { "symbol": "rejected.Unwrap", "report": "DS1103", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "method", "liveness_relation": "reachability", "component": { "root": false } },
+    { "symbol": "deadWiden", "report": "DS1002", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "function", "liveness_relation": "reference-counting", "component": { "root": true } }
+  ]
+}

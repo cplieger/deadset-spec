@@ -1,0 +1,25 @@
+{
+  "name": "member-tested-by-in",
+  "description": "A value narrowed by an in expression whose left operand is a string literal is read back by that name, often through unknown, where no type links the read to a declaration. A member whose name such a literal of a production file spells is therefore reported at the reachability class possible, and a member no in expression names keeps its class.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "expect": [
+    {
+      "symbol": "Skipped",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member"
+    },
+    {
+      "symbol": "Uploaded",
+      "report": "DS1301",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "type-member"
+    }
+  ]
+}

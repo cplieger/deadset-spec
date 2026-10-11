@@ -1,0 +1,22 @@
+{
+  "name": "positional-member-codes",
+  "description": "A positional member carries manual fixability and a component that removes no line whatever code its references select: an exported constant of an importable package nothing references, an exported constant of a command, a constant only a test references, a constant carrying a deprecation marker, and a test file's constant whose every referenced declaration of the target is dead. A dead declaration a positional member references is held under the code its own references select as well: the constant only that test file's constant names, which shares its cycle, and an interface only a positional member's expression names, whose method falls with it.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "expect": [
+    { "symbol": "Low", "report": "DS1001", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "constant", "liveness_relation": "reference-counting", "fixability": "manual", "component": { "root": true, "symbol_count": 1, "deletable_lines": 0 } },
+    { "symbol": "High", "report": "none" },
+    { "symbol": "Quiet", "report": "DS1103", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "constant", "liveness_relation": "reference-counting", "fixability": "manual", "component": { "root": true, "symbol_count": 1, "deletable_lines": 0 } },
+    { "symbol": "loud", "report": "none" },
+    { "symbol": "probeA", "report": "DS1004", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "constant", "liveness_relation": "reference-counting", "fixability": "manual", "component": { "root": true, "symbol_count": 1, "deletable_lines": 0 } },
+    { "symbol": "probeB", "report": "none" },
+    { "symbol": "retired", "report": "DS1004", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "constant", "liveness_relation": "reference-counting", "fixability": "manual", "component": { "root": true, "symbol_count": 2, "deletable_lines": 0 } },
+    { "symbol": "fixtureA", "report": "DS1005", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "constant", "liveness_relation": "reference-counting", "fixability": "manual", "component": { "root": true, "symbol_count": 2, "deletable_lines": 0 } },
+    { "symbol": "fixtureB", "report": "none" },
+    { "symbol": "colorOld", "report": "DS1006", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "constant", "liveness_relation": "reference-counting", "fixability": "manual", "component": { "root": true, "symbol_count": 1, "deletable_lines": 0 } },
+    { "symbol": "colorRed", "report": "none" },
+    { "symbol": "sizer", "report": "DS1201", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "interface", "liveness_relation": "reachability", "fixability": "manual", "component": { "root": false, "symbol_count": 3, "deletable_lines": 0 } },
+    { "symbol": "sizerSlots", "report": "DS1002", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "constant", "liveness_relation": "reference-counting", "fixability": "manual", "component": { "root": true, "symbol_count": 3, "deletable_lines": 0 } },
+    { "symbol": "slotIndex", "report": "none" }
+  ]
+}

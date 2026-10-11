@@ -1,0 +1,31 @@
+{
+  "name": "value-stored-in-an-unknown-property-of-a-dependency-type",
+  "description": "A value the program stores in a property typed unknown of an object type a dependency declares has left the analysis, because the dependency receives the object and may serialize what the property holds: a request body a callback returns in a constituent of the dependency's request type keeps the data members of its own type. A value stored in a property typed unknown of a type the target declares, and never serialized, keeps nothing, so its member is still reported as written and never read.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "CreateName",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    },
+    {
+      "symbol": "CreateSource",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    },
+    {
+      "symbol": "UnsentLabel",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member"
+    }
+  ]
+}

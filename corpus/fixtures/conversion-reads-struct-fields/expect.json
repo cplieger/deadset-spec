@@ -1,0 +1,166 @@
+{
+  "name": "conversion-reads-struct-fields",
+  "description": "A conversion between two struct types, or between two unnamed pointers to struct types, reads every field of both, and every field of each pair of distinct struct type literals type identity compares through them: under a slice, a map and a pointer. A field under a type argument or the method of an interface type literal has no reference of its own, so the identity walk through them holds no finding back and such a field is reported nowhere. It stops at a defined type, whose written-only field stays reported, and a conversion to a type parameter or from a type parameter operand reads the same fields. A conversion between two types that share one struct type literal reads nothing, so a field only the plain decode idiom names stays reported, and a generic that converts nothing and a conversion to an interface type read nothing either.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "SharedSeen",
+      "report": "none"
+    },
+    {
+      "symbol": "SharedHidden",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field"
+    },
+    {
+      "symbol": "BoxV",
+      "report": "none"
+    },
+    {
+      "symbol": "AS",
+      "report": "none"
+    },
+    {
+      "symbol": "AItems",
+      "report": "none"
+    },
+    {
+      "symbol": "AItemsP",
+      "report": "none"
+    },
+    {
+      "symbol": "AItemsQ",
+      "report": "none"
+    },
+    {
+      "symbol": "AIndex",
+      "report": "none"
+    },
+    {
+      "symbol": "AIndexK",
+      "report": "none"
+    },
+    {
+      "symbol": "APtr",
+      "report": "none"
+    },
+    {
+      "symbol": "APtrDeep",
+      "report": "none"
+    },
+    {
+      "symbol": "AGen",
+      "report": "none"
+    },
+    {
+      "symbol": "AGenG",
+      "report": "none"
+    },
+    {
+      "symbol": "AHook",
+      "report": "none"
+    },
+    {
+      "symbol": "AHookZ",
+      "report": "none"
+    },
+    {
+      "symbol": "BS",
+      "report": "none"
+    },
+    {
+      "symbol": "BItems",
+      "report": "none"
+    },
+    {
+      "symbol": "BItemsP",
+      "report": "none"
+    },
+    {
+      "symbol": "BItemsQ",
+      "report": "none"
+    },
+    {
+      "symbol": "BIndex",
+      "report": "none"
+    },
+    {
+      "symbol": "BIndexK",
+      "report": "none"
+    },
+    {
+      "symbol": "BPtr",
+      "report": "none"
+    },
+    {
+      "symbol": "BPtrDeep",
+      "report": "none"
+    },
+    {
+      "symbol": "BGen",
+      "report": "none"
+    },
+    {
+      "symbol": "BGenG",
+      "report": "none"
+    },
+    {
+      "symbol": "BHook",
+      "report": "none"
+    },
+    {
+      "symbol": "BHookZ",
+      "report": "none"
+    },
+    {
+      "symbol": "SrcName",
+      "report": "none"
+    },
+    {
+      "symbol": "DstName",
+      "report": "none"
+    },
+    {
+      "symbol": "FromTitle",
+      "report": "none"
+    },
+    {
+      "symbol": "PairLeft",
+      "report": "none"
+    },
+    {
+      "symbol": "PairRight",
+      "report": "none"
+    },
+    {
+      "symbol": "KeptLost",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field"
+    },
+    {
+      "symbol": "BoxedHidden",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field"
+    },
+    {
+      "symbol": "RecordX",
+      "report": "none"
+    },
+    {
+      "symbol": "RecordY",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field"
+    }
+  ]
+}

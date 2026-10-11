@@ -1,0 +1,87 @@
+The Go rendering: a command whose error types enter interfaces of its own that
+embed error. Two reach error through live conversions, one in one step and one in
+two. The third interface reaches error only in a function nothing calls.
+
+-- fixture.json --
+{
+  "symbols": {
+    "refused.Unwrap": { "file": "target/refusal.go", "line": 23 },
+    "banned.Unwrap": { "file": "target/refusal.go", "line": 31 },
+    "rejected.Unwrap": { "file": "target/refusal.go", "line": 38 },
+    "deadWiden": { "file": "target/refusal.go", "line": 60 }
+  }
+}
+-- target/go.mod --
+module example.com/app
+
+go 1.27.0
+-- target/main.go --
+package main
+
+import "fmt"
+
+func main() {
+	r := turnDown()
+	fmt.Println(fail(classify()), fail(widen(narrow())), r.reason())
+}
+-- target/refusal.go --
+package main
+
+type refusal interface {
+	error
+	code() int
+}
+
+type denial interface {
+	refusal
+	final() bool
+}
+
+type rejection interface {
+	error
+	reason() string
+}
+
+type refused struct{}
+
+func (*refused) Error() string { return "refused" }
+func (*refused) code() int     { return 1 }
+
+func (*refused) Unwrap() error { return nil }
+
+type banned struct{}
+
+func (*banned) Error() string { return "banned" }
+func (*banned) code() int     { return 2 }
+func (*banned) final() bool   { return true }
+
+func (*banned) Unwrap() error { return nil }
+
+type rejected struct{}
+
+func (*rejected) Error() string  { return "rejected" }
+func (*rejected) reason() string { return "quota" }
+
+func (*rejected) Unwrap() error { return nil }
+
+func classify() refusal { return &refused{} }
+
+func narrow() denial { return &banned{} }
+
+func widen(d denial) refusal {
+	if d.final() {
+		return d
+	}
+	return nil
+}
+
+func fail(r refusal) error {
+	if r == nil || r.code() < 0 {
+		return nil
+	}
+	return r
+}
+
+func turnDown() rejection { return &rejected{} }
+
+func deadWiden(r rejection) error { return r }

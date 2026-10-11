@@ -1,0 +1,21 @@
+{
+  "symbols": {
+    "FieldsTitle": { "file": "target/main.ts", "line": 4 },
+    "FieldsBody": { "file": "target/main.ts", "line": 5 },
+    "FieldsExtra": { "file": "target/main.ts", "line": 6 },
+    "PickedLeft": { "file": "target/main.ts", "line": 13 },
+    "PickedRight": { "file": "target/main.ts", "line": 14 },
+    "DraftA": { "file": "target/main.ts", "line": 24 },
+    "DraftB": { "file": "target/main.ts", "line": 25 },
+    "DraftValue": { "file": "target/main.ts", "line": 27 },
+    "OtherX": { "file": "target/main.ts", "line": 34 },
+    "OtherY": { "file": "target/main.ts", "line": 35 },
+    "OtherZ": { "file": "target/main.ts", "line": 36 },
+    "SignalsClosed": { "file": "target/main.ts", "line": 48 },
+    "SignalsOpened": { "file": "target/main.ts", "line": 49 },
+    "DocTitle": { "file": "target/main.ts", "line": 55 },
+    "DocAuthor": { "file": "target/main.ts", "line": 56 },
+    "ModesLight": { "file": "target/main.ts", "line": 71 },
+    "ModesDark": { "file": "target/main.ts", "line": 72 }
+  }
+}

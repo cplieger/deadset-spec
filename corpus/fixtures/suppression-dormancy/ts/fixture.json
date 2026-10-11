@@ -1,0 +1,9 @@
+{
+  "symbols": {
+    "Dead": { "file": "target/main.ts", "line": 5 },
+    "ReadParameterDirective": { "file": "target/main.ts", "line": 9 },
+    "Helper": { "file": "target/main.ts", "line": 10 },
+    "WithheldDirective": { "file": "target/main.ts", "line": 14 },
+    "AlsoDead": { "file": "target/main.ts", "line": 15 }
+  }
+}

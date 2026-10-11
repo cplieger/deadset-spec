@@ -1,0 +1,11 @@
+{
+  "symbols": {
+    "AboveMarkerDirective": { "file": "target/main.ts", "line": 6 },
+    "UnderMarker": { "file": "target/main.ts", "line": 8 },
+    "DecoratedAbove": { "file": "target/main.ts", "line": 12 },
+    "BetweenDirective": { "file": "target/main.ts", "line": 15 },
+    "DecoratedBetween": { "file": "target/main.ts", "line": 16 },
+    "TrailingOnDecorator": { "file": "target/main.ts", "line": 18 },
+    "DecoratedTrailing": { "file": "target/main.ts", "line": 19 }
+  }
+}

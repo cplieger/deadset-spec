@@ -51,12 +51,13 @@ type corpusDocument struct {
 	SubjectShapes corpusSubjectShapes `json:"subject_shapes"`
 }
 
-// corpusSubjectShapes mirrors the subject_shapes block: the two shapes a subject
-// is named under, with every other kind of the finding schema's vocabulary a
-// declaration by omission.
+// corpusSubjectShapes mirrors the subject_shapes block: the three shapes a
+// subject is named under, with every other kind of the finding schema's
+// vocabulary a declaration by omission.
 type corpusSubjectShapes struct {
 	Description string   `json:"description"`
 	Part        []string `json:"part"`
+	Dependency  []string `json:"dependency"`
 	Row         []string `json:"row"`
 }
 
@@ -113,6 +114,8 @@ type expectationDocument struct {
 	ConsumerTests          string                           `json:"consumer_tests"`
 	EntryFiles             []string                         `json:"entry_files"`
 	DisabledConventions    []string                         `json:"disabled_conventions"`
+	Severity               map[string]string                `json:"severity"`
+	SuppressionsInEffect   *int                             `json:"suppressions_in_effect"`
 }
 
 // expectedNote mirrors one notes entry: the note's kind and the directory it names.
@@ -166,6 +169,7 @@ type expectationRow struct {
 	Confidence        string                `json:"confidence"`
 	ReachabilityClass string                `json:"reachability_class"`
 	LivenessRelation  string                `json:"liveness_relation"`
+	Fixability        string                `json:"fixability"`
 	Configurations    []string              `json:"configurations"`
 	RetainedBy        []string              `json:"retained_by"`
 }
@@ -181,6 +185,7 @@ type expectationDetails struct {
 	Replacement        string   `json:"replacement"`
 	Mechanism          string   `json:"mechanism"`
 	Edge               string   `json:"edge"`
+	NameLiteral        string   `json:"name_literal"`
 }
 
 // expectationComponent mirrors the component members a row pins. Each member is a
@@ -208,6 +213,7 @@ func (row expectationRow) namedDetails() []string {
 		"edge":                row.Details.Edge != "",
 		"excluded_by":         row.Details.ExcludedBy != "",
 		"mechanism":           row.Details.Mechanism != "",
+		"name_literal":        row.Details.NameLiteral != "",
 		"narrower_visibility": row.Details.NarrowerVisibility != "",
 		"overlap":             len(row.Details.Overlap) > 0,
 		"replacement":         row.Details.Replacement != "",
@@ -225,8 +231,9 @@ func (row expectationRow) namedDetails() []string {
 // manifestDocument mirrors a rendering's fixture.json. Line is a pointer so
 // an absent line is distinguishable from line zero.
 type manifestDocument struct {
-	Symbols        map[string]manifestPosition `json:"symbols"`
-	Configurations []string                    `json:"configurations"`
+	Symbols                map[string]manifestPosition `json:"symbols"`
+	Configurations         []string                    `json:"configurations"`
+	ConfigurationsNotBuilt []string                    `json:"configurations_not_built"`
 }
 
 type manifestPosition struct {
@@ -266,6 +273,9 @@ var (
 	errMatrixUnordered  = errors.New("rendering declares its build matrix out of order")
 	errMatrixUnused     = errors.New("rendering declares a build matrix no expectation names and no closed-world declaration configures")
 	errMatrixUndeclared = errors.New("expectation file declares the build matrix complete and the rendering declares no build matrix")
+	errNotBuiltOrder    = errors.New("rendering lists the configurations it drops out of bytewise order or twice")
+	errNotBuiltBuilt    = errors.New("rendering lists a configuration as dropped and as built")
+	errNotBuiltDeclared = errors.New("rendering drops a configuration of a matrix the expectation file declares complete")
 
 	semverPattern = regexp.MustCompile(`^([0-9]+)\.[0-9]+\.[0-9]+$`)
 
@@ -275,7 +285,7 @@ var (
 
 	// vocabularyFields are the expectation-file fields corpus.json must name
 	// a closed vocabulary for.
-	vocabularyFields = []string{"confidence", "details", "languages", "notes", "reachability_class", "report", "retained_by", "setup_failure", "symbol_kind"}
+	vocabularyFields = []string{"confidence", "details", "fixability", "languages", "notes", "reachability_class", "report", "retained_by", "setup_failure", "symbol_kind"}
 )
 
 // decodeStrict decodes one JSON object, failing on any key the target type
@@ -467,16 +477,13 @@ func enumAt(schema map[string]any, p string) []string {
 	return out
 }
 
-// resolveExpectations maps every logical name the expectation file uses
-// through the manifest to a file and a line, and returns one entry per name that
-// resolves to a position. A name the expectation file's configured_roots member
-// declares resolves to the configured entry instead and so to no position, which
-// is what the runner rule states: a finding about a configured root is positioned
-// in the configuration document the runner wrote and is answered by its subject.
-// It fails on a name used twice, a name neither document carries, an entry
-// without a file or a line, a manifest name no expectation uses, a configured
-// root no expectation uses, and a name both documents carry; every error names
-// the logical name.
+// resolveExpectations maps every logical name the expectation file uses through
+// the manifest to a file and a line. A configured root or configured declaration
+// resolves to no position: a finding about it sits in the configuration document
+// the runner wrote and is answered by its subject. It fails, naming the logical
+// name, on a name used twice or carried by neither or both documents, an entry
+// without a file or a line, a manifest name, configured root or configured
+// declaration no expectation uses, and two names at one position.
 func resolveExpectations(expect *expectationDocument, manifest manifestDocument) (map[string]symbolPosition, error) {
 	positions := make(map[string]symbolPosition, len(expect.Expect))
 	expected := make(map[string]bool, len(expect.Expect))
@@ -497,6 +504,28 @@ func resolveExpectations(expect *expectationDocument, manifest manifestDocument)
 		entry, ok := manifest.Symbols[name]
 		switch {
 		case rowNames[name]:
+			errs = append(errs, fmt.Errorf("%w: %q", errDuplicateSymbol, name))
+		case !ok:
+			errs = append(errs, fmt.Errorf("%w: %q", errUnboundSymbol, name))
+		case entry.File == "":
+			errs = append(errs, fmt.Errorf("%w: %q", errNoFile, name))
+		case entry.Line == nil || *entry.Line < 1:
+			errs = append(errs, fmt.Errorf("%w: %q", errNoLine, name))
+		default:
+			expected[name] = true
+			positions[name] = symbolPosition{File: entry.File, Line: *entry.Line}
+		}
+	}
+	literals := map[string]bool{}
+	for _, row := range expect.Expect {
+		if row.Details == nil || row.Details.NameLiteral == "" || literals[row.Details.NameLiteral] {
+			continue
+		}
+		name := row.Details.NameLiteral
+		literals[name] = true
+		entry, ok := manifest.Symbols[name]
+		switch {
+		case expected[name]:
 			errs = append(errs, fmt.Errorf("%w: %q", errDuplicateSymbol, name))
 		case !ok:
 			errs = append(errs, fmt.Errorf("%w: %q", errUnboundSymbol, name))
@@ -577,18 +606,17 @@ func resolveExpectations(expect *expectationDocument, manifest manifestDocument)
 	return positions, nil
 }
 
-// checkConfigurations resolves every expectation's configuration list against
-// the build matrix one rendering declares. A rendering declares the matrix a
-// run derives from it and an expectation names configurations from that list,
-// in the matrix's own order, so the two documents cannot drift into naming
-// different configurations for one finding; a rendering that declares no matrix
-// answers no expectation that names one, and a matrix no expectation names is a
-// declaration with no reader.
 // closedWorldMatrix is the fact an expectation file names to have the runner
 // configure the rendering's own matrix and declare it complete, which is the one
 // declaration under which a file no configuration builds is a finding.
 const closedWorldMatrix = "matrix"
 
+// checkConfigurations resolves every expectation's configuration list against
+// the bytewise-ordered build matrix one rendering declares: each listed
+// configuration is in the matrix and in its order, so the two documents cannot
+// drift. A rendering with no matrix answers no row that names one and cannot
+// carry the closedWorldMatrix fact, and a matrix that no row names and no such
+// fact configures has no reader.
 func checkConfigurations(expect *expectationDocument, language string, matrix []string) []error {
 	var errs []error
 	if len(matrix) > 0 && !slices.IsSorted(matrix) {
@@ -622,6 +650,30 @@ func checkConfigurations(expect *expectationDocument, language string, matrix []
 	}
 	if len(matrix) == 0 && configured {
 		errs = append(errs, fmt.Errorf("%w: rendering %q", errMatrixUndeclared, language))
+	}
+	return errs
+}
+
+// checkConfigurationsNotBuilt holds a rendering's configurations_not_built to
+// fixture.schema.json: each identifier once and in bytewise order, so a runner
+// compares it with the report's array as a list, none also in the built matrix,
+// and none at all where the expectation file declares the matrix complete,
+// because only a derived configuration is dropped.
+func checkConfigurationsNotBuilt(expect *expectationDocument, language string, built, dropped []string) []error {
+	var errs []error
+	for i := 1; i < len(dropped); i++ {
+		if dropped[i-1] >= dropped[i] {
+			errs = append(errs, fmt.Errorf("%w: rendering %q lists %q", errNotBuiltOrder, language, dropped))
+			break
+		}
+	}
+	for _, id := range dropped {
+		if slices.Contains(built, id) {
+			errs = append(errs, fmt.Errorf("%w: rendering %q lists %q", errNotBuiltBuilt, language, id))
+		}
+	}
+	if len(dropped) > 0 && slices.Contains(expect.ClosedWorld, closedWorldMatrix) {
+		errs = append(errs, fmt.Errorf("%w: rendering %q lists %q", errNotBuiltDeclared, language, dropped))
 	}
 	return errs
 }
@@ -765,6 +817,7 @@ func checkRendering(expect *expectationDocument, language string, files map[stri
 		return fmt.Errorf("rendering %q: %w", language, err)
 	}
 	errs := checkConfigurations(expect, language, manifest.Configurations)
+	errs = append(errs, checkConfigurationsNotBuilt(expect, language, manifest.Configurations, manifest.ConfigurationsNotBuilt)...)
 	errs = append(errs, checkEdgeEvaluations(expect, language, files)...)
 	errs = append(errs, checkInstalledPackages(language, files)...)
 	for _, name := range slices.Sorted(maps.Keys(positions)) {
@@ -799,8 +852,11 @@ func checkRendering(expect *expectationDocument, language string, files map[stri
 }
 
 // installedDir is the directory a TypeScript rendering carries its installed
-// packages in, which the runner renames node_modules.
+// packages in, at the rendering root or inside the target directory, which the
+// runner renames node_modules in either place.
 const installedDir = "installed"
+
+var installedPrefixes = []string{installedDir + "/", targetDir + "/" + installedDir + "/"}
 
 // checkInstalledPackages holds an installed tree to the layout corpus.json states:
 // only a TypeScript rendering carries one, and every manifest below it names the
@@ -808,7 +864,12 @@ const installedDir = "installed"
 func checkInstalledPackages(language string, files map[string][]byte) []error {
 	var errs []error
 	for _, name := range slices.Sorted(maps.Keys(files)) {
-		rest, below := strings.CutPrefix(name, installedDir+"/")
+		var rest string
+		below := slices.ContainsFunc(installedPrefixes, func(prefix string) bool {
+			var ok bool
+			rest, ok = strings.CutPrefix(name, prefix)
+			return ok
+		})
 		if !below {
 			continue
 		}
@@ -1089,14 +1150,14 @@ func TestCorpusDocument(t *testing.T) {
 	t.Run("subject_shapes", func(t *testing.T) {
 		shapes := doc.SubjectShapes
 		if shapes.Description == "" {
-			t.Errorf("subject_shapes.description = %q, want the three shapes stated", shapes.Description)
+			t.Errorf("subject_shapes.description = %q, want the four shapes stated", shapes.Description)
 		}
 		vocabulary := enumAt(loadFindingSchema(t), "properties/symbol/properties/kind")
 		if len(vocabulary) == 0 {
 			t.Fatalf("Setup: %s declares no symbol.kind vocabulary", findingSchemaPath)
 		}
 		named := map[string]string{}
-		for shape, kinds := range map[string][]string{"part": shapes.Part, "row": shapes.Row} {
+		for shape, kinds := range map[string][]string{"part": shapes.Part, "dependency": shapes.Dependency, "row": shapes.Row} {
 			if len(kinds) == 0 {
 				t.Errorf("subject_shapes.%s = %v, want the kinds of that shape", shape, kinds)
 			}
@@ -1118,7 +1179,7 @@ func TestCorpusDocument(t *testing.T) {
 		// is classified rather than silently read as a declaration.
 		for _, kind := range findingRelationAbsentKinds(t) {
 			if named[kind] == "" {
-				t.Errorf("%s lists %q as carrying no liveness relation and subject_shapes names it under neither part nor row", findingSchemaPath, kind)
+				t.Errorf("%s lists %q as carrying no liveness relation and subject_shapes names it under none of part, dependency and row", findingSchemaPath, kind)
 			}
 		}
 	})
@@ -1190,18 +1251,13 @@ func corpusFixtureNames(t *testing.T) []string {
 	return names
 }
 
-// TestCorpusVersionMovesWithTheFixtureSetAndTheExpectationMembers enforces the
-// rule corpus.json states for itself and could not check: the minor number moves
-// when a fixture or a field is added. The baseline records the three sets at the
-// version it names, so a fixture directory, a fixture-level member or an
-// expectation-row member added while the published version stays where the
-// baseline left it fails here, and moving the version and rewriting the baseline
-// in one change is the green path.
-//
-// The three sets are the ones a version bump is decidable from. A change to a
-// description or to a runner rule moves the version too and leaves this document
-// alone, which is why the check is an equality over sets rather than a digest of
-// the corpus.
+// TestCorpusVersionMovesWithTheFixtureSetAndTheExpectationMembers pins
+// corpus_version, the fixture directories and the members of the expectation and
+// fixture schemas to the committed baseline: the two name the same version, and a
+// fixture or a member added or removed fails until the baseline is rewritten.
+// Whether that change also moves the version is corpus.json's rule, which no
+// comparison here can decide. The check is an equality over sets rather than a
+// digest of the corpus, so a description or runner-rule edit never trips it.
 func TestCorpusVersionMovesWithTheFixtureSetAndTheExpectationMembers(t *testing.T) {
 	doc := loadCorpus(t)
 	baseline := loadCorpusBaseline(t)
@@ -1211,8 +1267,8 @@ func TestCorpusVersionMovesWithTheFixtureSetAndTheExpectationMembers(t *testing.
 			corpusBaselinePath, baseline.CorpusVersion, corpusPath, doc.CorpusVersion, corpusBaselinePath)
 	}
 	if got := corpusFixtureNames(t); !slices.Equal(got, baseline.Fixtures) {
-		t.Errorf("%s holds the fixtures %v and %s records %v at corpus_version %q: a fixture added or removed moves the version, so move it in %s and rewrite %s in one change",
-			fixturesDir, got, corpusBaselinePath, baseline.Fixtures, doc.CorpusVersion, corpusPath, corpusBaselinePath)
+		t.Errorf("%s holds the fixtures %v and %s records %v at corpus_version %q: a fixture added or removed fails until %s records it, so rewrite it, moving the version in %s in the same change unless it already stands above the last release by that level",
+			fixturesDir, got, corpusBaselinePath, baseline.Fixtures, doc.CorpusVersion, corpusBaselinePath, corpusPath)
 	}
 	schema := loadSchema(t, spec.Corpus, expectSchemaPath)
 	fixtureMembers := objectAt(schema, "properties")
@@ -1220,32 +1276,32 @@ func TestCorpusVersionMovesWithTheFixtureSetAndTheExpectationMembers(t *testing.
 		t.Fatalf("Setup: %s properties is not an object", expectSchemaPath)
 	}
 	if got := slices.Sorted(maps.Keys(fixtureMembers)); !slices.Equal(got, baseline.FixtureMembers) {
-		t.Errorf("%s declares the fixture members %v and %s records %v at corpus_version %q: a member added or removed moves the version, so move it in %s and rewrite %s in one change",
-			expectSchemaPath, got, corpusBaselinePath, baseline.FixtureMembers, doc.CorpusVersion, corpusPath, corpusBaselinePath)
+		t.Errorf("%s declares the fixture members %v and %s records %v at corpus_version %q: a member added or removed fails until %s records it, so rewrite it, moving the version in %s in the same change unless it already stands above the last release by that level",
+			expectSchemaPath, got, corpusBaselinePath, baseline.FixtureMembers, doc.CorpusVersion, corpusBaselinePath, corpusPath)
 	}
 	members := objectAt(schema, expectSchemaRowPath+"/properties")
 	if members == nil {
 		t.Fatalf("Setup: %s %s/properties is not an object", expectSchemaPath, expectSchemaRowPath)
 	}
 	if got := slices.Sorted(maps.Keys(members)); !slices.Equal(got, baseline.ExpectationMembers) {
-		t.Errorf("%s declares the expectation members %v and %s records %v at corpus_version %q: a member added or removed moves the version, so move it in %s and rewrite %s in one change",
-			expectSchemaPath, got, corpusBaselinePath, baseline.ExpectationMembers, doc.CorpusVersion, corpusPath, corpusBaselinePath)
+		t.Errorf("%s declares the expectation members %v and %s records %v at corpus_version %q: a member added or removed fails until %s records it, so rewrite it, moving the version in %s in the same change unless it already stands above the last release by that level",
+			expectSchemaPath, got, corpusBaselinePath, baseline.ExpectationMembers, doc.CorpusVersion, corpusBaselinePath, corpusPath)
 	}
 	details := objectAt(schema, expectSchemaDetailsPath+"/properties")
 	if details == nil {
 		t.Fatalf("Setup: %s %s/properties is not an object", expectSchemaPath, expectSchemaDetailsPath)
 	}
 	if got := slices.Sorted(maps.Keys(details)); !slices.Equal(got, baseline.DetailsMembers) {
-		t.Errorf("%s declares the details members %v and %s records %v at corpus_version %q: a member added or removed moves the version, so move it in %s and rewrite %s in one change",
-			expectSchemaPath, got, corpusBaselinePath, baseline.DetailsMembers, doc.CorpusVersion, corpusPath, corpusBaselinePath)
+		t.Errorf("%s declares the details members %v and %s records %v at corpus_version %q: a member added or removed fails until %s records it, so rewrite it, moving the version in %s in the same change unless it already stands above the last release by that level",
+			expectSchemaPath, got, corpusBaselinePath, baseline.DetailsMembers, doc.CorpusVersion, corpusBaselinePath, corpusPath)
 	}
 	manifest := objectAt(loadSchema(t, spec.Corpus, fixtureSchemaPath), "properties")
 	if manifest == nil {
 		t.Fatalf("Setup: %s properties is not an object", fixtureSchemaPath)
 	}
 	if got := slices.Sorted(maps.Keys(manifest)); !slices.Equal(got, baseline.ManifestMembers) {
-		t.Errorf("%s declares the manifest members %v and %s records %v at corpus_version %q: a member added or removed moves the version, so move it in %s and rewrite %s in one change",
-			fixtureSchemaPath, got, corpusBaselinePath, baseline.ManifestMembers, doc.CorpusVersion, corpusPath, corpusBaselinePath)
+		t.Errorf("%s declares the manifest members %v and %s records %v at corpus_version %q: a member added or removed fails until %s records it, so rewrite it, moving the version in %s in the same change unless it already stands above the last release by that level",
+			fixtureSchemaPath, got, corpusBaselinePath, baseline.ManifestMembers, doc.CorpusVersion, corpusBaselinePath, corpusPath)
 	}
 }
 
@@ -1290,6 +1346,7 @@ func TestExpectSchemaEnumsAreTheContractVocabularies(t *testing.T) {
 		{name: "languages", at: "properties/languages/items", want: kinds.Languages},
 		{name: "confidence", at: "properties/expect/items/properties/confidence", want: kinds.ReachabilityClasses},
 		{name: "reachability_class", at: "properties/expect/items/properties/reachability_class", want: kinds.ReachabilityClasses},
+		{name: "fixability", at: "properties/expect/items/properties/fixability", want: kinds.Fixabilities},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -1462,6 +1519,23 @@ func TestResolveExpectationsBinds(t *testing.T) {
 			manifest: manifestDocument{Symbols: map[string]manifestPosition{"PlainDead": {File: "target/main.ts", Line: line(12)}}},
 			want:     map[string]symbolPosition{"PlainDead": {File: "target/main.ts", Line: 12}},
 		},
+		{
+			name: "a_name_literal_two_rows_share",
+			expect: expectationDocument{Expect: []expectationRow{
+				{Symbol: "Spelled", Report: "DS1002", Confidence: "possible", Details: &expectationDetails{NameLiteral: "SpelledLiteral"}},
+				{Symbol: "SpelledToo", Report: "DS1002", Confidence: "possible", Details: &expectationDetails{NameLiteral: "SpelledLiteral"}},
+			}},
+			manifest: manifestDocument{Symbols: map[string]manifestPosition{
+				"Spelled":        {File: "target/a.go", Line: line(3)},
+				"SpelledToo":     {File: "target/a.go", Line: line(4)},
+				"SpelledLiteral": {File: "target/b.go", Line: line(7)},
+			}},
+			want: map[string]symbolPosition{
+				"Spelled":        {File: "target/a.go", Line: 3},
+				"SpelledToo":     {File: "target/a.go", Line: 4},
+				"SpelledLiteral": {File: "target/b.go", Line: 7},
+			},
+		},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -1589,6 +1663,39 @@ func TestResolveExpectationsRefuses(t *testing.T) {
 			wantSymbol: "AbsentEntry",
 		},
 		{
+			name: "name_literal_absent_from_manifest",
+			expect: expectationDocument{Expect: []expectationRow{
+				{Symbol: "Spelled", Report: "DS1002", Confidence: "possible", Details: &expectationDetails{NameLiteral: "SpelledLiteral"}},
+			}},
+			manifest:   manifestDocument{Symbols: map[string]manifestPosition{"Spelled": {File: "target/a.go", Line: line(3)}}},
+			wantErr:    errUnboundSymbol,
+			wantSymbol: "SpelledLiteral",
+		},
+		{
+			name: "name_literal_a_row_names_as_its_subject",
+			expect: expectationDocument{Expect: []expectationRow{
+				{Symbol: "Spelled", Report: "DS1002", Confidence: "possible", Details: &expectationDetails{NameLiteral: "Spelled"}},
+			}},
+			manifest:   manifestDocument{Symbols: map[string]manifestPosition{"Spelled": {File: "target/a.go", Line: line(3)}}},
+			wantErr:    errDuplicateSymbol,
+			wantSymbol: "Spelled",
+		},
+		{
+			name: "name_literal_a_type_error_names_as_well",
+			expect: expectationDocument{
+				TypeErrorSkips: []string{"Broken"},
+				Expect: []expectationRow{
+					{Symbol: "Spelled", Report: "DS1002", Confidence: "possible", Details: &expectationDetails{NameLiteral: "Broken"}},
+				},
+			},
+			manifest: manifestDocument{Symbols: map[string]manifestPosition{
+				"Spelled": {File: "target/a.go", Line: line(3)},
+				"Broken":  {File: "target/b.go", Line: line(5)},
+			}},
+			wantErr:    errDuplicateSymbol,
+			wantSymbol: "Broken",
+		},
+		{
 			name: "logical_name_expected_twice",
 			expect: expectationDocument{Expect: []expectationRow{
 				{Symbol: "DeadExport", Report: "DS1001", Confidence: "certain"},
@@ -1597,6 +1704,18 @@ func TestResolveExpectationsRefuses(t *testing.T) {
 			manifest:   manifestDocument{Symbols: map[string]manifestPosition{"DeadExport": {File: "target/dead.go", Line: line(5)}}},
 			wantErr:    errDuplicateSymbol,
 			wantSymbol: "DeadExport",
+		},
+		{
+			name: "a_name_literal_at_a_reported_position",
+			expect: expectationDocument{Expect: []expectationRow{
+				{Symbol: "Spelled", Report: "DS1002", Confidence: "possible", Details: &expectationDetails{NameLiteral: "SpelledLiteral"}},
+			}},
+			manifest: manifestDocument{Symbols: map[string]manifestPosition{
+				"Spelled":        {File: "target/a.go", Line: line(3)},
+				"SpelledLiteral": {File: "target/a.go", Line: line(3)},
+			}},
+			wantErr:    errSharedPosition,
+			wantSymbol: "SpelledLiteral",
 		},
 	}
 	for _, tc := range cases {
@@ -2358,14 +2477,12 @@ var languageNames = map[string]string{"Go": "go", "TypeScript": "ts"}
 var languageNamePattern = regexp.MustCompile(`\b(Go|TypeScript)\b`)
 
 // subjectKindLanguages reads, from the symbol.kind description of
-// contract/finding.schema.json, the language each subject kind belongs to when
-// only one language declares a subject of that kind. The description lists one
-// clause per value, the value and then the subject it names, and a clause naming
-// one language and not the other is that language's kind; a clause naming both,
-// or "either language", or no language at all, is a kind every language declares
-// and is absent from the result. The clauses must name every value of the
-// vocabulary exactly once, so a value the schema gains is read rather than
-// silently taken for a kind of every language.
+// contract/finding.schema.json, the language of each subject kind only one
+// language declares. Each clause names a value and its subject: one naming a
+// single language is that language's kind, and one naming both, "either
+// language" or none is a kind of every language and absent from the result. The
+// clauses must name every vocabulary value exactly once, so a new value is read
+// rather than silently taken for a kind of every language.
 func subjectKindLanguages(t *testing.T) map[string]string {
 	t.Helper()
 	kind := objectAt(loadFindingSchema(t), "properties/symbol/properties/kind")
@@ -2483,6 +2600,15 @@ func TestCorpusRowsNameASubjectKindEveryListedLanguageDeclares(t *testing.T) {
 // field of a language-neutral expectation does, so such a member has no form on
 // an expectation row.
 var findingDetailsRefs = []string{"#/$defs/position", "#/$defs/positioned_symbol", "#/$defs/symbol_reference"}
+
+// logicalPositionDetails are the details members whose value is one position that a
+// row spells as a logical name of the rendering's manifest, which every rendering
+// binds to its own file and line.
+var logicalPositionDetails = []string{"name_literal"}
+
+// logicalNamePattern is the shape of a fixture-local logical name, as the
+// expectation schema's symbol member declares it.
+const logicalNamePattern = `^[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z_][A-Za-z0-9_]*)*$`
 
 // refValues lists every $ref value the schema declares, at any depth.
 func refValues(node any) []string {
@@ -2755,6 +2881,24 @@ func TestExpectSchemaDetailsMirrorsTheFindingSchema(t *testing.T) {
 		t.Fatalf("Setup: %s %s is not an object", expectSchemaPath, expectSchemaRowPath)
 	}
 	mirrored := armCodes(row["allOf"], "report", false)
+	bound := armCodes(finding["allOf"], "code", true)
+	for _, member := range logicalPositionDetails {
+		codes, ok := bound[member]
+		if !ok {
+			t.Fatalf("Setup: %s binds details.%s to no code, want the codes whose finding carries it", findingSchemaPath, member)
+		}
+		t.Run(subtestName(member)+"_is_a_logical_name", func(t *testing.T) {
+			if got := mirrored[member]; !slices.Equal(got, codes) {
+				t.Errorf("%s binds details.%s to %v and %s binds it to %v, want the same codes", expectSchemaPath, member, got, findingSchemaPath, codes)
+			}
+			got := withoutDescriptions(objectAt(expect, expectSchemaDetailsPath+"/properties/"+member))
+			want := map[string]any{"type": "string", "pattern": logicalNamePattern}
+			if !reflect.DeepEqual(got, want) {
+				t.Errorf("%s declares details.%s as %s, want %s, a logical name and nothing else", expectSchemaPath, member, asJSON(t, got), asJSON(t, want))
+			}
+		})
+		delete(mirrored, member)
+	}
 
 	t.Run("members", func(t *testing.T) {
 		got, want := slices.Sorted(maps.Keys(mirrored)), slices.Sorted(maps.Keys(admitted))
@@ -3364,6 +3508,104 @@ func TestCorpusInstalledPackagesNameTheirPath(t *testing.T) {
 	if got := checkInstalledPackages("go", files); len(got) == 0 {
 		t.Errorf("checkInstalledPackages(go, an installed tree) = none, want it refused")
 	}
+	inTarget := map[string][]byte{"target/installed/@example/tool/package.json": []byte(`{"name": "@example/tool", "private": true}`)}
+	if got := checkInstalledPackages("ts", inTarget); len(got) != 0 {
+		t.Errorf("checkInstalledPackages(ts, a tree inside the target) = %v, want none", got)
+	}
+	inTarget["target/installed/@example/tool/package.json"] = []byte(`{"name": "@example/other", "private": true}`)
+	if got := checkInstalledPackages("ts", inTarget); len(got) == 0 {
+		t.Errorf("checkInstalledPackages(ts, a manifest inside the target naming another package) = none, want it refused")
+	}
+	if got := checkInstalledPackages("go", map[string][]byte{"target/installed/tool/package.json": []byte(`{"name": "tool", "private": true}`)}); len(got) == 0 {
+		t.Errorf("checkInstalledPackages(go, a tree inside the target) = none, want it refused")
+	}
+}
+
+func TestCheckConfigurationsNotBuilt(t *testing.T) {
+	derived := expectationDocument{}
+	complete := expectationDocument{ClosedWorld: []string{closedWorldMatrix}}
+	built := []string{"linux-amd64"}
+	cases := []struct {
+		name    string
+		expect  *expectationDocument
+		dropped []string
+		wantErr error
+	}{
+		{name: "absent", expect: &derived, dropped: nil},
+		{name: "empty", expect: &derived, dropped: []string{}},
+		{name: "bytewise_order", expect: &derived, dropped: []string{"linux-amd64-legacy", "linux-amd64-race"}},
+		{name: "out_of_order", expect: &derived, dropped: []string{"linux-amd64-race", "linux-amd64-legacy"}, wantErr: errNotBuiltOrder},
+		{name: "named_twice", expect: &derived, dropped: []string{"linux-amd64-legacy", "linux-amd64-legacy"}, wantErr: errNotBuiltOrder},
+		{name: "dropped_and_built", expect: &derived, dropped: []string{"linux-amd64"}, wantErr: errNotBuiltBuilt},
+		{name: "empty_under_a_complete_matrix", expect: &complete, dropped: []string{}},
+		{name: "dropped_under_a_complete_matrix", expect: &complete, dropped: []string{"linux-amd64-legacy"}, wantErr: errNotBuiltDeclared},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			got := checkConfigurationsNotBuilt(tc.expect, "go", built, tc.dropped)
+			if tc.wantErr == nil {
+				if len(got) != 0 {
+					t.Errorf("checkConfigurationsNotBuilt(%q) = %v, want nil", tc.dropped, got)
+				}
+				return
+			}
+			if len(got) != 1 || !errors.Is(got[0], tc.wantErr) {
+				t.Errorf("checkConfigurationsNotBuilt(%q) = %v, want one error wrapping %v", tc.dropped, got, tc.wantErr)
+			}
+		})
+	}
+}
+
+func TestExpectSchemaFixabilityBindsToAReportedFinding(t *testing.T) {
+	cases := []struct {
+		name string
+		row  string
+		want string
+	}{
+		{
+			name: "a_reported_row_pins_its_fixability",
+			row:  `{"symbol":"Ledger","report":"DS1002","confidence":"certain","fixability":"manual"}`,
+		},
+		{
+			name: "a_value_outside_the_vocabulary",
+			row:  `{"symbol":"Ledger","report":"DS1002","confidence":"certain","fixability":"removable"}`,
+			want: "/expect/0/fixability",
+		},
+		{
+			name: "an_unreported_subject_may_not_pin_a_fixability",
+			row:  `{"symbol":"Ledger","report":"none","fixability":"deletable"}`,
+			want: "/expect/0",
+		},
+		{
+			name: "a_stale_suppression_row_may_not_pin_a_fixability",
+			row:  `{"symbol":"StaleEntry","report":"DS1703","confidence":"certain","details":{"mechanism":"ignore"},"fixability":"none"}`,
+			want: "/expect/0",
+		},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			document := `{"name":"planted","description":"One planted expectation.","languages":["go"],"target_kind":"application","expect":[` + tc.row + `]}`
+			problems, err := validationProblems(expectSchemaPath, []byte(document))
+			if err != nil {
+				t.Fatalf("Setup: validationProblems(%q, %s): %v", expectSchemaPath, tc.name, err)
+			}
+			if tc.want == "" {
+				if len(problems) != 0 {
+					t.Errorf("validationProblems(%q, %s) = %v, want no violation", expectSchemaPath, tc.name, problems)
+				}
+				return
+			}
+			named := false
+			for _, problem := range problems {
+				if problem.InstanceLocation == tc.want {
+					named = true
+				}
+			}
+			if !named {
+				t.Errorf("validationProblems(%q, %s) = %v, want a violation at %q", expectSchemaPath, tc.name, problems, tc.want)
+			}
+		})
+	}
 }
 
 // missingConsumerClass is the setup-failure class whose fixture renders a declared consumer as absent.
@@ -3409,6 +3651,8 @@ func checkSetupFailure(expect *expectationDocument) []error {
 		"consumer_tests":          expect.ConsumerTests != "",
 		"entry_files":             len(expect.EntryFiles) != 0,
 		"disabled_conventions":    len(expect.DisabledConventions) != 0,
+		"severity":                len(expect.Severity) != 0,
+		"suppressions_in_effect":  expect.SuppressionsInEffect != nil,
 	}
 	for _, member := range slices.Sorted(maps.Keys(reportMembers)) {
 		if reportMembers[member] {
@@ -3416,6 +3660,30 @@ func checkSetupFailure(expect *expectationDocument) []error {
 		}
 	}
 	return errs
+}
+
+func TestCheckSetupFailureRefusesTheMembersThatConfigureARun(t *testing.T) {
+	count := 0
+	cases := []struct {
+		plant  func(*expectationDocument)
+		member string
+	}{
+		{member: "severity", plant: func(d *expectationDocument) { d.Severity = map[string]string{"DS1002": "allow"} }},
+		{member: "suppressions_in_effect", plant: func(d *expectationDocument) { d.SuppressionsInEffect = &count }},
+	}
+	for _, tc := range cases {
+		t.Run(tc.member, func(t *testing.T) {
+			doc := expectationDocument{SetupFailure: &expectedSetupFailure{Class: "missing-module", Names: []string{"example.com/dep"}}}
+			if got := checkSetupFailure(&doc); len(got) != 0 {
+				t.Fatalf("checkSetupFailure(setup failure alone) = %v, want nil so the plant below is the one cause", got)
+			}
+			tc.plant(&doc)
+			got := checkSetupFailure(&doc)
+			if len(got) != 1 || !strings.Contains(got[0].Error(), tc.member) {
+				t.Errorf("checkSetupFailure(setup failure beside %s) = %v, want one error naming %s", tc.member, got, tc.member)
+			}
+		})
+	}
 }
 
 // checkConventionsLanguage holds a fixture naming conventions_applied to the one language the

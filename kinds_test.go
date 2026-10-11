@@ -55,18 +55,19 @@ type codeRange struct {
 }
 
 type kindRow struct {
-	DefaultEnabled  *bool               `json:"default_enabled"`
-	Fixed           *bool               `json:"fixed"`
-	Overlap         map[string][]string `json:"overlap"`
-	Code            string              `json:"code"`
-	Name            string              `json:"name"`
-	Rule            string              `json:"rule"`
-	DefaultSeverity string              `json:"default_severity"`
-	MaxClass        string              `json:"max_class"`
-	Fixability      string              `json:"fixability"`
-	Precondition    string              `json:"precondition"`
-	Languages       []string            `json:"languages"`
-	DerivedFrom     []string            `json:"derived_from"`
+	DefaultEnabled      *bool               `json:"default_enabled"`
+	Fixed               *bool               `json:"fixed"`
+	Overlap             map[string][]string `json:"overlap"`
+	Code                string              `json:"code"`
+	Name                string              `json:"name"`
+	Rule                string              `json:"rule"`
+	DefaultSeverity     string              `json:"default_severity"`
+	MaxClass            string              `json:"max_class"`
+	Fixability          string              `json:"fixability"`
+	Precondition        string              `json:"precondition"`
+	Languages           []string            `json:"languages"`
+	DerivedFrom         []string            `json:"derived_from"`
+	FindingFixabilities []string            `json:"finding_fixabilities"`
 }
 
 // retiredKind mirrors a row of the retired list, which carries the code and
@@ -364,6 +365,44 @@ func TestKindsNarrowedRowsCarryAPrecondition(t *testing.T) {
 				t.Errorf("Kind(%s).precondition = %q, want a non-empty condition", code, doc.Kinds[i].Precondition)
 			}
 		})
+	}
+}
+
+// heldDeclarationKinds are the rows whose subject is a declaration that can
+// be a positional member or a declaration one holds, so a finding of the kind
+// may carry manual in place of its own fixability.
+var heldDeclarationKinds = []string{"DS1001", "DS1002", "DS1003", "DS1004", "DS1005", "DS1006", "DS1103", "DS1201", "DS1302"}
+
+func TestKindsFindingFixabilitiesAreAlternatives(t *testing.T) {
+	doc := loadKinds(t)
+	var carrying []string
+	for _, k := range doc.Kinds {
+		if k.FindingFixabilities == nil {
+			continue
+		}
+		carrying = append(carrying, k.Code)
+		t.Run(k.Code, func(t *testing.T) {
+			if len(k.FindingFixabilities) == 0 {
+				t.Errorf("Kind(%s).finding_fixabilities = [], want the member absent or non-empty", k.Code)
+			}
+			seen := map[string]bool{}
+			for _, f := range k.FindingFixabilities {
+				switch {
+				case !slices.Contains(doc.Fixabilities, f):
+					t.Errorf("Kind(%s).finding_fixabilities contains %q, want one of %v", k.Code, f, doc.Fixabilities)
+				case f == k.Fixability:
+					t.Errorf("Kind(%s).finding_fixabilities contains %q, want only values other than the row's own fixability", k.Code, f)
+				case f == "none":
+					t.Errorf("Kind(%s).finding_fixabilities contains %q, want no value a generated file's finding carries", k.Code, f)
+				case seen[f]:
+					t.Errorf("Kind(%s).finding_fixabilities lists %q twice, want each value once", k.Code, f)
+				}
+				seen[f] = true
+			}
+		})
+	}
+	if !slices.Equal(carrying, heldDeclarationKinds) {
+		t.Errorf("Kinds(%s) carrying finding_fixabilities = %v, want %v", kindsPath, carrying, heldDeclarationKinds)
 	}
 }
 

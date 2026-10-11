@@ -1,0 +1,21 @@
+One main package with an unexported function nothing calls, carrying a directive for the
+exported code.
+
+-- fixture.json --
+{
+  "symbols": {
+    "WrongCodeDirective": { "file": "target/main.go", "line": 5 },
+    "Unreached": { "file": "target/main.go", "line": 6 }
+  }
+}
+-- target/go.mod --
+module example.com/app
+
+go 1.27.0
+-- target/main.go --
+package main
+
+func main() {}
+
+//deadset:ignore DS1001 -- Named under the wrong code.
+func unreached() int { return 1 }

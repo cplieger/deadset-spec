@@ -1,0 +1,16 @@
+{
+  "symbols": {
+    "PayloadClose": {
+      "file": "target/main.ts",
+      "line": 3
+    },
+    "PayloadIdle": {
+      "file": "target/main.ts",
+      "line": 4
+    },
+    "PayloadOpen": {
+      "file": "target/main.ts",
+      "line": 2
+    }
+  }
+}
