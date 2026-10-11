@@ -1,6 +1,6 @@
 {
   "description": "The fixture set, the fixture-level members, the expectation-row members, the details members a row may pin and the rendering-manifest members of the corpus at the version this document records. The suite compares it with corpus/corpus.json, corpus/fixtures/, corpus/expect.schema.json and corpus/fixture.schema.json on disk, so a fixture or a member of any of those kinds added or removed while the version still names the version recorded here fails until this document records it, and the change that rewrites it moves the version as well unless the version already stands above the last release by the level the change needs. The rule corpus.json states for itself is what this document enforces: the minor number moves when a fixture or an optional field is added. Nothing outside this repository reads it, and no analyzer implements anything on account of it.",
-  "corpus_version": "5.0.0",
+  "corpus_version": "5.1.0",
   "fixtures": [
     "abstract-member-through-this",
     "applied-replace-local-dependency",
@@ -175,6 +175,7 @@
     "satisfaction-assertion-published-interface",
     "satisfies-target-members",
     "serialization-contract-object-types",
+    "serialized-checked-values-and-ambient-callees",
     "serialized-values-stored-as-unknown",
     "serialized-values-stored-in-typed-slots",
     "signature-fixed-by-an-outside-interface",

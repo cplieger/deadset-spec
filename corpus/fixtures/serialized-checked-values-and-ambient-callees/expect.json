@@ -1,0 +1,38 @@
+{
+  "name": "serialized-checked-values-and-ambient-callees",
+  "description": "A value a satisfies expression checks, or an assertion to unknown hides, keeps the data members of the type it is checked against and of its own type where it reaches a destination. A function or method a declaration file declares, a member it merges into a platform interface included, has no body the analysis reads, so a value passed to its unknown parameter keeps its data members. A member of an interface a declaration file declares and a class of the target implements runs that class's code, so a value passed to it that nothing reads keeps nothing, and its member is still reported as written and never read.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "PushedKind",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    },
+    {
+      "symbol": "SmallTiny",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    },
+    {
+      "symbol": "RelayedHop",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    },
+    {
+      "symbol": "HiddenUnread",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member"
+    }
+  ]
+}

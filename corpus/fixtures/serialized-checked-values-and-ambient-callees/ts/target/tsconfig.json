@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "target": "es2023",
+    "lib": ["es2023", "webworker"],
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "strict": true,
+    "noEmit": true
+  },
+  "include": ["**/*.ts"]
+}
