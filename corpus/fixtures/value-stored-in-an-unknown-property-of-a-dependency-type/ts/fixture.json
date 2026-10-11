@@ -1,0 +1,7 @@
+{
+  "symbols": {
+    "CreateName": { "file": "target/main.ts", "line": 4 },
+    "CreateSource": { "file": "target/main.ts", "line": 5 },
+    "UnsentLabel": { "file": "target/main.ts", "line": 13 }
+  }
+}

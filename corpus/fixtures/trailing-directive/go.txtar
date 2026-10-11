@@ -1,0 +1,41 @@
+One main package whose constants carry trailing directives on their own lines, one of them
+under a marker comment, beside a trailing directive after a call on a line where no
+declaration begins.
+
+-- fixture.json --
+{
+  "symbols": {
+    "CallTrailingDirective": { "file": "target/main.go", "line": 8 },
+    "UnusedAfterFunction": { "file": "target/main.go", "line": 13 },
+    "OneLine": { "file": "target/main.go", "line": 15 },
+    "TrailingFirst": { "file": "target/main.go", "line": 17 },
+    "NextLine": { "file": "target/main.go", "line": 18 },
+    "BesideMarker": { "file": "target/main.go", "line": 21 }
+  }
+}
+-- target/go.mod --
+module example.com/app
+
+go 1.27.0
+-- target/main.go --
+package main
+
+func main() { run() }
+
+func setup() {}
+
+func run() {
+	setup() //deadset:ignore DS1002 -- Kept for the generator.
+	local := 1
+	println(local)
+}
+
+const unusedAfter = 2
+
+const pinned = "v1" //deadset:ignore DS1002 -- The generator reads this value from source.
+
+const first = 1 //deadset:ignore DS1002 -- The generator reads this value from source.
+const second = 2
+
+// pin: datasource=git-refs name=example-list
+const listCommit = "v2" //deadset:ignore DS1002 -- The generator reads this value from source.

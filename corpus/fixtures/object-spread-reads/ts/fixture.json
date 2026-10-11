@@ -1,0 +1,13 @@
+{
+  "symbols": {
+    "Counter.count": { "file": "target/counter.ts", "line": 2 },
+    "Counter.label": { "file": "target/counter.ts", "line": 3 },
+    "Counter.doubled": { "file": "target/counter.ts", "line": 4 },
+    "Counter.stale": { "file": "target/counter.ts", "line": 7 },
+    "Gauge.level": { "file": "target/counter.ts", "line": 13 },
+    "Gauge.spent": { "file": "target/counter.ts", "line": 14 },
+    "Shape.side": { "file": "target/counter.ts", "line": 20 },
+    "Shape.area": { "file": "target/counter.ts", "line": 21 },
+    "Sized.size": { "file": "target/counter.ts", "line": 25 }
+  }
+}

@@ -1,0 +1,86 @@
+One published library package asserting three interfaces, one of them named by a consumer as a
+type, and an internal package asserting an exported interface nothing names.
+
+-- fixture.json --
+{
+  "symbols": {
+    "PublishedInterface": { "file": "target/lib.go", "line": 5 },
+    "PublishedInterfaceMethod": { "file": "target/lib.go", "line": 6 },
+    "PublishedAssertion": { "file": "target/lib.go", "line": 27 },
+    "NamedAssertion": { "file": "target/lib.go", "line": 29 },
+    "UnexportedAssertion": { "file": "target/lib.go", "line": 31 },
+    "InternalInterface": { "file": "target/internal/inner/inner.go", "line": 3 },
+    "InternalInterfaceMethod": { "file": "target/internal/inner/inner.go", "line": 4 },
+    "InternalAssertion": { "file": "target/internal/inner/inner.go", "line": 11 }
+  }
+}
+-- target/go.mod --
+module example.com/lib
+
+go 1.27.0
+-- target/lib.go --
+package lib
+
+import "example.com/lib/internal/inner"
+
+type Checker interface {
+	Check() bool
+}
+
+type Named interface {
+	Name() string
+}
+
+type checker interface {
+	check() bool
+}
+
+type Limiter struct{}
+
+func (*Limiter) Check() bool { return true }
+
+func (*Limiter) Name() string { return "limiter" }
+
+func (*Limiter) check() bool { return true }
+
+func (l *Limiter) Probe() bool { return inner.Impl{}.Probe() && l.check() }
+
+var _ Checker = (*Limiter)(nil)
+
+var _ Named = (*Limiter)(nil)
+
+var _ checker = (*Limiter)(nil)
+-- target/internal/inner/inner.go --
+package inner
+
+type Prober interface {
+	Probe() bool
+}
+
+type Impl struct{}
+
+func (Impl) Probe() bool { return true }
+
+var _ Prober = Impl{}
+-- consumer/go.mod --
+module example.com/consumer
+
+go 1.27.0
+
+require example.com/lib v0.0.0
+
+replace example.com/lib => ../target
+-- consumer/main.go --
+package main
+
+import (
+	"fmt"
+
+	"example.com/lib"
+)
+
+func main() {
+	var named lib.Named = &lib.Limiter{}
+	l := &lib.Limiter{}
+	fmt.Println(named.Name(), l.Check(), l.Probe())
+}

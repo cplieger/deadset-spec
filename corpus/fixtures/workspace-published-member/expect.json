@@ -1,0 +1,40 @@
+{
+  "name": "workspace-published-member",
+  "description": "A workspace member of an application whose manifest is not private is a library inside the target: its manifest entries, read back to their source, are its published API, so an export of it nothing uses is reported at the published API's confidence, possible with no consumer information, while its internals and every export of a private member are reported at certain. An import naming the member's package resolves to its source.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "expect": [
+    {
+      "symbol": "used",
+      "report": "none"
+    },
+    {
+      "symbol": "spare",
+      "report": "DS1001",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "unusedInternal",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "helper",
+      "report": "none"
+    },
+    {
+      "symbol": "idle",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    }
+  ]
+}

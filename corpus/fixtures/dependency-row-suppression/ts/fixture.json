@@ -1,0 +1,9 @@
+{
+  "symbols": {
+    "AdjudicatedDependency": { "file": "target/package.json", "line": 8 },
+    "UnadjudicatedDependency": { "file": "target/package.json", "line": 9 },
+    "EntryInEffect": { "file": "target/deadset-ignore.json", "line": 4 },
+    "WrongCodeEntry": { "file": "target/deadset-ignore.json", "line": 10 },
+    "AbsentRowEntry": { "file": "target/deadset-ignore.json", "line": 16 }
+  }
+}

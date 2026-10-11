@@ -11,7 +11,7 @@ import (
 	"testing"
 	"testing/fstest"
 
-	"github.com/cplieger/deadset-spec/v6"
+	"github.com/cplieger/deadset-spec/v7"
 )
 
 const (
@@ -71,6 +71,7 @@ type answer struct {
 	Confidence        string   `json:"confidence"`
 	ReachabilityClass string   `json:"reachability_class"`
 	LivenessRelation  string   `json:"liveness_relation"`
+	Fixability        string   `json:"fixability"`
 }
 
 type suppressionResult struct {
@@ -237,7 +238,7 @@ const plantedResults = `{
         {
           "symbol": "DeadExport",
           "result": "pass",
-          "actual": {"report": "DS1001", "confidence": "certain", "reachability_class": "certain", "liveness_relation": "reference-counting"},
+          "actual": {"report": "DS1001", "confidence": "certain", "reachability_class": "certain", "liveness_relation": "reference-counting", "fixability": "deletable"},
           "suppression": {"suppressed": true, "stale": false}
         },
         {
@@ -305,7 +306,7 @@ func TestConformanceSchemaProperties(t *testing.T) {
 		{name: "results_totals", schema: resultsSchemaPath, at: "properties/totals", want: []string{"fail", "fixtures", "gap", "pass"}},
 		{name: "fixture_row", schema: resultsSchemaPath, at: fixtureRowPath, want: []string{"expectations", "fixture", "message", "result", "unexpected"}},
 		{name: "expectation_row", schema: resultsSchemaPath, at: expectationRowPath, want: []string{"actual", "capability", "message", "result", "suppression", "symbol"}},
-		{name: "answer", schema: resultsSchemaPath, at: answerPath, want: []string{"component", "confidence", "configurations", "details", "liveness_relation", "reachability_class", "report", "retained_by", "symbol_kind"}},
+		{name: "answer", schema: resultsSchemaPath, at: answerPath, want: []string{"component", "confidence", "configurations", "details", "fixability", "liveness_relation", "reachability_class", "report", "retained_by", "symbol_kind"}},
 		{name: "suppression", schema: resultsSchemaPath, at: expectationRowPath + "/properties/suppression", want: []string{"stale", "suppressed"}},
 		{name: "unexpected_finding", schema: resultsSchemaPath, at: fixtureRowPath + "/properties/unexpected/items", want: []string{"file", "line", "report"}},
 	}
@@ -334,6 +335,7 @@ func TestConformanceResultVocabulary(t *testing.T) {
 		{name: "language", at: "properties/product/properties/language", want: kinds.Languages},
 		{name: "confidence", at: answerPath + "/properties/confidence", want: kinds.ReachabilityClasses},
 		{name: "reachability_class", at: answerPath + "/properties/reachability_class", want: kinds.ReachabilityClasses},
+		{name: "fixability", at: answerPath + "/properties/fixability", want: kinds.Fixabilities},
 	}
 	for _, tc := range enums {
 		t.Run(tc.name, func(t *testing.T) {
@@ -423,6 +425,45 @@ func TestResultsDocumentDecodesStrictly(t *testing.T) {
 	planted := strings.Replace(plantedResults, `"result": "fail",`, `"result": "fail", "language": "go",`, 1)
 	if err := decodeStrict([]byte(planted), &doc); err == nil || !strings.Contains(err.Error(), `unknown field "language"`) {
 		t.Errorf("decodeStrict(results with a top-level language) error = %v, want an unknown-field error", err)
+	}
+	if got := doc.Fixtures[0].Expectations[0].Actual.Fixability; got != "deletable" {
+		t.Errorf("plantedResults DeadExport actual fixability = %q, want %q", got, "deletable")
+	}
+}
+
+func TestResultsSchemaFixabilityBindsToAReportedFinding(t *testing.T) {
+	const deadExport = `"actual": {"report": "DS1001", "confidence": "certain", "reachability_class": "certain", "liveness_relation": "reference-counting", "fixability": "deletable"}`
+	const at = "/fixtures/0/expectations/0/actual"
+	cases := []struct {
+		name   string
+		actual string
+		want   string
+	}{
+		{name: "a_reported_finding_echoes_its_fixability", actual: deadExport},
+		{name: "a_value_outside_the_vocabulary", actual: `"actual": {"report": "DS1001", "confidence": "certain", "fixability": "removable"}`, want: at + "/fixability"},
+		{name: "an_unreported_subject_carries_no_fixability", actual: `"actual": {"report": "none", "fixability": "deletable"}`, want: at},
+		{name: "a_stale_suppression_carries_no_fixability", actual: `"actual": {"report": "DS1703", "confidence": "certain", "fixability": "manual"}`, want: at},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			if !strings.Contains(plantedResults, deadExport) {
+				t.Fatalf("Setup: plantedResults carries no DeadExport actual %s", deadExport)
+			}
+			document := strings.Replace(plantedResults, deadExport, tc.actual, 1)
+			problems, err := validationProblems(resultsSchemaPath, []byte(document))
+			if err != nil {
+				t.Fatalf("Setup: validationProblems(%q, %s): %v", resultsSchemaPath, tc.name, err)
+			}
+			if tc.want == "" {
+				if len(problems) != 0 {
+					t.Errorf("validationProblems(%q, %s) = %v, want no violation", resultsSchemaPath, tc.name, problems)
+				}
+				return
+			}
+			if !slices.ContainsFunc(problems, func(p validationProblem) bool { return p.InstanceLocation == tc.want }) {
+				t.Errorf("validationProblems(%q, %s) = %v, want a violation at %q", resultsSchemaPath, tc.name, problems, tc.want)
+			}
+		})
 	}
 }
 

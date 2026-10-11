@@ -1,0 +1,63 @@
+The Go rendering: a command and a package of its internal tree, which is a
+closed world, with an external test file naming two of the package's exports.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Config": { "file": "target/internal/config/config.go", "line": 5 },
+    "Default": { "file": "target/internal/config/config.go", "line": 10 },
+    "Local": { "file": "target/internal/config/config.go", "line": 13 },
+    "Load": { "file": "target/internal/config/config.go", "line": 16 },
+    "Fixture": { "file": "target/internal/config/config.go", "line": 19 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target loads its configuration.
+package main
+
+import (
+	"fmt"
+
+	"example.com/target/internal/config"
+)
+
+func main() { fmt.Println(config.Load()) }
+-- target/internal/config/config.go --
+// Package config builds the command's configuration.
+package config
+
+// Config is named by this package and by its external test.
+type Config struct {
+	Name string
+}
+
+// Default is called by this package and by its external test.
+func Default() Config { return Config{Name: Local()} }
+
+// Local is called by this package alone.
+func Local() string { return "local" }
+
+// Load is called by the command.
+func Load() string { return Default().Name }
+
+// Fixture is called by the external test alone.
+func Fixture() Config { return Config{Name: "fixture"} }
+-- target/internal/config/config_test.go --
+package config_test
+
+import (
+	"testing"
+
+	"example.com/target/internal/config"
+)
+
+func TestDefault(t *testing.T) {
+	var c config.Config = config.Default()
+	if c.Name == "" || config.Fixture().Name == "" {
+		t.Error("a configuration has no name")
+	}
+}

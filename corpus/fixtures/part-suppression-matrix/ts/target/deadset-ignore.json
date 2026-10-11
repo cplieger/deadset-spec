@@ -1,0 +1,35 @@
+{
+  "description": "One entry per part kind, each holding the part of one function.",
+  "ignore": [
+    {
+      "code": "DS1801",
+      "symbol": "ts://@example/target/parts.ts#parameterEntry",
+      "path": "parts.ts",
+      "reason": "The parameter is kept on purpose."
+    },
+    {
+      "code": "DS1803",
+      "symbol": "ts://@example/target/parts.ts#resultEntry",
+      "path": "parts.ts",
+      "reason": "The result is kept on purpose."
+    },
+    {
+      "code": "DS1805",
+      "symbol": "ts://@example/target/parts.ts#statementEntry",
+      "path": "parts.ts",
+      "reason": "The statement is kept on purpose."
+    },
+    {
+      "code": "DS1807",
+      "symbol": "ts://@example/target/parts.ts#storeEntry",
+      "path": "parts.ts",
+      "reason": "The store is kept on purpose."
+    },
+    {
+      "code": "DS1809",
+      "symbol": "ts://@example/target/parts.ts#caseEntry",
+      "path": "parts.ts",
+      "reason": "The case is kept on purpose."
+    }
+  ]
+}

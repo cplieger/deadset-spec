@@ -1,0 +1,24 @@
+{
+  "name": "abstract-member-through-this",
+  "description": "A call through this in a class of the target reaches the member it names and every member of a subclass that overrides it, because the runtime dispatches on the instance, so an abstract member the class calls and its override are live. A subclass member nothing calls is reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Processor.cookies",
+      "report": "none"
+    },
+    {
+      "symbol": "LambdaProcessor.cookies",
+      "report": "none"
+    },
+    {
+      "symbol": "LambdaProcessor.spare",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    }
+  ]
+}

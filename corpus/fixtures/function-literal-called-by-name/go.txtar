@@ -1,0 +1,29 @@
+The Go rendering: a command holding a function literal in a variable it calls,
+and passing another to a function that calls it.
+
+-- fixture.json --
+{
+  "symbols": {
+    "CalledName": { "file": "target/main.go", "line": 10 },
+    "PassedName": { "file": "target/main.go", "line": 12 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target calls one function literal by name and hands another on.
+package main
+
+import "fmt"
+
+// apply calls the function it is handed.
+func apply(f func(string, int) bool) bool { return f("b", 2) }
+
+func main() {
+	check := func(name string, n int) bool { return n > 0 }
+	fmt.Println(check("a", 1), apply(
+		func(name string, n int) bool { return n > 1 },
+	))
+}

@@ -1,0 +1,1 @@
+{"name": "script-tool", "private": true, "version": "1.0.0", "bin": {"script-tool": "./cli.js"}}

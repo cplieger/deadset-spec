@@ -9,7 +9,7 @@ The columns of every table below, each the field of the same name in the kind's 
 - Languages are the languages the kind applies to, where `go` is Go and `ts` is TypeScript and JavaScript. The source is `contract/kinds.json`, `languages`.
 - Default is `default_enabled`. `on` means an analyzer reports the kind unless a configuration disables it.
 - Severity is `default_severity`, one of `allow`, `warn` and `deny`, as `contract/kinds.json`, `severities`, lists them. A finding at or above the failing severity, `reporters.fail_on`, exits with the findings code. Under the default, `deny`, a `warn` finding never fails a run. The sources are `contract/exit-codes.json`, codes 1 and 0, and the document's `description`. A configuration names a code or a two-digit family prefix under `severity` to change a severity, as `contract/config.schema.json` states.
-- Fixability is `fixability`, one of `deletable`, `narrowable`, `manual` and `none`, as `contract/kinds.json`, `fixabilities`, lists them. It says what a mechanical edit may do with the finding.
+- Fixability is `fixability`, one of `deletable`, `narrowable`, `manual` and `none`, as `contract/kinds.json`, `fixabilities`, lists them. It says what a mechanical edit may do with the finding. A finding about a declaration whose deletion changes the value of a live declaration carries `manual` instead. So does a finding about a declaration such a one depends on. This holds under the kinds whose row lists `manual` in `finding_fixabilities`, as `contract/grammar/analysis.md`, "Fixability", states.
 
 Confidence is a ceiling on the reachability class, not a second axis. A finding carries a `reachability_class`, which is what the analysis knows about the symbol's callers, and a `confidence`, which is that class capped by the kind's `max_class`. Both take one value from `certain`, `probable` and `possible`, ordered from the strongest. The source is `contract/kinds.json`, `reachability_classes`.
 
@@ -36,11 +36,15 @@ Declarations nothing references, and the test-only and deprecated variants of th
 
 An exported symbol with no reference in the target and no reference from any loaded consumer. A symbol referenced only from its own declaration site counts as unreferenced.
 
+A finding of this kind may carry `manual` instead, as the fixability bullet above states.
+
 From `contract/kinds.json`, row `DS1001`.
 
 ### DS1002 unused-unexported
 
 An unexported symbol with no reference in the target. A symbol referenced only from its own declaration site counts as unreferenced.
+
+A finding of this kind may carry `manual` instead, as the fixability bullet above states.
 
 From `contract/kinds.json`, row `DS1002`.
 
@@ -50,6 +54,8 @@ A struct field, class member or type member with no reference, a private member 
 
 Precondition: A TypeScript member that no value writes and nothing reads may name a type parameter of its declaring interface, class or type alias. It is not reported when every part of that declaration naming the type parameter is such a member. TypeScript compares object types by their members, so those members keep two instantiations of the type apart. Deleting them leaves the type parameter phantom and lets one instantiation stand for another. A member a value writes is decided by the rule of `DS1301` instead, whatever its type names.
 
+A finding of this kind may carry `manual` instead, as the fixability bullet above states.
+
 From `contract/kinds.json`, row `DS1003`.
 
 ### DS1004 test-only-use
@@ -58,11 +64,15 @@ A symbol with zero production references and at least one test reference: an unu
 
 Derived from `DS1001`, `DS1002` and `DS1003`.
 
+A finding of this kind may carry `manual` instead, as the fixability bullet above states.
+
 From `contract/kinds.json`, row `DS1004`.
 
 ### DS1005 test-of-dead-code
 
 A test symbol whose set of referenced target symbols is non-empty and every member of that set is reported dead. A test that references at least one live target symbol is never reported, no notion of a test's subject and no name matching enters the rule, and the message states the rule. The test joins the dead component of the symbols it references, and it and each of them count as referencing each other, so the test is a member of their cycle and never a dead symbol outside it.
+
+A finding of this kind may carry `manual` instead, as the fixability bullet above states.
 
 From `contract/kinds.json`, row `DS1005`.
 
@@ -71,6 +81,8 @@ From `contract/kinds.json`, row `DS1005`.
 A symbol carrying a deprecation marker and no production reference: an unused-exported, unused-unexported or unused-member candidate whose symbol is deprecated, reported once under this code. Go identifies the marker by the convention the standard tools recognize, TypeScript by the documentation tag its tools recognize.
 
 Derived from `DS1001`, `DS1002` and `DS1003`.
+
+A finding of this kind may carry `manual` instead, as the fixability bullet above states.
 
 From `contract/kinds.json`, row `DS1006`.
 
@@ -87,7 +99,7 @@ Symbols that are alive but more visible than their references require. From `con
 
 ### DS1101 unnecessary-export
 
-An exported symbol whose every reference is inside the symbol's own package or module, reported as a candidate for unexporting. The subject is a package-level declaration or a method. Three subjects are excluded. An interface method is excluded because its exportedness is the contract of the interface that declares it. A struct field is excluded because an encoder reads it by name. A method that satisfies an interface some symbol uses as a type is excluded because it cannot be unexported without its type ceasing to satisfy that interface. The finding names the narrower visibility the references support. A declared cross-language edge counts as an out-of-package reference. Where the edge's other side is unknown to the analyzer, the finding is emitted pending.
+An exported symbol whose every reference is inside the symbol's own package or module, reported as a candidate for unexporting. The subject is a package-level declaration or a method. Three subjects are excluded. An interface method is excluded because its exportedness is the contract of the interface that declares it. A struct field is excluded because an encoder reads it by name. A method that satisfies an interface some symbol uses as a type is excluded because it cannot be unexported without its type ceasing to satisfy that interface, and so is a method whose name and signature are those of a method of an exported interface type declared by a package outside the target that the import closure holds, because that interface fixes them whether or not the program converts the method's type to it. The finding names the narrower visibility the references support. A declared cross-language edge counts as an out-of-package reference. Where the edge's other side is unknown to the analyzer, the finding is emitted pending. A reference from a Go external test package, a test file whose package clause names its directory's package with the suffix _test, is a reference from outside the package, because that test builds as another package and needs the export.
 
 Precondition: Closed world only. A Go main package, and an internal/ directory tree for importers outside its parent, are closed worlds whatever the configuration declares, because no other program can import them. So this finding is reported there always. A published package is a closed world only when the configuration declares the consumer set complete and every declared consumer loads. A library with no consumer loaded and no complete consumer set declared gets this finding on its internal/ tree and its main packages and never on its published API.
 
@@ -95,11 +107,13 @@ A symbol the rule of DS1301 holds for is not reported under this code, whatever 
 
 An exported function or method may name a type of its own package in a parameter or a result. When code outside the package references that function or method, the type is not reported. The caller holds values of the type, and unexporting it would leave an exported signature naming a type its callers cannot name.
 
+A package-level declaration whose name a string literal spells carries the class `contract/grammar/analysis.md` gives it, which is `possible`.
+
 From `contract/kinds.json`, row `DS1101`.
 
 ### DS1102 unnecessary-exposure
 
-An exported symbol of a non-internal package whose every reference is inside the target module, reported as a candidate for relocation behind an internal boundary. The subject is a package-level declaration or a method. Three subjects are excluded. An interface method is excluded because its exportedness is the contract of the interface that declares it. A struct field is excluded because an encoder reads it by name. A method that satisfies an interface some symbol uses as a type is excluded because it cannot be unexported without its type ceasing to satisfy that interface. The finding names the narrower visibility the references support. A declared cross-language edge counts as an out-of-package reference. Where the edge's other side is unknown to the analyzer, the finding is emitted pending.
+An exported symbol of a non-internal package whose every reference is inside the target module, reported as a candidate for relocation behind an internal boundary. The subject is a package-level declaration or a method. Three subjects are excluded. An interface method is excluded because its exportedness is the contract of the interface that declares it. A struct field is excluded because an encoder reads it by name. A method that satisfies an interface some symbol uses as a type is excluded because it cannot be unexported without its type ceasing to satisfy that interface, and so is a method whose name and signature are those of a method of an exported interface type declared by a package outside the target that the import closure holds, because that interface fixes them whether or not the program converts the method's type to it. The finding names the narrower visibility the references support. A declared cross-language edge counts as an out-of-package reference. Where the edge's other side is unknown to the analyzer, the finding is emitted pending. A reference from a Go external test package, a test file whose package clause names its directory's package with the suffix _test, is a reference from outside the package, because that test builds as another package and needs the export.
 
 Precondition: Closed world only. Reported always for a main package and an internal/ directory tree, and for a published package only when the configuration declares the consumer set complete and every declared consumer loads. A library with no consumer loaded and no complete consumer set declared gets this finding on its internal/ tree and its main packages and never on its published API. A symbol the rule of DS1301 holds for is not reported under this code, whatever severity the configuration gives DS1301, because the write-only finding names the defect to fix first.
 
@@ -109,9 +123,11 @@ From `contract/kinds.json`, row `DS1102`.
 
 ### DS1103 unreachable-export
 
-An unused exported symbol in a package or file no external code can import: an unused-exported candidate whose enclosing package or file is unimportable from outside, reported once under this code at the certain class, because unimportability is a property of the package graph rather than of the consumer set.
+An unused exported symbol in a package or file no external code can import: an unused-exported candidate whose enclosing package or file is unimportable from outside, reported once under this code at the certain class, because unimportability is a property of the package graph rather than of the consumer set, except where the confidence rule of grammar/analysis.md gives a declaration a string literal spells the class possible.
 
 Derived from `DS1001`.
+
+A finding of this kind may carry `manual` instead, as the fixability bullet above states.
 
 From `contract/kinds.json`, row `DS1103`.
 
@@ -137,6 +153,8 @@ Interfaces and interface members nothing uses through the interface. From `contr
 
 An interface no symbol uses as a type, counting uses from every loaded module. The finding names the concrete implementations and their positions, and the interface's members join its dead component rather than being reported as independent unused declarations.
 
+A finding of this kind may carry `manual` instead, as the fixability bullet above states.
+
 From `contract/kinds.json`, row `DS1201`.
 
 ### DS1203 uncalled-interface-method
@@ -150,6 +168,8 @@ From `contract/kinds.json`, row `DS1203`.
 ### DS1204 unused-satisfaction-assertion
 
 A compile-time satisfaction assertion whose interface no symbol uses as a type.
+
+Precondition: In a library, an assertion on a published interface has the reachability class `possible`. A published interface is an exported interface of a package that outside programs can import. The class holds whatever consumers the run declares and loads, because the assertion checks a promise the published API makes to every program that imports the package, not only to the declared consumers: that the type satisfies the interface. A loaded consumer that names the interface as a type uses it, and the assertion is not reported.
 
 From `contract/kinds.json`, row `DS1204`.
 
@@ -165,9 +185,13 @@ State that carries no information: write-only symbols, enumerated members nothin
 
 ### DS1301 write-only-symbol
 
-A package-level or module-level variable, struct field, class member, type member or collection that production code writes and never reads. In production mode a read from a test file counts as no read. A write from a loaded consumer's code counts as a read, because the deletion the finding names would break a consumer the target does not own. A write in a consumer's test file counts as a read in the run that counts test references. It counts in a production sweep only where the configuration counts consumer tests as production. A comparison of struct values reads every field of the type: in Go, a value of a struct type used as an operand of `==` or `!=`, as a map key, or as a `switch` tag or `case` expression is a read of every field of that type, transitively through the fields of every struct type it holds, recorded at the comparison, because equality reads every field and a field that decides equality carries information. In Go a type argument the program instantiates a type parameter with, where the parameter's constraint is `comparable` or embeds it, is compared as an operand of `==` of that type is, recorded at the instantiation, so the struct values `slices.Equal`, `slices.Index` or `maps.Equal` compares have every field read. `reflect.DeepEqual` is not a comparison under this rule. In TypeScript a comparison of two object references reads no member, because `===` compares identity and never a member.
+A package-level or module-level variable, struct field, class member, type member or collection that production code writes and never reads. In production mode a read from a test file counts as no read. A write from a loaded consumer's code counts as a read, because the deletion the finding names would break a consumer the target does not own. A write in a consumer's test file counts as a read in the run that counts test references. It counts in a production sweep only where the configuration counts consumer tests as production. A comparison of struct values reads every field of the type: in Go, a value of a struct type used as an operand of `==` or `!=`, as a map key, or as a `switch` tag or `case` expression is a read of every field of that type, transitively through the fields of every struct type it holds, recorded at the comparison, because equality reads every field and a field that decides equality carries information. In Go a type argument the program instantiates a type parameter with, where the parameter's constraint is `comparable` or embeds it, is compared as an operand of `==` of that type is, recorded at the instantiation, so the struct values `slices.Equal`, `slices.Index` or `maps.Equal` compares have every field read. `reflect.DeepEqual` is not a comparison under this rule.
 
-In TypeScript a property of an object literal writes the member of the same name that the literal's contextual type declares, whether or not the compiler checks the literal for excess properties. Where that contextual type is a union or an intersection, the property writes the member of that name on each constituent that declares one. So a literal that a declaration annotates, a function returns, a call passes or a `satisfies` expression checks writes the members of the type it is given.
+In Go, a conversion the compiler accepts between two struct types, or between two pointer types that are not named types and whose base types are struct types, reads every field of the two struct types where their struct type literals are distinct, recorded at the conversion, because the conversion is legal only while their fields are identical, ignoring tags, and so no field of either can be deleted alone. It reads in the same way every field of each pair of distinct struct type literals the identity of the two types compares in turn: through each field's type, and from there through the element, key, base, parameter and result types of the type literals it reaches, through the method signatures of an interface type literal, and through the type arguments of an instantiated generic type. A field reached there has no reference of its own, as grammar/symbol-ref.md states, so it is never a subject and those reads hold no finding back. It stops at a defined type, whose fields the conversion does not read, because a defined type is identical to itself whatever fields it declares. A pair whose two sides are one struct type literal, the two struct types themselves included, as where one type is declared from the other or the conversion is to the operand's own type, reads nothing, because a field deleted from that literal leaves both sides identical. Where the operand's type or the conversion's type is a type parameter, the struct type its constraint's core type is takes that side's place, and a type parameter operand reads in the same way the fields of each struct type argument an instantiation the program holds gives it, an instantiation made through another generic declaration's own type parameters included. A conversion to any other type, an interface type among them, reads no field under this rule.
+
+In TypeScript a comparison of two object references reads no member, because `===` compares identity and never a member.
+
+In TypeScript a property of an object literal writes the member of the same name that the literal's contextual type declares, whether or not the compiler checks the literal for excess properties. Where that contextual type is a union or an intersection, the property writes the member of that name on each constituent that declares one. So a literal that a declaration annotates, a function returns, a call passes or a `satisfies` expression checks writes the members of the type it is given. An object literal handed to a callee the target does not implement has its members read, as grammar/analysis.md states.
 
 A store through the value a field or a member holds reads that field or member rather than writing it, because the store lands in storage every other holder of the value reads. In Go that store is an assignment, an increment, a compound assignment or a `delete` whose target is reached through a struct field holding a map, a slice or a pointer. Examples are `s.f[k] = v`, `s.f.x = v` and `delete(s.f, k)`. The same store through a field holding an array or a struct is a store into the field itself. TypeScript holds every object by reference, so an element or property store through a member's value reads the member.
 
@@ -178,6 +202,8 @@ From `contract/kinds.json`, row `DS1301`.
 ### DS1302 unused-enum-member
 
 An enumerated member that no symbol names, at the reachability class derived for the member and with no confidence ceiling below it. Every member of a type that carries a string, text or binary conversion method, or that a conversion from an integer or a wire value produces, is retained by the enum-group exemption first, so a member reached only by value is never a candidate.
+
+A finding of this kind may carry `manual` instead, as the fixability bullet above states.
 
 From `contract/kinds.json`, row `DS1302`.
 
@@ -204,7 +230,7 @@ Source files nothing builds or imports. From `contract/kinds.json`, the `non-cod
 
 ### DS1501 file-never-built
 
-A source file no configuration in the build matrix builds. On the Go side the finding names the build constraint that excluded the file. A file whose build constraint is the ignore tag is never reported: the toolchain applies no build constraint to a file named on its own command line, so that tag is the toolchain's convention for a file built by hand. A file any other custom tag excludes is reported under a matrix the configuration declares complete, because completeness is the maintainer's assertion that the listed configurations are every one the target builds, and a configuration the maintainer builds by hand belongs in that list.
+A source file no configuration in the build matrix builds. On the Go side the finding names the build constraint that excluded the file. A file whose build constraint holds only when the ignore tag is set is never reported, because grammar/analysis.md keeps such a file outside the analysis wherever no configuration builds it: the tag is the toolchain's convention for a file kept out of ordinary package builds unless a configuration explicitly satisfies the tag, and built by hand, the toolchain applying no build constraint to a file named on its own command line. A file any other custom tag excludes is reported under a matrix the configuration declares complete, because completeness is the maintainer's assertion that the listed configurations are every one the target builds, and a configuration the maintainer builds by hand belongs in that list.
 
 Precondition: Reported only when the configuration declares the build matrix complete, and never for a file the toolchain ignored solely because it imports "C" under a build with cgo disabled. Such a file is recorded as excluded by cgo rather than as never built.
 
@@ -231,9 +257,15 @@ A directly declared dependency that no import in the target needs. On the Go sid
 
 Precondition: On the Go side the rule is exactly the semantics of `go mod tidy -diff`. A requirement marked indirect is never reported, because it exists to pin a transitive version and removing it changes the build list.
 
-On the TypeScript side the import closure is the files of the run's projects, and four more dependencies are needed. The first is a dependency whose installed manifest declares a command, because a command is run by name rather than imported. The second is a dependency that the installed manifest of a needed dependency declares as a peer and does not mark optional. The third is, to a fixpoint, the required peers of every dependency so held. The fourth is a dependency a string names under a `package.json` member that an applied convention row reads its tool's configuration from.
+On the TypeScript side the import closure is the files of the run's projects, and four more dependencies are needed. The first is a dependency whose command a script entry or a workflow step runs. The second is a dependency a string of a configuration file names. The third is a dependency a string names under a `package.json` member that an applied convention row reads its tool's configuration from. The fourth is a dependency a string names under a configuration file member that an applied row lists as naming the packages its tool loads.
 
-An installed manifest is the package's manifest in the nearest node_modules directory at or above the target, and a dependency with none is decided by the import closure alone.
+A call of `import.meta.resolve` or `require.resolve` whose argument is a literal specifier needs the dependency the specifier names, as an import of it does.
+
+A command nothing runs keeps no dependency. A declared dependency that a needed dependency's installed manifest names as a peer, optional or not, is needed. So is each declared peer of that peer, in turn. The declaration is what keeps the package the needed dependency expects beside it present. A dependency of a manifest whose source sits only in configurations that were not built is reported at `possible`.
+
+An installed manifest is the package's manifest in the nearest node_modules directory at or above the directory of the manifest that declares the dependency, and a dependency with none is decided by the import closure alone.
+
+On the TypeScript side the manifests judged are every manifest the analysis reads. A nested package's manifest is one of them, so a run at the repository root judges the dependencies of a package below it. Each is read against its own directory. A dependency is needed by a use written in a file at or below that directory, by a use no one file holds, and as a peer of a needed dependency of the same manifest or of one below it. A nested package's dependency that nothing installs is not judged, because no run requires a nested package to be installed.
 
 From `contract/kinds.json`, row `DS1601`.
 
@@ -272,7 +304,7 @@ From `contract/kinds.json`, row `DS1702`.
 
 ### DS1703 stale-suppression
 
-A suppression that matches no current finding, at either mechanism and in the baseline alike. The run exits with the findings code when at least one is reported. The kind is fixed on at deny: no flag, no severity setting and no per-mechanism exception reduces it below a finding, and a configuration naming this code under a severity key is an unimplemented key.
+A suppression record that is stale, as grammar/suppression.md defines it, at either mechanism and in the baseline alike. The run exits with the findings code when at least one is reported. The kind is fixed on at deny: no flag, no severity setting and no per-mechanism exception reduces it below a finding, and a configuration naming this code under a severity key is an unimplemented key.
 
 The row carries `"fixed": true`. No configuration changes this kind's enablement or its severity. A configuration that names this code under a severity key, or a family prefix whose range holds it, names a key the product does not implement, and the run ends with the usage code. The sources are `contract/config.schema.json`, `severity`, and `contract/exit-codes.json`, code 2.
 
@@ -319,11 +351,15 @@ A parameter with no reference inside its function body, on a function whose sign
 
 Precondition: The signature must be free. A free signature belongs to a function that is not a method retained by interface satisfaction, is not used as a value and is not a go:linkname or cgo target. It is also not a function the Go test driver runs, which is a test, benchmark or fuzz test of a test file, or TestMain, and not a stub whose body is empty or only panics.
 
+A method whose name and signature match an exported interface of a package outside the target is not free either, because that interface fixes them. A function literal held in a variable the program only calls is called by name, so its signature is free.
+
 A parameter its body never names is dead whatever the callers. A published declaration of a library is therefore reported too, with the fixability the vocabulary gives the kind, because the signature change is a breaking change.
 
 In TypeScript a caller may pass a function used as a value more arguments than it declares. In such a function, an unread parameter is reported only when the body reads no parameter after it. No name exempts a parameter, so a TypeScript parameter whose name starts with `_` is judged as any other. A Go parameter named `_` declares no name and is never reported.
 
-A TypeScript parameter that destructures its argument is judged name by name. Each name the body never reads is reported wherever the parameter stands, because removing it moves no argument. A name beside a rest element of an object pattern is kept, because removing it changes what the rest element holds. The pattern counts as read when the body reads any name it binds. A rest parameter is judged as the last parameter, and a `this` parameter receives no argument and is never reported.
+A parameter of a TypeScript callback the compiler types from its context is not reported when it carries a type annotation, which the call's inference may read. Nor is it reported when it is an object pattern, which reads properties of the argument.
+
+Any other TypeScript parameter that destructures its argument is judged name by name. Each name the body never reads is reported wherever the parameter stands, because removing it moves no argument. A name beside a rest element of an object pattern is kept, because removing it changes what the rest element holds. The pattern counts as read when the body reads any name it binds. A rest parameter is judged as the last parameter, and a `this` parameter receives no argument and is never reported.
 
 Overlap in Go: `revive unused-parameter`, `gopls unusedparams`, `unparam`. Overlap in TypeScript: `tsc --noUnusedParameters`, `@typescript-eslint/no-unused-vars`.
 
@@ -331,9 +367,9 @@ From `contract/kinds.json`, row `DS1801`.
 
 ### DS1802 unused-receiver
 
-A named method receiver with no reference inside the method body, on a method whose signature is free to change. Go permits a method with no receiver name, so the fix deletes an identifier and changes no signature.
+A named method receiver with no reference inside the method body. Go permits a method with no receiver name, so the fix deletes an identifier and changes no signature.
 
-Precondition: The same free-signature rule as unused-parameter, applied to the receiver.
+Precondition: None beyond the rule. Deleting a receiver name changes no signature, so a method retained by interface satisfaction, a method used as a value and a stub are reported as any other method is.
 
 Overlap in Go: `revive unused-receiver`. Overlap in TypeScript: `not applicable`.
 
@@ -343,7 +379,7 @@ From `contract/kinds.json`, row `DS1802`.
 
 A result value that no call site of the function uses, on a function whose signature is free to change.
 
-Precondition: The same free-signature rule as unused-parameter, plus a closed-world condition. Every call site of the function must be in the loaded graph, because an unknown caller may consume the result. The kind therefore reports only for a function whose callers are all visible.
+Precondition: The same free-signature rule as unused-parameter, plus a closed-world condition. Every call site of the function must be in the loaded graph, because an unknown caller may consume the result. The kind therefore reports only for a function whose callers are all visible. A call awaited as a statement of its own uses a result that has a `then` member, a promise or another thenable, because the caller sequences on it, and discards any other result. A call written as a statement of its own, or as the operand of `void`, discards its result whatever its type.
 
 Overlap in Go: `unparam`. Overlap in TypeScript: `none known`.
 

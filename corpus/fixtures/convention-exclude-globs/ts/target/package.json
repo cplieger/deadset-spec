@@ -5,5 +5,8 @@
   "type": "module",
   "devDependencies": {
     "astro": "7.999.0"
+  },
+  "scripts": {
+    "build": "astro build"
   }
 }

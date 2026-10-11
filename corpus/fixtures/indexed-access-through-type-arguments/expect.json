@@ -1,0 +1,40 @@
+{
+  "name": "indexed-access-through-type-arguments",
+  "description": "An indexed-access type is read after each type parameter it names is replaced by the type argument the reference or the call holding it fixes, through a generic type alias, both branches of a conditional type and a dependency's generic declaration instantiated with a type of the target, so each member a literal so fixed names is referenced. The members no such literal names are reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Payloads.open",
+      "report": "none"
+    },
+    {
+      "symbol": "Payloads.close",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    },
+    {
+      "symbol": "Operations.rename",
+      "report": "none"
+    },
+    {
+      "symbol": "Operations.remove",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    },
+    {
+      "symbol": "StoreMap.page",
+      "report": "none"
+    },
+    {
+      "symbol": "StoreMap.theme",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    }
+  ]
+}

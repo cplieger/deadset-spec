@@ -1,0 +1,58 @@
+{
+  "name": "element-access-by-a-type-parameter-index",
+  "description": "An element access whose index the compiler types as a type parameter reads each member the parameter's constraint admits, because the function body serves every instantiation. A function body that assigns the index parameter, by a destructuring assignment or as the target of a for-of statement, has its accesses read where they are written, through the type the compiler gives the index there, rather than at the calls.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "FieldsBody",
+      "report": "none"
+    },
+    {
+      "symbol": "FieldsExtra",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member"
+    },
+    {
+      "symbol": "FieldsTitle",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member"
+    },
+    {
+      "symbol": "LoopedLeft",
+      "report": "none"
+    },
+    {
+      "symbol": "LoopedRight",
+      "report": "none"
+    },
+    {
+      "symbol": "LoopedSpare",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member"
+    },
+    {
+      "symbol": "PayloadClose",
+      "report": "none"
+    },
+    {
+      "symbol": "PayloadIdle",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member"
+    },
+    {
+      "symbol": "PayloadOpen",
+      "report": "none"
+    }
+  ]
+}

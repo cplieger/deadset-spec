@@ -1,0 +1,86 @@
+The Go rendering: one application whose constant groups each open with a dead
+constant that a live constant of the group depends on, an exported constant of
+an importable package, an exported constant of the command, a constant only a
+test names, a deprecated constant, a test file's constant naming a constant
+nothing else names, and a constant naming an interface nothing else names.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Low": { "file": "target/level/level.go", "line": 4 },
+    "High": { "file": "target/level/level.go", "line": 5 },
+    "Quiet": { "file": "target/main.go", "line": 6 },
+    "loud": { "file": "target/main.go", "line": 7 },
+    "probeA": { "file": "target/main.go", "line": 11 },
+    "probeB": { "file": "target/main.go", "line": 12 },
+    "retired": { "file": "target/main.go", "line": 15 },
+    "colorOld": { "file": "target/main.go", "line": 19 },
+    "colorRed": { "file": "target/main.go", "line": 20 },
+    "sizer": { "file": "target/main.go", "line": 23 },
+    "sizerSlots": { "file": "target/main.go", "line": 28 },
+    "slotIndex": { "file": "target/main.go", "line": 29 },
+    "fixtureA": { "file": "target/main_test.go", "line": 6 },
+    "fixtureB": { "file": "target/main_test.go", "line": 7 }
+  }
+}
+-- target/go.mod --
+module example.com/app
+
+go 1.27.0
+-- target/level/level.go --
+package level
+
+const (
+	Low = iota
+	High
+)
+-- target/main.go --
+package main
+
+import "example.com/app/level"
+
+const (
+	Quiet = iota
+	loud
+)
+
+const (
+	probeA = iota
+	probeB
+)
+
+const retired = 7
+
+const (
+	// Deprecated: colorRed replaces it.
+	colorOld = iota
+	colorRed
+)
+
+type sizer interface {
+	size() int
+}
+
+const (
+	sizerSlots = len([1]sizer{})
+	slotIndex  = iota
+)
+
+func main() {
+	println(level.High, loud, probeB, colorRed, slotIndex)
+}
+-- target/main_test.go --
+package main
+
+import "testing"
+
+const (
+	fixtureA = retired
+	fixtureB = iota
+)
+
+func TestProbe(t *testing.T) {
+	if probeA+probeB+fixtureB != 2 {
+		t.Fatal("probe values moved")
+	}
+}

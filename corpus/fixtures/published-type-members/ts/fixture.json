@@ -1,0 +1,14 @@
+{
+  "symbols": {
+    "configure": { "file": "target/index.ts", "line": 10 },
+    "Options.name": { "file": "target/options.ts", "line": 3 },
+    "Options.plugin": { "file": "target/options.ts", "line": 4 },
+    "Plugin.webpack": { "file": "target/options.ts", "line": 9 },
+    "Internal.spare": { "file": "target/index.ts", "line": 6 },
+    "load": { "file": "target/index.ts", "line": 16 },
+    "Loaded.id": { "file": "target/options.ts", "line": 14 },
+    "Loaded.extra": { "file": "target/options.ts", "line": 15 },
+    "Registry": { "file": "target/index.ts", "line": 21 },
+    "Entry.label": { "file": "target/options.ts", "line": 20 }
+  }
+}

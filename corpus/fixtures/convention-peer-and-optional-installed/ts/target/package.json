@@ -8,5 +8,8 @@
   },
   "optionalDependencies": {
     "storybook": "10.999.0"
+  },
+  "scripts": {
+    "build": "next build"
   }
 }

@@ -1,0 +1,49 @@
+One main package whose type has three methods that never name their receiver, each held by
+another mechanism or position, and a fourth that reads it under a record that matches nothing.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Above": { "file": "target/main.go", "line": 10 },
+    "Trailing": { "file": "target/main.go", "line": 12 },
+    "Entry": { "file": "target/main.go", "line": 16 },
+    "StaleDirective": { "file": "target/main.go", "line": 18 },
+    "Live": { "file": "target/main.go", "line": 19 }
+  }
+}
+-- target/go.mod --
+module example.com/app
+
+go 1.27.0
+-- target/main.go --
+package main
+
+func main() {
+	println(counter{}.above(), counter{}.trailing(), counter{}.entry(), counter{n: 1}.live())
+}
+
+type counter struct{ n int }
+
+//deadset:ignore DS1802 -- The receiver is kept for the method set.
+func (c counter) above() int { return 1 }
+
+func (c counter) trailing() int { //deadset:ignore DS1802 -- The receiver is kept for the method set.
+	return 2
+}
+
+func (c counter) entry() int { return 3 }
+
+//deadset:ignore DS1802 -- The receiver is kept for the method set.
+func (c counter) live() int { return c.n }
+-- target/deadset-ignore.json --
+{
+  "description": "One entry holding the receiver of entry.",
+  "ignore": [
+    {
+      "code": "DS1802",
+      "symbol": "go://example.com/app#counter.entry",
+      "path": "main.go",
+      "reason": "The receiver is kept for the method set."
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "enum-member-fixability",
+  "description": "An enum member whose deletion moves the value of a live member with no initializer is a positional member, and a finding about it carries manual fixability and a component that removes no line. A dead member such a member's initializer names is held with it, and so is a dead member before a held one whose value its deletion would move. A member that a member with an initializer follows carries its code's own fixability, and so do dead members whose deletion moves only the value of other dead members, which share one component. An enum nothing names is reported whole, its members falling with it.",
+  "languages": ["ts"],
+  "target_kind": "application",
+  "expect": [
+    { "symbol": "Phase.Idle", "report": "DS1302", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "enum-member", "liveness_relation": "reference-counting", "fixability": "manual", "component": { "root": true, "symbol_count": 1, "deletable_lines": 0 } },
+    { "symbol": "Phase.Running", "report": "none" },
+    { "symbol": "Phase.Stopped", "report": "DS1302", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "enum-member", "liveness_relation": "reference-counting", "fixability": "deletable", "component": { "root": true, "symbol_count": 1, "deletable_lines": 1 } },
+    { "symbol": "Phase.Failed", "report": "none" },
+    { "symbol": "Phase.Paused", "report": "DS1302", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "enum-member", "liveness_relation": "reference-counting", "fixability": "deletable", "component": { "root": true, "symbol_count": 2, "deletable_lines": 2 } },
+    { "symbol": "Phase.Closed", "report": "DS1302", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "enum-member", "liveness_relation": "reference-counting", "fixability": "deletable", "component": { "root": true, "symbol_count": 2, "deletable_lines": 2 } },
+    { "symbol": "Spare", "report": "DS1001", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "enum", "liveness_relation": "reference-counting", "fixability": "deletable", "component": { "root": true, "symbol_count": 3, "deletable_lines": 4 } },
+    { "symbol": "Tier.Base", "report": "DS1302", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "enum-member", "liveness_relation": "reference-counting", "fixability": "manual", "component": { "root": true, "symbol_count": 1, "deletable_lines": 0 } },
+    { "symbol": "Tier.Next", "report": "DS1003", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "enum-member", "liveness_relation": "reachability", "fixability": "manual", "component": { "root": false, "symbol_count": 2, "deletable_lines": 0 } },
+    { "symbol": "Tier.Alias", "report": "DS1302", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "enum-member", "liveness_relation": "reference-counting", "fixability": "manual", "component": { "root": true, "symbol_count": 2, "deletable_lines": 0 } },
+    { "symbol": "Tier.Top", "report": "none" }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "name": "@angular/cli",
+  "version": "20.999.0",
+  "private": true,
+  "bin": {
+    "ng": "./bin/ng.js"
+  }
+}

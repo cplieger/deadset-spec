@@ -1,0 +1,61 @@
+{
+  "name": "parameters-a-context-reads",
+  "description": "A parameter of a function expression the compiler gives a contextual type is not reported when it carries a type annotation, which the call's inference may read, or when it is an object binding pattern, which reads the properties it names from the argument; neither is any name such a pattern binds. A declared function's unread annotated parameter, and one of a function expression no context types where it is written, are reported. A name an array binding pattern of a local binds and nothing reads is a dead store, whatever element follows it, because the element can be left as a hole.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "AnnotatedContextual",
+      "report": "none"
+    },
+    {
+      "symbol": "DestructuredContextual",
+      "report": "none"
+    },
+    {
+      "symbol": "DeclaredAnnotated",
+      "report": "DS1801",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "parameter",
+      "details": {
+        "overlap": [
+          "tsc --noUnusedParameters",
+          "@typescript-eslint/no-unused-vars"
+        ]
+      }
+    },
+    {
+      "symbol": "UncontextualExpression",
+      "report": "DS1801",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "parameter",
+      "details": {
+        "overlap": [
+          "tsc --noUnusedParameters",
+          "@typescript-eslint/no-unused-vars"
+        ]
+      }
+    },
+    {
+      "symbol": "ArrayElementBeforeUsed",
+      "report": "DS1807",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "store",
+      "details": {
+        "overlap": [
+          "eslint no-useless-assignment",
+          "@typescript-eslint/no-unused-vars"
+        ]
+      }
+    },
+    {
+      "symbol": "ArrayElementUsed",
+      "report": "none"
+    }
+  ]
+}

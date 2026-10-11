@@ -1,0 +1,58 @@
+The Go rendering: a command calling one function of a package, and a
+test-support package two external tests call, one of them beside the live
+function and one beside a function only it calls.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Live": { "file": "target/codec/codec.go", "line": 4 },
+    "Dead": { "file": "target/codec/codec.go", "line": 7 },
+    "Helper": { "file": "target/testsupport/testsupport.go", "line": 4 },
+    "TestLive": { "file": "target/codec/codec_test.go", "line": 10 },
+    "TestDead": { "file": "target/codec/codec_test.go", "line": 16 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+package main
+
+import "example.com/target/codec"
+
+func main() { println(codec.Live()) }
+-- target/codec/codec.go --
+package codec
+
+// Live is called by the command and by a test.
+func Live() int { return 1 }
+
+// Dead is called by a test alone.
+func Dead() int { return 2 }
+-- target/testsupport/testsupport.go --
+package testsupport
+
+// Helper is called by both tests.
+func Helper() int { return 3 }
+-- target/codec/codec_test.go --
+package codec_test
+
+import (
+	"testing"
+
+	"example.com/target/codec"
+	"example.com/target/testsupport"
+)
+
+func TestLive(t *testing.T) {
+	if codec.Live()+testsupport.Helper() != 4 {
+		t.Error("Live and Helper do not add up to 4")
+	}
+}
+
+func TestDead(t *testing.T) {
+	if codec.Dead()+testsupport.Helper() != 5 {
+		t.Error("Dead and Helper do not add up to 5")
+	}
+}

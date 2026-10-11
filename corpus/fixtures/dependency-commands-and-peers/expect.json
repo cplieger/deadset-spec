@@ -1,6 +1,6 @@
 {
   "name": "dependency-commands-and-peers",
-  "description": "A declared dependency nothing imports is reported in each of the three manifest sections, and three are not although nothing imports them: one whose installed manifest declares a command, and one a needed dependency's installed manifest names as a required peer. A peer the needed dependency marks optional is reported as any other unimported dependency is, and the dependencies an import names are not.",
+  "description": "A declared dependency nothing imports, runs or configures is reported in each of the three manifest sections. One whose installed manifest declares a command is used where a script entry runs that command, and reported where nothing does. A declared dependency that the installed manifest of a needed dependency names as a peer is needed, whether the peer is marked optional or not, and so is a declared peer of that peer in turn. A declared dependency that only an unneeded dependency names as a peer is reported, and so are two unneeded dependencies that name each other as peers.",
   "languages": [
     "ts"
   ],
@@ -22,6 +22,16 @@
     },
     {
       "symbol": "Command",
+      "report": "DS1601",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "dependency",
+      "details": {
+        "dependency_class": "dev-dependency"
+      }
+    },
+    {
+      "symbol": "ScriptCommand",
       "report": "none"
     },
     {
@@ -34,6 +44,34 @@
     },
     {
       "symbol": "OptionalPeer",
+      "report": "none"
+    },
+    {
+      "symbol": "PeerOfPeer",
+      "report": "none"
+    },
+    {
+      "symbol": "OrphanPeer",
+      "report": "DS1601",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "dependency",
+      "details": {
+        "dependency_class": "dev-dependency"
+      }
+    },
+    {
+      "symbol": "CycleA",
+      "report": "DS1601",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "dependency",
+      "details": {
+        "dependency_class": "dev-dependency"
+      }
+    },
+    {
+      "symbol": "CycleB",
       "report": "DS1601",
       "confidence": "certain",
       "reachability_class": "certain",

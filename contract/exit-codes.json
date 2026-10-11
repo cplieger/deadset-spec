@@ -39,11 +39,6 @@
       "fix": "Name the module and tell the user to run go mod tidy in the module that requires it."
     },
     {
-      "class": "test-build-tag",
-      "meaning": "Test files of the target build under no configuration of the run, because a build constraint they carry is satisfied by no configuration.",
-      "fix": "Name the files and the exact entry of analysis.configurations that builds them."
-    },
-    {
       "class": "missing-consumer",
       "meaning": "A declared consumer is absent from the path the scope names for it, or its own dependencies are not installed.",
       "fix": "Name the consumer and tell the user to check it out at that path and install its dependencies."

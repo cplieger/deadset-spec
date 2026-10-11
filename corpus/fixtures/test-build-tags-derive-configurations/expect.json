@@ -1,0 +1,13 @@
+{
+  "name": "test-build-tags-derive-configurations",
+  "description": "A tag only test files name derives a configuration exactly as a tag of any other file does, so a derived matrix builds the tests that carry it, those the race detector selects included, and the run reports what those test files declare and nothing reads, in the configuration that builds them, with no setup failure and no configuration dropped.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "expect": [
+    { "symbol": "label", "report": "none" },
+    { "symbol": "unusedHelper", "report": "DS1002", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "function", "liveness_relation": "reference-counting", "configurations": ["linux-amd64-integration"] },
+    { "symbol": "raceOn", "report": "none" },
+    { "symbol": "raceOff", "report": "none" },
+    { "symbol": "raceOnly", "report": "DS1002", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "function", "liveness_relation": "reference-counting", "configurations": ["linux-amd64-race"] }
+  ]
+}

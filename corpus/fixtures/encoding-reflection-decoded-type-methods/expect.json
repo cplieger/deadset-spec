@@ -1,0 +1,41 @@
+{
+  "name": "encoding-reflection-decoded-type-methods",
+  "description": "A type only a decoder reaches keeps the decoding methods the decoder resolves by name and no other method, so a method nothing calls is reported, and an embedded field is live while the program reads a member it promotes. A field of a pointer, interface or map type that the program writes and that a decoder reaches is read by the decoder, which decodes into the value the field holds, while a field of another type that the program writes before the decode is reported as written and never read.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "level.UnmarshalText",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "settings.String",
+      "report": "DS1103",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method"
+    },
+    {
+      "symbol": "settings.base",
+      "report": "none"
+    },
+    {
+      "symbol": "envelope.Data",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "envelope.Note",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    }
+  ]
+}

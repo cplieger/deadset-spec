@@ -1,0 +1,239 @@
+The Go rendering: one library package whose published methods and functions take
+two sealed interfaces, one through a variadic parameter, an interface any type
+with a Write method implements, an interface the package does not export, an
+interface another package declares, error, and a type parameter a sealed
+interface constrains. Exported types implement each, unexported types a
+published result, an exported variable and an exported field hand out implement
+one, an unexported type only a published parameter takes implements another, and
+two types have methods no published interface requires. An inline suppression
+covers a method the published API's conversions retain. A promoted field, a
+constant and a result handed out by value hand out further implementers, a
+generic type implements one interface for one instantiation alone, a
+slice of a type parameter takes a third sealed interface, and a method
+promoted from an unexported embedded struct takes a fourth.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Counter.registerInto": { "file": "target/types.go", "line": 5 },
+    "GaugeDirective": { "file": "target/types.go", "line": 9 },
+    "Gauge.registerInto": { "file": "target/types.go", "line": 10 },
+    "Trace.attach": { "file": "target/types.go", "line": 14 },
+    "Buffer.Write": { "file": "target/types.go", "line": 18 },
+    "Ratio.sample": { "file": "target/types.go", "line": 22 },
+    "Probe.track": { "file": "target/types.go", "line": 26 },
+    "Name.String": { "file": "target/types.go", "line": 30 },
+    "tally.registerInto": { "file": "target/types.go", "line": 34 },
+    "Label.registerInto": { "file": "target/types.go", "line": 38 },
+    "Spare.reset": { "file": "target/types.go", "line": 42 },
+    "spool.registerInto": { "file": "target/types.go", "line": 46 },
+    "extra.registerInto": { "file": "target/types.go", "line": 50 },
+    "quiet.track": { "file": "target/types.go", "line": 54 },
+    "Fault.Error": { "file": "target/types.go", "line": 58 },
+    "Fault.Unwrap": { "file": "target/types.go", "line": 60 },
+    "stock.registerInto": { "file": "target/types.go", "line": 64 },
+    "level.track": { "file": "target/types.go", "line": 68 },
+    "plain.registerInto": { "file": "target/types.go", "line": 72 },
+    "Box.sample": { "file": "target/types.go", "line": 76 },
+    "Grade.score": { "file": "target/types.go", "line": 80 },
+    "Pier.moor": { "file": "target/types.go", "line": 84 }
+  }
+}
+-- target/go.mod --
+module example.com/registry
+
+go 1.27.0
+-- target/registry.go --
+package registry
+
+import "fmt"
+
+type Metric interface {
+	registerInto(r *Registry)
+}
+
+type Hook interface {
+	attach(r *Registry)
+}
+
+type Sink interface {
+	Write(p []byte) (int, error)
+}
+
+type Sampler interface {
+	sample() int
+}
+
+type tracker interface {
+	track()
+}
+
+type Registry struct {
+	names []string
+}
+
+func (r *Registry) Register(m Metric) {
+	m.registerInto(r)
+	r.Attach()
+}
+
+func (r *Registry) Attach(hs ...Hook) {
+	for _, h := range hs {
+		h.attach(r)
+	}
+}
+
+func (r *Registry) MustRegister(s Sink, ms ...Metric) error {
+	for _, m := range ms {
+		r.Register(m)
+	}
+	return Emit(s, r.names)
+}
+
+func Emit(s Sink, names []string) error {
+	for _, name := range names {
+		if _, err := s.Write([]byte(name)); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func Sample[S Sampler](s S) int { return s.sample() }
+
+func Track(t tracker) { t.track() }
+
+func Describe(v fmt.Stringer) string { return v.String() }
+
+func NewTally() *tally { return &tally{} }
+
+var Default = &spool{}
+
+type Bundle struct {
+	Extra *extra
+}
+
+func Mute(q *quiet) int { return q.level }
+
+func Report(err error) string { return err.Error() }
+
+type Shelf struct {
+	*shelf
+}
+
+type shelf struct {
+	Stock *stock
+}
+
+const Debug level = 0
+
+func NewPlain() plain { return plain{} }
+
+type Scorer interface {
+	score() int
+}
+
+func ScoreAll[S Scorer](ss []S) int {
+	total := 0
+	for _, s := range ss {
+		total += s.score()
+	}
+	return total
+}
+
+type Station struct {
+	dock
+}
+
+type dock struct{}
+
+func (dock) Moor(b Berth) { b.moor() }
+
+type Berth interface {
+	moor()
+}
+-- target/types.go --
+package registry
+
+type Counter struct{}
+
+func (*Counter) registerInto(r *Registry) { r.names = append(r.names, "counter") }
+
+type Gauge struct{}
+
+//deadset:ignore DS1002 -- registered by the programs that import the package
+func (*Gauge) registerInto(r *Registry) { r.names = append(r.names, "gauge") }
+
+type Trace struct{}
+
+func (Trace) attach(r *Registry) { r.names = append(r.names, "trace") }
+
+type Buffer struct{}
+
+func (*Buffer) Write(p []byte) (int, error) { return len(p), nil }
+
+type Ratio struct{}
+
+func (Ratio) sample() int { return 1 }
+
+type Probe struct{}
+
+func (Probe) track() {}
+
+type Name struct{}
+
+func (Name) String() string { return "name" }
+
+type tally struct{}
+
+func (*tally) registerInto(r *Registry) { r.names = append(r.names, "tally") }
+
+type Label struct{}
+
+func (Label) registerInto() string { return "label" }
+
+type Spare struct{}
+
+func (Spare) reset() {}
+
+type spool struct{}
+
+func (*spool) registerInto(r *Registry) { r.names = append(r.names, "spool") }
+
+type extra struct{}
+
+func (*extra) registerInto(r *Registry) { r.names = append(r.names, "extra") }
+
+type quiet struct{ level int }
+
+func (*quiet) track() {}
+
+type Fault struct{}
+
+func (*Fault) Error() string { return "fault" }
+
+func (*Fault) Unwrap() error { return nil }
+
+type stock struct{}
+
+func (*stock) registerInto(r *Registry) { r.names = append(r.names, "stock") }
+
+type level int
+
+func (level) track() {}
+
+type plain struct{}
+
+func (*plain) registerInto(r *Registry) { r.names = append(r.names, "plain") }
+
+type Box[T any] struct{ v T }
+
+func (b Box[T]) sample() T { return b.v }
+
+type Grade struct{}
+
+func (Grade) score() int { return 2 }
+
+type Pier struct{}
+
+func (Pier) moor() {}

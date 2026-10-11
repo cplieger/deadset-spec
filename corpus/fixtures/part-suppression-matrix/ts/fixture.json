@@ -1,0 +1,24 @@
+{
+  "symbols": {
+    "ParameterAbove": { "file": "target/parts.ts", "line": 6 },
+    "ParameterTrailing": { "file": "target/parts.ts", "line": 10 },
+    "ParameterEntry": { "file": "target/parts.ts", "line": 14 },
+    "ParameterStale": { "file": "target/parts.ts", "line": 18 },
+    "ResultAbove": { "file": "target/parts.ts", "line": 24 },
+    "ResultTrailing": { "file": "target/parts.ts", "line": 28 },
+    "ResultEntry": { "file": "target/parts.ts", "line": 32 },
+    "ResultStale": { "file": "target/parts.ts", "line": 36 },
+    "StatementAbove": { "file": "target/parts.ts", "line": 45 },
+    "StatementTrailing": { "file": "target/parts.ts", "line": 51 },
+    "StatementEntry": { "file": "target/parts.ts", "line": 57 },
+    "StatementStale": { "file": "target/parts.ts", "line": 60 },
+    "StoreAbove": { "file": "target/parts.ts", "line": 67 },
+    "StoreTrailing": { "file": "target/parts.ts", "line": 73 },
+    "StoreEntry": { "file": "target/parts.ts", "line": 79 },
+    "StoreStale": { "file": "target/parts.ts", "line": 84 },
+    "CaseAbove": { "file": "target/parts.ts", "line": 96 },
+    "CaseTrailing": { "file": "target/parts.ts", "line": 106 },
+    "CaseEntry": { "file": "target/parts.ts", "line": 116 },
+    "CaseStale": { "file": "target/parts.ts", "line": 122 }
+  }
+}

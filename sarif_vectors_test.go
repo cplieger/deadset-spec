@@ -19,7 +19,7 @@ import (
 	"unicode/utf16"
 	"unicode/utf8"
 
-	spec "github.com/cplieger/deadset-spec/v6"
+	spec "github.com/cplieger/deadset-spec/v7"
 )
 
 // sarifVectorsDir holds one directory per published SARIF case.
@@ -424,8 +424,8 @@ type relatedLocation struct {
 	at    sarifPosition
 }
 
-// relatedOf is the implementations, the write positions and the other component
-// members a finding names, in that order, the first hundred. The finding's own
+// relatedOf is the implementations, the write positions, the name literal and the
+// other component members a finding names, in that order, the first hundred. The finding's own
 // declaration is the member with its reference and its path.
 func relatedOf(found sarifRecord, ownRef, ownPath string) ([]relatedLocation, error) {
 	var related []relatedLocation
@@ -446,6 +446,13 @@ func relatedOf(found sarifRecord, ownRef, ownPath string) ([]relatedLocation, er
 			return nil, err
 		}
 		related = append(related, relatedLocation{"write", at})
+	}
+	if literal, ok := details["name_literal"]; ok {
+		at, err := positionOf(literal)
+		if err != nil {
+			return nil, err
+		}
+		related = append(related, relatedLocation{"name", at})
 	}
 	component, _ := found["component"].(map[string]any)
 	members, _ := component["members"].([]any)

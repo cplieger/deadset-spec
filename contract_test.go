@@ -12,7 +12,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/cplieger/deadset-spec/v6"
+	"github.com/cplieger/deadset-spec/v7"
 )
 
 const contractPath = "contract/contract.json"
@@ -218,19 +218,13 @@ func loadContractBaseline(t *testing.T) contractBaselineDocument {
 	return doc
 }
 
-// TestContractVersionMovesWithEveryClosedVocabulary enforces the rule
-// contract.json states for itself and could not check: the version moves when a
-// document under contract/ changes in a way an implementation can observe. The
-// baseline records every closed vocabulary at the version it names, so a code, a
-// class, a subject kind, an exit code or an admitted report shape added or retired
-// while the published version stays where the baseline left it fails here, and
-// moving the version and rewriting the baseline in one change is the green path.
-//
-// The sets are the observable part of a contract change that a comparison can
-// decide. An observable change no set holds, a mechanism sentence for example,
-// moves the version and leaves the baseline alone, which is why this is an
-// equality over vocabularies rather than a digest of the tree: a digest would make
-// a description a version bump.
+// TestContractVersionMovesWithEveryClosedVocabulary pins contract_version and
+// every closed vocabulary under contract/ to the committed baseline: the two name
+// the same version, and a code, a class, a subject kind, an exit code or an
+// admitted report shape added or retired fails until the baseline is rewritten.
+// Whether that change also moves the version is contract.json's rule, which no
+// comparison here can decide. The check is an equality over sets rather than a
+// digest of the tree, so a description edit never trips it.
 func TestContractVersionMovesWithEveryClosedVocabulary(t *testing.T) {
 	contract := loadContract(t)
 	baseline := loadContractBaseline(t)
@@ -273,15 +267,15 @@ func TestContractVersionMovesWithEveryClosedVocabulary(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			if !slices.Equal(tc.got, tc.want) {
-				t.Errorf("%s declares %s %v and %s records %v at contract_version %q: a value added or retired moves the version, so move it in %s and rewrite %s in one change",
-					tc.file, tc.name, tc.got, contractBaselinePath, tc.want, contract.ContractVersion, contractPath, contractBaselinePath)
+				t.Errorf("%s declares %s %v and %s records %v at contract_version %q: a value added or retired fails until %s records it, so rewrite it, moving the version in %s in the same change unless it already stands above the last release by that level",
+					tc.file, tc.name, tc.got, contractBaselinePath, tc.want, contract.ContractVersion, contractBaselinePath, contractPath)
 			}
 		})
 	}
 	t.Run("exit_codes", func(t *testing.T) {
 		if !slices.Equal(codes, baseline.ExitCodes) {
-			t.Errorf("%s declares exit_codes %v and %s records %v at contract_version %q: a value added or retired moves the version, so move it in %s and rewrite %s in one change",
-				exitCodesPath, codes, contractBaselinePath, baseline.ExitCodes, contract.ContractVersion, contractPath, contractBaselinePath)
+			t.Errorf("%s declares exit_codes %v and %s records %v at contract_version %q: a value added or retired fails until %s records it, so rewrite it, moving the version in %s in the same change unless it already stands above the last release by that level",
+				exitCodesPath, codes, contractBaselinePath, baseline.ExitCodes, contract.ContractVersion, contractBaselinePath, contractPath)
 		}
 	})
 }

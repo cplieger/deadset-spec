@@ -1,0 +1,45 @@
+{
+  "name": "dependency-row-suppression-under-allow",
+  "description": "With the unused-dependency code set to allow, an ignore entry whose code, symbol and path equal the dependency finding the setting withholds is dormant: neither in effect nor stale. An entry naming the same row under another code, and an entry naming a row the file does not declare, still match no finding and are stale.",
+  "languages": [
+    "go",
+    "ts"
+  ],
+  "target_kind": "application",
+  "severity": {
+    "DS1601": "allow"
+  },
+  "suppressions_in_effect": 0,
+  "expect": [
+    {
+      "symbol": "AdjudicatedDependency",
+      "report": "none"
+    },
+    {
+      "symbol": "EntryInEffect",
+      "report": "none"
+    },
+    {
+      "symbol": "UnadjudicatedDependency",
+      "report": "none"
+    },
+    {
+      "symbol": "WrongCodeEntry",
+      "report": "DS1703",
+      "confidence": "certain",
+      "symbol_kind": "suppression",
+      "details": {
+        "mechanism": "ignore"
+      }
+    },
+    {
+      "symbol": "AbsentRowEntry",
+      "report": "DS1703",
+      "confidence": "certain",
+      "symbol_kind": "suppression",
+      "details": {
+        "mechanism": "ignore"
+      }
+    }
+  ]
+}

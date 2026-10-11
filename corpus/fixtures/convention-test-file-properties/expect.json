@@ -1,0 +1,53 @@
+{
+  "name": "convention-test-file-properties",
+  "description": "A file an applied convention row's test-file property names is a test file, so its top level and exports are roots of the test run and what only it and the tests reference is test-support code: the vitest row's setupFiles and globalSetup each name one. A helper only such a file and a test reference is reported at the class possible as test-only, and neither the global setup's exported hook nor the members its augmentation of the runner's module declares for the tests to read is reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "conventions_applied": [
+    {
+      "name": "vitest",
+      "package": "vitest",
+      "version": "5.999.0",
+      "manifest": "package.json"
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "Prepare",
+      "report": "DS1004",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "Warm",
+      "report": "DS1004",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "GlobalSetupHook",
+      "report": "none"
+    },
+    {
+      "symbol": "Augmentation",
+      "report": "none"
+    },
+    {
+      "symbol": "ProvidedContext",
+      "report": "none"
+    },
+    {
+      "symbol": "ProvidedPort",
+      "report": "none"
+    },
+    {
+      "symbol": "Main",
+      "report": "none"
+    }
+  ]
+}

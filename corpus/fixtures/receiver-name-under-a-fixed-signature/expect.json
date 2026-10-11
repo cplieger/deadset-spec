@@ -1,0 +1,38 @@
+{
+  "name": "receiver-name-under-a-fixed-signature",
+  "description": "A receiver name the method's body never reads is reported whatever fixes the method's signature, because deleting the name leaves the signature as it is: a method interface satisfaction retains and a method used as a value have their unread receiver names reported. A method that names no receiver has none to report.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Epoch.f",
+      "report": "DS1802",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "receiver",
+      "details": {
+        "overlap": [
+          "revive unused-receiver"
+        ]
+      }
+    },
+    {
+      "symbol": "Label.f",
+      "report": "DS1802",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "receiver",
+      "details": {
+        "overlap": [
+          "revive unused-receiver"
+        ]
+      }
+    },
+    {
+      "symbol": "Zone",
+      "report": "none"
+    }
+  ]
+}

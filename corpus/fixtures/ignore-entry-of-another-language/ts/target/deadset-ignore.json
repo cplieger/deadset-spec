@@ -1,0 +1,27 @@
+{
+  "description": "One entry of this language in effect and three of the other language.",
+  "ignore": [
+    {
+      "code": "DS1002",
+      "symbol": "go://example.com/app#unusedGo",
+      "path": "main.go",
+      "reason": "The other language's adjudication."
+    },
+    {
+      "code": "DS1002",
+      "symbol": "ts://@example/target/main.ts#unusedTs",
+      "path": "main.ts",
+      "reason": "Kept for the next release."
+    },
+    {
+      "code": "DS1002",
+      "symbol": "go://example.com/app#unusedGo",
+      "reason": "The other language's entry, scoped to no file."
+    },
+    {
+      "code": "DS1002",
+      "symbol": "go://example.com/app#unusedGo",
+      "path": "main.go"
+    }
+  ]
+}

@@ -11,7 +11,7 @@ import (
 	"testing"
 	"testing/fstest"
 
-	spec "github.com/cplieger/deadset-spec/v6"
+	spec "github.com/cplieger/deadset-spec/v7"
 )
 
 // baselineVectorsDir holds one directory per published baseline case: the report of one

@@ -1,0 +1,99 @@
+{
+  "name": "element-access-by-literal-type",
+  "description": "An element access whose index the compiler types as a literal type or a union of them references each member those literals name, as a read or a write. An index that is an unassigned keyof parameter of a function whose every call the target holds is decided at the calls, by each argument's type or by the parameter's default, so a member no call passes stays reported. Where the function escapes as a value or is reached through an interface, the access reads every member its index type admits. A non-generic parameter typed by keyof of a type parameter reads the member a literal argument names.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "FieldsTitle",
+      "report": "none"
+    },
+    {
+      "symbol": "FieldsBody",
+      "report": "none"
+    },
+    {
+      "symbol": "FieldsExtra",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member"
+    },
+    {
+      "symbol": "PickedLeft",
+      "report": "none"
+    },
+    {
+      "symbol": "PickedRight",
+      "report": "none"
+    },
+    {
+      "symbol": "DraftA",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member"
+    },
+    {
+      "symbol": "DraftB",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member"
+    },
+    {
+      "symbol": "DraftValue",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "variable"
+    },
+    {
+      "symbol": "OtherX",
+      "report": "none"
+    },
+    {
+      "symbol": "OtherY",
+      "report": "none"
+    },
+    {
+      "symbol": "OtherZ",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member"
+    },
+    {
+      "symbol": "SignalsClosed",
+      "report": "none"
+    },
+    {
+      "symbol": "SignalsOpened",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member"
+    },
+    {
+      "symbol": "DocTitle",
+      "report": "none"
+    },
+    {
+      "symbol": "DocAuthor",
+      "report": "none"
+    },
+    {
+      "symbol": "ModesLight",
+      "report": "none"
+    },
+    {
+      "symbol": "ModesDark",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member"
+    }
+  ]
+}

@@ -1,7 +1,8 @@
 The Go rendering: one module of three packages under a matrix of one
-configuration. Two files carry a build constraint no configuration of that matrix
-satisfies, one a custom tag and one the ignore tag, and the two are answered
-differently; a third package is reached by no import of the module.
+configuration. Four files carry a build constraint no configuration of that
+matrix satisfies: two a custom tag, one of them a test file, and two the ignore
+tag, one with a platform tag beside it. The custom-tag files are reported and the
+ignore-tag files are not; a third package is reached by no import of the module.
 
 -- fixture.json --
 {
@@ -11,7 +12,9 @@ differently; a third package is reached by no import of the module.
     "Generated": { "file": "target/generate.go", "line": 1 },
     "Handwritten": { "file": "target/tool.go", "line": 1 },
     "Orphan": { "file": "target/internal/orphan/orphan.go", "line": 1 },
-    "width": { "file": "target/internal/orphan/orphan.go", "line": 4 }
+    "width": { "file": "target/internal/orphan/orphan.go", "line": 4 },
+    "HandwrittenTest": { "file": "target/handwritten_test.go", "line": 1 },
+    "GeneratedOnLinux": { "file": "target/generate_linux.go", "line": 1 }
   }
 }
 -- target/go.mod --
@@ -53,3 +56,21 @@ package orphan
 
 // width is reached by no import of the module and by no root.
 func width() int { return 2 }
+-- target/handwritten_test.go --
+//go:build handwritten
+
+package main
+
+import "testing"
+
+func TestHandwritten(t *testing.T) {
+	if handwritten() != 4 {
+		t.Fatal("handwritten")
+	}
+}
+-- target/generate_linux.go --
+//go:build ignore && linux
+
+package main
+
+func main() { println("generated on linux") }

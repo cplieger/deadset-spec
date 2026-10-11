@@ -1,0 +1,62 @@
+The Go rendering: a command that converts two struct types to an interface it
+defines and encodes each value through that interface, and converts a third
+struct type to any.
+
+-- fixture.json --
+{
+  "symbols": {
+    "hello.Name": { "file": "target/main.go", "line": 17 },
+    "bye.Reason": { "file": "target/main.go", "line": 24 },
+    "other.Note": { "file": "target/main.go", "line": 31 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target encodes values it holds through an interface it defines.
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"os"
+)
+
+// message is the defined interface the queue holds its values through.
+type message interface {
+	kind() string
+}
+
+// hello is converted to message.
+type hello struct {
+	Name string
+}
+
+func (hello) kind() string { return "hello" }
+
+// bye is converted to message.
+type bye struct {
+	Reason string
+}
+
+func (bye) kind() string { return "bye" }
+
+// other is converted to any alone.
+type other struct {
+	Note string
+}
+
+func main() {
+	queue := []message{hello{Name: "a"}, bye{Reason: "b"}}
+	for _, m := range queue {
+		out, err := json.Marshal(m)
+		if err != nil {
+			os.Exit(1)
+		}
+		fmt.Println(m.kind(), string(out))
+	}
+	var held any = other{Note: "n"}
+	fmt.Println(held == nil)
+}

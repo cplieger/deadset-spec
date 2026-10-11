@@ -1,0 +1,9 @@
+{
+  "name": "@example/e2e",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "@stryker-mutator/core": "9.999.0"
+  }
+}

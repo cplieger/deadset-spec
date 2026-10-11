@@ -1,0 +1,43 @@
+One main package that imports nothing, whose module file requires a module no
+package imports and replaces that same module, and whose ignore file holds an
+entry for each of the two directives.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Requirement": { "file": "target/go.mod", "line": 5 },
+    "Replace": { "file": "target/go.mod", "line": 7 },
+    "RequirementEntry": { "file": "target/deadset-ignore.json", "line": 4 },
+    "ReplaceEntry": { "file": "target/deadset-ignore.json", "line": 10 }
+  }
+}
+-- target/go.mod --
+module example.com/app
+
+go 1.27.0
+
+require golang.org/x/sync v0.16.0
+
+replace golang.org/x/sync v0.16.0 => golang.org/x/sync v0.17.0
+-- target/main.go --
+package main
+
+func main() {}
+-- target/deadset-ignore.json --
+{
+  "description": "One entry for the requirement and one for the replace directive.",
+  "ignore": [
+    {
+      "code": "DS1601",
+      "symbol": "go://example.com/app#golang.org/x/sync:require",
+      "path": "go.mod",
+      "reason": "Kept for a tool a workflow outside the module runs."
+    },
+    {
+      "code": "DS1605",
+      "symbol": "go://example.com/app#golang.org/x/sync@v0.16.0:replace",
+      "path": "go.mod",
+      "reason": "Kept with the requirement it redirects."
+    }
+  ]
+}

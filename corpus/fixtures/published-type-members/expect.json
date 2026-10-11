@@ -1,0 +1,72 @@
+{
+  "name": "published-type-members",
+  "description": "A public member of a type the published API reaches is published API at the published declaration's confidence, the reach running through the type of each parameter, result and property of a published declaration and of every type so reached, so a member of a type only another reached type names is reported at possible with no consumer information, as the published function nothing calls is. A member of a type only the module's own body names is reported at certain.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "library",
+  "min_confidence": "possible",
+  "expect": [
+    {
+      "symbol": "configure",
+      "report": "DS1001",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "Options.name",
+      "report": "none"
+    },
+    {
+      "symbol": "Options.plugin",
+      "report": "DS1003",
+      "confidence": "possible",
+      "reachability_class": "possible"
+    },
+    {
+      "symbol": "Plugin.webpack",
+      "report": "DS1003",
+      "confidence": "possible",
+      "reachability_class": "possible"
+    },
+    {
+      "symbol": "load",
+      "report": "DS1001",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "Loaded.id",
+      "report": "DS1301",
+      "confidence": "possible",
+      "reachability_class": "possible"
+    },
+    {
+      "symbol": "Loaded.extra",
+      "report": "DS1003",
+      "confidence": "possible",
+      "reachability_class": "possible"
+    },
+    {
+      "symbol": "Registry",
+      "report": "DS1001",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "class"
+    },
+    {
+      "symbol": "Entry.label",
+      "report": "DS1003",
+      "confidence": "possible",
+      "reachability_class": "possible"
+    },
+    {
+      "symbol": "Internal.spare",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    }
+  ]
+}

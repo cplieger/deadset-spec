@@ -1,0 +1,7 @@
+{
+  "symbols": {
+    "PrefsLang": { "file": "target/lib.ts", "line": 2 },
+    "PrefsZone": { "file": "target/lib.ts", "line": 3 },
+    "Reader": { "file": "target/lib.ts", "line": 7 }
+  }
+}

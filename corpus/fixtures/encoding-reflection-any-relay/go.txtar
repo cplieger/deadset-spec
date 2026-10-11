@@ -1,0 +1,64 @@
+The Go rendering: a command that hands values to a function of its own that
+encodes its any-typed parameter, and a value to a function that only stores it.
+
+-- fixture.json --
+{
+  "symbols": {
+    "status.Code": { "file": "target/main.go", "line": 26 },
+    "user.Name": { "file": "target/main.go", "line": 31 },
+    "ignored.Level": { "file": "target/main.go", "line": 36 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target encodes through a function of its own.
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"io"
+	"os"
+)
+
+// writeJSON encodes whatever it is handed.
+func writeJSON(w io.Writer, v any) error {
+	return json.NewEncoder(w).Encode(v)
+}
+
+// held keeps what keep is handed.
+var held []any
+
+// keep stores whatever it is handed and encodes nothing.
+func keep(v any) {
+	held = append(held, v)
+}
+
+// status is handed to writeJSON.
+type status struct {
+	Code int
+}
+
+// user is stored into a map literal handed to writeJSON.
+type user struct {
+	Name string
+}
+
+// ignored is handed to keep alone.
+type ignored struct {
+	Level int
+}
+
+func main() {
+	if err := writeJSON(os.Stdout, status{Code: 1}); err != nil {
+		os.Exit(1)
+	}
+	if err := writeJSON(os.Stdout, map[string]any{"user": user{Name: "u"}}); err != nil {
+		os.Exit(1)
+	}
+	keep(ignored{Level: 2})
+	fmt.Println(len(held))
+}

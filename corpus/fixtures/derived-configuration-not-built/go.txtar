@@ -1,0 +1,30 @@
+The Go rendering: a command and a file only the legacy tag builds, which imports a
+package of the module that nothing provides.
+
+-- fixture.json --
+{
+  "configurations_not_built": ["linux-amd64-legacy"],
+  "symbols": {
+    "orphan": { "file": "target/main.go", "line": 7 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+package main
+
+func main() { println(label()) }
+
+func label() string { return "target" }
+
+func orphan() int { return 2 }
+-- target/legacy.go --
+//go:build legacy
+
+package main
+
+import "example.com/target/internal/missing"
+
+func legacyLabel() string { return missing.Label }

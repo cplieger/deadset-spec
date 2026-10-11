@@ -1,0 +1,10 @@
+{
+  "symbols": {
+    "OrphanFile": { "file": "target/orphan.ts", "line": 1 },
+    "Orphan": { "file": "target/orphan.ts", "line": 2 },
+    "StrykerDependency": { "file": "target/e2e/package.json", "line": 7 },
+    "Live": { "file": "target/e2e/hooks.ts", "line": 1 },
+    "ResetForTest": { "file": "target/e2e/hooks.ts", "line": 5 },
+    "LeftPadDependency": { "file": "target/fixtures/sample/package.json", "line": 6 }
+  }
+}

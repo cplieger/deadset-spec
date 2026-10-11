@@ -1,0 +1,10 @@
+{
+  "symbols": {
+    "StrykerDependency": { "file": "target/web/package.json", "line": 11 },
+    "VitestDependency": { "file": "target/web/package.json", "line": 12 },
+    "Live": { "file": "target/web/src/hooks.ts", "line": 1 },
+    "ResetForTest": { "file": "target/web/src/hooks.ts", "line": 5 },
+    "Register": { "file": "target/web/src/registry.ts", "line": 1 },
+    "LintToolDependency": { "file": "target/tools/package.json", "line": 8 }
+  }
+}

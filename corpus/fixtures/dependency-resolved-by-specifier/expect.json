@@ -1,0 +1,32 @@
+{
+  "name": "dependency-resolved-by-specifier",
+  "description": "A call of import.meta.resolve or of require.resolve whose argument is a string literal or a template literal with no substitution needs the dependency an import of that specifier needs, a subpath of the package included, so each package the entry resolves is used. A string that names a dependency anywhere else in the source is no use, so that dependency is reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "MetaResolved",
+      "report": "none"
+    },
+    {
+      "symbol": "NeverResolved",
+      "report": "DS1601",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "dependency",
+      "details": {
+        "dependency_class": "dev-dependency"
+      }
+    },
+    {
+      "symbol": "RequireResolved",
+      "report": "none"
+    },
+    {
+      "symbol": "SubpathResolved",
+      "report": "none"
+    }
+  ]
+}

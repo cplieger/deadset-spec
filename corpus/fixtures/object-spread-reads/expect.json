@@ -1,0 +1,17 @@
+{
+  "name": "object-spread-reads",
+  "description": "An object spread reads each field of the value it copies and no accessor its class declares, because the runtime copies own enumerable properties and a class's accessors sit on its prototype. A class member is an accessor by its declaration, so a spread through a mapped type over the class, Readonly of it, reads no getter either, and a getter nothing else reads is reported. A spread copies a method an interface declares and calls none, so an interface method nothing calls is reported. An accessor an interface declares is read as a property is, so a spread reads it.",
+  "languages": ["ts"],
+  "target_kind": "application",
+  "expect": [
+    { "symbol": "Counter.count", "report": "none" },
+    { "symbol": "Counter.label", "report": "none" },
+    { "symbol": "Counter.doubled", "report": "none" },
+    { "symbol": "Counter.stale", "report": "DS1003", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "class-member", "liveness_relation": "reference-counting" },
+    { "symbol": "Gauge.level", "report": "none" },
+    { "symbol": "Gauge.spent", "report": "DS1003", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "class-member", "liveness_relation": "reference-counting" },
+    { "symbol": "Shape.side", "report": "none" },
+    { "symbol": "Shape.area", "report": "DS1203", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "interface-method", "liveness_relation": "reference-counting" },
+    { "symbol": "Sized.size", "report": "none" }
+  ]
+}

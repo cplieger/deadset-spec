@@ -29,7 +29,7 @@ type repo struct {
 }
 
 // TableName satisfies an interface the store package declares.
-func (r *repo) TableName() string { return "repos" }
+func (*repo) TableName() string { return "repos" }
 
 // ResetName satisfies no interface the store package can name.
 func (r *repo) ResetName() { r.Name = "" }

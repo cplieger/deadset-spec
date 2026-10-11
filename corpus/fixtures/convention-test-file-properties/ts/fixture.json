@@ -1,0 +1,11 @@
+{
+  "symbols": {
+    "Main": { "file": "target/main.ts", "line": 1 },
+    "Augmentation": { "file": "target/global-setup.ts", "line": 3 },
+    "ProvidedContext": { "file": "target/global-setup.ts", "line": 4 },
+    "ProvidedPort": { "file": "target/global-setup.ts", "line": 5 },
+    "GlobalSetupHook": { "file": "target/global-setup.ts", "line": 9 },
+    "Prepare": { "file": "target/src/support.ts", "line": 1 },
+    "Warm": { "file": "target/src/support.ts", "line": 3 }
+  }
+}

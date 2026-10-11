@@ -1,0 +1,42 @@
+{
+  "name": "nested-package-dependency-scope",
+  "description": "A nested package's dependency is needed only by a use written at or below the nested package's directory, so a dependency the root and a nested package both declare, which only a root file imports, is reported in the nested manifest alone. A nested package's enabling package and dependency that nothing installs apply no row, raise no setup failure and are not judged, because no run requires a nested package to be installed, while the target's own uninstalled dependency is judged by the import closure alone.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "PinsLeftPad",
+      "report": "none"
+    },
+    {
+      "symbol": "PinsVitest",
+      "report": "none"
+    },
+    {
+      "symbol": "RootOnly",
+      "report": "DS1601",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "dependency",
+      "details": {
+        "dependency_class": "dependency"
+      }
+    },
+    {
+      "symbol": "RootShared",
+      "report": "none"
+    },
+    {
+      "symbol": "ScopedShared",
+      "report": "DS1601",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "dependency",
+      "details": {
+        "dependency_class": "dependency"
+      }
+    }
+  ]
+}

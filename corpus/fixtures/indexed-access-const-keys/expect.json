@@ -1,0 +1,29 @@
+{
+  "name": "indexed-access-const-keys",
+  "description": "A key the compiler types as a literal type fixes the type parameter of a keyof position whatever expression spells it: a member of an object an as-const assertion fixes, passed to a destructured method, and a literal passed to a type parameter constrained by Extract over keyof. Each member such a key names is referenced, and the member no key names is reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "EventsOpenSeries",
+      "report": "none"
+    },
+    {
+      "symbol": "EventsOpenMovie",
+      "report": "none"
+    },
+    {
+      "symbol": "EventsClosed",
+      "report": "none"
+    },
+    {
+      "symbol": "EventsDropped",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member"
+    }
+  ]
+}

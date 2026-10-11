@@ -1,0 +1,26 @@
+{
+  "name": "element-access-by-literal-type-in-a-library",
+  "description": "A public method of a library's published class may be called by a program the target does not hold, so an element access whose index is its keyof parameter reads every member the index type admits, although the target holds no call of it. The class itself is reported at the class of a library's published API with no consumer declared.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "library",
+  "min_confidence": "possible",
+  "expect": [
+    {
+      "symbol": "PrefsLang",
+      "report": "none"
+    },
+    {
+      "symbol": "PrefsZone",
+      "report": "none"
+    },
+    {
+      "symbol": "Reader",
+      "report": "DS1001",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "class"
+    }
+  ]
+}

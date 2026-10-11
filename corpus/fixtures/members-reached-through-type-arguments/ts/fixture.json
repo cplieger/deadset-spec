@@ -1,0 +1,28 @@
+{
+  "symbols": {
+    "HolderTick": {
+      "file": "target/main.ts",
+      "line": 11
+    },
+    "ReplyCode": {
+      "file": "target/main.ts",
+      "line": 7
+    },
+    "ResultCode": {
+      "file": "target/main.ts",
+      "line": 2
+    },
+    "ResultExtra": {
+      "file": "target/main.ts",
+      "line": 3
+    },
+    "ViewIdle": {
+      "file": "target/main.ts",
+      "line": 16
+    },
+    "ViewTick": {
+      "file": "target/main.ts",
+      "line": 15
+    }
+  }
+}

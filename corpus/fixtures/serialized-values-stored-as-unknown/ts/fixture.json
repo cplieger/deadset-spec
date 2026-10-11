@@ -1,0 +1,10 @@
+{
+  "symbols": {
+    "SavedRules": { "file": "target/main.ts", "line": 2 },
+    "SavedFallback": { "file": "target/main.ts", "line": 3 },
+    "WrappedInner": { "file": "target/main.ts", "line": 7 },
+    "ListedValue": { "file": "target/main.ts", "line": 16 },
+    "BoxedSize": { "file": "target/main.ts", "line": 20 },
+    "KeptNote": { "file": "target/main.ts", "line": 24 }
+  }
+}

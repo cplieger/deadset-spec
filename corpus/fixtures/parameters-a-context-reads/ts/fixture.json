@@ -1,0 +1,10 @@
+{
+  "symbols": {
+    "AnnotatedContextual": { "file": "target/main.ts", "line": 19 },
+    "DestructuredContextual": { "file": "target/main.ts", "line": 26 },
+    "DeclaredAnnotated": { "file": "target/main.ts", "line": 32 },
+    "UncontextualExpression": { "file": "target/main.ts", "line": 39 },
+    "ArrayElementBeforeUsed": { "file": "target/main.ts", "line": 49 },
+    "ArrayElementUsed": { "file": "target/main.ts", "line": 50 }
+  }
+}

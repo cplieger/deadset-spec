@@ -1,0 +1,7 @@
+{
+  "symbols": {
+    "live": { "file": "target/src/codec.ts", "line": 2 },
+    "forTests": { "file": "target/src/codec.ts", "line": 7 },
+    "Unused": { "file": "target/test/unit/codec.test.ts", "line": 4 }
+  }
+}

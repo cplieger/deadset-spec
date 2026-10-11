@@ -1,0 +1,21 @@
+{
+  "name": "indexed-access-index-signature",
+  "description": "In a type that declares an index signature beside its members, a literal fixed through a keyof position reads the declared member it names, and a literal that names no declared member reads the signature, which is no member. The declared member no literal names is reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "SettingsPage",
+      "report": "none"
+    },
+    {
+      "symbol": "SettingsTheme",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member"
+    }
+  ]
+}

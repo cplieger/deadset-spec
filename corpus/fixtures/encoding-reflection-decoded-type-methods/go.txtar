@@ -1,0 +1,74 @@
+The Go rendering: a command that decodes one document into a struct with a
+decoding method, an unused method and an embedded struct, and a second into a
+struct whose interface field holds a pointer it wrote.
+
+-- fixture.json --
+{
+  "symbols": {
+    "level.UnmarshalText": { "file": "target/main.go", "line": 25 },
+    "settings.String": { "file": "target/main.go", "line": 31 },
+    "settings.base": { "file": "target/main.go", "line": 13 },
+    "envelope.Data": { "file": "target/main.go", "line": 35 },
+    "envelope.Note": { "file": "target/main.go", "line": 36 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target decodes two documents.
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"os"
+)
+
+// settings is reached by a decoder alone.
+type settings struct {
+	Level level `json:"level"`
+	base
+}
+
+// base is embedded, and the program reads the field it promotes.
+type base struct {
+	ID int
+}
+
+// level decodes itself from text.
+type level int
+
+// UnmarshalText is the method the decoder resolves by name.
+func (l *level) UnmarshalText(b []byte) error {
+	*l = level(len(b))
+	return nil
+}
+
+// String is a method of a type only a decoder reaches, and nothing calls it.
+func (settings) String() string { return "settings" }
+
+// envelope routes the decode into the value its Data field holds.
+type envelope struct {
+	Data any
+	Note string
+}
+
+// result is the value the decode fills through envelope.
+type result struct {
+	Value int
+}
+
+func main() {
+	var s settings
+	if err := json.Unmarshal([]byte(`{}`), &s); err != nil {
+		os.Exit(1)
+	}
+	var r result
+	env := envelope{Data: &r, Note: "n"}
+	if err := json.Unmarshal([]byte(`{}`), &env); err != nil {
+		os.Exit(1)
+	}
+	fmt.Println(int(s.Level), s.ID, r.Value)
+}

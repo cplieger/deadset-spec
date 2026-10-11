@@ -1,0 +1,6 @@
+{
+  "name": "@example/keep",
+  "version": "1.0.0",
+  "private": true,
+  "types": "./index.d.ts"
+}

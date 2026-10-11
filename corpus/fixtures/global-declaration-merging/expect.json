@@ -1,0 +1,24 @@
+{
+  "name": "global-declaration-merging",
+  "description": "A declare global block is used where a declaration it holds is used, and a member it merges into an interface the compiler's library declarations declare is read where a read of that interface's member resolves to it. A merged member nothing reads is reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "GlobalBlock",
+      "report": "none"
+    },
+    {
+      "symbol": "ImportMeta.flag",
+      "report": "none"
+    },
+    {
+      "symbol": "ImportMeta.unusedFlag",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    }
+  ]
+}

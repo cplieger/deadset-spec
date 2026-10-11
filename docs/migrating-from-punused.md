@@ -61,7 +61,7 @@ Carry the reason text from the line's `#` comment into the entry's `reason` fiel
 
 ### 6. Read the run again
 
-An entry that matches nothing is reported as `DS1703`, so a file that falls out of date is visible rather than silently inert. The source is `contract/kinds.json`, row `DS1703`.
+An entry that is stale, as `contract/grammar/suppression.md` defines it, is reported as `DS1703`, so a file that falls out of date is visible rather than silently inert. The source is `contract/kinds.json`, row `DS1703`.
 
 ## The entry
 
@@ -98,11 +98,20 @@ An entry matches only the code, the symbol and the path it names, all three, so 
 
 ## The other mechanism
 
-An adjudication may sit in the source instead, as a comment on the line immediately above the declaration, naming one or more codes and carrying the reason after `--`:
+An adjudication may sit in the source instead, as a comment beside the declaration or on the line immediately above it, naming one or more codes and carrying the reason after `--`:
 
 ```go
 //deadset:ignore DS1001 -- Reached only through the generated TypeScript client.
 func (c *Catalog) ResolveAlias(name string) string {
 ```
+
+| Where the directive sits | What it binds |
+| --- | --- |
+| Alone on the line immediately above the line where a declaration begins | That declaration |
+| After the code on the line where a declaration begins | That declaration |
+| Alone on the line immediately above a parameter or result on a later line of a wrapped signature | The function that declares the parameter or result |
+| After a parameter or result on a later line of a wrapped signature, on that line | The function that declares the parameter or result |
+
+A declaration begins on the line of its first token, so a TypeScript declaration with a decorator begins on the decorator's line. A directive anywhere else binds nothing and is reported as a stale suppression. That covers a directive two lines up, one below the declaration, one beside code where no declaration begins, and one above another comment.
 
 The inline directive is scoped by its position, so it needs no path, and it carries the same reason rule. A directive with no reason is reported as `DS1701`. The source is `contract/grammar/suppression.md`, the inline directive. Put an adjudication inline when the reason belongs beside the declaration, and in the file when a reader wants every adjudication of the target in one place.

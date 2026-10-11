@@ -2,6 +2,7 @@ package spec_test
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/fs"
 	"maps"
 	"regexp"
@@ -10,7 +11,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/cplieger/deadset-spec/v6"
+	"github.com/cplieger/deadset-spec/v7"
 )
 
 const (
@@ -505,9 +506,65 @@ var (
 	}
 )
 
-// boundLineOffset is the only offset from which an inline directive binds: the line
-// immediately above the declaration it names.
-const boundLineOffset = -1
+// boundLineOffset is the offset from which a directive alone on its line binds: the
+// line immediately above the line it targets. trailingLineOffset is the one a
+// trailing directive binds from, the targeted line itself, and only the trailing
+// rule exercises it.
+const (
+	boundLineOffset    = -1
+	trailingLineOffset = 0
+	trailingRule       = "trailing"
+)
+
+// inlineOffsetDefect reports what is wrong with an inline case's line_offset under its
+// rule, or "" when nothing is. A refused case sits at a binding offset exactly when
+// its one defect is something other than its placement.
+func inlineOffsetDefect(rule string, accepted bool, offset int) string {
+	if accepted {
+		want := boundLineOffset
+		if rule == trailingRule {
+			want = trailingLineOffset
+		}
+		if offset != want {
+			return fmt.Sprintf("under %q line_offset = %d, want %d", rule, offset, want)
+		}
+		return ""
+	}
+	binds := offset == boundLineOffset || offset == trailingLineOffset
+	if binds == (rule == "line-above") {
+		return fmt.Sprintf("under %q line_offset = %d, want the placement rule to be the one defect it exercises", rule, offset)
+	}
+	return ""
+}
+
+func TestInlineOffsetDefectNamesEachMisplacedCase(t *testing.T) {
+	cases := []struct {
+		name     string
+		rule     string
+		accepted bool
+		offset   int
+		bad      bool
+	}{
+		{name: "accepted_alone_above", rule: "spelling-no-space", accepted: true, offset: -1},
+		{name: "accepted_alone_on_the_declaration_line", rule: "spelling-no-space", accepted: true, offset: 0, bad: true},
+		{name: "accepted_trailing", rule: trailingRule, accepted: true, offset: 0},
+		{name: "accepted_trailing_above", rule: trailingRule, accepted: true, offset: -1, bad: true},
+		{name: "refused_two_above", rule: "line-above", offset: -2},
+		{name: "refused_below", rule: "line-above", offset: 1},
+		{name: "refused_placement_at_a_trailing_offset", rule: "line-above", offset: 0, bad: true},
+		{name: "refused_placement_at_the_line_above", rule: "line-above", offset: -1, bad: true},
+		{name: "refused_reason_at_the_line_above", rule: "reason-required", offset: -1},
+		{name: "refused_reason_trailing", rule: "reason-required", offset: 0},
+		{name: "refused_reason_misplaced", rule: "reason-required", offset: -2, bad: true},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := inlineOffsetDefect(tc.rule, tc.accepted, tc.offset); (got != "") != tc.bad {
+				t.Errorf("inlineOffsetDefect(%q, %v, %d) = %q, want a defect: %v", tc.rule, tc.accepted, tc.offset, got, tc.bad)
+			}
+		})
+	}
+}
 
 type suppressionCase struct {
 	Input    json.RawMessage `json:"input"`
@@ -586,8 +643,8 @@ func TestSuppressionInlineCorpusFollowsTheDecisionProcedure(t *testing.T) {
 				if got != wellFormed {
 					t.Fatalf("the procedure reaches %q on the accepted comment %q, want %q", got, in.Comment, wellFormed)
 				}
-				if *in.LineOffset != boundLineOffset {
-					t.Errorf("accepted case %d has line_offset = %d, want %d", i, *in.LineOffset, boundLineOffset)
+				if defect := inlineOffsetDefect(c.Rule, true, *in.LineOffset); defect != "" {
+					t.Errorf("accepted case %d: %s", i, defect)
 				}
 				groups := exprs.wellFormed.FindStringSubmatch(in.Comment)
 				for code := range strings.SplitSeq(groups[codesGroup], ",") {
@@ -611,8 +668,8 @@ func TestSuppressionInlineCorpusFollowsTheDecisionProcedure(t *testing.T) {
 			if outcome := vocabulary[c.Rule].onRefusal; !strings.Contains(outcome, statedOutcome[want]) {
 				t.Errorf("the page states %q on refusal under rule %q, want it to name %q", outcome, c.Rule, statedOutcome[want])
 			}
-			if boundHere := *in.LineOffset == boundLineOffset; boundHere == (c.Rule == "line-above") {
-				t.Errorf("refused case %d under %q has line_offset = %d, want the placement rule to be the one defect it exercises", i, c.Rule, *in.LineOffset)
+			if defect := inlineOffsetDefect(c.Rule, false, *in.LineOffset); defect != "" {
+				t.Errorf("refused case %d: %s", i, defect)
 			}
 			if got == reasonMissing {
 				codes := reasonlessCodes(t, exprs, in.Comment)

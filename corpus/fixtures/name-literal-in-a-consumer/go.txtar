@@ -1,0 +1,49 @@
+One published library package with two functions nothing references, one spelled by a string
+literal of the target and the other only by a literal of the one loaded consumer.
+
+-- fixture.json --
+{
+  "symbols": {
+    "SpelledInTarget": { "file": "target/lib.go", "line": 5 },
+    "SpelledInConsumer": { "file": "target/lib.go", "line": 7 },
+    "TargetLiteral": { "file": "target/lib.go", "line": 9 }
+  }
+}
+-- target/go.mod --
+module example.com/lib
+
+go 1.27.0
+-- target/lib.go --
+package lib
+
+func Used() int { return 0 }
+
+func Spelled() int { return 1 }
+
+func ConsumerSpelled() int { return 2 }
+
+var table = map[string]int{"Spelled": 1}
+
+func Size() int { return len(table) }
+-- consumer/go.mod --
+module example.com/consumer
+
+go 1.27.0
+
+require example.com/lib v0.0.0
+
+replace example.com/lib => ../target
+-- consumer/main.go --
+package main
+
+import (
+	"fmt"
+
+	"example.com/lib"
+)
+
+var generated = map[string]int{"ConsumerSpelled": 1}
+
+func main() {
+	fmt.Println(lib.Used(), lib.Size(), len(generated))
+}

@@ -1,0 +1,45 @@
+The Go rendering: a command whose fake type satisfies an interface it converts
+the fake to, with one method used as a value and one with no receiver name.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Epoch.f": { "file": "target/main.go", "line": 15 },
+    "Label.f": { "file": "target/main.go", "line": 18 },
+    "Zone": { "file": "target/main.go", "line": 21 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target hands a fake to a function that takes a clock.
+package main
+
+import "fmt"
+
+// clock is the interface run reads the time through.
+type clock interface {
+	epoch() int
+}
+
+// fake is handed to run as a clock.
+type fake struct{}
+
+// epoch names a receiver its body never reads, on a method interface satisfaction retains.
+func (f *fake) epoch() int { return 1 }
+
+// label names a receiver its body never reads, on a method used as a value.
+func (f *fake) label() string { return "fake" }
+
+// zone names no receiver.
+func (*fake) zone() string { return "utc" }
+
+func run(c clock) int { return c.epoch() }
+
+func main() {
+	f := &fake{}
+	name := f.label
+	fmt.Println(run(f), name(), f.zone())
+}

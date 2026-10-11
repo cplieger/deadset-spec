@@ -1,0 +1,59 @@
+One published library package whose functions and method never read a parameter, each held by
+a suppression record in another position or mechanism, and one function whose parameters are
+all read carrying a record that matches nothing.
+
+-- fixture.json --
+{
+  "symbols": {
+    "HeldAbove": { "file": "target/lib.go", "line": 4 },
+    "TrailingMethod": { "file": "target/lib.go", "line": 8 },
+    "HeldByEntry": { "file": "target/lib.go", "line": 12 },
+    "BothOnFirstLine": { "file": "target/lib.go", "line": 15 },
+    "WrappedFirst": { "file": "target/lib.go", "line": 18 },
+    "WrappedSecond": { "file": "target/lib.go", "line": 19 },
+    "StaleDirective": { "file": "target/lib.go", "line": 24 },
+    "ReadsEverything": { "file": "target/lib.go", "line": 25 }
+  }
+}
+-- target/go.mod --
+module example.com/lib
+
+go 1.27.0
+-- target/lib.go --
+package lib
+
+//deadset:ignore DS1801 -- The next release reads note.
+func Held(note string) int { return 1 }
+
+type Store struct{ n int }
+
+func (s *Store) Mark(committed int) int { //deadset:ignore DS1801 -- An interface of the next release fixes the arity.
+	return s.n
+}
+
+func Entry(key string) int { return 2 }
+
+//deadset:ignore DS1801 -- Both are reserved for the decoder.
+func Both(first, second string) int { return 3 }
+
+func Wrapped(
+	first string,
+	second string, //deadset:ignore DS1801 -- Both are reserved for the decoder.
+) int {
+	return 4
+}
+
+//deadset:ignore DS1801 -- Kept for a parameter that is read.
+func Reads(a, b int) int { return a + b }
+-- target/deadset-ignore.json --
+{
+  "description": "One entry holding the unused parameter of Entry.",
+  "ignore": [
+    {
+      "code": "DS1801",
+      "symbol": "go://example.com/lib#Entry",
+      "path": "lib.go",
+      "reason": "The next release reads key."
+    }
+  ]
+}

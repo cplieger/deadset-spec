@@ -1,0 +1,156 @@
+{
+  "name": "object-literal-to-unimplemented-callee",
+  "description": "An object literal passed to a call or a new expression whose callee has no implementation in the target reads each member of the parameter type it is checked against, as the call instantiates it, through each constituent of a union or an intersection and through a nested literal: a construct signature or a type-literal method read off a global, a method of a declared global, a function a declaration file declares, a dependency's generic and the methods of the compiler's library. Where a function, an override, an overload implementation, an arrow or an object of the target stands for the callee, the literal reads nothing, so a member that callee never reads stays reported, even beside an implementation the target cannot see.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "CtorId",
+      "report": "none"
+    },
+    {
+      "symbol": "CtorPassword",
+      "report": "none"
+    },
+    {
+      "symbol": "CtorMeta",
+      "report": "none"
+    },
+    {
+      "symbol": "CtorMetaOrigin",
+      "report": "none"
+    },
+    {
+      "symbol": "PutKey",
+      "report": "none"
+    },
+    {
+      "symbol": "PutSecret",
+      "report": "none"
+    },
+    {
+      "symbol": "ShareTitle",
+      "report": "none"
+    },
+    {
+      "symbol": "ShareUrl",
+      "report": "none"
+    },
+    {
+      "symbol": "NotifySubject",
+      "report": "none"
+    },
+    {
+      "symbol": "NotifyBody",
+      "report": "none"
+    },
+    {
+      "symbol": "KeepShown",
+      "report": "none"
+    },
+    {
+      "symbol": "KeepHidden",
+      "report": "none"
+    },
+    {
+      "symbol": "PushLabel",
+      "report": "none"
+    },
+    {
+      "symbol": "PushNote",
+      "report": "none"
+    },
+    {
+      "symbol": "SetLabel",
+      "report": "none"
+    },
+    {
+      "symbol": "SetNote",
+      "report": "none"
+    },
+    {
+      "symbol": "UnionPing",
+      "report": "none"
+    },
+    {
+      "symbol": "UnionPong",
+      "report": "none"
+    },
+    {
+      "symbol": "IntersectionName",
+      "report": "none"
+    },
+    {
+      "symbol": "IntersectionSize",
+      "report": "none"
+    },
+    {
+      "symbol": "OverloadLabel",
+      "report": "none"
+    },
+    {
+      "symbol": "AbstractKind",
+      "report": "none"
+    },
+    {
+      "symbol": "SinkName",
+      "report": "none"
+    },
+    {
+      "symbol": "RelayTopic",
+      "report": "none"
+    },
+    {
+      "symbol": "MixedTopic",
+      "report": "none"
+    },
+    {
+      "symbol": "PlainId",
+      "report": "none"
+    },
+    {
+      "symbol": "OverloadExtra",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member"
+    },
+    {
+      "symbol": "AbstractDetail",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member"
+    },
+    {
+      "symbol": "SinkToken",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member"
+    },
+    {
+      "symbol": "RelayBody",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member"
+    },
+    {
+      "symbol": "MixedBody",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member"
+    },
+    {
+      "symbol": "PlainPassword",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member"
+    }
+  ]
+}

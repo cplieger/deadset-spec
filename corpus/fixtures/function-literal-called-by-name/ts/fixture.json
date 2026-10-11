@@ -1,0 +1,6 @@
+{
+  "symbols": {
+    "CalledName": { "file": "target/main.ts", "line": 7 },
+    "PassedName": { "file": "target/main.ts", "line": 12 }
+  }
+}

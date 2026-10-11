@@ -11,7 +11,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/cplieger/deadset-spec/v6"
+	"github.com/cplieger/deadset-spec/v7"
 )
 
 const (
@@ -94,7 +94,13 @@ var findingDetailsBranches = []findingDetailsBranch{
 	{codes: []string{"DS1701", "DS1702", "DS1703"}, fields: []string{"mechanism", "entry"}},
 	{codes: []string{"DS1705"}, fields: []string{"edge", "sides"}},
 	{codes: []string{"DS1801", "DS1802", "DS1803", "DS1805", "DS1807", "DS1809"}, fields: []string{"overlap"}},
+	{codes: nameLiteralCodes, fields: []string{"name_literal"}},
 }
+
+// nameLiteralCodes are the codes grammar/analysis.md lets a string literal spelling
+// the subject's name lower to possible, and so the codes whose finding may carry
+// details.name_literal.
+var nameLiteralCodes = []string{"DS1001", "DS1002", "DS1004", "DS1006", "DS1101", "DS1102", "DS1103"}
 
 // findingDeletableOnlyField is the one details field no code discriminates: it
 // rides on any deletable finding whose fix drops a dependency's last use.
@@ -103,8 +109,7 @@ const findingDeletableOnlyField = "removes_last_use_of"
 // findingEmptyDetailsCodes are the live codes no branch names, so their details
 // object is empty.
 var findingEmptyDetailsCodes = []string{
-	"DS1001", "DS1002", "DS1003", "DS1004", "DS1005", "DS1006",
-	"DS1103", "DS1302", "DS1303", "DS1502", "DS1704", "DS1706",
+	"DS1003", "DS1005", "DS1302", "DS1303", "DS1502", "DS1704", "DS1706",
 }
 
 // findingFieldsForCode lists the details fields a code carries, sorted.
@@ -786,6 +791,11 @@ func TestFindingSchemaDetailsBranchesFollowTheKinds(t *testing.T) {
 			field: "mechanism",
 			want:  findingSuppressionCodes(t),
 		},
+		{
+			name:  "the_codes_the_name_literal_rule_lists",
+			field: "name_literal",
+			want:  findingNameLiteralCodes(t),
+		},
 	}
 	for _, d := range derivations {
 		t.Run(d.name, func(t *testing.T) {
@@ -876,6 +886,26 @@ func findingBranchCarrying(field string) []string {
 		}
 	}
 	return nil
+}
+
+// findingNameLiteralCodes returns the codes the name-literal sentence of
+// grammar/analysis.md lists: the one sentence that gives a declaration a string
+// literal spells the class possible names every code it applies under.
+func findingNameLiteralCodes(t *testing.T) []string {
+	t.Helper()
+	const marker = "whose identifier a string literal spells exactly"
+	page := grammarPage(t, analysisPagePath)
+	at := strings.Index(page, marker)
+	if at < 0 {
+		t.Fatalf("Setup: %s states no sentence holding %q, want the name-literal rule", analysisPagePath, marker)
+	}
+	sentence := page[at:]
+	if end := strings.Index(sentence, ". "); end >= 0 {
+		sentence = sentence[:end]
+	}
+	codes := findingCodeInText.FindAllString(sentence, -1)
+	slices.Sort(codes)
+	return slices.Compact(codes)
 }
 
 // findingSuppressionCodes returns the codes suppression.md hands this schema,

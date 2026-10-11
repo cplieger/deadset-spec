@@ -18,6 +18,6 @@ Record the rows of one round from `report.json` and compare them with the `basel
 | Case | What it establishes |
 | --- | --- |
 | `declarations-and-parts` | One row per finding in report order, each with the finding's code, its symbol reference and its path, and the reason naming the analyzer and its version: a declaration, a member, a narrowing finding, a write-only member and a part, the two parts of one declaration under one code recorded as one row. |
-| `document-rows-left-out` | No row for a finding about a file, a dependency, a module directive, a suppression record or a configured root, and a row for the declaration beside them. |
+| `document-rows-left-out` | No row for a finding about a file, a suppression record or a configured root, and a row for the declaration beside them and for each dependency row, a requirement and a replace directive. |
 | `nothing-to-record` | A round whose every finding is about a document row records an empty baseline. |
 | `typescript-rows` | A TypeScript round: a row for a private class member, and none for a file or a configured declaration. |

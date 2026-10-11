@@ -1,0 +1,13 @@
+{
+  "name": "@example/target",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./main.ts",
+  "devDependencies": {
+    "meta-resolved": "1.0.0",
+    "never-resolved": "1.0.0",
+    "require-resolved": "1.0.0",
+    "subpath-resolved": "1.0.0"
+  }
+}
