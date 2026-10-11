@@ -1,0 +1,77 @@
+{
+  "name": "name-literal-of-a-constants-type",
+  "description": "A package-level constant whose type is a defined type a string literal of the target spells carries the class possible under the codes the name-literal rule lists, with that literal's position in its details, because a generator that finds a type by its name reads the type's constants. A constant of a type nothing spells stays certain.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "closed_world": [
+    "consumers"
+  ],
+  "min_confidence": "possible",
+  "expect": [
+    {
+      "symbol": "Kind",
+      "report": "DS1101",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "type",
+      "details": {
+        "name_literal": "KindLiteral",
+        "narrower_visibility": "file"
+      }
+    },
+    {
+      "symbol": "KindA",
+      "report": "DS1101",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "constant",
+      "details": {
+        "name_literal": "KindLiteral",
+        "narrower_visibility": "file"
+      }
+    },
+    {
+      "symbol": "KindB",
+      "report": "DS1101",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "constant",
+      "details": {
+        "name_literal": "KindLiteral",
+        "narrower_visibility": "file"
+      }
+    },
+    {
+      "symbol": "Mode",
+      "report": "DS1101",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type",
+      "details": {
+        "narrower_visibility": "file"
+      }
+    },
+    {
+      "symbol": "ModeA",
+      "report": "DS1101",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "constant",
+      "details": {
+        "narrower_visibility": "file"
+      }
+    },
+    {
+      "symbol": "ModeB",
+      "report": "DS1101",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "constant",
+      "details": {
+        "narrower_visibility": "file"
+      }
+    }
+  ]
+}

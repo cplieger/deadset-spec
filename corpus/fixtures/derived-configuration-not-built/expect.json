@@ -1,0 +1,9 @@
+{
+  "name": "derived-configuration-not-built",
+  "description": "A configuration the analysis derives and cannot build, because a file only it holds imports a module nothing provides, is dropped and listed in the report's configurations_not_built, and the run analyzes the configurations left.",
+  "languages": ["go", "ts"],
+  "target_kind": "application",
+  "expect": [
+    { "symbol": "orphan", "report": "DS1002", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "function", "liveness_relation": "reference-counting" }
+  ]
+}

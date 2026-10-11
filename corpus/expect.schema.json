@@ -169,6 +169,19 @@
       "type": "string",
       "enum": ["certain", "probable", "possible"]
     },
+    "severity": {
+      "description": "The severities the runner sets in the configuration's severity key before analysing this fixture, one member per code: the member name is the code of a live row in contract/kinds.json and the value is the severity the runner writes for it, as contract/config.schema.json declares that key. A runner leaves every code the member does not name at its default, so a fixture that omits it is answered under the default severities. It is what pins the rules contract/grammar/suppression.md states under a severity setting, a record dormant under allow on its code among them. It is the fixture's declaration rather than any expectation's, for the reason closed_world states. The member is optional and never empty.",
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "pattern": "^DS[0-9]{4}$"
+      },
+      "additionalProperties": {
+        "description": "The severity the runner writes for that code.",
+        "type": "string",
+        "enum": ["allow", "warn", "deny"]
+      }
+    },
     "consumer_tests": {
       "description": "How the runner counts a reference from a consumer's test file before analysing this fixture, the value it sets in analysis.consumer_tests as contract/config.schema.json declares that key. A runner leaves the key at its default, test, where the member is absent, so the member is named only by a fixture that names a consumer and that pins how a consumer's test file counts. It is the fixture's declaration rather than any expectation's, for the reason closed_world states.",
       "type": "string",
@@ -260,6 +273,11 @@
         }
       }
     },
+    "suppressions_in_effect": {
+      "description": "The value the report's totals.suppressions_in_effect must carry after the run over the fixture as written, the first phase of the runner, compared exactly. The second phase rewrites the ignore file and is not compared. A fixture that omits the member does not compare the count. It is the fixture's declaration rather than any expectation's, because the count is a total of the run rather than a finding at a position.",
+      "type": "integer",
+      "minimum": 0
+    },
     "setup_failure": {
       "description": "The setup failure the run must end with, in place of a report: the analyzer must exit with the failure code contract/exit-codes.json names, write no finding, and print on standard error a line that starts with \"setup failure: \", the class and \": \", and contains every string names lists. A fixture that carries the member carries an empty expect array, because a run that ends this way answers no expectation, and no other member that configures or answers a report. Under the class missing-consumer, every name that is also an entry of consumers is a consumer the renderings hold no directory for, and at least one name is. The member is optional.",
       "type": "object",
@@ -269,7 +287,7 @@
         "class": {
           "description": "The class of the failure, drawn from the class field of contract/exit-codes.json's setup_failures.",
           "type": "string",
-          "enum": ["missing-module", "incomplete-module-sum", "test-build-tag", "missing-consumer", "workspace-member-without-source", "convention-not-literal"]
+          "enum": ["missing-module", "incomplete-module-sum", "missing-consumer", "workspace-member-without-source", "convention-not-literal"]
         },
         "names": {
           "description": "The strings the line on standard error contains: what is missing, spelled as the rendering spells it.",
@@ -321,6 +339,11 @@
             "type": "string",
             "enum": ["reference-counting", "reachability"]
           },
+          "fixability": {
+            "description": "The fixability the reported finding must carry, drawn from the fixabilities field of contract/kinds.json, and one contract/kinds.json allows for the row's code: the code's fixability or a value its finding_fixabilities lists. Optional on a reported subject and compared value by value. It is forbidden where report is none, and where report is DS1703, because a stale-suppression record carries the fixability its code fixes. A finding in a generated file carries none under every kind, and a row names none only where none is the code's own fixability, so this member pins no finding in a generated file.",
+            "type": "string",
+            "enum": ["deletable", "narrowable", "manual", "none"]
+          },
           "configurations": {
             "description": "The configurations the reported finding must name, by identifier, drawn from the build matrix the rendering's manifest declares and ordered as that matrix orders them. A finding holds in exactly the configurations in which its subject is declared, so a subject one configuration alone declares names that one and a subject every configuration declares names them all. Optional on a reported subject and forbidden when report is none, and forbidden when report is DS1703, because a stale-suppression record names no configuration; a fixture whose renderings declare no build matrix names none.",
             "type": "array",
@@ -342,7 +365,7 @@
             }
           },
           "details": {
-            "description": "The members of the reported finding's details the row pins, each named and shaped as the details object of contract/finding.schema.json declares it for the row's report code. Every member is optional and the row pins exactly the members it names, so a runner compares those and states nothing about the ones it omits; the object is never empty, because a details naming no member pins nothing. The member set is what a language-neutral expectation can state: a details member whose value is a position or a stable symbol reference spells one language's own names, which no field of an expectation does, so implementations, write_positions, entry and sides have no form here and the arms below carry the rest under the codes whose details arm names each. A member named under a code whose arm does not carry it is refused rather than ignored, and details is forbidden altogether when report is none, because no finding is reported there whose details a row could pin. A member whose value one language alone spells, a build constraint or a dependency section, is named only by a fixture that lists that one language, for the reason symbol_kind states: every expectation applies to every rendering the fixture lists.",
+            "description": "The members of the reported finding's details the row pins, each named and shaped as the details object of contract/finding.schema.json declares it for the row's report code. Every member is optional and the row pins exactly the members it names, so a runner compares those and states nothing about the ones it omits; the object is never empty, because a details naming no member pins nothing. The member set is what a language-neutral expectation can state: a details member whose value is a position or a stable symbol reference spells one language's own names, which no field of an expectation does, so implementations, write_positions, entry and sides have no form here. name_literal is the exception: its value is one position, which a logical name the rendering's manifest binds spells in every rendering, so a row names it by that logical name. The arms below carry the rest under the codes whose details arm names each. A member named under a code whose arm does not carry it is refused rather than ignored, and details is forbidden altogether when report is none, because no finding is reported there whose details a row could pin. A member whose value one language alone spells, a build constraint or a dependency section, is named only by a fixture that lists that one language, for the reason symbol_kind states: every expectation applies to every rendering the fixture lists.",
             "type": "object",
             "additionalProperties": false,
             "minProperties": 1,
@@ -376,6 +399,11 @@
                 "description": "The identifier of the declared cross-language edge the finding reports, as the edges document at the target root spells it.",
                 "type": "string",
                 "pattern": "^[A-Za-z0-9_.-]+(/[A-Za-z0-9_.-]+)*$"
+              },
+              "name_literal": {
+                "description": "The fixture-local logical name of the string literal whose position the finding's details.name_literal must carry, resolved through the rendering's manifest as an expectation's symbol is and compared by its file and its line. It is the one positional member a row spells, because the manifest gives the literal its own position in each rendering.",
+                "type": "string",
+                "pattern": "^[A-Za-z_][A-Za-z0-9_]*(\\.[A-Za-z_][A-Za-z0-9_]*)*$"
               },
               "overlap": {
                 "description": "The external linters or rules that report the same kind in the rendering's language, as the overlap field of the kind's row in contract/kinds.json lists them for that language.",
@@ -425,6 +453,7 @@
               { "required": ["confidence"] },
               { "required": ["reachability_class"] },
               { "required": ["liveness_relation"] },
+              { "required": ["fixability"] },
               { "required": ["configurations"] },
               { "required": ["details"] },
               { "required": ["component"] }
@@ -513,6 +542,7 @@
                 "anyOf": [
                   { "required": ["reachability_class"] },
                   { "required": ["liveness_relation"] },
+                  { "required": ["fixability"] },
                   { "required": ["configurations"] },
                   { "required": ["component"] }
                 ]
@@ -529,6 +559,19 @@
             "else": {
               "properties": {
                 "details": { "not": { "required": ["edge"] } }
+              }
+            }
+          },
+          {
+            "if": {
+              "required": ["report"],
+              "properties": {
+                "report": { "enum": ["DS1001", "DS1002", "DS1004", "DS1006", "DS1101", "DS1102", "DS1103"] }
+              }
+            },
+            "else": {
+              "properties": {
+                "details": { "not": { "required": ["name_literal"] } }
               }
             }
           },

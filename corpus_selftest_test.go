@@ -68,21 +68,20 @@ type declaredGap struct {
 }
 
 // expectationVocabularies are the closed value sets an expectation file draws
-// from, each read from the document that declares it: the reachability classes
-// and the languages from contract/kinds.json, which is where corpus.json's
-// vocabularies block sends a reader for them, the symbol kinds from
-// contract/finding.schema.json, which owns that vocabulary, and the target
-// kinds and the liveness relations from the expectation schema, the only
-// document that declares those two.
+// from, each read from the document that declares it, never a copy. Fixabilities
+// is keyed by live code: a finding's fixability is its kind's own or one its
+// finding_fixabilities lists in contract/kinds.json.
 type expectationVocabularies struct {
+	Fixabilities        map[string][]string
 	ReachabilityClasses []string
 	Languages           []string
 	SymbolKinds         []string
 	TargetKinds         []string
 	LivenessRelations   []string
+	SettableCodes       []string
 }
 
-// loadExpectationVocabularies reads the five value sets, failing the test when
+// loadExpectationVocabularies reads the value sets, failing the test when
 // one is empty, because an empty set lets every value through.
 func loadExpectationVocabularies(t *testing.T) expectationVocabularies {
 	t.Helper()
@@ -94,6 +93,15 @@ func loadExpectationVocabularies(t *testing.T) expectationVocabularies {
 		SymbolKinds:         enumAt(loadFindingSchema(t), "properties/symbol/properties/kind"),
 		TargetKinds:         enumAt(schema, "properties/target_kind"),
 		LivenessRelations:   enumAt(schema, expectSchemaRowPath+"/properties/liveness_relation"),
+		Fixabilities:        map[string][]string{},
+	}
+	for _, k := range kinds.Kinds {
+		v.Fixabilities[k.Code] = append([]string{k.Fixability}, k.FindingFixabilities...)
+	}
+	for _, k := range kinds.Kinds {
+		if !isSet(k.Fixed) || !*k.Fixed {
+			v.SettableCodes = append(v.SettableCodes, k.Code)
+		}
 	}
 	sets := map[string][]string{
 		"reachability_classes": v.ReachabilityClasses,
@@ -101,6 +109,8 @@ func loadExpectationVocabularies(t *testing.T) expectationVocabularies {
 		"symbol_kind":          v.SymbolKinds,
 		"target_kind":          v.TargetKinds,
 		"liveness_relation":    v.LivenessRelations,
+		"settable_codes":       v.SettableCodes,
+		"fixabilities":         slices.Collect(maps.Keys(v.Fixabilities)),
 	}
 	for _, name := range slices.Sorted(maps.Keys(sets)) {
 		if len(sets[name]) == 0 {
@@ -111,14 +121,12 @@ func loadExpectationVocabularies(t *testing.T) expectationVocabularies {
 }
 
 // checkExpectationVocabularies reports every value the expectation file names
-// outside the closed vocabulary of its field. It covers the fields nothing
-// else resolves: a report code resolves against contract/kinds.json in
-// vocabulary_test.go and a retained_by class against contract/exemptions.json
-// in exemptions_test.go, over these same fixtures. A symbol_kind resolves here
-// against the vocabulary contract/finding.schema.json owns, and the same file's
-// rule on the liveness relation is read from it in vocabulary_test.go. An
-// absent optional value is not a violation; target_kind has no default, so an
-// absent one is.
+// outside the closed vocabulary of its field, for the fields nothing else
+// resolves: vocabulary_test.go resolves report codes and the liveness-relation
+// rule, and exemptions_test.go retained_by classes, over these same fixtures.
+// A symbol_kind resolves against the vocabulary contract/finding.schema.json
+// owns. An absent optional value is not a violation; target_kind has no
+// default, so an absent one is.
 func checkExpectationVocabularies(doc *expectationDocument, v expectationVocabularies) []error {
 	var errs []error
 	value := func(subject, field, got string, want []string) {
@@ -135,11 +143,17 @@ func checkExpectationVocabularies(doc *expectationDocument, v expectationVocabul
 	for _, language := range doc.Languages {
 		value("fixture", "languages", language, v.Languages)
 	}
+	// A fixed code takes no severity setting, so a fixture can set only a live code
+	// whose row is not fixed.
+	for _, code := range slices.Sorted(maps.Keys(doc.Severity)) {
+		value("fixture", "severity", code, v.SettableCodes)
+	}
 	for _, row := range doc.Expect {
 		optional(row.Symbol, "symbol_kind", row.SymbolKind, v.SymbolKinds)
 		optional(row.Symbol, "confidence", row.Confidence, v.ReachabilityClasses)
 		optional(row.Symbol, "reachability_class", row.ReachabilityClass, v.ReachabilityClasses)
 		optional(row.Symbol, "liveness_relation", row.LivenessRelation, v.LivenessRelations)
+		optional(row.Symbol, "fixability under "+row.Report, row.Fixability, v.Fixabilities[row.Report])
 	}
 	return errs
 }
@@ -279,11 +293,10 @@ func corpusExpectations(t *testing.T) []expectationDocument {
 	return docs
 }
 
-// answeredResults is the results document a conforming product writes: it
-// answers every fixture the corpus selects for one language, exactly as the
-// expectations state, with the suppression phase held for every reported
-// finding. Each plant below carries one difference from it, so every failure
-// has one cause.
+// answeredResults builds the complete fixture and symbol inventory for one
+// language that unansweredExpectations checks. Actual values and suppression
+// semantics are outside that check. Each plant below changes one inventory or
+// gap-coverage fact, so every failure has one cause.
 func answeredResults(t *testing.T, fixtures []expectationDocument, language string) resultsDocument {
 	t.Helper()
 	doc := resultsDocument{
@@ -306,6 +319,7 @@ func answeredResults(t *testing.T, fixtures []expectationDocument, language stri
 					Confidence:        want.Confidence,
 					ReachabilityClass: want.ReachabilityClass,
 					LivenessRelation:  want.LivenessRelation,
+					Fixability:        want.Fixability,
 					Configurations:    want.Configurations,
 					RetainedBy:        want.RetainedBy,
 				},
@@ -489,9 +503,32 @@ func TestCorpusExpectationValuesDrawFromClosedVocabularies(t *testing.T) {
 			wantMsg: []string{"DeadExport", "reachability_class", `"unknown"`},
 		},
 		{
+			name:   "severity_on_a_code_the_configuration_may_move",
+			mutate: func(d *expectationDocument) { d.Severity = map[string]string{"DS1002": "allow"} },
+		},
+		{
+			name:    "severity_on_a_fixed_code",
+			mutate:  func(d *expectationDocument) { d.Severity = map[string]string{"DS1703": "warn"} },
+			wantMsg: []string{"severity", `"DS1703"`},
+		},
+		{
+			name:    "severity_on_a_retired_code",
+			mutate:  func(d *expectationDocument) { d.Severity = map[string]string{"DS1202": "allow"} },
+			wantMsg: []string{"severity", `"DS1202"`},
+		},
+		{
 			name:    "liveness_relation_outside_the_schema_enum",
 			mutate:  func(d *expectationDocument) { d.Expect[0].LivenessRelation = "mark-and-sweep" },
 			wantMsg: []string{"DeadExport", "liveness_relation", `"mark-and-sweep"`},
+		},
+		{
+			name:   "fixability_the_code_lists_in_its_finding_fixabilities",
+			mutate: func(d *expectationDocument) { d.Expect[0].Fixability = "manual" },
+		},
+		{
+			name:    "fixability_the_code_does_not_allow",
+			mutate:  func(d *expectationDocument) { d.Expect[0].Fixability = "narrowable" },
+			wantMsg: []string{"DeadExport", "fixability", `"narrowable"`},
 		},
 	}
 	for _, tc := range planted {

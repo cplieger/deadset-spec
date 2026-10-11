@@ -1,0 +1,53 @@
+One main package passing one reader to net/http/httptest, whose source asserts
+io.ReadCloser on it, and another to io.ReadAll.
+
+-- fixture.json --
+{
+  "symbols": {
+    "BodyTag": { "file": "target/main.go", "line": 13 },
+    "BodyClose": { "file": "target/main.go", "line": 22 },
+    "PlainClose": { "file": "target/main.go", "line": 30 }
+  }
+}
+-- target/go.mod --
+module example.com/app
+
+go 1.27.0
+-- target/main.go --
+package main
+
+import (
+	"fmt"
+	"io"
+	"net/http/httptest"
+	"strings"
+)
+
+type body struct {
+	r   io.Reader
+	n   int
+	Tag string
+}
+
+func (b *body) Read(p []byte) (int, error) {
+	n, err := b.r.Read(p)
+	b.n += n
+	return n, err
+}
+
+func (*body) Close() error { return nil }
+
+type plain struct {
+	r io.Reader
+}
+
+func (p *plain) Read(buf []byte) (int, error) { return p.r.Read(buf) }
+
+func (*plain) Close() error { return nil }
+
+func main() {
+	b := &body{r: strings.NewReader("x"), Tag: "t"}
+	req := httptest.NewRequest("POST", "/", b)
+	data, _ := io.ReadAll(&plain{r: strings.NewReader("y")})
+	fmt.Println(req.Method, b.n, len(data))
+}

@@ -1,0 +1,63 @@
+One main package whose test files carry tags no production file names: an
+integration test, and a pair of files the race detector's tag selects between.
+
+-- fixture.json --
+{
+  "configurations": ["linux-amd64", "linux-amd64-integration", "linux-amd64-race"],
+  "configurations_not_built": [],
+  "symbols": {
+    "label": { "file": "target/main.go", "line": 5 },
+    "unusedHelper": { "file": "target/main_test.go", "line": 13 },
+    "raceOn": { "file": "target/race_on_test.go", "line": 5 },
+    "raceOff": { "file": "target/race_off_test.go", "line": 5 },
+    "raceOnly": { "file": "target/race_on_test.go", "line": 7 }
+  }
+}
+-- target/go.mod --
+module example.com/app
+
+go 1.27.0
+-- target/main.go --
+package main
+
+func main() { println(label()) }
+
+func label() string { return "app" }
+-- target/main_test.go --
+//go:build integration
+
+package main
+
+import "testing"
+
+func TestLabel(t *testing.T) {
+	if label() != "app" {
+		t.Fatal("label")
+	}
+}
+
+func unusedHelper() string { return "unused" }
+-- target/race_on_test.go --
+//go:build race
+
+package main
+
+const raceEnabled = true
+
+func raceOnly() string { return "race" }
+-- target/race_off_test.go --
+//go:build !race
+
+package main
+
+const raceEnabled = false
+-- target/flag_test.go --
+package main
+
+import "testing"
+
+func TestRaceFlag(t *testing.T) {
+	if raceEnabled && label() == "" {
+		t.Fatal("label")
+	}
+}

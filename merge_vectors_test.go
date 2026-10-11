@@ -683,6 +683,20 @@ func mergeCaseDirs(t *testing.T) []string {
 	return dirs
 }
 
+// TestMergeVectorsReadmeNamesEveryCase pins the case table of the vectors' README to the
+// case directories, one row each.
+func TestMergeVectorsReadmeNamesEveryCase(t *testing.T) {
+	readme, err := fs.ReadFile(spec.Vectors, mergeVectorsDir+"/README.md")
+	if err != nil {
+		t.Fatalf("Setup: %v", err)
+	}
+	for _, dir := range mergeCaseDirs(t) {
+		if n := strings.Count(string(readme), "| `"+dir+"` |"); n != 1 {
+			t.Errorf("README rows naming %s = %d, want 1", dir, n)
+		}
+	}
+}
+
 // mergeCases loads every published case, failing the run on a case that does not decode.
 func mergeCases(t *testing.T) []mergeCase {
 	t.Helper()

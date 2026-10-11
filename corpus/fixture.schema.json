@@ -16,6 +16,15 @@
         "minLength": 1
       }
     },
+    "configurations_not_built": {
+      "description": "The identifiers of the derived configurations a run of this rendering drops, each spelled as the report spells a configuration's id, ordered bytewise, none of them an entry of configurations. It names none where the expectation file declares the matrix complete, because a run then derives no configuration and a declared one that does not build ends the run. A runner compares the identifiers of the report's configurations_not_built array with this list and compares nothing there where the manifest omits the member, because which derived configuration builds can depend on the host's toolchain for a rendering whose constraints name another platform. An empty list states that the run drops no configuration.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
     "symbols": {
       "description": "The binding table, keyed by logical name exactly as the expectation file spells it. Each value is the position of that subject in this rendering, and no two subjects share a file and a line, because a finding is matched to its subject by that position. It is empty for a fixture whose run ends with a setup failure, which names no subject.",
       "type": "object",

@@ -1,0 +1,26 @@
+{
+  "name": "mapped-type-instantiation",
+  "description": "A reference inside a mapped type fixes the type parameter of the generic it instantiates to the union the mapped type iterates, so an indexed-access type in that generic references each member a literal of the union names. A member no literal of the union names is reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "PayloadClose",
+      "report": "none"
+    },
+    {
+      "symbol": "PayloadIdle",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "PayloadOpen",
+      "report": "none"
+    }
+  ]
+}

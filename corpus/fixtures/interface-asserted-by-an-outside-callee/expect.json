@@ -1,0 +1,32 @@
+{
+  "name": "interface-asserted-by-an-outside-callee",
+  "description": "A value passed as an argument to a function a package outside the program declares is held by that function through its parameter, so a method by which the value's type implements an interface the source of the callee's package asserts is retained: net/http/httptest asserts io.ReadCloser on the io.Reader it is given, which keeps Close. A Close method of a value handed only to a callee whose package's source asserts no interface that Close helps satisfy stays reported. An exported field of a value passed to such a parameter is not read on that account, because only an empty-interface parameter hands the value to code that may read its fields.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "BodyClose",
+      "report": "none",
+      "retained_by": [
+        "interface-satisfaction"
+      ]
+    },
+    {
+      "symbol": "PlainClose",
+      "report": "DS1103",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "BodyTag",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field"
+    }
+  ]
+}

@@ -1,0 +1,205 @@
+The Go rendering: a command that returns one error type and asserts interfaces on
+it through errors.As and errors.AsType, live, in an uncalled function and in a
+test, and a type that implements error and an asserted interface but enters
+another interface only. It hands a host module an error the host asserts an
+interface on through errors.As, and a second module a writer that module asserts
+nothing on. Both modules are local modules the target requires and replaces.
+
+-- fixture.json --
+{
+  "symbols": {
+    "busy.Pause": { "file": "target/busy.go", "line": 42 },
+    "stamp.Show": { "file": "target/stamp.go", "line": 13 },
+    "stamp.Label": { "file": "target/stamp.go", "line": 15 },
+    "busy.Backoff": { "file": "target/busy.go", "line": 18 },
+    "busy.Attempts": { "file": "target/busy.go", "line": 20 },
+    "busy.Remaining": { "file": "target/busy.go", "line": 22 },
+    "busy.Spare": { "file": "target/busy.go", "line": 24 },
+    "budget.Remaining": { "file": "target/busy.go", "line": 28 },
+    "deadQuota": { "file": "target/busy.go", "line": 34 },
+    "fault.Code": { "file": "target/fault.go", "line": 7 },
+    "fault.Close": { "file": "target/fault.go", "line": 9 },
+    "fault.Flush": { "file": "target/fault.go", "line": 11 },
+    "recorder.Close": { "file": "target/recorder.go", "line": 7 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+
+require (
+	example.com/host v0.0.0
+	example.com/other v0.0.0
+)
+
+replace (
+	example.com/host => ../host
+	example.com/other => ../other
+)
+-- target/main.go --
+package main
+
+import (
+	"errors"
+	"fmt"
+
+	"example.com/host"
+	"example.com/other"
+)
+
+func main() {
+	err := run()
+	var b backoff
+	if errors.As(err, &b) && b.Backoff() {
+		fmt.Println("backoff")
+	}
+	if r, ok := errors.AsType[retrier](err); ok {
+		fmt.Println(r.Attempts())
+	}
+	var l labeler
+	if errors.As(err, &l) {
+		fmt.Println(l.Label())
+	}
+	display(stamp{})
+	fmt.Println(remaining(budget{}), host.Settle(&fault{}))
+	other.Keep(&recorder{})
+}
+-- target/busy.go --
+package main
+
+import "errors"
+
+type backoff interface{ Backoff() bool }
+
+type retrier interface {
+	error
+	Attempts() int
+}
+
+type quota interface{ Remaining() int }
+
+type busy struct{}
+
+func (*busy) Error() string { return "busy" }
+
+func (*busy) Backoff() bool { return true }
+
+func (*busy) Attempts() int { return 3 }
+
+func (*busy) Remaining() int { return 0 }
+
+func (*busy) Spare() {}
+
+type budget struct{}
+
+func (budget) Remaining() int { return 5 }
+
+func run() error { return &busy{} }
+
+func remaining(q quota) int { return q.Remaining() }
+
+func deadQuota(err error) int {
+	var q quota
+	if errors.As(err, &q) {
+		return q.Remaining()
+	}
+	return 0
+}
+
+func (*busy) Pause() bool { return true }
+-- target/busy_test.go --
+package main
+
+import (
+	"errors"
+	"testing"
+)
+
+type pauser interface{ Pause() bool }
+
+func TestBusyPauses(t *testing.T) {
+	var p pauser
+	if !errors.As(run(), &p) || !p.Pause() {
+		t.Fatal("busy pauses")
+	}
+}
+-- target/stamp.go --
+package main
+
+import "fmt"
+
+type labeler interface{ Label() string }
+
+type shower interface{ Show() }
+
+type stamp struct{}
+
+func (stamp) Error() string { return "stamp" }
+
+func (s stamp) Show() { fmt.Println(s.Error()) }
+
+func (stamp) Label() string { return "stamp" }
+
+func display(s shower) { s.Show() }
+-- target/fault.go --
+package main
+
+type fault struct{}
+
+func (*fault) Error() string { return "fault" }
+
+func (*fault) Code() int { return 7 }
+
+func (*fault) Close() error { return nil }
+
+func (*fault) Flush() {}
+-- target/recorder.go --
+package main
+
+type recorder struct{}
+
+func (*recorder) Write(p []byte) (int, error) { return len(p), nil }
+
+func (*recorder) Close() error { return nil }
+-- host/go.mod --
+module example.com/host
+
+go 1.27.0
+-- host/host.go --
+package host
+
+import "errors"
+
+type Failure interface {
+	error
+	Code() int
+}
+
+type Closer interface {
+	Close() error
+}
+
+type Flusher interface {
+	Flush()
+}
+
+func Settle(f Failure) int {
+	var c Closer
+	if errors.As(f, &c) {
+		_ = c.Close()
+	}
+	return f.Code()
+}
+-- other/go.mod --
+module example.com/other
+
+go 1.27.0
+-- other/other.go --
+package other
+
+type Writer interface {
+	Write(p []byte) (int, error)
+}
+
+func Keep(w Writer) { _, _ = w.Write([]byte{0}) }

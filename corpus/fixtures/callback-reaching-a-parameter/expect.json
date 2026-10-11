@@ -1,0 +1,40 @@
+{
+  "name": "callback-reaching-a-parameter",
+  "description": "A function of the target passed for a parameter, an arrow function or a function a name refers to, by a call that names the function declaring the parameter, stands for the signature a call through that parameter resolves to, so an object literal passed there is read only as that function reads it. A call that reaches the function through another name is not followed, so its callee keeps no implementation and the literal reads every member.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "AliasedFirst",
+      "report": "none"
+    },
+    {
+      "symbol": "AliasedSecond",
+      "report": "none"
+    },
+    {
+      "symbol": "InitExtra",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member"
+    },
+    {
+      "symbol": "InitUsed",
+      "report": "none"
+    },
+    {
+      "symbol": "NamedKept",
+      "report": "none"
+    },
+    {
+      "symbol": "NamedSpare",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member"
+    }
+  ]
+}

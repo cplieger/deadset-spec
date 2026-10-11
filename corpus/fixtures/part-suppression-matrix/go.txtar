@@ -1,0 +1,231 @@
+One main package holding, per part kind, three functions whose part is held by a record in
+another mechanism or position, and a fourth whose part is live under a record that matches nothing.
+
+-- fixture.json --
+{
+  "symbols": {
+    "ParameterAbove": { "file": "target/parts.go", "line": 4 },
+    "ParameterTrailing": { "file": "target/parts.go", "line": 8 },
+    "ParameterEntry": { "file": "target/parts.go", "line": 12 },
+    "ParameterStale": { "file": "target/parts.go", "line": 16 },
+    "ResultAbove": { "file": "target/parts.go", "line": 22 },
+    "ResultTrailing": { "file": "target/parts.go", "line": 26 },
+    "ResultEntry": { "file": "target/parts.go", "line": 30 },
+    "ResultStale": { "file": "target/parts.go", "line": 34 },
+    "StatementAbove": { "file": "target/parts.go", "line": 43 },
+    "StatementTrailing": { "file": "target/parts.go", "line": 49 },
+    "StatementEntry": { "file": "target/parts.go", "line": 55 },
+    "StatementStale": { "file": "target/parts.go", "line": 58 },
+    "StoreAbove": { "file": "target/parts.go", "line": 65 },
+    "StoreTrailing": { "file": "target/parts.go", "line": 71 },
+    "StoreEntry": { "file": "target/parts.go", "line": 77 },
+    "StoreStale": { "file": "target/parts.go", "line": 82 },
+    "CaseAbove": { "file": "target/parts.go", "line": 94 },
+    "CaseTrailing": { "file": "target/parts.go", "line": 104 },
+    "CaseEntry": { "file": "target/parts.go", "line": 114 },
+    "CaseStale": { "file": "target/parts.go", "line": 120 }
+  }
+}
+-- target/go.mod --
+module example.com/app
+
+go 1.27.0
+-- target/parts.go --
+package main
+
+//deadset:ignore DS1801 -- The parameter is kept on purpose.
+func parameterAbove(value int, label string) int {
+	return value * 2
+}
+
+func parameterTrailing(value int, label string) int { //deadset:ignore DS1801 -- The parameter is kept on purpose.
+	return value * 2
+}
+
+func parameterEntry(value int, label string) int {
+	return value * 2
+}
+
+//deadset:ignore DS1801 -- The parameter is kept on purpose.
+func parameterLive(value int, label string) int {
+	return value + len(label)
+}
+
+//deadset:ignore DS1803 -- The result is kept on purpose.
+func resultAbove() int {
+	return 1
+}
+
+func resultTrailing() int { //deadset:ignore DS1803 -- The result is kept on purpose.
+	return 1
+}
+
+func resultEntry() int {
+	return 1
+}
+
+//deadset:ignore DS1803 -- The result is kept on purpose.
+func resultLive() int {
+	return 2
+}
+
+//deadset:ignore DS1805 -- The statement is kept on purpose.
+func statementAbove() {
+	println("before the return")
+	return
+	println("after the return")
+}
+
+func statementTrailing() { //deadset:ignore DS1805 -- The statement is kept on purpose.
+	println("before the return")
+	return
+	println("after the return")
+}
+
+func statementEntry() {
+	println("before the return")
+	return
+	println("after the return")
+}
+
+//deadset:ignore DS1805 -- The statement is kept on purpose.
+func statementLive() {
+	println("only")
+}
+
+//deadset:ignore DS1807 -- The store is kept on purpose.
+func storeAbove() int {
+	count := 1
+	count = 2
+	return count
+}
+
+func storeTrailing() int { //deadset:ignore DS1807 -- The store is kept on purpose.
+	count := 1
+	count = 2
+	return count
+}
+
+func storeEntry() int {
+	count := 1
+	count = 2
+	return count
+}
+
+//deadset:ignore DS1807 -- The store is kept on purpose.
+func storeLive() int {
+	count := 1
+	count += 2
+	return count
+}
+
+//deadset:ignore DS1809 -- The case is kept on purpose.
+func caseAbove(v any) string {
+	switch v.(type) {
+	case stringer:
+		return "stringer"
+	case node:
+		return "node"
+	}
+	return "other"
+}
+
+func caseTrailing(v any) string { //deadset:ignore DS1809 -- The case is kept on purpose.
+	switch v.(type) {
+	case stringer:
+		return "stringer"
+	case node:
+		return "node"
+	}
+	return "other"
+}
+
+func caseEntry(v any) string {
+	switch v.(type) {
+	case stringer:
+		return "stringer"
+	case node:
+		return "node"
+	}
+	return "other"
+}
+
+//deadset:ignore DS1809 -- The case is kept on purpose.
+func caseLive(v any) string {
+	switch v.(type) {
+	case node:
+		return "node"
+	case stringer:
+		return "stringer"
+	}
+	return "other"
+}
+
+type stringer interface {
+	str() string
+}
+
+type node struct{}
+
+func (node) str() string { return "n" }
+-- target/main.go --
+package main
+
+func main() {
+	println(parameterAbove(1, "a"))
+	println(parameterTrailing(1, "a"))
+	println(parameterEntry(1, "a"))
+	println(parameterLive(1, "a"))
+	resultAbove()
+	resultTrailing()
+	resultEntry()
+	println(resultLive())
+	statementAbove()
+	statementTrailing()
+	statementEntry()
+	statementLive()
+	println(storeAbove())
+	println(storeTrailing())
+	println(storeEntry())
+	println(storeLive())
+	println(caseAbove(node{}))
+	println(caseTrailing(node{}))
+	println(caseEntry(node{}))
+	println(caseLive(node{}))
+}
+-- target/deadset-ignore.json --
+{
+  "description": "One entry per part kind, each holding the part of one function.",
+  "ignore": [
+    {
+      "code": "DS1801",
+      "symbol": "go://example.com/app#parameterEntry",
+      "path": "parts.go",
+      "reason": "The parameter is kept on purpose."
+    },
+    {
+      "code": "DS1803",
+      "symbol": "go://example.com/app#resultEntry",
+      "path": "parts.go",
+      "reason": "The result is kept on purpose."
+    },
+    {
+      "code": "DS1805",
+      "symbol": "go://example.com/app#statementEntry",
+      "path": "parts.go",
+      "reason": "The statement is kept on purpose."
+    },
+    {
+      "code": "DS1807",
+      "symbol": "go://example.com/app#storeEntry",
+      "path": "parts.go",
+      "reason": "The store is kept on purpose."
+    },
+    {
+      "code": "DS1809",
+      "symbol": "go://example.com/app#caseEntry",
+      "path": "parts.go",
+      "reason": "The case is kept on purpose."
+    }
+  ]
+}

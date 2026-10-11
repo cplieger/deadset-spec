@@ -1,0 +1,52 @@
+{
+  "name": "encoding-reflection-through-program-values",
+  "description": "A value reaches a destination through the program's own values: a type argument of a generic function of a destination package, a value of a type parameter's type, which is a value of each type argument the program instantiates it with, an interface-typed parameter of a function of the program that hands it to a destination, whatever its type, and an interface-typed result of a function of the program, which holds each concrete value its return statements store there; a call through a function value returns what every function or method of the program used as a value returns there, a bound method value among them. An encoder reads an embedded struct field whether or not its type is exported. A value returned as an interface and never encoded, and a value a function literal returns, reach nothing.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "ShadowedA",
+      "report": "none"
+    },
+    {
+      "symbol": "FlexUnmarshal",
+      "report": "none"
+    },
+    {
+      "symbol": "RawMarshal",
+      "report": "none"
+    },
+    {
+      "symbol": "OuterInner",
+      "report": "none"
+    },
+    {
+      "symbol": "AckID",
+      "report": "none"
+    },
+    {
+      "symbol": "RepliedOK",
+      "report": "none"
+    },
+    {
+      "symbol": "MadeID",
+      "report": "none"
+    },
+    {
+      "symbol": "UnsentID",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field"
+    },
+    {
+      "symbol": "ClosedID",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field"
+    }
+  ]
+}

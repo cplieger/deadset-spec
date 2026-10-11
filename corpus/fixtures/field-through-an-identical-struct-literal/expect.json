@@ -1,0 +1,28 @@
+{
+  "name": "field-through-an-identical-struct-literal",
+  "description": "Identical unnamed struct types are one type, so a selector of a field through one spelling references the field at the same position of every identical spelling. A struct type literal whose tag differs is another type, and a defined struct type is identical only to itself, so neither field is referenced.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "HolderXC",
+      "report": "none"
+    },
+    {
+      "symbol": "HolderYC",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field"
+    },
+    {
+      "symbol": "NamedC",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "symbols": {
+    "Skipped": {
+      "file": "target/main.ts",
+      "line": 3
+    },
+    "Uploaded": {
+      "file": "target/main.ts",
+      "line": 2
+    }
+  }
+}

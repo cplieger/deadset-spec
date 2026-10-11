@@ -1,0 +1,7 @@
+{
+  "name": "@example/scoped",
+  "private": true,
+  "dependencies": {
+    "shared": "1.0.0"
+  }
+}

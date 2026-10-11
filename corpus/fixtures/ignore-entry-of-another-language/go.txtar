@@ -1,0 +1,51 @@
+One main package with an unexported function nothing calls, and an ignore file
+holding its entry and three entries of the TypeScript analysis of the same target.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Unused": { "file": "target/main.go", "line": 5 },
+    "OwnEntry": { "file": "target/deadset-ignore.json", "line": 4 },
+    "OtherEntry": { "file": "target/deadset-ignore.json", "line": 10 },
+    "OtherUnscopedEntry": { "file": "target/deadset-ignore.json", "line": 16 },
+    "OtherReasonlessEntry": { "file": "target/deadset-ignore.json", "line": 21 }
+  }
+}
+-- target/go.mod --
+module example.com/app
+
+go 1.27.0
+-- target/main.go --
+package main
+
+func main() {}
+
+func unusedGo() int { return 1 }
+-- target/deadset-ignore.json --
+{
+  "description": "One entry of this language in effect and three of the other language.",
+  "ignore": [
+    {
+      "code": "DS1002",
+      "symbol": "go://example.com/app#unusedGo",
+      "path": "main.go",
+      "reason": "Kept for the next release."
+    },
+    {
+      "code": "DS1002",
+      "symbol": "ts://@example/target/main.ts#unusedTs",
+      "path": "main.ts",
+      "reason": "The other language's adjudication."
+    },
+    {
+      "code": "DS1002",
+      "symbol": "ts://@example/target/main.ts#unusedTs",
+      "reason": "The other language's entry, scoped to no file."
+    },
+    {
+      "code": "DS1002",
+      "symbol": "ts://@example/target/main.ts#unusedTs",
+      "path": "main.ts"
+    }
+  ]
+}

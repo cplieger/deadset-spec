@@ -1,0 +1,13 @@
+{
+  "name": "@example/target",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./main.ts",
+  "devDependencies": {
+    "@example/module-plugin": "1.0.0",
+    "@example/preset": "1.0.0",
+    "@example/project-plugin": "1.0.0",
+    "@example/shared-plugin": "1.0.0"
+  }
+}

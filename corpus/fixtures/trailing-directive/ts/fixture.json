@@ -1,0 +1,10 @@
+{
+  "symbols": {
+    "CallTrailingDirective": { "file": "target/main.ts", "line": 4 },
+    "UnusedAfterFunction": { "file": "target/main.ts", "line": 9 },
+    "OneLine": { "file": "target/main.ts", "line": 11 },
+    "TrailingFirst": { "file": "target/main.ts", "line": 13 },
+    "NextLine": { "file": "target/main.ts", "line": 14 },
+    "BesideMarker": { "file": "target/main.ts", "line": 17 }
+  }
+}

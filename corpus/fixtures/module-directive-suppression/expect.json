@@ -1,0 +1,27 @@
+{
+  "name": "module-directive-suppression",
+  "description": "An ignore entry naming a replace directive's reference under the module-directive code binds the directive and holds its finding back, and one naming the requirement it redirects under the dependency code holds that finding back, each counted in effect.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "suppressions_in_effect": 2,
+  "expect": [
+    {
+      "symbol": "Requirement",
+      "report": "none"
+    },
+    {
+      "symbol": "Replace",
+      "report": "none"
+    },
+    {
+      "symbol": "RequirementEntry",
+      "report": "none"
+    },
+    {
+      "symbol": "ReplaceEntry",
+      "report": "none"
+    }
+  ]
+}

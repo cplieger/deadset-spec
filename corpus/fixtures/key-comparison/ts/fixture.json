@@ -1,0 +1,24 @@
+{
+  "symbols": {
+    "PayloadsChanged": {
+      "file": "target/keys.ts",
+      "line": 3
+    },
+    "PayloadsIdle": {
+      "file": "target/keys.ts",
+      "line": 6
+    },
+    "PayloadsImported": {
+      "file": "target/keys.ts",
+      "line": 5
+    },
+    "PayloadsOrdinary": {
+      "file": "target/keys.ts",
+      "line": 2
+    },
+    "PayloadsSwitched": {
+      "file": "target/keys.ts",
+      "line": 4
+    }
+  }
+}

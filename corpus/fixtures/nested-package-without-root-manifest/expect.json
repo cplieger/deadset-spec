@@ -1,0 +1,61 @@
+{
+  "name": "nested-package-without-root-manifest",
+  "description": "A run at a root that holds no package.json reads the manifest of each nested package that holds a compiler configuration, so it applies the convention rows that manifest declares and judges its dependencies, as a run at that package does. A string at the stryker row's selection key roots nothing, so a hook only a test calls is reported, a file the vitest row's setupFiles names is test code, and a development dependency nothing runs is reported. A command a workflow step of the root runs is a use of the dependency of a nested package that declares it.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "conventions_applied": [
+    {
+      "name": "stryker",
+      "package": "@stryker-mutator/core",
+      "version": "9.999.0",
+      "manifest": "web/package.json"
+    },
+    {
+      "name": "vitest",
+      "package": "vitest",
+      "version": "5.999.0",
+      "manifest": "web/package.json"
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "Live",
+      "report": "none"
+    },
+    {
+      "symbol": "ResetForTest",
+      "report": "DS1004",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "Register",
+      "report": "DS1004",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "StrykerDependency",
+      "report": "DS1601",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "dependency",
+      "details": {
+        "dependency_class": "dev-dependency"
+      }
+    },
+    {
+      "symbol": "VitestDependency",
+      "report": "none"
+    },
+    {
+      "symbol": "LintToolDependency",
+      "report": "none"
+    }
+  ]
+}

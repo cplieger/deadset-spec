@@ -1,0 +1,16 @@
+{
+  "symbols": {
+    "AwaitedNumber": {
+      "file": "target/main.ts",
+      "line": 9
+    },
+    "AwaitedPromise": {
+      "file": "target/main.ts",
+      "line": 5
+    },
+    "DroppedPromise": {
+      "file": "target/main.ts",
+      "line": 13
+    }
+  }
+}

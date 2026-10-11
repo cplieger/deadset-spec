@@ -141,6 +141,11 @@
                       "type": "string",
                       "enum": ["reference-counting", "reachability"]
                     },
+                    "fixability": {
+                      "description": "The fixability the reported finding carried, drawn from the fixabilities field of contract/kinds.json. A runner writes it where the expectation names one and omits it otherwise, because the row pins what it names, so it is forbidden when report is none and when report is DS1703, where no expectation names one.",
+                      "type": "string",
+                      "enum": ["deletable", "narrowable", "manual", "none"]
+                    },
                     "configurations": {
                       "description": "The configurations the reported finding named, by identifier, ordered as the rendering's manifest orders its build matrix. Optional on a reported finding, because a rendering with no build matrix gives a finding nothing to name, and forbidden when report is none.",
                       "type": "array",
@@ -195,6 +200,11 @@
                           "type": "string",
                           "pattern": "^[A-Za-z0-9_.-]+(/[A-Za-z0-9_.-]+)*$"
                         },
+                        "name_literal": {
+                          "description": "The logical name of the string literal the reported finding's details.name_literal resolved to, echoed where its file and its line matched the row's.",
+                          "type": "string",
+                          "pattern": "^[A-Za-z_][A-Za-z0-9_]*(\\.[A-Za-z_][A-Za-z0-9_]*)*$"
+                        },
                         "overlap": {
                           "description": "The external linters or rules the reported finding named.",
                           "type": "array",
@@ -243,6 +253,7 @@
                         { "required": ["confidence"] },
                         { "required": ["reachability_class"] },
                         { "required": ["liveness_relation"] },
+                        { "required": ["fixability"] },
                         { "required": ["configurations"] },
                         { "required": ["details"] },
                         { "required": ["component"] }
@@ -252,7 +263,20 @@
                   "else": {
                     "required": ["confidence"],
                     "not": { "required": ["retained_by"] }
-                  }
+                  },
+                  "allOf": [
+                    {
+                      "if": {
+                        "required": ["report"],
+                        "properties": {
+                          "report": { "const": "DS1703" }
+                        }
+                      },
+                      "then": {
+                        "not": { "required": ["fixability"] }
+                      }
+                    }
+                  ]
                 },
                 "suppression": {
                   "description": "The outcome of the second analysis, after the runner wrote the reported finding into the rendering's ignore file. Present exactly when the suppression phase applies to the expectation and the first analysis reported a finding there, because only then is there a finding to suppress; absent otherwise, so a row about a subject corpus.json shapes as a record of a document carries none. The expectation passes only when suppressed is true and stale is false, and both fields are compared between two products by the cross-language agreement check.",

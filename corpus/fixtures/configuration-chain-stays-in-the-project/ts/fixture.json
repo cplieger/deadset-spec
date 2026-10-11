@@ -1,0 +1,8 @@
+{
+  "symbols": {
+    "ModulePlugin": { "file": "target/package.json", "line": 8 },
+    "Preset": { "file": "target/package.json", "line": 9 },
+    "ProjectPlugin": { "file": "target/package.json", "line": 10 },
+    "SharedPlugin": { "file": "target/package.json", "line": 11 }
+  }
+}

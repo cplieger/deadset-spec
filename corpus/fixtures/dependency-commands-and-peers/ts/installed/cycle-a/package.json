@@ -1,0 +1,1 @@
+{"name": "cycle-a", "private": true, "version": "1.0.0", "types": "./index.d.ts", "peerDependencies": {"cycle-b": "1.0.0"}}

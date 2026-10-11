@@ -1,0 +1,47 @@
+{
+  "name": "trailing-directive",
+  "description": "A directive that follows the code on the line where a declaration begins binds that declaration and nothing on the next line: a one-line constant is held by it, a constant on the next line stays reported, and a constant whose line sits under a marker comment another tool reads is held by the directive beside it. A directive trailing a call, on a line where no declaration begins, binds nothing and is stale, and the declaration after the function stays reported.",
+  "languages": [
+    "go",
+    "ts"
+  ],
+  "target_kind": "application",
+  "suppressions_in_effect": 3,
+  "expect": [
+    {
+      "symbol": "CallTrailingDirective",
+      "report": "DS1703",
+      "confidence": "certain",
+      "symbol_kind": "suppression",
+      "details": {
+        "mechanism": "inline"
+      }
+    },
+    {
+      "symbol": "UnusedAfterFunction",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "OneLine",
+      "report": "none"
+    },
+    {
+      "symbol": "TrailingFirst",
+      "report": "none"
+    },
+    {
+      "symbol": "NextLine",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "BesideMarker",
+      "report": "none"
+    }
+  ]
+}

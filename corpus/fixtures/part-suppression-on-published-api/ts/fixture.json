@@ -1,0 +1,12 @@
+{
+  "symbols": {
+    "HeldAbove": { "file": "target/lib.ts", "line": 2 },
+    "TrailingMethod": { "file": "target/lib.ts", "line": 8 },
+    "HeldByEntry": { "file": "target/lib.ts", "line": 13 },
+    "BothOnFirstLine": { "file": "target/lib.ts", "line": 18 },
+    "WrappedFirst": { "file": "target/lib.ts", "line": 23 },
+    "WrappedSecond": { "file": "target/lib.ts", "line": 24 },
+    "StaleDirective": { "file": "target/lib.ts", "line": 29 },
+    "ReadsEverything": { "file": "target/lib.ts", "line": 30 }
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "name": "key-comparison",
+  "description": "A string literal compared by equality, or written as a case label, with an operand whose declaration's type is keyof a type references the member of that type the literal names, the declaration read through the import that names it. A member no comparison names is reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "PayloadsChanged",
+      "report": "none"
+    },
+    {
+      "symbol": "PayloadsIdle",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "PayloadsImported",
+      "report": "none"
+    },
+    {
+      "symbol": "PayloadsOrdinary",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "PayloadsSwitched",
+      "report": "none"
+    }
+  ]
+}

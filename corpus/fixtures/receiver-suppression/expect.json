@@ -1,0 +1,36 @@
+{
+  "name": "receiver-suppression",
+  "description": "An unused receiver is suppressed by each mechanism: a directive above its method, a directive trailing the method's first line, and an ignore entry carrying the finding's reference and path. A record on a method that reads its receiver matches nothing and is stale.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "suppressions_in_effect": 3,
+  "expect": [
+    {
+      "symbol": "Above",
+      "report": "none"
+    },
+    {
+      "symbol": "Trailing",
+      "report": "none"
+    },
+    {
+      "symbol": "Entry",
+      "report": "none"
+    },
+    {
+      "symbol": "StaleDirective",
+      "report": "DS1703",
+      "confidence": "certain",
+      "symbol_kind": "suppression",
+      "details": {
+        "mechanism": "inline"
+      }
+    },
+    {
+      "symbol": "Live",
+      "report": "none"
+    }
+  ]
+}

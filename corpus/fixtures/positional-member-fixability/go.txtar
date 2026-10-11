@@ -1,0 +1,139 @@
+The Go rendering: one application declaring constant groups of every shape a
+deletion can renumber, naming one member of the groups it uses, and two
+groups whose specifications each declare two names.
+
+-- fixture.json --
+{
+  "symbols": {
+    "phase": { "file": "target/main.go", "line": 3 },
+    "phaseIdle": { "file": "target/main.go", "line": 6 },
+    "phaseRunning": { "file": "target/main.go", "line": 7 },
+    "phasePaused": { "file": "target/main.go", "line": 8 },
+    "phaseDone": { "file": "target/main.go", "line": 9 },
+    "levelLow": { "file": "target/main.go", "line": 13 },
+    "levelHigh": { "file": "target/main.go", "line": 14 },
+    "limit": { "file": "target/main.go", "line": 18 },
+    "spare": { "file": "target/main.go", "line": 19 },
+    "first": { "file": "target/main.go", "line": 23 },
+    "fixed": { "file": "target/main.go", "line": 24 },
+    "base": { "file": "target/main.go", "line": 28 },
+    "spacer": { "file": "target/main.go", "line": 29 },
+    "tail": { "file": "target/main.go", "line": 30 },
+    "mode": { "file": "target/main.go", "line": 33 },
+    "modeA": { "file": "target/main.go", "line": 36 },
+    "modeB": { "file": "target/main.go", "line": 37 },
+    "modeC": { "file": "target/main.go", "line": 38 },
+    "spareA": { "file": "target/main.go", "line": 42 },
+    "spareB": { "file": "target/main.go", "line": 43 },
+    "scale": { "file": "target/main.go", "line": 46 },
+    "stepA": { "file": "target/main.go", "line": 49 },
+    "stepB": { "file": "target/main.go", "line": 50 },
+    "spareScale": { "file": "target/main.go", "line": 53 },
+    "floor": { "file": "target/main.go", "line": 56 },
+    "ceiling": { "file": "target/main.go", "line": 57 },
+    "margin": { "file": "target/main.go", "line": 61 },
+    "slot": { "file": "target/main.go", "line": 62 },
+    "loScaled": { "file": "target/main.go", "line": 66 },
+    "hiScaled": { "file": "target/main.go", "line": 67 },
+    "pairA": { "file": "target/main.go", "line": 71 },
+    "pairB": { "file": "target/main.go", "line": 72 },
+    "deadPair": { "file": "target/main.go", "line": 73 },
+    "livePair": { "file": "target/main.go", "line": 74 },
+    "qa": { "file": "target/main.go", "line": 78 },
+    "qb": { "file": "target/main.go", "line": 79 },
+    "qc": { "file": "target/main.go", "line": 80 },
+    "qd": { "file": "target/main.go", "line": 81 }
+  }
+}
+-- target/go.mod --
+module example.com/app
+
+go 1.27.0
+-- target/main.go --
+package main
+
+type phase uint8
+
+const (
+	phaseIdle phase = iota
+	phaseRunning
+	phasePaused
+	phaseDone
+)
+
+const (
+	levelLow = iota
+	levelHigh
+)
+
+const (
+	limit = 5
+	spare
+)
+
+const (
+	first = iota
+	fixed = 100
+)
+
+const (
+	base   = iota
+	spacer = 100
+	tail   = iota
+)
+
+type mode uint8
+
+const (
+	modeA mode = iota
+	modeB
+	modeC
+)
+
+const (
+	spareA = iota
+	spareB
+)
+
+const scale = 10
+
+const (
+	stepA = scale
+	stepB = iota
+)
+
+func spareScale() int { return scale }
+
+const (
+	floor = 5
+	ceiling
+)
+
+const (
+	margin = ceiling
+	slot   = iota
+)
+
+const (
+	lo, loScaled = iota, iota * 2
+	hi, hiScaled
+)
+
+const (
+	pairA,
+	pairB = 1, 2
+	deadPair,
+	livePair
+)
+
+const (
+	qa,
+	qb = 1, 2
+	qc,
+	qd
+)
+
+func main() {
+	p := phaseRunning
+	println(p == phaseRunning, levelHigh, spare, fixed, tail, stepB, slot, lo, hi, hiScaled, livePair)
+}

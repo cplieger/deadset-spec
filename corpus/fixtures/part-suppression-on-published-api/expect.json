@@ -1,0 +1,49 @@
+{
+  "name": "part-suppression-on-published-api",
+  "description": "A suppression record for an unused parameter of a library's published function or method is in effect at the default minimum confidence, because a part's finding carries its own class rather than the class of the published declaration that holds it. Each mechanism holds it: a directive above the function, a trailing directive on its first line, a directive trailing a parameter of a wrapped signature, and an ignore entry carrying the finding's own reference and path. One record holds every unused parameter of its function, and a record on a function whose parameters are all read is stale.",
+  "languages": [
+    "go",
+    "ts"
+  ],
+  "target_kind": "library",
+  "suppressions_in_effect": 5,
+  "expect": [
+    {
+      "symbol": "HeldAbove",
+      "report": "none"
+    },
+    {
+      "symbol": "TrailingMethod",
+      "report": "none"
+    },
+    {
+      "symbol": "HeldByEntry",
+      "report": "none"
+    },
+    {
+      "symbol": "BothOnFirstLine",
+      "report": "none"
+    },
+    {
+      "symbol": "WrappedFirst",
+      "report": "none"
+    },
+    {
+      "symbol": "WrappedSecond",
+      "report": "none"
+    },
+    {
+      "symbol": "StaleDirective",
+      "report": "DS1703",
+      "confidence": "certain",
+      "symbol_kind": "suppression",
+      "details": {
+        "mechanism": "inline"
+      }
+    },
+    {
+      "symbol": "ReadsEverything",
+      "report": "none"
+    }
+  ]
+}

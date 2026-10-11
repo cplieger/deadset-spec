@@ -1,0 +1,10 @@
+{
+  "name": "@example/tools",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./index.ts",
+  "devDependencies": {
+    "lint-tool": "1.0.0"
+  }
+}

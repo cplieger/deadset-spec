@@ -1,0 +1,20 @@
+{
+  "symbols": {
+    "DecodedName": {
+      "file": "target/main.ts",
+      "line": 23
+    },
+    "DecodedSpare": {
+      "file": "target/main.ts",
+      "line": 24
+    },
+    "ScopeOnconnect": {
+      "file": "target/main.ts",
+      "line": 2
+    },
+    "ShownOnclick": {
+      "file": "target/main.ts",
+      "line": 9
+    }
+  }
+}

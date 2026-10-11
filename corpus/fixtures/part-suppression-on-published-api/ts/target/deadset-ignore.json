@@ -1,0 +1,11 @@
+{
+  "description": "One entry holding the unused parameter of entry.",
+  "ignore": [
+    {
+      "code": "DS1801",
+      "symbol": "ts://@example/lib/lib.ts#entry",
+      "path": "lib.ts",
+      "reason": "The next release reads key."
+    }
+  ]
+}

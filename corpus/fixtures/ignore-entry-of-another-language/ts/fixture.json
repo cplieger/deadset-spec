@@ -1,0 +1,9 @@
+{
+  "symbols": {
+    "Unused": { "file": "target/main.ts", "line": 3 },
+    "OtherEntry": { "file": "target/deadset-ignore.json", "line": 4 },
+    "OwnEntry": { "file": "target/deadset-ignore.json", "line": 10 },
+    "OtherUnscopedEntry": { "file": "target/deadset-ignore.json", "line": 16 },
+    "OtherReasonlessEntry": { "file": "target/deadset-ignore.json", "line": 21 }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "@example/bus",
+  "version": "1.0.0",
+  "private": true,
+  "types": "./index.d.ts"
+}

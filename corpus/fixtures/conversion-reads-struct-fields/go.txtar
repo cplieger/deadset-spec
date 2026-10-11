@@ -1,0 +1,190 @@
+One main package converting between struct types that declare identical fields, through value
+and pointer conversions, a type parameter on either side and nested type literals, beside the
+shapes that convert nothing.
+
+-- fixture.json --
+{
+  "symbols": {
+    "SharedSeen": { "file": "target/main.go", "line": 6 },
+    "SharedHidden": { "file": "target/main.go", "line": 7 },
+    "BoxV": { "file": "target/main.go", "line": 11 },
+    "AS": { "file": "target/main.go", "line": 15 },
+    "AItems": { "file": "target/main.go", "line": 16 },
+    "AItemsP": { "file": "target/main.go", "line": 17 },
+    "AItemsQ": { "file": "target/main.go", "line": 18 },
+    "AIndex": { "file": "target/main.go", "line": 20 },
+    "AIndexK": { "file": "target/main.go", "line": 21 },
+    "APtr": { "file": "target/main.go", "line": 23 },
+    "APtrDeep": { "file": "target/main.go", "line": 24 },
+    "AGen": { "file": "target/main.go", "line": 26 },
+    "AGenG": { "file": "target/main.go", "line": 27 },
+    "AHook": { "file": "target/main.go", "line": 29 },
+    "AHookZ": { "file": "target/main.go", "line": 31 },
+    "BS": { "file": "target/main.go", "line": 37 },
+    "BItems": { "file": "target/main.go", "line": 38 },
+    "BItemsP": { "file": "target/main.go", "line": 39 },
+    "BItemsQ": { "file": "target/main.go", "line": 40 },
+    "BIndex": { "file": "target/main.go", "line": 42 },
+    "BIndexK": { "file": "target/main.go", "line": 43 },
+    "BPtr": { "file": "target/main.go", "line": 45 },
+    "BPtrDeep": { "file": "target/main.go", "line": 46 },
+    "BGen": { "file": "target/main.go", "line": 48 },
+    "BGenG": { "file": "target/main.go", "line": 49 },
+    "BHook": { "file": "target/main.go", "line": 51 },
+    "BHookZ": { "file": "target/main.go", "line": 53 },
+    "SrcName": { "file": "target/main.go", "line": 59 },
+    "DstName": { "file": "target/main.go", "line": 63 },
+    "FromTitle": { "file": "target/main.go", "line": 67 },
+    "PairLeft": { "file": "target/main.go", "line": 73 },
+    "PairRight": { "file": "target/main.go", "line": 74 },
+    "KeptLost": { "file": "target/main.go", "line": 80 },
+    "BoxedHidden": { "file": "target/main.go", "line": 84 },
+    "RecordX": { "file": "target/main.go", "line": 88 },
+    "RecordY": { "file": "target/main.go", "line": 89 }
+  }
+}
+-- target/go.mod --
+module example.com/app
+
+go 1.27.0
+-- target/main.go --
+package main
+
+import "encoding/json"
+
+type shared struct {
+	Seen   string
+	Hidden string
+}
+
+type box[T any] struct {
+	V T
+}
+
+type outerA struct {
+	S     shared
+	Items []struct {
+		P int
+		Q int
+	}
+	Index map[string]struct {
+		K int
+	}
+	Ptr *struct {
+		Deep int
+	}
+	Gen box[struct {
+		G int
+	}]
+	Hook interface {
+		Get() struct {
+			Z int
+		}
+	}
+}
+
+type outerB struct {
+	S     shared `json:"s"`
+	Items []struct {
+		P int
+		Q int
+	}
+	Index map[string]struct {
+		K int
+	}
+	Ptr *struct {
+		Deep int
+	}
+	Gen box[struct {
+		G int
+	}]
+	Hook interface {
+		Get() struct {
+			Z int
+		}
+	}
+}
+
+type src struct {
+	Name string
+}
+
+type dst struct {
+	Name string
+}
+
+type from struct {
+	Title string
+}
+
+type wireT struct{ Title string }
+
+type pair struct {
+	Left  string
+	Right string
+}
+
+type wire struct{ Left, Right string }
+
+type kept struct {
+	Lost string
+}
+
+type boxed struct {
+	Hidden string
+}
+
+type record struct {
+	X int
+	Y int
+}
+
+func (r *record) UnmarshalJSON(b []byte) error {
+	type plain record
+	return json.Unmarshal(b, (*plain)(r))
+}
+
+func toWire[P ~struct{ Left, Right string }](p P) wire { return wire(p) }
+
+func toParam[T ~struct{ Title string }](f from) T { return T(f) }
+
+func keep[T any](t T) { println(any(t) != nil) }
+
+func main() {
+	var a outerA
+	a.S.Seen = "s"
+	a.S.Hidden = "h"
+	a.Items = nil
+	a.Index = nil
+	a.Ptr = nil
+	a.Gen = box[struct{ G int }]{}
+	a.Hook = nil
+	b := outerB(a)
+	_ = b.Gen.V
+	println(b.S.Seen, len(b.Items), len(b.Index), b.Ptr == nil, b.Hook == nil)
+
+	var s src
+	s.Name = "n"
+	println((*dst)(&s) != nil)
+
+	var f from
+	f.Title = "t"
+	println(toParam[wireT](f) == wireT{})
+
+	var p pair
+	p.Left, p.Right = "l", "r"
+	println(toWire(p) == wire{})
+
+	var k kept
+	k.Lost = "x"
+	keep(k)
+
+	var bx boxed
+	bx.Hidden = "h"
+	println(any(bx) != nil)
+
+	var r record
+	if err := json.Unmarshal([]byte(`{"X":1}`), &r); err == nil {
+		println(r.X, record(r).X)
+	}
+}

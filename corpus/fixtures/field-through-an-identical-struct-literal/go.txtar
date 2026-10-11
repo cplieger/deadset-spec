@@ -1,0 +1,37 @@
+A main package selecting a field through one spelling of an unnamed struct type while a field of
+a struct declares the identical type, beside a twin whose tag differs and a named struct of the
+same shape.
+
+-- fixture.json --
+{
+  "symbols": {
+    "HolderXC": { "file": "target/main.go", "line": 4 },
+    "HolderYC": { "file": "target/main.go", "line": 6 },
+    "NamedC": { "file": "target/main.go", "line": 12 }
+  }
+}
+-- target/go.mod --
+module example.com/app
+
+go 1.27.0
+-- target/main.go --
+package main
+
+type holder struct {
+	X *struct{ C string }
+	Y *struct {
+		C string `json:"c"`
+	}
+	Z *named
+}
+
+type named struct {
+	C string
+}
+
+func use(p *struct{ C string }) string { return p.C }
+
+func main() {
+	h := holder{}
+	println(use(h.X), h.Y == nil, h.Z == nil)
+}

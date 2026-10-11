@@ -1,0 +1,30 @@
+{
+  "name": "published-parameter-conversions",
+  "description": "A library analyzed with no consumer declared. An outside program can hand a value of each type it can hold to each published parameter whose type is an interface the value implements, whichever package declares that interface and whether or not it is exported, a variadic parameter's element type included, and it can instantiate a published type parameter with such a type. It holds each exported type, and each unexported type the published API hands out through a result, an exported variable, an exported constant or an exported field, a field promoted through an unexported embedded struct included, and it calls an exported method promoted through such a struct as it calls one the type declares. So the methods those interfaces and constraints require are retained on each such type, an unexported method that seals an interface and an exported method of an interface any type implements alike, and a type a published parameter of type error takes is reachable as an error. A suppression written for one of them no longer matches a finding and is reported as stale. A type counts where it or a pointer to it implements the interface, a generic type counts where its methods match the interface's by name and by the number of parameters and results, and a constraint counts however the published declaration spells its type parameter, a slice of it included. A method no published interface requires is reported, and so is one on an unexported type that only a published parameter takes, which no outside program can hold.",
+  "languages": ["go"],
+  "target_kind": "library",
+  "expect": [
+    { "symbol": "Counter.registerInto", "report": "none", "retained_by": ["interface-satisfaction"] },
+    { "symbol": "Gauge.registerInto", "report": "none", "retained_by": ["interface-satisfaction"] },
+    { "symbol": "GaugeDirective", "report": "DS1703", "confidence": "certain", "symbol_kind": "suppression", "details": { "mechanism": "inline" } },
+    { "symbol": "Trace.attach", "report": "none", "retained_by": ["interface-satisfaction"] },
+    { "symbol": "Buffer.Write", "report": "none", "retained_by": ["interface-satisfaction"] },
+    { "symbol": "Ratio.sample", "report": "none", "retained_by": ["interface-satisfaction"] },
+    { "symbol": "Probe.track", "report": "none", "retained_by": ["interface-satisfaction"] },
+    { "symbol": "Name.String", "report": "none", "retained_by": ["interface-satisfaction"] },
+    { "symbol": "tally.registerInto", "report": "none", "retained_by": ["interface-satisfaction"] },
+    { "symbol": "Label.registerInto", "report": "DS1002", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "method" },
+    { "symbol": "Spare.reset", "report": "DS1002", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "method" },
+    { "symbol": "spool.registerInto", "report": "none", "retained_by": ["interface-satisfaction"] },
+    { "symbol": "extra.registerInto", "report": "none", "retained_by": ["interface-satisfaction"] },
+    { "symbol": "quiet.track", "report": "DS1002", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "method" },
+    { "symbol": "Fault.Error", "report": "none", "retained_by": ["interface-satisfaction"] },
+    { "symbol": "Fault.Unwrap", "report": "none", "retained_by": ["errors-duck-typing"] },
+    { "symbol": "stock.registerInto", "report": "none", "retained_by": ["interface-satisfaction"] },
+    { "symbol": "level.track", "report": "none", "retained_by": ["interface-satisfaction"] },
+    { "symbol": "plain.registerInto", "report": "none", "retained_by": ["interface-satisfaction"] },
+    { "symbol": "Box.sample", "report": "none", "retained_by": ["interface-satisfaction"] },
+    { "symbol": "Grade.score", "report": "none", "retained_by": ["interface-satisfaction"] },
+    { "symbol": "Pier.moor", "report": "none", "retained_by": ["interface-satisfaction"] }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "name": "awaited-promise-result",
+  "description": "A call awaited as a statement sequences on its value where the value is a promise or another thenable, so a promise result every call site awaits is used though its resolved value is not. An awaited result that is no thenable, and a promise a call drops as a statement of its own, are discarded.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "AwaitedNumber",
+      "report": "DS1803",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "result",
+      "details": {
+        "overlap": [
+          "none known"
+        ]
+      }
+    },
+    {
+      "symbol": "AwaitedPromise",
+      "report": "none"
+    },
+    {
+      "symbol": "DroppedPromise",
+      "report": "DS1803",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "result",
+      "details": {
+        "overlap": [
+          "none known"
+        ]
+      }
+    }
+  ]
+}

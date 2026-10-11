@@ -1,0 +1,4 @@
+{
+  "testRunner": "vitest",
+  "mutate": ["src/hooks.ts"]
+}

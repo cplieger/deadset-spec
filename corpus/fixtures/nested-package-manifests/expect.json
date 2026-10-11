@@ -1,0 +1,57 @@
+{
+  "name": "nested-package-manifests",
+  "description": "A nested package below a root manifest that holds no compiler configuration of its own is read all the same when a source file of the root's program sits in it, so its convention rows apply and its dependencies are judged. A package.json above no program file and no compiler configuration, the manifest of a test fixture, is not read, so its dependency is not judged and a string in a configuration file beside it roots nothing.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "conventions_applied": [
+    {
+      "name": "stryker",
+      "package": "@stryker-mutator/core",
+      "version": "9.999.0",
+      "manifest": "e2e/package.json"
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "Live",
+      "report": "none"
+    },
+    {
+      "symbol": "ResetForTest",
+      "report": "DS1004",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "StrykerDependency",
+      "report": "DS1601",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "dependency",
+      "details": {
+        "dependency_class": "dev-dependency"
+      }
+    },
+    {
+      "symbol": "LeftPadDependency",
+      "report": "none"
+    },
+    {
+      "symbol": "OrphanFile",
+      "report": "DS1502",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "Orphan",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "variable"
+    }
+  ]
+}

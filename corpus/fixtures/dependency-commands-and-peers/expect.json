@@ -1,6 +1,6 @@
 {
   "name": "dependency-commands-and-peers",
-  "description": "A declared dependency nothing imports, runs or configures is reported in each of the three manifest sections. One whose installed manifest declares a command is used where a script entry runs that command, and reported where nothing does. A peer that a needed dependency's installed manifest requires is reported as any other unimported dependency is, whether the peer is marked optional or not, and the dependencies an import names are not.",
+  "description": "A declared dependency nothing imports, runs or configures is reported in each of the three manifest sections. One whose installed manifest declares a command is used where a script entry runs that command, and reported where nothing does. A declared dependency that the installed manifest of a needed dependency names as a peer is needed, whether the peer is marked optional or not, and so is a declared peer of that peer in turn. A declared dependency that only an unneeded dependency names as a peer is reported, and so are two unneeded dependencies that name each other as peers.",
   "languages": [
     "ts"
   ],
@@ -36,6 +36,22 @@
     },
     {
       "symbol": "RequiredPeer",
+      "report": "none"
+    },
+    {
+      "symbol": "PeerHost",
+      "report": "none"
+    },
+    {
+      "symbol": "OptionalPeer",
+      "report": "none"
+    },
+    {
+      "symbol": "PeerOfPeer",
+      "report": "none"
+    },
+    {
+      "symbol": "OrphanPeer",
       "report": "DS1601",
       "confidence": "certain",
       "reachability_class": "certain",
@@ -45,11 +61,17 @@
       }
     },
     {
-      "symbol": "PeerHost",
-      "report": "none"
+      "symbol": "CycleA",
+      "report": "DS1601",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "dependency",
+      "details": {
+        "dependency_class": "dev-dependency"
+      }
     },
     {
-      "symbol": "OptionalPeer",
+      "symbol": "CycleB",
       "report": "DS1601",
       "confidence": "certain",
       "reachability_class": "certain",

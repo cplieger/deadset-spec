@@ -1,0 +1,11 @@
+{
+  "name": "@example/target",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./main.ts",
+  "dependencies": {
+    "shared": "1.0.0",
+    "rootonly": "1.0.0"
+  }
+}

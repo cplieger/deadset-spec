@@ -1,0 +1,262 @@
+{
+  "name": "name-literal-confidence",
+  "description": "A package-level declaration whose name a string literal of a production file spells, outside the declaration itself, is reported at the class possible under each candidate and visibility code, with the literal's position in the finding's details, because a tool reading the source may find the declaration by that name. A method of a type is a declaration of its own, so a literal in its body lowers the type, and so is each specification of a grouped declaration, so a literal in one lowers a sibling the group declares. The same declaration is certain where only a test file or its own declaration spells the name. A declaration only a lowered declaration reaches keeps the class certain at the confidence possible, because it falls in that declaration's component. An import path, a struct tag and a struct field's name lower nothing.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "closed_world": [
+    "consumers"
+  ],
+  "min_confidence": "possible",
+  "expect": [
+    {
+      "symbol": "UnusedExported",
+      "report": "DS1001",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "function",
+      "details": {
+        "name_literal": "SpelledLiteral"
+      }
+    },
+    {
+      "symbol": "UnusedExportedTestLiteral",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "UnusedExportedSelfLiteral",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "UnusedUnexported",
+      "report": "DS1002",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "constant",
+      "details": {
+        "name_literal": "SpelledConstLiteral"
+      }
+    },
+    {
+      "symbol": "UnusedUnexportedTestLiteral",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "constant"
+    },
+    {
+      "symbol": "UnusedUnexportedSelfLiteral",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "constant"
+    },
+    {
+      "symbol": "TestOnly",
+      "report": "DS1004",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "constant",
+      "details": {
+        "name_literal": "SpelledTestedLiteral"
+      }
+    },
+    {
+      "symbol": "TestOnlyTestLiteral",
+      "report": "DS1004",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "constant"
+    },
+    {
+      "symbol": "TestOnlySelfLiteral",
+      "report": "DS1004",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "constant"
+    },
+    {
+      "symbol": "Deprecated",
+      "report": "DS1006",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "function",
+      "details": {
+        "name_literal": "SpelledOldLiteral"
+      }
+    },
+    {
+      "symbol": "DeprecatedTestLiteral",
+      "report": "DS1006",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "DeprecatedSelfLiteral",
+      "report": "DS1006",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "LocalOnly",
+      "report": "DS1101",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "type",
+      "details": {
+        "name_literal": "SpelledLocalLiteral",
+        "narrower_visibility": "package"
+      }
+    },
+    {
+      "symbol": "LocalOnlyTestLiteral",
+      "report": "DS1101",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type",
+      "details": {
+        "narrower_visibility": "package"
+      }
+    },
+    {
+      "symbol": "LocalOnlySelfLiteral",
+      "report": "DS1101",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type",
+      "details": {
+        "narrower_visibility": "package"
+      }
+    },
+    {
+      "symbol": "LocalOnlyMethodLiteral",
+      "report": "DS1101",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "type",
+      "details": {
+        "name_literal": "MethodSpelledLiteral",
+        "narrower_visibility": "package"
+      }
+    },
+    {
+      "symbol": "ModuleOnly",
+      "report": "DS1102",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "type",
+      "details": {
+        "name_literal": "SpelledExposedLiteral",
+        "narrower_visibility": "module"
+      }
+    },
+    {
+      "symbol": "ModuleOnlyTestLiteral",
+      "report": "DS1102",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type",
+      "details": {
+        "narrower_visibility": "module"
+      }
+    },
+    {
+      "symbol": "ModuleOnlySelfLiteral",
+      "report": "DS1102",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type",
+      "details": {
+        "narrower_visibility": "module"
+      }
+    },
+    {
+      "symbol": "Unreachable",
+      "report": "DS1103",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "function",
+      "details": {
+        "name_literal": "SpelledGoneLiteral"
+      }
+    },
+    {
+      "symbol": "UnreachableTestLiteral",
+      "report": "DS1103",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "UnreachableSelfLiteral",
+      "report": "DS1103",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "ImportPathControl",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "variable"
+    },
+    {
+      "symbol": "TagControl",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type"
+    },
+    {
+      "symbol": "MemberControl",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field"
+    },
+    {
+      "symbol": "SpelledRoot",
+      "report": "DS1002",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "function",
+      "details": {
+        "name_literal": "SpelledRootLiteral"
+      }
+    },
+    {
+      "symbol": "RootHelper",
+      "report": "DS1002",
+      "confidence": "possible",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "GroupedSibling",
+      "report": "DS1002",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "constant",
+      "details": {
+        "name_literal": "GroupedLiteral"
+      }
+    },
+    {
+      "symbol": "GroupedSpeller",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "constant"
+    }
+  ]
+}

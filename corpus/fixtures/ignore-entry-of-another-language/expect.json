@@ -1,0 +1,32 @@
+{
+  "name": "ignore-entry-of-another-language",
+  "description": "An analyzer reads only the ignore entries whose reference names its own language. In a target both languages analyze, an entry of the other language's scheme binds nothing, counts in neither total and is reported under no code, whether it would match, lacks a path or lacks a reason, because the other language's analyzer reads the same file and reports it once. The entry of the analyzer's own language is in effect.",
+  "languages": [
+    "go",
+    "ts"
+  ],
+  "target_kind": "application",
+  "suppressions_in_effect": 1,
+  "expect": [
+    {
+      "symbol": "Unused",
+      "report": "none"
+    },
+    {
+      "symbol": "OwnEntry",
+      "report": "none"
+    },
+    {
+      "symbol": "OtherEntry",
+      "report": "none"
+    },
+    {
+      "symbol": "OtherUnscopedEntry",
+      "report": "none"
+    },
+    {
+      "symbol": "OtherReasonlessEntry",
+      "report": "none"
+    }
+  ]
+}

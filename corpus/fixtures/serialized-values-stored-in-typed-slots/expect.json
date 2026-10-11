@@ -1,0 +1,37 @@
+{
+  "name": "serialized-values-stored-in-typed-slots",
+  "description": "A value stored in a slot of a serialized type is serialized at its own static type, because the serializer emits the value the slot holds: a subtype stored where the slot's type names a supertype, a value stored in a variable annotated with an alias of unknown, and a value a destructuring assignment stores, from a literal or from the part of a typed value the pattern names. A value of the destructured source the pattern does not take is not serialized, so its member stays reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "AliasedNote",
+      "report": "none"
+    },
+    {
+      "symbol": "DerivedExtra",
+      "report": "none"
+    },
+    {
+      "symbol": "ListedNote",
+      "report": "none"
+    },
+    {
+      "symbol": "OtherSpare",
+      "report": "none"
+    },
+    {
+      "symbol": "PickedNote",
+      "report": "none"
+    },
+    {
+      "symbol": "UnsentNote",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member"
+    }
+  ]
+}

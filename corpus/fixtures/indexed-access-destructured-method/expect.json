@@ -1,0 +1,29 @@
+{
+  "name": "indexed-access-destructured-method",
+  "description": "A method destructured from a value of an instantiated generic type and called through a namespace import resolves to the signature the instantiation fixes, so a literal passed to its keyof position references the member it names, whether the signature returns an indexed-access type or only constrains its type parameter by keyof. The member no literal names is reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "FieldsTitle",
+      "report": "none"
+    },
+    {
+      "symbol": "FieldsBody",
+      "report": "none"
+    },
+    {
+      "symbol": "FieldsDraft",
+      "report": "none"
+    },
+    {
+      "symbol": "FieldsExtra",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member"
+    }
+  ]
+}

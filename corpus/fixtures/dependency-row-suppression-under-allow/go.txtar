@@ -1,0 +1,51 @@
+One main package that imports nothing, whose module file requires two modules no
+package imports, so neither is ever fetched, run with the unused-dependency code at
+allow. Its ignore file holds one entry on a requirement the setting withholds, one
+under the wrong code and one naming a requirement the file lacks.
+
+-- fixture.json --
+{
+  "symbols": {
+    "AdjudicatedDependency": { "file": "target/go.mod", "line": 5 },
+    "UnadjudicatedDependency": { "file": "target/go.mod", "line": 7 },
+    "EntryInEffect": { "file": "target/deadset-ignore.json", "line": 4 },
+    "WrongCodeEntry": { "file": "target/deadset-ignore.json", "line": 10 },
+    "AbsentRowEntry": { "file": "target/deadset-ignore.json", "line": 16 }
+  }
+}
+-- target/go.mod --
+module example.com/app
+
+go 1.27.0
+
+require golang.org/x/sync v0.16.0
+
+require golang.org/x/text v0.20.0
+-- target/main.go --
+package main
+
+func main() {}
+-- target/deadset-ignore.json --
+{
+  "description": "One entry in effect on a requirement, one under the wrong code, one naming no row.",
+  "ignore": [
+    {
+      "code": "DS1601",
+      "symbol": "go://example.com/app#golang.org/x/sync:require",
+      "path": "go.mod",
+      "reason": "Pinned for a tool a workflow outside the module runs."
+    },
+    {
+      "code": "DS1001",
+      "symbol": "go://example.com/app#golang.org/x/text:require",
+      "path": "go.mod",
+      "reason": "Names the requirement under a code it is not reported under."
+    },
+    {
+      "code": "DS1601",
+      "symbol": "go://example.com/app#golang.org/x/absent:require",
+      "path": "go.mod",
+      "reason": "Names a requirement the module file does not declare."
+    }
+  ]
+}

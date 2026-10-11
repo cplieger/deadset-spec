@@ -3,7 +3,7 @@
   "version": "1.21.0",
   "contract_version": "7.0.0",
   "schema_versions_accepted": [
-    "8.0.0"
+    "8.1.0"
   ],
   "languages": [
     "go"

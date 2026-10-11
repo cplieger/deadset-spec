@@ -1,0 +1,38 @@
+{
+  "name": "declarations-merged-with-outside-ones",
+  "description": "An interface a file that is no module declares merges into the global scope, and a module declaration may augment a module no import of the target names. Each is used where a declaration it holds is used, so an interface the language types a value by, and an augmentation of a dependency's module, are not reported while a use reads a member they declare, and a member nothing reads is reported by its own references.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Augmentation",
+      "report": "none"
+    },
+    {
+      "symbol": "Commands",
+      "report": "none"
+    },
+    {
+      "symbol": "Emulate",
+      "report": "none"
+    },
+    {
+      "symbol": "Glob",
+      "report": "none"
+    },
+    {
+      "symbol": "ImportMeta",
+      "report": "none"
+    },
+    {
+      "symbol": "Spare",
+      "report": "DS1203",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "interface-method",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

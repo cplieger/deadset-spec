@@ -1,0 +1,117 @@
+{
+  "name": "part-suppression-matrix",
+  "description": "Every part kind both languages share is suppressed by each mechanism in each position: an unused parameter, a dropped result, a statement after a return, a dead store and an unreachable case, each held by a directive above its function, by a directive trailing the function's first line and by an ignore entry carrying the finding's reference and path. A record of each kind above a function whose part of that kind is live matches nothing and is stale.",
+  "languages": [
+    "go",
+    "ts"
+  ],
+  "target_kind": "application",
+  "suppressions_in_effect": 15,
+  "expect": [
+    {
+      "symbol": "ParameterAbove",
+      "report": "none"
+    },
+    {
+      "symbol": "ParameterTrailing",
+      "report": "none"
+    },
+    {
+      "symbol": "ParameterEntry",
+      "report": "none"
+    },
+    {
+      "symbol": "ParameterStale",
+      "report": "DS1703",
+      "confidence": "certain",
+      "symbol_kind": "suppression",
+      "details": {
+        "mechanism": "inline"
+      }
+    },
+    {
+      "symbol": "ResultAbove",
+      "report": "none"
+    },
+    {
+      "symbol": "ResultTrailing",
+      "report": "none"
+    },
+    {
+      "symbol": "ResultEntry",
+      "report": "none"
+    },
+    {
+      "symbol": "ResultStale",
+      "report": "DS1703",
+      "confidence": "certain",
+      "symbol_kind": "suppression",
+      "details": {
+        "mechanism": "inline"
+      }
+    },
+    {
+      "symbol": "StatementAbove",
+      "report": "none"
+    },
+    {
+      "symbol": "StatementTrailing",
+      "report": "none"
+    },
+    {
+      "symbol": "StatementEntry",
+      "report": "none"
+    },
+    {
+      "symbol": "StatementStale",
+      "report": "DS1703",
+      "confidence": "certain",
+      "symbol_kind": "suppression",
+      "details": {
+        "mechanism": "inline"
+      }
+    },
+    {
+      "symbol": "StoreAbove",
+      "report": "none"
+    },
+    {
+      "symbol": "StoreTrailing",
+      "report": "none"
+    },
+    {
+      "symbol": "StoreEntry",
+      "report": "none"
+    },
+    {
+      "symbol": "StoreStale",
+      "report": "DS1703",
+      "confidence": "certain",
+      "symbol_kind": "suppression",
+      "details": {
+        "mechanism": "inline"
+      }
+    },
+    {
+      "symbol": "CaseAbove",
+      "report": "none"
+    },
+    {
+      "symbol": "CaseTrailing",
+      "report": "none"
+    },
+    {
+      "symbol": "CaseEntry",
+      "report": "none"
+    },
+    {
+      "symbol": "CaseStale",
+      "report": "DS1703",
+      "confidence": "certain",
+      "symbol_kind": "suppression",
+      "details": {
+        "mechanism": "inline"
+      }
+    }
+  ]
+}

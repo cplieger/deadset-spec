@@ -1,1 +1,1 @@
-{"name": "unused-dev", "private": true, "version": "1.0.0", "types": "./index.d.ts"}
+{"name": "unused-dev", "private": true, "version": "1.0.0", "types": "./index.d.ts", "peerDependencies": {"orphan-peer": "1.0.0"}}

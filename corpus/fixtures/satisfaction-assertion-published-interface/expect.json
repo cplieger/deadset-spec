@@ -1,0 +1,76 @@
+{
+  "name": "satisfaction-assertion-published-interface",
+  "description": "In a library, an assertion whose interface is published API has the reachability class possible whatever consumers the run declares and loads, because a program the run does not hold may name the interface as a type, while the interface itself, which only its own package names, stays a certain candidate for unexporting under the complete consumer set. An assertion on an unexported interface and on an exported interface of an internal tree is certain, and an assertion whose interface a loaded consumer names as a type is a use and is not reported, under a consumer set declared complete.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "library",
+  "consumers": [
+    "consumer"
+  ],
+  "closed_world": [
+    "consumers"
+  ],
+  "min_confidence": "possible",
+  "expect": [
+    {
+      "symbol": "PublishedAssertion",
+      "report": "DS1204",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "satisfaction-assertion"
+    },
+    {
+      "symbol": "NamedAssertion",
+      "report": "none"
+    },
+    {
+      "symbol": "UnexportedAssertion",
+      "report": "DS1204",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "satisfaction-assertion"
+    },
+    {
+      "symbol": "InternalAssertion",
+      "report": "DS1204",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "satisfaction-assertion"
+    },
+    {
+      "symbol": "PublishedInterface",
+      "report": "DS1101",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "interface",
+      "details": {
+        "narrower_visibility": "file"
+      }
+    },
+    {
+      "symbol": "PublishedInterfaceMethod",
+      "report": "DS1203",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "interface-method"
+    },
+    {
+      "symbol": "InternalInterface",
+      "report": "DS1101",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "interface",
+      "details": {
+        "narrower_visibility": "file"
+      }
+    },
+    {
+      "symbol": "InternalInterfaceMethod",
+      "report": "DS1203",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "interface-method"
+    }
+  ]
+}

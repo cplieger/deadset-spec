@@ -1,0 +1,42 @@
+{
+  "name": "members-reached-through-type-arguments",
+  "description": "A value reaching a position of another type reads each member of its type that the position's type declares, an interface method included, through the type arguments of two instantiations of generic types with as many type arguments, and from an array's element to the one type argument of an instantiation the array reaches, as an array reaches an iterable. A member the position's type does not declare is reported by its own references.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "HolderTick",
+      "report": "none"
+    },
+    {
+      "symbol": "ReplyCode",
+      "report": "none"
+    },
+    {
+      "symbol": "ResultCode",
+      "report": "none"
+    },
+    {
+      "symbol": "ResultExtra",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "ViewIdle",
+      "report": "DS1203",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "interface-method",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "ViewTick",
+      "report": "none"
+    }
+  ]
+}

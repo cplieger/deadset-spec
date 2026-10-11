@@ -1,0 +1,12 @@
+{
+  "name": "configuration-chain-stays-in-the-project",
+  "description": "A configuration file no program holds is read for its strings, and so is a file it imports by a relative specifier, but only while that file is the project's own: one below the target root and in no node_modules directory. A relative specifier that reaches an installed package's file below the target's node_modules directory reads nothing, and neither does one that reaches a file outside the target root, so a dependency only such a file's strings name is reported. A dependency the configuration file imports by name, and one a project file of the chain names, are used.",
+  "languages": ["ts"],
+  "target_kind": "application",
+  "expect": [
+    { "symbol": "ModulePlugin", "report": "DS1601", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "dependency", "details": { "dependency_class": "dev-dependency" } },
+    { "symbol": "Preset", "report": "none" },
+    { "symbol": "ProjectPlugin", "report": "none" },
+    { "symbol": "SharedPlugin", "report": "DS1601", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "dependency", "details": { "dependency_class": "dev-dependency" } }
+  ]
+}
