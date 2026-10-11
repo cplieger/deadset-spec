@@ -1,5 +1,6 @@
 name: ci
 on: push
+permissions: {}
 jobs:
   lint:
     runs-on: ubuntu-latest
