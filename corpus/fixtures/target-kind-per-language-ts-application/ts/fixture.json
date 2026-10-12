@@ -1,0 +1,6 @@
+{
+  "symbols": {
+    "Kit": { "file": "target/kit.ts", "line": 2 },
+    "shown": { "file": "target/kit.ts", "line": 4 }
+  }
+}

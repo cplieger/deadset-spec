@@ -1,6 +1,6 @@
 {
-  "schema_version": "8.1.0",
-  "contract_version": "7.1.0",
+  "schema_version": "8.2.0",
+  "contract_version": "7.2.0",
   "analyzer": {
     "name": "deadset",
     "version": "1.4.0",
@@ -9,7 +9,7 @@
       "ts"
     ],
     "schema_versions_accepted": [
-      "8.1.0"
+      "8.2.0"
     ],
     "conformance": {
       "corpus_version": "1.0.0",

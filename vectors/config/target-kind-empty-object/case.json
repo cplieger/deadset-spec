@@ -1,0 +1,7 @@
+{
+  "name": "target-kind-empty-object",
+  "description": "A repository configuration writing the target kind as an object naming no language. The run is refused naming the first language the object leaves out, in the order the vocabulary lists the languages, rather than the key as a whole.",
+  "covers": [
+    "target-kind-empty-object"
+  ]
+}

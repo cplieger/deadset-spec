@@ -1,0 +1,12 @@
+{
+  "name": "parameter-property-injected",
+  "description": "A class a parameter decorator marks as built by a dependency-injection container keeps every parameter property of its constructor, decorated or not, because the container supplies each argument, and its constructor's signature is not free. A parameter property of a class nothing decorates, which nothing reads, is a write-only symbol.",
+  "languages": ["ts"],
+  "target_kind": "application",
+  "expect": [
+    { "symbol": "Clock.zone", "report": "none", "retained_by": ["injection-container"] },
+    { "symbol": "Clock.ticks", "report": "none", "retained_by": ["injection-container"] },
+    { "symbol": "Clock.retries", "report": "none" },
+    { "symbol": "Report.title", "report": "DS1301", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "class-member" }
+  ]
+}

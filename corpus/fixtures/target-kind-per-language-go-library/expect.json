@@ -1,0 +1,25 @@
+{
+  "name": "target-kind-per-language-go-library",
+  "description": "A target kind written per language names the Go code a library and the TypeScript code an application, so the Go analysis applies the library's rules: the package nothing imports is published API, whose findings the default minimum confidence withholds, and it carries no published-package note. An analyzer that reads the TypeScript member, or that treats the target as an application because one language is, reports them.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": {
+    "go": "library",
+    "ts": "application"
+  },
+  "expect": [
+    {
+      "symbol": "Run",
+      "report": "none"
+    },
+    {
+      "symbol": "ClientFile",
+      "report": "none"
+    },
+    {
+      "symbol": "Fetch",
+      "report": "none"
+    }
+  ]
+}

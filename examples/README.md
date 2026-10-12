@@ -40,7 +40,9 @@ build it and dropped it from the matrix, `typescript-configurations.json` for a 
 a set of compiler configurations rather than a set of platforms, with a configuration whose checker
 left questions unanswered and a convention row it applied, `setup-records.json` for a run that
 skipped a function holding a type error, classified test-support code and carries a note, and
-`merged.json` for the report a merge writes over two analyzers' reports.
+`merged.json` for the report a merge writes over two analyzers' reports, and
+`merged-kinds-per-language.json` for the same merge over a target whose Go code is an application
+and whose TypeScript code is a library.
 
 Every finding inside a report here is also an instance of the finding schema on its own, and every
 count in `totals` is the count of the array it describes.

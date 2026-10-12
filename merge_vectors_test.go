@@ -247,6 +247,18 @@ var mergeShapes = []mergeShape{
 		holds: mergeCase.refusedOnTargets,
 	},
 	{
+		name:  "two reports of two languages claiming two kinds, merged as mixed",
+		holds: mergeCase.mergesTwoKinds,
+	},
+	{
+		name:  "two reports claiming two kinds for one language",
+		holds: mergeCase.refusedOnKindClaims,
+	},
+	{
+		name:  "a mixed report whose language kinds are not its languages",
+		holds: func(c mergeCase) bool { return c.refused() && c.carriesMixedInput(false) },
+	},
+	{
 		name:  "a report that omitted a finding",
 		holds: mergeCase.refusedOnOmitted,
 	},
@@ -475,7 +487,73 @@ func (c mergeCase) refusedOnTargets() bool {
 		return false
 	}
 	for i, a := range c.inputs {
-		if slices.ContainsFunc(c.inputs[i+1:], func(b mergeReport) bool { return !sameRawJSON(a.Target, b.Target) }) {
+		if slices.ContainsFunc(c.inputs[i+1:], func(b mergeReport) bool {
+			x, y := a.target(), b.target()
+			return x.Root != y.Root || x.Identity != y.Identity
+		}) {
+			return true
+		}
+	}
+	return false
+}
+
+// mergeTarget is a report's target, decoded.
+type mergeTarget struct {
+	LanguageKinds map[string]string `json:"language_kinds"`
+	Kind          string            `json:"kind"`
+	Root          string            `json:"root"`
+	Identity      string            `json:"identity"`
+}
+
+// target decodes the report's target, reading as empty where it does not decode.
+func (r mergeReport) target() mergeTarget {
+	var t mergeTarget
+	if json.Unmarshal(r.Target, &t) != nil {
+		return mergeTarget{}
+	}
+	return t
+}
+
+// mergesTwoKinds reports whether two inputs of different languages each name one kind, the
+// two kinds differ, and the merged report names them as mixed.
+func (c mergeCase) mergesTwoKinds() bool {
+	if c.expected == nil || c.expected.target().Kind != "mixed" {
+		return false
+	}
+	for i, a := range c.inputs {
+		if slices.ContainsFunc(c.inputs[i+1:], func(b mergeReport) bool {
+			x, y := a.target(), b.target()
+			return x.Kind != "mixed" && y.Kind != "mixed" && x.Kind != y.Kind &&
+				!slices.ContainsFunc(a.Analyzer.Languages, func(l string) bool { return slices.Contains(b.Analyzer.Languages, l) })
+		}) {
+			return true
+		}
+	}
+	return false
+}
+
+// carriesMixedInput reports whether an input names its kind as mixed, with language kinds
+// naming exactly its languages where matching is true and naming other languages otherwise.
+func (c mergeCase) carriesMixedInput(matching bool) bool {
+	return slices.ContainsFunc(c.inputs, func(r mergeReport) bool {
+		t := r.target()
+		named := slices.Sorted(maps.Keys(t.LanguageKinds))
+		return t.Kind == "mixed" && slices.Equal(named, slices.Sorted(slices.Values(r.Analyzer.Languages))) == matching
+	})
+}
+
+// refusedOnKindClaims reports whether the case is refused and two inputs that share a language
+// each name one kind, the two kinds differing.
+func (c mergeCase) refusedOnKindClaims() bool {
+	if !c.refused() {
+		return false
+	}
+	for i, a := range c.inputs {
+		if slices.ContainsFunc(c.inputs[i+1:], func(b mergeReport) bool {
+			x, y := a.target(), b.target()
+			return x.Kind != "mixed" && y.Kind != "mixed" && x.Kind != y.Kind &&
+				slices.ContainsFunc(a.Analyzer.Languages, func(l string) bool { return slices.Contains(b.Analyzer.Languages, l) })
+		}) {
 			return true
 		}
 	}
@@ -621,9 +699,12 @@ func sameRawJSON(a, b json.RawMessage) bool {
 	return (errA == nil) == (errB == nil) && reflect.DeepEqual(x, y)
 }
 
-// twoAnalyzersClaimOneLanguage reports whether two input reports of the case were written by
+// twoAnalyzersClaimOneLanguage reports whether the case merges two input reports written by
 // different analyzers that claim a language in common.
 func (c mergeCase) twoAnalyzersClaimOneLanguage() bool {
+	if c.expected == nil {
+		return false
+	}
 	for i, a := range c.inputs {
 		for _, b := range c.inputs[i+1:] {
 			if a.Analyzer.Name == b.Analyzer.Name {
@@ -1587,6 +1668,17 @@ func mergeShapeCases() []mergeCase {
 		}},
 		refused("targets-differ", func(a, b *mergeReport) {
 			a.Target, b.Target = json.RawMessage(`{"root": "."}`), json.RawMessage(`{"root": "web"}`)
+		}),
+		mergedCase("target-kinds-of-two-languages", func(a, b, m *mergeReport) {
+			a.Target, b.Target = json.RawMessage(`{"kind": "application"}`), json.RawMessage(`{"kind": "library"}`)
+			m.Target = json.RawMessage(`{"kind": "mixed", "language_kinds": {"go": "application", "ts": "library"}}`)
+		}),
+		refused("target-kind-claims-differ", func(a, b *mergeReport) {
+			b.Analyzer.Languages = a.Analyzer.Languages
+			a.Target, b.Target = json.RawMessage(`{"kind": "application"}`), json.RawMessage(`{"kind": "library"}`)
+		}),
+		refused("target-kinds-not-the-reports-languages", func(a, _ *mergeReport) {
+			a.Target = json.RawMessage(`{"kind": "mixed", "language_kinds": {"go": "application", "ts": "library"}}`)
 		}),
 		refused("findings-omitted", func(_, b *mergeReport) { b.Totals.Omitted = 1 }),
 		refused("configuration-entries-differ", func(a, b *mergeReport) {

@@ -1,0 +1,120 @@
+The Go rendering: a command hands a retry module a function that returns an error
+type implementing three interfaces the module declares, each holding the Error
+method. The module asserts two of them on the error it gets back, one through
+errors.AsType and one through errors.As, and never asserts the third. A second
+type implements the asserted interface and enters only an interface the command
+declares. A third reaches error as a value while only a pointer to it declares the
+asserted interface's other method. A directive on a method the assertion retains
+holds nothing. The retry module is a local module the target requires and replaces.
+
+-- fixture.json --
+{
+  "symbols": {
+    "upstream.IsTransient": { "file": "target/main.go", "line": 22 },
+    "upstream.Delay": { "file": "target/main.go", "line": 25 },
+    "DelayDirective": { "file": "target/main.go", "line": 24 },
+    "upstream.Hint": { "file": "target/main.go", "line": 27 },
+    "note.Error": { "file": "target/main.go", "line": 37 },
+    "note.IsTransient": { "file": "target/main.go", "line": 39 },
+    "flaky.Error": { "file": "target/main.go", "line": 45 },
+    "flaky.IsTransient": { "file": "target/main.go", "line": 47 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+
+require example.com/retry v0.0.0
+
+replace example.com/retry => ../retry
+-- target/main.go --
+package main
+
+import (
+	"errors"
+	"fmt"
+
+	"example.com/retry"
+)
+
+func main() {
+	fmt.Println(retry.Do(fetch) != nil)
+	fmt.Println(retry.Do(once) != nil)
+	describe(note{})
+}
+
+type upstream struct {
+	err error
+}
+
+func (u *upstream) Error() string { return u.err.Error() }
+
+func (*upstream) IsTransient() bool { return true }
+
+//deadset:ignore DS1103 -- The retry module asks for the delay.
+func (*upstream) Delay() int { return 1 }
+
+func (*upstream) Hint() string { return "later" }
+
+func fetch() error { return &upstream{err: errors.New("busy")} }
+
+type shower interface{ Show() }
+
+type note struct{}
+
+func (note) Show() {}
+
+func (note) Error() string { return "note" }
+
+func (note) IsTransient() bool { return false }
+
+func describe(s shower) { s.Show() }
+
+type flaky struct{}
+
+func (flaky) Error() string { return "flaky" }
+
+func (*flaky) IsTransient() bool { return true }
+
+func once() error { return flaky{} }
+-- retry/go.mod --
+module example.com/retry
+
+go 1.27.0
+-- retry/retry.go --
+package retry
+
+import "errors"
+
+type Transient interface {
+	error
+	IsTransient() bool
+}
+
+type Delayed interface {
+	Error() string
+	Delay() int
+}
+
+type Hinted interface {
+	error
+	Hint() string
+}
+
+func Do(fn func() error) error {
+	for range 3 {
+		err := fn()
+		if err == nil {
+			return nil
+		}
+		if t, ok := errors.AsType[Transient](err); !ok || !t.IsTransient() {
+			return err
+		}
+		var d Delayed
+		if errors.As(err, &d) {
+			_ = d.Delay()
+		}
+	}
+	return errors.New("gave up")
+}

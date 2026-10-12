@@ -1,0 +1,11 @@
+{
+  "symbols": {
+    "Box.label": { "file": "target/box.ts", "line": 4 },
+    "Box.spare": { "file": "target/box.ts", "line": 5 },
+    "Box.width": { "file": "target/box.ts", "line": 6 },
+    "Box.height": { "file": "target/box.ts", "line": 7 },
+    "Box.depth": { "file": "target/box.ts", "line": 8 },
+    "Box.count": { "file": "target/box.ts", "line": 9 },
+    "Shelf.size": { "file": "target/box.ts", "line": 21 }
+  }
+}

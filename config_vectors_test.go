@@ -43,6 +43,17 @@ var configVectorAspects = []string{
 	"quoted-key-with-a-dot",
 	"resolved-configuration-round-trip",
 	"severity-key-names-no-kind",
+	"target-kind-empty-object",
+	"target-kind-language-missing",
+	"target-kind-language-undeclared",
+	"target-kind-language-value-refused",
+	"target-kind-member-null",
+	"target-kind-missing-before-a-refused-value",
+	"target-kind-object-over-a-string",
+	"target-kind-of-another-type",
+	"target-kind-per-language",
+	"target-kind-replaced-whole",
+	"target-kind-undeclared-before-missing",
 	"template-delimiters-configured",
 	"template-delimiters-half",
 	"typescript-matrix-declared",
@@ -247,6 +258,9 @@ func vectorSchemaProblems(t *testing.T, index vectorSchemaIndex, where, at, sche
 	if branches := len(branchesOf(entry.node)); branches > 0 {
 		return vectorBranchProblems(t, index, where, at, schemaPath, branches, value)
 	}
+	if want, _ := entry.node["type"].(string); want != "" && vectorJSONType(value) != want && (want != "number" || vectorJSONType(value) != "integer") {
+		return []string{fmt.Sprintf("%s: %s is a JSON %s, want the %s schema[%s].type names", where, at, vectorJSONType(value), want, schemaPath)}
+	}
 	var out []string
 	if text, isText := value.(string); isText {
 		if pattern, _ := entry.node["pattern"].(string); pattern != "" {
@@ -284,6 +298,34 @@ func vectorSchemaProblems(t *testing.T, index vectorSchemaIndex, where, at, sche
 		}
 	}
 	return out
+}
+
+// vectorJSONType names the JSON Schema type of one decoded value. A number decodes as
+// float64 or as json.Number, and one with no fraction is an integer.
+func vectorJSONType(value any) string {
+	switch v := value.(type) {
+	case map[string]any:
+		return "object"
+	case []any:
+		return "array"
+	case string:
+		return "string"
+	case bool:
+		return "boolean"
+	case nil:
+		return "null"
+	case json.Number:
+		if _, err := v.Int64(); err == nil {
+			return "integer"
+		}
+		return "number"
+	case float64:
+		if v == float64(int64(v)) {
+			return "integer"
+		}
+		return "number"
+	}
+	return fmt.Sprintf("%T", value)
 }
 
 // vectorBranchProblems walks one value against each branch of the oneOf at schemaPath and
@@ -844,9 +886,27 @@ func TestVectorSchemaProblemsRefuses(t *testing.T) {
 		},
 		{
 			name:    "a_value_outside_the_enumeration",
+			old:     `"min_confidence": "probable"`,
+			planted: `"min_confidence": "likely"`,
+			wantMsg: `analysis.min_confidence = "likely", want one of schema[analysis.min_confidence].enum`,
+		},
+		{
+			name:    "a_target_kind_outside_both_shapes",
 			old:     `"target": {"kind": "library"}`,
 			planted: `"target": {"kind": "framework"}`,
-			wantMsg: `target.kind = "framework", want one of schema[target.kind].enum`,
+			wantMsg: `schema[target.kind.<oneOf.0>] refuses it: target.kind = "framework", want one of schema[target.kind.<oneOf.0>].enum`,
+		},
+		{
+			name:    "a_target_kind_naming_one_language",
+			old:     `"target": {"kind": "library"}`,
+			planted: `"target": {"kind": {"go": "library"}}`,
+			wantMsg: `schema[target.kind.<oneOf.1>] refuses it: target.kind omits "ts"`,
+		},
+		{
+			name:    "a_value_of_another_type",
+			old:     `"target": {"kind": "library"}`,
+			planted: `"target": {"kind": "library"}, "consumers": {"complete": "yes"}`,
+			wantMsg: `consumers.complete is a JSON string, want the boolean schema[consumers.complete].type names`,
 		},
 		{
 			name:    "a_severity_key_the_code_pattern_refuses",
@@ -939,4 +999,100 @@ func vectorValueAt(doc map[string]any, setting string) any {
 		at = object[name]
 	}
 	return at
+}
+
+// targetKindRefusal is the path a refusal of one written target.kind names, as the key's
+// description in config.schema.json orders the faults, or "" where the value is admitted.
+func targetKindRefusal(raw json.RawMessage, languages, kinds []string) (string, error) {
+	var one string
+	if json.Unmarshal(raw, &one) == nil {
+		if slices.Contains(kinds, one) {
+			return "", nil
+		}
+		return "target.kind", nil
+	}
+	decoder := json.NewDecoder(bytes.NewReader(raw))
+	if open, err := decoder.Token(); err != nil || open != json.Delim('{') {
+		return "target.kind", err
+	}
+	var written []string
+	values := map[string]json.RawMessage{}
+	for decoder.More() {
+		token, err := decoder.Token()
+		if err != nil {
+			return "", err
+		}
+		name, _ := token.(string)
+		var value json.RawMessage
+		if err := decoder.Decode(&value); err != nil {
+			return "", err
+		}
+		written, values[name] = append(written, name), value
+	}
+	for _, name := range written {
+		if !slices.Contains(languages, name) {
+			return "target.kind." + name, nil
+		}
+	}
+	for _, language := range languages {
+		if _, ok := values[language]; !ok {
+			return "target.kind." + language, nil
+		}
+	}
+	for _, language := range languages {
+		var kind *string
+		if json.Unmarshal(values[language], &kind) != nil || kind == nil || !slices.Contains(kinds, *kind) {
+			return "target.kind." + language, nil
+		}
+	}
+	return "", nil
+}
+
+// TestConfigVectorTargetKindCasesNameTheFaultTheKeyOrders holds every case writing a target
+// kind to the order the key states: a case resolving it writes only admitted values, and a
+// case refusing it on that key names the first fault of its highest-ranked source.
+func TestConfigVectorTargetKindCasesNameTheFaultTheKeyOrders(t *testing.T) {
+	kinds := []string{"application", "library"}
+	languages := loadKinds(t).Languages
+	checked := 0
+	for _, dir := range configVectorDirs(t) {
+		var refusal configVectorError
+		if data, refused := readVectorFile(t, dir, vectorErrorFile); refused {
+			if err := decodeStrict(data, &refusal); err != nil {
+				t.Fatalf("Setup: decoding %s/%s/%s: %v", configVectorsDir, dir, vectorErrorFile, err)
+			}
+			if !strings.HasPrefix(refusal.Names, "target.kind") {
+				continue
+			}
+		}
+		for _, source := range []string{vectorRepositoryFile, vectorCentralFile} {
+			data, ok := readVectorFile(t, dir, source)
+			if !ok {
+				continue
+			}
+			var doc struct {
+				Target struct {
+					Kind json.RawMessage `json:"kind"`
+				} `json:"target"`
+			}
+			if err := json.Unmarshal(data, &doc); err != nil {
+				t.Fatalf("Setup: decoding %s/%s/%s: %v", configVectorsDir, dir, source, err)
+			}
+			if doc.Target.Kind == nil {
+				continue
+			}
+			got, err := targetKindRefusal(doc.Target.Kind, languages, kinds)
+			if err != nil {
+				t.Fatalf("Setup: reading %s/%s/%s target.kind: %v", configVectorsDir, dir, source, err)
+			}
+			if got != refusal.Names {
+				t.Errorf("%s/%s/%s target.kind %s is refused naming %q, want %q as the case states", configVectorsDir, dir, source, doc.Target.Kind, got, refusal.Names)
+			}
+			checked++
+			break
+		}
+	}
+	if checked == 0 {
+		t.Error("cases writing a target kind = 0, want every case that writes one checked")
+	}
 }

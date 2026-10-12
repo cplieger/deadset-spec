@@ -1,0 +1,8 @@
+{
+  "symbols": {
+    "Clock.zone": { "file": "target/services.ts", "line": 11 },
+    "Clock.ticks": { "file": "target/services.ts", "line": 12 },
+    "Clock.retries": { "file": "target/services.ts", "line": 13 },
+    "Report.title": { "file": "target/services.ts", "line": 21 }
+  }
+}

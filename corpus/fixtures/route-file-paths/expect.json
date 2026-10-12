@@ -1,0 +1,83 @@
+{
+  "name": "route-file-paths",
+  "description": "Source files at the paths file-system routers give them: a SvelteKit route group and + prefix, a route of a nested dashboard directory, a Remix $ parameter, a Next.js catch-all in brackets, a directory whose name holds a space and a file whose name holds characters outside ASCII. Each path is written as the tree holds it, so the findings in those files are reported at those paths and the report stays valid: an unused export in each file, and a route file nothing imports.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "load",
+      "report": "none"
+    },
+    {
+      "symbol": "layoutTitle",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "PageFile",
+      "report": "DS1502",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "GET",
+      "report": "none"
+    },
+    {
+      "symbol": "POST",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "loader",
+      "report": "none"
+    },
+    {
+      "symbol": "action",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "handler",
+      "report": "none"
+    },
+    {
+      "symbol": "signOut",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "format",
+      "report": "none"
+    },
+    {
+      "symbol": "formatLong",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "summary",
+      "report": "none"
+    },
+    {
+      "symbol": "headline",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    }
+  ]
+}

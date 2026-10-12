@@ -1,0 +1,17 @@
+{
+  "name": "errors-astype-in-a-dependency",
+  "description": "A dependency that declares an interface embedding error, or declaring its Error method, asserts it through errors.AsType or errors.As on an error the program returns to it, so a type the program converts to error keeps each method by which the converted type itself implements an interface that dependency asserts, and a directive on such a method holds nothing and is stale. A method of an interface the dependency declares and never asserts, a type that implements the asserted interface but never reaches error, and a pointer method of a type that reaches error only as a value keep nothing on that account.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "suppressions_in_effect": 0,
+  "expect": [
+    { "symbol": "upstream.IsTransient", "report": "none", "retained_by": ["interface-satisfaction"] },
+    { "symbol": "upstream.Delay", "report": "none", "retained_by": ["interface-satisfaction"] },
+    { "symbol": "DelayDirective", "report": "DS1703", "confidence": "certain", "symbol_kind": "suppression", "details": { "mechanism": "inline" } },
+    { "symbol": "upstream.Hint", "report": "DS1103", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "method" },
+    { "symbol": "note.Error", "report": "DS1103", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "method" },
+    { "symbol": "note.IsTransient", "report": "DS1103", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "method" },
+    { "symbol": "flaky.Error", "report": "none" },
+    { "symbol": "flaky.IsTransient", "report": "DS1103", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "method" }
+  ]
+}

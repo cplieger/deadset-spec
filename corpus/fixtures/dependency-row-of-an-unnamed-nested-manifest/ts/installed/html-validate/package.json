@@ -1,0 +1,6 @@
+{
+  "name": "html-validate",
+  "private": true,
+  "version": "11.16.2",
+  "types": "./index.d.ts"
+}

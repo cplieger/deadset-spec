@@ -145,7 +145,7 @@ A member is its container's component, a dot and its own component. The containe
 | enum | member | `Kind.Resize`, `Kind.'tab-close'` |
 | namespace | exported declaration, recursively | `Wire.Server.Event` |
 
-An instance member is bare and **a static member always carries `:static`**, because a class may declare a static and an instance member of one name and the spelling must not depend on whether it does. One side is marked, and always marked, so the reference is canonical. A getter and a setter of one name are one symbol and one reference. A private modifier (`private cachedLayout`) changes nothing in the spelling; only the `#` form is spelled differently, because only it is a different name.
+An instance member is bare and **a static member always carries `:static`**, because a class may declare a static and an instance member of one name and the spelling must not depend on whether it does. One side is marked, and always marked, so the reference is canonical. A getter and a setter of one name are one symbol and one reference. A private modifier (`private cachedLayout`) changes nothing in the spelling; only the `#` form is spelled differently, because only it is a different name. A parameter property, a constructor parameter that carries a modifier, declares an instance member of its class and is spelled as one: `constructor(private readonly label: string)` in `TabStrip` declares `TabStrip.label`.
 
 A member of a type alias is a member of the object type literal the alias declares, or of a literal that is a direct constituent of a union or intersection under it. Parentheses are syntax and are not a constituent: the direct constituents of a parenthesized type are the type's own, so `type Layout = ({ gap: number }) | { width: number }` declares `Layout.gap` and `Layout.width`, and the constituents of `(A | B) & C` are `A`, `B` and `C`. Where two constituents declare one member name, the member has no reference of its own and the alias stands for it. Nested classes do not exist as declarations in the language; a class inside a namespace is a namespace member, `N.C`, and a class expression assigned to a property has no name and no reference.
 
@@ -157,11 +157,12 @@ A type parameter of a function or method is the function's or method's reference
 
 The module itself is the empty fragment, `ts://@example/app/src/wire.ts#`. It is the `symbol.parent` of every module-level declaration and the reference of a file-level finding (`DS1501`, `DS1502`).
 
-A manifest dependency is scoped by the manifest, `<package-name>/package.json`, spelled by the dependency's own package name, and followed by the selector of the section that declares it: `:dependency` for `dependencies`, `:dev-dependency` for `devDependencies`, `:peer-dependency` for `peerDependencies`, the three sections `DS1601` names in `kinds.json`.
+A manifest dependency is scoped by the manifest, `<package-name>/<path>`, the package name and the path being those the scope rule above gives the manifest as a file: a manifest that carries a `name` is its own nearest named manifest, so its path is `package.json`, and a nested manifest that carries none takes the name of the nearest manifest above it that carries one, or a single dot, and its path from that manifest's directory, or from the target root, as `ts://./static-src/package.json#html-validate:dev-dependency` does. The dependency is spelled by its own package name, and followed by the selector of the section that declares it: `:dependency` for `dependencies`, `:dev-dependency` for `devDependencies`, `:peer-dependency` for `peerDependencies`, the three sections `DS1601` names in `kinds.json`.
 
 ```text
 ts://@example/app/package.json#lodash:dependency
 ts://@example/app/package.json#@types/node:dev-dependency
+ts://./static-src/package.json#html-validate:dev-dependency
 ```
 
 The declared version range is the entry's value, not its identity, and never appears.
@@ -231,7 +232,7 @@ Each row is anchored, `^` to `$`, and is the whole reference. The corpus names t
 | ts | `class-member`, `private-member`, `interface-member`, `type-member`, `enum-member`, `namespace-member`, `computed-member` | `^ts://TS_PACKAGE/TS_FILE#TS_HEAD(?:\.TS_MEMBER)+$` |
 | ts | `static-member` | `^ts://TS_PACKAGE/TS_FILE#TS_HEAD(?:\.TS_MEMBER)+:static$` |
 | ts | `type-parameter` | `^ts://TS_PACKAGE/TS_FILE#TS_HEAD(?:\.TS_MEMBER)*(?::static)?<TS_IDENT>$` |
-| ts | `dependency` | `^ts://TS_PACKAGE/package\.json#TS_PACKAGE:(?:dependency\|dev-dependency\|peer-dependency)$` |
+| ts | `dependency` | `^ts://TS_PACKAGE/(?:[^/#\r\n]+/)*package\.json#TS_PACKAGE:(?:dependency\|dev-dependency\|peer-dependency)$` |
 
 ### Expanded
 
@@ -278,7 +279,7 @@ ts type-parameter
 ^ts://(?:@[A-Za-z0-9._-]+/)?[A-Za-z0-9._-]+/(?:[^/#\r\n]+/)*[^/#\r\n]+(?:(?:\.d)?\.[mc]?ts|\.tsx|\.[mc]?js|\.jsx)#(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*')(?:\.(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|#(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*'|\[[^\]\r\n\t ]+\]))*(?::static)?<(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*>$
 
 ts dependency
-^ts://(?:@[A-Za-z0-9._-]+/)?[A-Za-z0-9._-]+/package\.json#(?:@[A-Za-z0-9._-]+/)?[A-Za-z0-9._-]+:(?:dependency|dev-dependency|peer-dependency)$
+^ts://(?:@[A-Za-z0-9._-]+/)?[A-Za-z0-9._-]+/(?:[^/#\r\n]+/)*package\.json#(?:@[A-Za-z0-9._-]+/)?[A-Za-z0-9._-]+:(?:dependency|dev-dependency|peer-dependency)$
 ```
 
 A reference is valid when it matches one of its language's expressions. A refused string in the corpus matches none of them.

@@ -1,0 +1,7 @@
+{
+  "name": "target-kind-language-undeclared",
+  "description": "A repository configuration naming the kind of each language and of a third member the key does not declare. The run is refused naming that member.",
+  "covers": [
+    "target-kind-language-undeclared"
+  ]
+}

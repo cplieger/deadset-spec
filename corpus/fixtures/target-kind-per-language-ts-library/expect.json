@@ -1,0 +1,21 @@
+{
+  "name": "target-kind-per-language-ts-library",
+  "description": "A target kind written per language names the TypeScript code a library and the Go code an application, so the TypeScript analysis applies the library's rules: the public member of the exported class is published API, whose finding the default minimum confidence withholds. An analyzer that reads the Go member, or that treats the target as an application because one language is, reports it.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": {
+    "go": "application",
+    "ts": "library"
+  },
+  "expect": [
+    {
+      "symbol": "Kit",
+      "report": "none"
+    },
+    {
+      "symbol": "shown",
+      "report": "none"
+    }
+  ]
+}

@@ -100,7 +100,7 @@ type expectationDocument struct {
 	ConfiguredDeclarations map[string]configuredDeclaration `json:"configured_declarations"`
 	Name                   string                           `json:"name"`
 	Description            string                           `json:"description"`
-	TargetKind             string                           `json:"target_kind"`
+	TargetKind             fixtureTargetKind                `json:"target_kind"`
 	Languages              []string                         `json:"languages"`
 	Consumers              []string                         `json:"consumers"`
 	ClosedWorld            []string                         `json:"closed_world"`
@@ -1191,6 +1191,32 @@ func TestCorpusDocument(t *testing.T) {
 			}
 		}
 	})
+}
+
+// fixtureTargetKind is a fixture's target_kind in either shape target.kind takes: one kind
+// for every language, or perLanguage naming the kind of each.
+type fixtureTargetKind struct {
+	perLanguage map[string]string
+	one         string
+}
+
+// oneKind is the target_kind that names one kind for every language.
+func oneKind(kind string) fixtureTargetKind { return fixtureTargetKind{one: kind} }
+
+func (k *fixtureTargetKind) UnmarshalJSON(data []byte) error {
+	*k = fixtureTargetKind{}
+	if err := json.Unmarshal(data, &k.one); err == nil {
+		return nil
+	}
+	return json.Unmarshal(data, &k.perLanguage)
+}
+
+// value is the target_kind as the configuration document a runner writes holds it.
+func (k fixtureTargetKind) value() any {
+	if k.perLanguage != nil {
+		return k.perLanguage
+	}
+	return k.one
 }
 
 // corpusBaselineDocument mirrors testdata/corpus-baseline.json; an unknown key
@@ -2311,7 +2337,7 @@ func TestCorpusConfiguredRootsSpellTheFixturesOwnLanguage(t *testing.T) {
 	}
 	for _, tc := range planted {
 		t.Run("planted_"+tc.name, func(t *testing.T) {
-			doc := expectationDocument{Name: "planted", TargetKind: "application", Languages: tc.languages, ConfiguredRoots: tc.roots}
+			doc := expectationDocument{Name: "planted", TargetKind: oneKind("application"), Languages: tc.languages, ConfiguredRoots: tc.roots}
 			got := checkConfiguredRootsScope(&doc)
 			if tc.wantMsg == "" {
 				if len(got) != 0 {
@@ -2387,7 +2413,7 @@ func configuredDeclarationsDocument(t *testing.T, doc *expectationDocument) []by
 		}
 		keys[key] = append(keys[key], declared.Entry)
 	}
-	data, err := json.Marshal(map[string]any{"target": map[string]string{"kind": doc.TargetKind}, "ts": keys})
+	data, err := json.Marshal(map[string]any{"target": map[string]any{"kind": doc.TargetKind.value()}, "ts": keys})
 	if err != nil {
 		t.Fatalf("Setup: json.Marshal(the configured declarations of %s): %v", doc.Name, err)
 	}
@@ -2406,7 +2432,7 @@ func TestCorpusConfiguredDeclarationsAreEntriesOfTheirKey(t *testing.T) {
 			validateAgainst(t, configSchemaPath, configuredDeclarationsDocument(t, &doc))
 		})
 	}
-	planted := expectationDocument{Name: "planted", TargetKind: "application", ConfiguredDeclarations: map[string]configuredDeclaration{
+	planted := expectationDocument{Name: "planted", TargetKind: oneKind("application"), ConfiguredDeclarations: map[string]configuredDeclaration{
 		"BothShapes": {Key: "ts.serializers", Entry: map[string]string{"global": "JSON.stringify", "symbol": "ts://./main.ts#encode"}},
 	}}
 	problems, err := validationProblems(configSchemaPath, configuredDeclarationsDocument(t, &planted))
@@ -2571,7 +2597,7 @@ func TestCorpusRowsNameASubjectKindEveryListedLanguageDeclares(t *testing.T) {
 		t.Run("planted_"+tc.name, func(t *testing.T) {
 			doc := expectationDocument{
 				Name:       "planted",
-				TargetKind: "application",
+				TargetKind: oneKind("application"),
 				Languages:  tc.languages,
 				Expect: []expectationRow{
 					{Symbol: "Subject", Report: "DS1002", SymbolKind: tc.kind, Confidence: "certain"},
@@ -2989,7 +3015,7 @@ func TestCorpusDetailsPinNoValueAnotherRenderingCannotCarry(t *testing.T) {
 			}
 			doc := expectationDocument{
 				Name:       "planted",
-				TargetKind: "library",
+				TargetKind: oneKind("library"),
 				Languages:  []string{"go", "ts"},
 				Expect: []expectationRow{
 					{Symbol: "Subject", Report: "DS1001", Confidence: "certain", Details: details},
@@ -3375,7 +3401,7 @@ func TestCorpusComponentCountsPinNoValueAnotherRenderingCannotCarry(t *testing.T
 		t.Run("planted_"+tc.name, func(t *testing.T) {
 			doc := expectationDocument{
 				Name:       "planted",
-				TargetKind: "application",
+				TargetKind: oneKind("application"),
 				Languages:  tc.languages,
 				Expect: []expectationRow{
 					{Symbol: "Ledger", Report: "DS1002", Confidence: "certain", Component: &tc.component},

@@ -698,9 +698,13 @@ func isWhitespace(s string) bool {
 var entryKeys = []string{"code", "symbol", "path", "reason"}
 
 // isRenderedPath reports whether p takes the path form text-line.md fixes for
-// position.path: target-relative, forward slashes, no leading "./" and no trailing "/".
+// position.path: target-relative, forward slashes, no leading "./" and no trailing "/",
+// and no control character.
 func isRenderedPath(p string) bool {
-	if strings.ContainsAny(p, "\\\r\n") || strings.HasPrefix(p, "/") || strings.HasSuffix(p, "/") {
+	if strings.HasPrefix(p, "/") || strings.HasSuffix(p, "/") {
+		return false
+	}
+	if strings.ContainsFunc(p, func(r rune) bool { return r < 0x20 || r == 0x7f }) {
 		return false
 	}
 	for segment := range strings.SplitSeq(p, "/") {

@@ -37,9 +37,9 @@
         "required": ["file", "line"],
         "properties": {
           "file": {
-            "description": "The path of the file that declares the subject, relative to the rendering root, with forward slashes and no empty, dot or dot-dot segment. The rendering root is the archive for Go and the ts/ directory for TypeScript, so target/ and each consumer directory are its first segments.",
+            "description": "The path of the file that declares the subject, relative to the rendering root, in the path form of contract/finding.schema.json: segments joined by /, none of them empty, . or .., so never absolute, with no leading ./ and no trailing /; no control character, U+0000 to U+001F or U+007F; every other character, a space, a backslash, which is no separator, a +, a $, a bracket, a parenthesis or one outside ASCII, written as it is. The rendering root is the archive for Go and the ts/ directory for TypeScript, so target/ and each consumer directory are its first segments.",
             "type": "string",
-            "pattern": "^(\\.?[A-Za-z0-9_@-][A-Za-z0-9_@.-]*)(/\\.?[A-Za-z0-9_@-][A-Za-z0-9_@.-]*)*$"
+            "pattern": "^(?:[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.\\.[^/\\x00-\\x1f\\x7f]+)(?:/(?:[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.\\.[^/\\x00-\\x1f\\x7f]+))*$"
           },
           "line": {
             "description": "The 1-based line of the file on which the subject is declared: the line a finding for it carries in its position.",

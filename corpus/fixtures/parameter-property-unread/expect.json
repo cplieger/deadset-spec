@@ -1,0 +1,15 @@
+{
+  "name": "parameter-property-unread",
+  "description": "A parameter property declares a class member the constructor writes, so one that nothing reads is reported as a write-only symbol and never as an unused parameter, while one read through this, a destructuring pattern or an index by a literal key is live. A plain constructor parameter the body never reads is an unused parameter, unless the class is used as a value, which fixes the constructor's signature.",
+  "languages": ["ts"],
+  "target_kind": "application",
+  "expect": [
+    { "symbol": "Box.label", "report": "none" },
+    { "symbol": "Box.spare", "report": "DS1301", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "class-member" },
+    { "symbol": "Box.width", "report": "none" },
+    { "symbol": "Box.height", "report": "none" },
+    { "symbol": "Box.depth", "report": "none" },
+    { "symbol": "Box.count", "report": "DS1801", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "parameter", "details": { "overlap": ["tsc --noUnusedParameters", "@typescript-eslint/no-unused-vars"] } },
+    { "symbol": "Shelf.size", "report": "none" }
+  ]
+}

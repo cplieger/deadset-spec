@@ -319,9 +319,100 @@
   {
     "input": { "code": "DS1001", "symbol": "go://example.com/app#Catalog.ResolveAlias", "path": "internal\\legacy\\catalog.go", "reason": "Kept for the v3 API promise." },
     "kind": "ignore-entry",
+    "accepted": true,
+    "rule": "path-form",
+    "reason": "A backslash is a character of a file name, never a separator, so the entry is well-formed; it names the file internal\\legacy\\catalog.go, and where the tree holds the symbol in internal/legacy/catalog.go instead it binds nothing and is stale, DS1703."
+  },
+  {
+    "input": { "code": "DS1001", "symbol": "ts://@example/app/src/routes/(app)/+layout.ts#load", "path": "src/routes/(app)/+layout.ts", "reason": "Kept for the v3 API promise." },
+    "kind": "ignore-entry",
+    "accepted": true,
+    "rule": "path-form",
+    "reason": "A SvelteKit route file: parentheses and a + are characters of a segment, so the entry binds."
+  },
+  {
+    "input": { "code": "DS1001", "symbol": "ts://@example/dashboard/src/routes/+page.server.ts#load", "path": "dashboard/src/routes/+page.server.ts", "reason": "Kept for the v3 API promise." },
+    "kind": "ignore-entry",
+    "accepted": true,
+    "rule": "path-form",
+    "reason": "A route file of a nested package: the reference is relative to that package's manifest and the path to the target root."
+  },
+  {
+    "input": { "code": "DS1001", "symbol": "ts://@example/app/app/$id.tsx#loader", "path": "app/$id.tsx", "reason": "Kept for the v3 API promise." },
+    "kind": "ignore-entry",
+    "accepted": true,
+    "rule": "path-form",
+    "reason": "A Remix route file: a $ is a character of a segment."
+  },
+  {
+    "input": { "code": "DS1001", "symbol": "ts://@example/app/pages/api/auth/[...nextauth].ts#default", "path": "pages/api/auth/[...nextauth].ts", "reason": "Kept for the v3 API promise." },
+    "kind": "ignore-entry",
+    "accepted": true,
+    "rule": "path-form",
+    "reason": "A Next.js catch-all route: brackets and a run of dots inside a segment are characters of it, and the segment is neither . nor .."
+  },
+  {
+    "input": { "code": "DS1001", "symbol": "ts://@example/app/src/lib/date utils/format.ts#format", "path": "src/lib/date utils/format.ts", "reason": "Kept for the v3 API promise." },
+    "kind": "ignore-entry",
+    "accepted": true,
+    "rule": "path-form",
+    "reason": "A space is a character of a segment and is written as it is."
+  },
+  {
+    "input": { "code": "DS1001", "symbol": "go://example.com/app/internal/catalog#Resolve", "path": "internal/catalog/r\u00e9sum\u00e9.go", "reason": "Kept for the v3 API promise." },
+    "kind": "ignore-entry",
+    "accepted": true,
+    "rule": "path-form",
+    "reason": "A character outside ASCII is written as it is, never percent-encoded."
+  },
+  {
+    "input": { "code": "DS1001", "symbol": "go://example.com/app#Catalog.ResolveAlias", "path": "..", "reason": "Kept for the v3 API promise." },
+    "kind": "ignore-entry",
     "accepted": false,
     "rule": "path-form",
-    "reason": "A backslash separator: the path uses / on every platform. Malformed, exit code 2."
+    "reason": "A lone .. segment leads out of the target root. Malformed, exit code 2."
+  },
+  {
+    "input": { "code": "DS1001", "symbol": "go://example.com/app#Catalog.ResolveAlias", "path": "internal/../catalog.go", "reason": "Kept for the v3 API promise." },
+    "kind": "ignore-entry",
+    "accepted": false,
+    "rule": "path-form",
+    "reason": "A .. segment inside the path: the path names each file one way, so it holds no segment that steps back. Malformed, exit code 2."
+  },
+  {
+    "input": { "code": "DS1001", "symbol": "go://example.com/app#Catalog.ResolveAlias", "path": "internal//catalog.go", "reason": "Kept for the v3 API promise." },
+    "kind": "ignore-entry",
+    "accepted": false,
+    "rule": "path-form",
+    "reason": "An empty segment between two separators. Malformed, exit code 2."
+  },
+  {
+    "input": { "code": "DS1001", "symbol": "go://example.com/app#Catalog.ResolveAlias", "path": "internal/catalog.go/", "reason": "Kept for the v3 API promise." },
+    "kind": "ignore-entry",
+    "accepted": false,
+    "rule": "path-form",
+    "reason": "A trailing / ends the path with an empty segment. Malformed, exit code 2."
+  },
+  {
+    "input": { "code": "DS1001", "symbol": "go://example.com/app#Catalog.ResolveAlias", "path": "internal/\tcatalog.go", "reason": "Kept for the v3 API promise." },
+    "kind": "ignore-entry",
+    "accepted": false,
+    "rule": "path-form",
+    "reason": "A tab is a control character, which a text line would carry to a terminal. Malformed, exit code 2."
+  },
+  {
+    "input": { "code": "DS1001", "symbol": "go://example.com/app#Catalog.ResolveAlias", "path": "internal/\u001b[31mcatalog.go", "reason": "Kept for the v3 API promise." },
+    "kind": "ignore-entry",
+    "accepted": false,
+    "rule": "path-form",
+    "reason": "An escape character, U+001B, would start a terminal escape sequence in a text line. Malformed, exit code 2."
+  },
+  {
+    "input": { "code": "DS1001", "symbol": "go://example.com/app#Catalog.ResolveAlias", "path": "internal/catalog\u007f.go", "reason": "Kept for the v3 API promise." },
+    "kind": "ignore-entry",
+    "accepted": false,
+    "rule": "path-form",
+    "reason": "The delete character, U+007F, is a control character. Malformed, exit code 2."
   },
   {
     "input": { "code": "DS1001", "symbol": "Catalog.ResolveAlias", "path": "catalog.go", "reason": "Kept for the v3 API promise." },

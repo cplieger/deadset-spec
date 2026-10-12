@@ -191,6 +191,8 @@ In Go, a conversion the compiler accepts between two struct types, or between tw
 
 In TypeScript a comparison of two object references reads no member, because `===` compares identity and never a member.
 
+A TypeScript parameter property, a constructor parameter that carries a modifier, declares a member of its class that the constructor writes with its argument, so the member is judged under this rule, and under every rule that reads a class member, as a member the class body declares is.
+
 In TypeScript a property of an object literal writes the member of the same name that the literal's contextual type declares, whether or not the compiler checks the literal for excess properties. Where that contextual type is a union or an intersection, the property writes the member of that name on each constituent that declares one. So a literal that a declaration annotates, a function returns, a call passes or a `satisfies` expression checks writes the members of the type it is given. An object literal handed to a callee the target does not implement has its members read, as grammar/analysis.md states.
 
 A store through the value a field or a member holds reads that field or member rather than writing it, because the store lands in storage every other holder of the value reads. In Go that store is an assignment, an increment, a compound assignment or a `delete` whose target is reached through a struct field holding a map, a slice or a pointer. Examples are `s.f[k] = v`, `s.f.x = v` and `delete(s.f, k)`. The same store through a field holding an array or a struct is a store into the field itself. TypeScript holds every object by reference, so an element or property store through a member's value reads the member.
@@ -360,6 +362,8 @@ In TypeScript a caller may pass a function used as a value more arguments than i
 A parameter of a TypeScript callback the compiler types from its context is not reported when it carries a type annotation, which the call's inference may read. Nor is it reported when it is an object pattern, which reads properties of the argument.
 
 Any other TypeScript parameter that destructures its argument is judged name by name. Each name the body never reads is reported wherever the parameter stands, because removing it moves no argument. A name beside a rest element of an object pattern is kept, because removing it changes what the rest element holds. The pattern counts as read when the body reads any name it binds. A rest parameter is judged as the last parameter, and a `this` parameter receives no argument and is never reported.
+
+A TypeScript constructor is used as a value where its class is, other than as the callee of `new` or the class an `extends` clause names. Its signature is not free either where the class or one of the constructor's parameters carries a decorator, because a decorator or a container may construct the class. A parameter property is read by the write to its member the constructor makes, so it is never reported here, and its member is judged as a write-only symbol.
 
 Overlap in Go: `revive unused-parameter`, `gopls unusedparams`, `unparam`. Overlap in TypeScript: `tsc --noUnusedParameters`, `@typescript-eslint/no-unused-vars`.
 

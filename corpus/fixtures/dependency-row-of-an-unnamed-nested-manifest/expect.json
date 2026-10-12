@@ -1,0 +1,11 @@
+{
+  "name": "dependency-row-of-an-unnamed-nested-manifest",
+  "description": "A dependency a nested manifest that carries no name declares is reported under the reference whose package is a single dot and whose path runs from the target root to the manifest, and an ignore entry that copies that reference and the manifest's path binds the row, holds the finding back and is counted in effect.",
+  "languages": ["ts"],
+  "target_kind": "application",
+  "suppressions_in_effect": 1,
+  "expect": [
+    { "symbol": "NestedDependency", "report": "none" },
+    { "symbol": "EntryInEffect", "report": "none" }
+  ]
+}

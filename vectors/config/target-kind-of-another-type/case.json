@@ -1,0 +1,7 @@
+{
+  "name": "target-kind-of-another-type",
+  "description": "A repository configuration writing the target kind as an array. The key takes a string or an object, so the run is refused naming the key.",
+  "covers": [
+    "target-kind-of-another-type"
+  ]
+}
