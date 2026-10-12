@@ -1,0 +1,16 @@
+{
+  "symbols": {
+    "Key.order": {
+      "file": "target/main.ts",
+      "line": 3
+    },
+    "Tab.order": {
+      "file": "target/main.ts",
+      "line": 7
+    },
+    "Tab.title": {
+      "file": "target/main.ts",
+      "line": 8
+    }
+  }
+}

@@ -26,7 +26,7 @@ This contract defines one directive name, `ignore`. A comment in the namespace w
 deadset:ignore <CODE>[,<CODE>…] -- <reason>
 ```
 
-The directive is the first token of a `//` line comment, with optional whitespace between `//` and the token, and it names one or more codes and then a reason after the separator `--`. Both spellings, `//deadset:ignore` and `// deadset:ignore`, parse to the same directive. The no-space form is the Go directive convention above, which `gofmt` preserves; the space form is what a TypeScript formatter keeps. After the whitespace between `//` and the token is removed, the two are one string.
+The directive is the first token of a `//` line comment, with optional whitespace between `//` and the token, and it names one or more codes and then a reason after the separator `--`. Both spellings, `//deadset:ignore` and `// deadset:ignore`, parse to the same directive. The no-space form is the Go directive convention above, which `gofmt` preserves; the space form is what a TypeScript formatter keeps. After the whitespace between `//` and the token is removed, the two are one string. A `//` starts a line comment only where the language reads one: inside a string, a template, a regular expression or JSX text it starts none, JSX text that begins with `//` included, so no directive is read there.
 
 The grammar, in EBNF:
 
@@ -163,7 +163,7 @@ The two are separate checks and both run. An entry lacking both its `reason` and
 
 A `code` outside the `DS` shape, a `symbol` that does not parse under `symbol-ref.md`, and a `path` outside the form above are malformed values: the run ends with exit code 2 and names the entry and the expected form. A `code` in the right shape that names no live kind in [`kinds.json`](../kinds.json), a retired code for example, is well formed and can match nothing; it is reported as `DS1703`.
 
-An entry's position, for the findings above, is the line and column of the `{` that opens the entry object in `deadset-ignore.json`.
+An entry's position, for the findings above and for a malformed entry the run names, is the line and column of the entry's first character in `deadset-ignore.json`: the `{` that opens an entry object, and the first character of an entry that is not an object.
 
 ### Matching
 
@@ -206,7 +206,7 @@ A row a round removes as stale is never recorded again within the write, so the 
 
 A round records no row for a stale suppression, for a pending finding (which lives in an edge evaluation and is neither reported nor suppressed), for a finding a directive or an entry already suppressed, or for a finding whose subject is a row of a document other than a dependency row: a file, a suppression, a configured root, a configured declaration or a declared edge. No record binds to such a row, so a row recorded for one would be stale on its first read back; such a finding fails a run after the baseline is written as it did before, and its remedy is the change it names or the severity the configuration gives its code. No timestamp and no host detail is written, so the document is the same bytes for the same tree. The published test vectors under [`vectors/baseline/`](../../vectors/baseline/README.md) pin the rows one round records from its report.
 
-A stale row is a finding like any other stale suppression: a row bound to nothing, or to a symbol that would not have produced the recorded code, is reported as `DS1703` at the row's position, the line and column of the `{` that opens it. A row whose symbol and path bind more than one declaration, as two declarations of one name in one file do, binds one record per declaration, and the row is stale only when every record it binds is stale: a row with one record in effect is not reported. The ratchet turns on this: the total goes down when a maintainer deletes dead code and rewrites the baseline, and a stale row that is not rewritten fails the run, so the baseline cannot drift into a list of claims about code that has gone.
+A stale row is a finding like any other stale suppression: a row bound to nothing, or to a symbol that would not have produced the recorded code, is reported as `DS1703` at the row's position, the line and column of the row's first character, the `{` that opens it. A row whose symbol and path bind more than one declaration, as two declarations of one name in one file do, binds one record per declaration, and the row is stale only when every record it binds is stale: a row with one record in effect is not reported. The ratchet turns on this: the total goes down when a maintainer deletes dead code and rewrites the baseline, and a stale row that is not rewritten fails the run, so the baseline cannot drift into a list of claims about code that has gone.
 
 ## Before the sweep
 

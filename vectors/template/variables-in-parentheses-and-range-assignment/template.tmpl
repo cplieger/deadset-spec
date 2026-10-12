@@ -1,0 +1,4 @@
+{{- print ($n := 1)}}{{$n}} {{$n = 2}}{{$n}}
+{{- $i := 9}}{{$f := 0}}{{range $i, $f = .findings}}{{end}} {{$i}} {{$f.code}}
+{{- $g := 0}}{{range $g = .stale_suppressions}}{{end}} {{$g}}
+{{- range $k, $v := .stale_suppressions}}{{else}} {{$k}}{{$v}}{{end}}

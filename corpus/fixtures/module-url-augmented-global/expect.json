@@ -1,0 +1,14 @@
+{
+  "name": "module-url-augmented-global",
+  "description": "A new URL expression resolved against import.meta.url loads the file its string names where the target only augments the global URL interface, because the augmentation merges into the global URL, which keeps its library declaration.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Worker",
+      "report": "none"
+    }
+  ]
+}

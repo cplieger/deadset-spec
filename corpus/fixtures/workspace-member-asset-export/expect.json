@@ -1,0 +1,25 @@
+{
+  "name": "workspace-member-asset-export",
+  "description": "A workspace member's exports entry naming a stylesheet that exists is no module with a source, so an import of it keeps the compiler's resolution and is no setup failure: the importing statement is a type error, the member's function the application uses is live, and one nothing calls is reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "type_error_skips": [
+    "StylesImport"
+  ],
+  "expect": [
+    {
+      "symbol": "orphan",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "used",
+      "report": "none"
+    }
+  ]
+}

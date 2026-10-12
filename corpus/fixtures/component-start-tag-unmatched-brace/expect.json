@@ -1,0 +1,25 @@
+{
+  "name": "component-start-tag-unmatched-brace",
+  "description": "A brace no brace closes inside a start tag hides no later block. In a .vue file it is a character of an attribute name or value and the tag ends at the first >. In a .svelte or .astro file the braced value ends at the first > or before a <script start tag that begins a line, whichever comes first. Each block after such a tag is read, so the exports its imports name are used.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "readByVue",
+      "report": "none"
+    },
+    {
+      "symbol": "readBySvelte",
+      "report": "none"
+    },
+    {
+      "symbol": "unread",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "variable"
+    }
+  ]
+}

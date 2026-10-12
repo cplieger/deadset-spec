@@ -1,0 +1,12 @@
+{
+  "symbols": {
+    "Mark.id": {
+      "file": "target/main.ts",
+      "line": 5
+    },
+    "Sent.id": {
+      "file": "target/main.ts",
+      "line": 10
+    }
+  }
+}

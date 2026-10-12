@@ -1,0 +1,6 @@
+{
+  "symbols": {
+    "readByVue": { "file": "target/lib.ts", "line": 1 },
+    "hiddenBySvelte": { "file": "target/lib.ts", "line": 2 }
+  }
+}

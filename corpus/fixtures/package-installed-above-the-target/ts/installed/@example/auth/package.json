@@ -1,0 +1,11 @@
+{
+  "name": "@example/auth",
+  "version": "1.0.0",
+  "private": true,
+  "exports": {
+    "./providers/*": {
+      "types": "./providers/*.d.ts",
+      "default": "./providers/*.js"
+    }
+  }
+}

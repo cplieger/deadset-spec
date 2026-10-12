@@ -1,0 +1,16 @@
+{
+  "symbols": {
+    "orphan": {
+      "file": "target/src/main.ts",
+      "line": 1
+    },
+    "GenFile": {
+      "file": "target/tools/gen.ts",
+      "line": 1
+    },
+    "orphanTool": {
+      "file": "target/tools/gen.ts",
+      "line": 3
+    }
+  }
+}

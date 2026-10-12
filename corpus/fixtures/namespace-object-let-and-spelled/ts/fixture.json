@@ -1,0 +1,20 @@
+{
+  "symbols": {
+    "shownByLet": {
+      "file": "target/letted.ts",
+      "line": 2
+    },
+    "spareByLet": {
+      "file": "target/letted.ts",
+      "line": 7
+    },
+    "shownBySpelling": {
+      "file": "target/spelled.ts",
+      "line": 2
+    },
+    "spareBySpelling": {
+      "file": "target/spelled.ts",
+      "line": 7
+    }
+  }
+}

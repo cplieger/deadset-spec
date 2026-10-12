@@ -1,0 +1,21 @@
+{
+  "name": "package-installed-above-the-target",
+  "description": "An import of a declared dependency installed in a node_modules directory above the target root, through a subpath the package's exports do not name, is a type error of the importing statement rather than a dependency that is not installed: the statement is skipped and listed, and the run goes on.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "type_error_skips": [
+    "ProvidersImport"
+  ],
+  "expect": [
+    {
+      "symbol": "orphan",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

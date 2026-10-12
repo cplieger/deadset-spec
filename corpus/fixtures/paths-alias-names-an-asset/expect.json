@@ -1,0 +1,21 @@
+{
+  "name": "paths-alias-names-an-asset",
+  "description": "An import a paths pattern maps to a file that exists and that is no module, an image, is a type error of the importing statement rather than a missing module: the statement is skipped and listed, and the run goes on to report a function nothing calls.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "type_error_skips": [
+    "AssetImport"
+  ],
+  "expect": [
+    {
+      "symbol": "orphan",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

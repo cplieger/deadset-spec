@@ -1,0 +1,21 @@
+{
+  "name": "mapped-type-position",
+  "description": "A value reaching a position a mapped type over literal keys types reads each of its members the mapped type declares under the same name, although no declaration writes the mapped type's property, and a member the mapped type does not declare is reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Source.id",
+      "report": "none"
+    },
+    {
+      "symbol": "Source.extra",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member"
+    }
+  ]
+}
