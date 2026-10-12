@@ -1,0 +1,7 @@
+{
+  "name": "target-kind-per-language",
+  "description": "A repository configuration naming the kind of each language: the Go code an application and the TypeScript code a library. The resolved configuration holds the object as the repository wrote it, under one provenance entry for the target kind and none per member.",
+  "covers": [
+    "target-kind-per-language"
+  ]
+}

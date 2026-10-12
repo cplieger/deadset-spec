@@ -1,0 +1,21 @@
+{
+  "description": "Recorded findings: a run fails only on a finding this document does not hold.",
+  "baseline": [
+    {
+      "code": "DS1003",
+      "symbol": "ts://@example/app/src/panel.ts#Panel.#frame",
+      "path": "src/panel.ts"
+    },
+    {
+      "code": "DS1002",
+      "symbol": "go://example.com/app#gone",
+      "path": "main.go",
+      "reason": "recorded by deadset-go 1.20.1"
+    },
+    {
+      "code": "DS1301",
+      "symbol": "ts://@example/app/src/panel.ts#Panel.size",
+      "reason": "recorded by deadset-ts 3.12.0"
+    }
+  ]
+}

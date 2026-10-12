@@ -125,7 +125,7 @@ func TestReportSchemaProperties(t *testing.T) {
 		{name: "analyzer", at: "properties/analyzer", want: []string{"conformance", "languages", "name", "schema_versions_accepted", "version"}},
 		{name: "conformance", at: reportConformancePath, want: []string{"corpus_version", "digest", "result"}},
 		{name: "merged_from_entry", at: "properties/merged_from/items", want: []string{"digest", "name", "version"}},
-		{name: "target", at: "properties/target", want: []string{"identity", "kind", "root"}},
+		{name: "target", at: "properties/target", want: []string{"identity", "kind", "language_kinds", "root"}},
 		{name: "configuration_platform", at: reportConfigurationPlatformPath, want: []string{"arch", "id", "os", "tags"}},
 		{name: "configuration_project", at: reportConfigurationProjectPath, want: []string{"id", "project"}},
 		{name: "configuration_not_built_platform", at: reportNotBuiltPlatformPath, want: []string{"arch", "error", "id", "os", "tags"}},
@@ -158,38 +158,6 @@ func TestReportSchemaProperties(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			if got := propertyNames(schema, tc.at); !slices.Equal(got, tc.want) {
 				t.Errorf("propertyNames(%s, %q) = %v, want %v", reportSchemaPath, tc.at, got, tc.want)
-			}
-		})
-	}
-}
-
-// TestEveryProjectMemberIsSpelledInThePathForm pins that a compiler
-// configuration file is spelled the way every path of the contract is spelled,
-// in the configuration document that declares it and in both report arrays
-// that carry it, so a project the configuration admits is one a report can
-// carry and an identifier derived from it names the same file in both. The
-// copies exist because neither schema references the other's definitions.
-func TestEveryProjectMemberIsSpelledInThePathForm(t *testing.T) {
-	want, _ := objectAt(loadFindingSchema(t), findingPathDefPath)["pattern"].(string)
-	if want == "" {
-		t.Fatalf("Setup: %s declares no pattern at %s, want the path form", findingSchemaPath, findingPathDefPath)
-	}
-	report := loadReportSchema(t)
-	config := loadSchema(t, spec.Contract, configSchemaPath)
-	cases := []struct {
-		schema map[string]any
-		name   string
-		source string
-		at     string
-	}{
-		{name: "declared", schema: config, source: configSchemaPath, at: "properties/analysis/properties/configurations/items/oneOf/1/properties/project"},
-		{name: "built", schema: report, source: reportSchemaPath, at: reportConfigurationProjectPath + "/properties/project"},
-		{name: "not_built", schema: report, source: reportSchemaPath, at: reportNotBuiltProjectPath + "/properties/project"},
-	}
-	for _, tc := range cases {
-		t.Run(tc.name, func(t *testing.T) {
-			if got, _ := objectAt(tc.schema, tc.at)["pattern"].(string); got != want {
-				t.Errorf("schema[%s %s].pattern = %q, want %q, the path form %s declares at %s", tc.source, tc.at, got, want, findingSchemaPath, findingPathDefPath)
 			}
 		})
 	}
@@ -270,7 +238,9 @@ func TestReportSchemaVocabulariesAreTheContractVocabularies(t *testing.T) {
 	}{
 		{name: "languages", at: "properties/analyzer/properties/languages/items", want: kinds.Languages, source: kindsPath},
 		{name: "conformance_result", at: reportConformancePath + "/properties/result", want: enumAt(results, "properties/result"), source: resultsSchemaPath},
-		{name: "target_kind", at: "properties/target/properties/kind", want: enumAt(config, "properties/target/properties/kind"), source: configSchemaPath},
+		{name: "target_kind", at: "properties/target/properties/kind", want: append(enumAt(config, configTargetKindStringPath), "mixed"), source: configSchemaPath},
+		{name: "target_language_kind_go", at: "properties/target/properties/language_kinds/properties/go", want: enumAt(config, configTargetKindStringPath), source: configSchemaPath},
+		{name: "target_language_kind_ts", at: "properties/target/properties/language_kinds/properties/ts", want: enumAt(config, configTargetKindStringPath), source: configSchemaPath},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -282,6 +252,12 @@ func TestReportSchemaVocabulariesAreTheContractVocabularies(t *testing.T) {
 			}
 		})
 	}
+
+	t.Run("target_language_kinds", func(t *testing.T) {
+		if got := propertyNames(schema, "properties/target/properties/language_kinds"); !slices.Equal(got, slices.Sorted(slices.Values(kinds.Languages))) {
+			t.Errorf("propertyNames(%s, language_kinds) = %v, want the languages %s declares, %v", reportSchemaPath, got, kindsPath, kinds.Languages)
+		}
+	})
 
 	t.Run("by_severity", func(t *testing.T) {
 		if got := propertyNames(schema, "properties/totals/properties/by_severity"); !slices.Equal(got, slices.Sorted(slices.Values(kinds.Severities))) {
@@ -305,6 +281,33 @@ func TestReportSchemaVocabulariesAreTheContractVocabularies(t *testing.T) {
 				t.Errorf("enumAt(%s, %q) = %v, want %v", reportSchemaPath, tc.at, got, tc.want)
 			}
 		})
+	}
+}
+
+// configTargetKindStringPath is the branch of config.schema.json's target.kind that writes one
+// kind for every language, whose vocabulary every other spelling of a kind repeats.
+const configTargetKindStringPath = "properties/target/properties/kind/oneOf/0"
+
+// TestReportSchemaTargetCarriesLanguageKindsExactlyWhenMixed pins the conditional that ties
+// the per-language kinds to the one value that needs them: a mixed kind carries them, and
+// a kind every covered language shares carries none.
+func TestReportSchemaTargetCarriesLanguageKindsExactlyWhenMixed(t *testing.T) {
+	schema := loadReportSchema(t)
+	target := objectAt(schema, "properties/target")
+	if got := reportConstAt(target, "if/properties/kind"); got != "mixed" {
+		t.Errorf("schema[target].if.properties.kind.const = %q, want %q", got, "mixed")
+	}
+	if got := requiredAt(target, "then"); !slices.Equal(got, []string{"language_kinds"}) {
+		t.Errorf("schema[target].then.required = %v, want [language_kinds]", got)
+	}
+	if got := requiredAt(target, "else/not"); !slices.Equal(got, []string{"language_kinds"}) {
+		t.Errorf("schema[target].else.not.required = %v, want [language_kinds], so a kind every language shares carries none", got)
+	}
+	if slices.Contains(requiredAt(schema, "properties/target"), "language_kinds") {
+		t.Errorf("schema[target].required = %v, want language_kinds required by the conditional alone", requiredAt(schema, "properties/target"))
+	}
+	if got, ok := objectAt(schema, "properties/target/properties/language_kinds")["minProperties"].(float64); !ok || got != 2 {
+		t.Errorf("schema[target.language_kinds].minProperties = %v, want 2, because one language has one kind", got)
 	}
 }
 

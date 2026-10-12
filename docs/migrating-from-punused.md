@@ -31,7 +31,7 @@ Expect findings the old file has no line for, because two families have no `EU` 
 
 ### 1. Write the configuration first
 
-`deadset.json` at the target root names `target.kind`, which has no default, so a run whose sources all omit it exits with the usage code. For a library, this is also where the consumer set is declared complete. The source is `contract/config.schema.json`, `target.kind` and `consumers.complete`.
+`deadset.json` at the target root names `target.kind`, which has no default, so a run whose sources all omit it exits with the usage code. It names one kind for the whole target, or an object naming the kind of the Go code and of the TypeScript code where the two differ. For a library, this is also where the consumer set is declared complete. The source is `contract/config.schema.json`, `target.kind` and `consumers.complete`.
 
 ### 2. Load the consumers
 

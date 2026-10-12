@@ -91,7 +91,7 @@ func loadExpectationVocabularies(t *testing.T) expectationVocabularies {
 		ReachabilityClasses: kinds.ReachabilityClasses,
 		Languages:           kinds.Languages,
 		SymbolKinds:         enumAt(loadFindingSchema(t), "properties/symbol/properties/kind"),
-		TargetKinds:         enumAt(schema, "properties/target_kind"),
+		TargetKinds:         enumAt(schema, "properties/target_kind/oneOf/0"),
 		LivenessRelations:   enumAt(schema, expectSchemaRowPath+"/properties/liveness_relation"),
 		Fixabilities:        map[string][]string{},
 	}
@@ -139,7 +139,16 @@ func checkExpectationVocabularies(doc *expectationDocument, v expectationVocabul
 			value(subject, field, got, want)
 		}
 	}
-	value("fixture", "target_kind", doc.TargetKind, v.TargetKinds)
+	if per := doc.TargetKind.perLanguage; per != nil {
+		for _, language := range slices.Sorted(maps.Keys(per)) {
+			value("fixture", "target_kind language", language, v.Languages)
+		}
+		for _, language := range v.Languages {
+			value("fixture", "target_kind."+language, per[language], v.TargetKinds)
+		}
+	} else {
+		value("fixture", "target_kind", doc.TargetKind.one, v.TargetKinds)
+	}
 	for _, language := range doc.Languages {
 		value("fixture", "languages", language, v.Languages)
 	}
@@ -452,7 +461,7 @@ func TestCorpusExpectationValuesDrawFromClosedVocabularies(t *testing.T) {
 	// not hold, so a field that stopped being resolved reports here.
 	good := expectationDocument{
 		Name:       "planted",
-		TargetKind: "library",
+		TargetKind: oneKind("library"),
 		Languages:  []string{"go", "ts"},
 		Expect: []expectationRow{
 			{Symbol: "DeadExport", Report: "DS1001", Confidence: "certain", ReachabilityClass: "certain", LivenessRelation: "reference-counting"},
@@ -470,13 +479,40 @@ func TestCorpusExpectationValuesDrawFromClosedVocabularies(t *testing.T) {
 		},
 		{
 			name:    "target_kind_outside_the_schema_enum",
-			mutate:  func(d *expectationDocument) { d.TargetKind = "module" },
+			mutate:  func(d *expectationDocument) { d.TargetKind = oneKind("module") },
 			wantMsg: []string{"target_kind", `"module"`},
 		},
 		{
 			name:    "target_kind_absent",
-			mutate:  func(d *expectationDocument) { d.TargetKind = "" },
+			mutate:  func(d *expectationDocument) { d.TargetKind = fixtureTargetKind{} },
 			wantMsg: []string{"target_kind", `""`},
+		},
+		{
+			name: "target_kind_per_language_inside_the_vocabulary",
+			mutate: func(d *expectationDocument) {
+				d.TargetKind = fixtureTargetKind{perLanguage: map[string]string{"go": "application", "ts": "library"}}
+			},
+		},
+		{
+			name: "target_kind_leaving_a_language_out",
+			mutate: func(d *expectationDocument) {
+				d.TargetKind = fixtureTargetKind{perLanguage: map[string]string{"go": "application"}}
+			},
+			wantMsg: []string{"target_kind.ts", `""`},
+		},
+		{
+			name: "target_kind_naming_an_undeclared_language",
+			mutate: func(d *expectationDocument) {
+				d.TargetKind = fixtureTargetKind{perLanguage: map[string]string{"go": "library", "ts": "library", "rust": "library"}}
+			},
+			wantMsg: []string{"target_kind language", `"rust"`},
+		},
+		{
+			name: "target_kind_of_a_language_outside_the_schema_enum",
+			mutate: func(d *expectationDocument) {
+				d.TargetKind = fixtureTargetKind{perLanguage: map[string]string{"go": "library", "ts": "module"}}
+			},
+			wantMsg: []string{"target_kind.ts", `"module"`},
 		},
 		{
 			name:    "language_outside_the_contract",

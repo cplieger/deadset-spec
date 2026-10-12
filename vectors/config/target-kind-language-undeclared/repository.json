@@ -1,0 +1,3 @@
+{
+  "target": { "kind": { "go": "application", "ts": "library", "py": "library" } }
+}

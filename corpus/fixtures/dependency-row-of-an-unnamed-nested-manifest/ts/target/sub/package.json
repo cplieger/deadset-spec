@@ -1,0 +1,7 @@
+{
+  "type": "module",
+  "main": "./main.ts",
+  "devDependencies": {
+    "html-validate": "11.16.2"
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "description": "Recorded findings: a run fails only on a finding this document does not hold.",
+  "description": "Recorded findings: a run fails only on a finding this document does not hold. Every reason is the analyzer that recorded the row, never an adjudication.",
   "baseline": [
     {
       "code": "DS1002",

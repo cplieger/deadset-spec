@@ -186,6 +186,48 @@ func TestConfigSchema_TargetKindIsRequiredWithNoDefault(t *testing.T) {
 	}
 }
 
+// TestConfigSchema_TargetKindIsOneKindOrOnePerLanguage pins the two shapes of the target kind:
+// a string of the two kinds, and an object naming every language the vocabulary declares,
+// each member required and a kind, with no default anywhere, because a kind is never defaulted.
+func TestConfigSchema_TargetKindIsOneKindOrOnePerLanguage(t *testing.T) {
+	kind := lookupKey(t, walkSchema(loadConfigSchema(t)), "target.kind")
+	branches := branchesOf(kind.node)
+	if len(branches) != 2 {
+		t.Fatalf("schema[target.kind].oneOf holds %d shapes, want 2", len(branches))
+	}
+	one, _ := branches[0].(schemaNode)
+	perLanguage, _ := branches[1].(schemaNode)
+	kinds := []string{"application", "library"}
+	if one["type"] != "string" || !slices.Equal(stringSlice(one["enum"]), kinds) {
+		t.Errorf("schema[target.kind].oneOf[0] = %v, want a string of %q", one, kinds)
+	}
+	languages := loadKinds(t).Languages
+	members, _ := perLanguage["properties"].(schemaNode)
+	if perLanguage["type"] != "object" || perLanguage["additionalProperties"] != false {
+		t.Errorf("schema[target.kind].oneOf[1] type = %v, additionalProperties = %v, want a closed object", perLanguage["type"], perLanguage["additionalProperties"])
+	}
+	if got := slices.Sorted(maps.Keys(members)); !slices.Equal(got, slices.Sorted(slices.Values(languages))) {
+		t.Errorf("schema[target.kind].oneOf[1] members = %q, want the languages contract/kinds.json declares, %q", got, languages)
+	}
+	if got := stringSlice(perLanguage["required"]); !slices.Equal(got, languages) {
+		t.Errorf("schema[target.kind].oneOf[1].required = %q, want every language, in the order contract/kinds.json lists them, %q", got, languages)
+	}
+	for _, language := range languages {
+		member, _ := members[language].(schemaNode)
+		if member["type"] != "string" || !slices.Equal(stringSlice(member["enum"]), kinds) {
+			t.Errorf("schema[target.kind].oneOf[1].%s = %v, want a string of %q", language, member, kinds)
+		}
+		if def, ok := member["default"]; ok {
+			t.Errorf("schema[target.kind].oneOf[1].%s.default = %v, want absent", language, def)
+		}
+	}
+	for i, branch := range []schemaNode{one, perLanguage} {
+		if def, ok := branch["default"]; ok {
+			t.Errorf("schema[target.kind].oneOf[%d].default = %v, want absent", i, def)
+		}
+	}
+}
+
 func TestConfigSchema_OnlyProvenanceIsIgnoredByResolution(t *testing.T) {
 	var ignored []string
 	for _, key := range walkSchema(loadConfigSchema(t)) {

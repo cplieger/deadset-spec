@@ -1,0 +1,8 @@
+{
+  "symbols": {
+    "spare": { "file": "target/src/legacy/catalog.ts", "line": 6 },
+    "WindowsEntry": { "file": "target/deadset-ignore.json", "line": 4 },
+    "kept": { "file": "target/src/legacy/catalog.ts", "line": 11 },
+    "SolidusEntry": { "file": "target/deadset-ignore.json", "line": 10 }
+  }
+}

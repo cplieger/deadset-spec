@@ -1,0 +1,17 @@
+{
+  "description": "One entry whose path uses Windows separators and one whose path uses solidi.",
+  "ignore": [
+    {
+      "code": "DS1002",
+      "symbol": "ts://@example/target/src/legacy/catalog.ts#spare",
+      "path": "src\\legacy\\catalog.ts",
+      "reason": "Kept for the generator."
+    },
+    {
+      "code": "DS1002",
+      "symbol": "ts://@example/target/src/legacy/catalog.ts#kept",
+      "path": "src/legacy/catalog.ts",
+      "reason": "Kept for the generator."
+    }
+  ]
+}

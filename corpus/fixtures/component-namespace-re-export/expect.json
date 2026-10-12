@@ -1,0 +1,41 @@
+{
+  "name": "component-namespace-re-export",
+  "description": "Component files whose import binding resolves to a module: a named import of an export * as re-export, a default import of an export * as default re-export, and a namespace import. The markup is not parsed, so every export of the module the binding resolves to counts as used, the one the markup names and the one it does not alike, while an export of the re-exporting module that no binding resolves to is reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "namedShown",
+      "report": "none"
+    },
+    {
+      "symbol": "namedHidden",
+      "report": "none"
+    },
+    {
+      "symbol": "defaultShown",
+      "report": "none"
+    },
+    {
+      "symbol": "defaultHidden",
+      "report": "none"
+    },
+    {
+      "symbol": "wholeShown",
+      "report": "none"
+    },
+    {
+      "symbol": "wholeHidden",
+      "report": "none"
+    },
+    {
+      "symbol": "barrelSpare",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    }
+  ]
+}

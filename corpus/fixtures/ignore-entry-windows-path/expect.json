@@ -1,0 +1,36 @@
+{
+  "name": "ignore-entry-windows-path",
+  "description": "An ignore entry whose path spells the file with backslashes names a file whose name holds them, since a backslash is a character of a name and never a separator. It binds no declaration, so it is stale and the declaration it meant stays reported, while the entry spelling the same file with solidi holds its finding back.",
+  "languages": [
+    "go",
+    "ts"
+  ],
+  "target_kind": "application",
+  "suppressions_in_effect": 1,
+  "expect": [
+    {
+      "symbol": "spare",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "WindowsEntry",
+      "report": "DS1703",
+      "confidence": "certain",
+      "symbol_kind": "suppression",
+      "details": {
+        "mechanism": "ignore"
+      }
+    },
+    {
+      "symbol": "kept",
+      "report": "none"
+    },
+    {
+      "symbol": "SolidusEntry",
+      "report": "none"
+    }
+  ]
+}

@@ -233,6 +233,27 @@
       "violates": "a stale-suppression record names another code, and the kind is fixed"
     },
     {
+      "file": "target-kind-language-left-out.json",
+      "schema": "contract/config.schema.json",
+      "constraint": "oneOf",
+      "instance_path": "/target/kind",
+      "violates": "a target kind written per language leaves the TypeScript code out, and a kind is never defaulted"
+    },
+    {
+      "file": "target-kind-mixed-without-language-kinds.json",
+      "schema": "contract/report.schema.json",
+      "constraint": "required",
+      "instance_path": "/target",
+      "violates": "the target kind is mixed and the target names no kind for each language"
+    },
+    {
+      "file": "target-language-kinds-beside-one-kind.json",
+      "schema": "contract/report.schema.json",
+      "constraint": "not",
+      "instance_path": "/target",
+      "violates": "the target names one kind for every language and a kind for each language as well"
+    },
+    {
       "file": "target-root-absolute.json",
       "schema": "contract/report.schema.json",
       "constraint": "pattern",

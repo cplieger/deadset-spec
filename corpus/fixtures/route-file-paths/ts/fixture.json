@@ -1,0 +1,17 @@
+{
+  "symbols": {
+    "load": { "file": "target/src/routes/(app)/+layout.ts", "line": 2 },
+    "layoutTitle": { "file": "target/src/routes/(app)/+layout.ts", "line": 7 },
+    "PageFile": { "file": "target/src/routes/(app)/+page.ts", "line": 1 },
+    "GET": { "file": "target/dashboard/src/routes/+page.server.ts", "line": 2 },
+    "POST": { "file": "target/dashboard/src/routes/+page.server.ts", "line": 7 },
+    "loader": { "file": "target/app/routes/$id.ts", "line": 2 },
+    "action": { "file": "target/app/routes/$id.ts", "line": 7 },
+    "handler": { "file": "target/pages/api/auth/[...nextauth].ts", "line": 2 },
+    "signOut": { "file": "target/pages/api/auth/[...nextauth].ts", "line": 7 },
+    "format": { "file": "target/src/lib/date utils/format.ts", "line": 2 },
+    "formatLong": { "file": "target/src/lib/date utils/format.ts", "line": 7 },
+    "summary": { "file": "target/src/lib/résumé.ts", "line": 2 },
+    "headline": { "file": "target/src/lib/résumé.ts", "line": 7 }
+  }
+}

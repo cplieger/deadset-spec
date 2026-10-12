@@ -325,9 +325,9 @@
               "required": ["file", "line", "report"],
               "properties": {
                 "file": {
-                  "description": "The path of the file the finding names, relative to the rendering root, in the manifest's path form.",
+                  "description": "The path of the file the finding names, relative to the rendering root, in the manifest's path form: segments joined by /, none of them empty, . or .., so never absolute, with no leading ./ and no trailing /; no control character, U+0000 to U+001F or U+007F; every other character, a space, a backslash, which is no separator, a +, a $, a bracket, a parenthesis or one outside ASCII, written as it is.",
                   "type": "string",
-                  "pattern": "^(\\.?[A-Za-z0-9_@-][A-Za-z0-9_@.-]*)(/\\.?[A-Za-z0-9_@-][A-Za-z0-9_@.-]*)*$"
+                  "pattern": "^(?:[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.\\.[^/\\x00-\\x1f\\x7f]+)(?:/(?:[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.\\.[^/\\x00-\\x1f\\x7f]+))*$"
                 },
                 "line": {
                   "description": "The 1-based line the finding names.",

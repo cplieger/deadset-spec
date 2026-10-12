@@ -1,0 +1,45 @@
+{
+  "description": "Recorded findings: a run fails only on a finding this document does not hold. Every reason is the analyzer that recorded the row, never an adjudication.",
+  "baseline": [
+    {
+      "code": "DS1001",
+      "symbol": "go://example.com/app#Unused",
+      "path": "catalog.go",
+      "reason": "recorded by deadset-go 1.20.2"
+    },
+    {
+      "code": "DS1003",
+      "symbol": "go://example.com/app#scanner.spare",
+      "path": "catalog.go",
+      "reason": "recorded by deadset-go 1.20.2"
+    },
+    {
+      "code": "DS1101",
+      "symbol": "go://example.com/app#Normalize",
+      "path": "catalog.go",
+      "reason": "recorded by deadset-go 1.20.2"
+    },
+    {
+      "code": "DS1301",
+      "symbol": "go://example.com/app#scanner.last",
+      "path": "catalog.go",
+      "reason": "recorded by deadset-go 1.20.2"
+    },
+    {
+      "code": "DS1801",
+      "symbol": "go://example.com/app#scanner.feed",
+      "path": "catalog.go",
+      "reason": "recorded by deadset-go 1.20.2"
+    },
+    {
+      "code": "DS1003",
+      "symbol": "ts://@example/app/src/panel.ts#Panel.#frame",
+      "path": "src/panel.ts"
+    },
+    {
+      "code": "DS1301",
+      "symbol": "ts://@example/app/src/panel.ts#Panel.size",
+      "reason": "recorded by deadset-ts 3.12.0"
+    }
+  ]
+}

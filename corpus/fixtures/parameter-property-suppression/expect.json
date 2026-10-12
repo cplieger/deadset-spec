@@ -1,0 +1,14 @@
+{
+  "name": "parameter-property-suppression",
+  "description": "A directive on a parameter property, and two ignore entries, bind both codes the parameter property's site answers to: the write-only finding on the member it declares and the unused-parameter finding on a plain parameter of its constructor, which the class stands for. A parameter property is never an unused parameter itself, so an unused-parameter directive on one whose constructor reads every plain parameter matches nothing and is stale.",
+  "languages": ["ts"],
+  "target_kind": "application",
+  "suppressions_in_effect": 4,
+  "expect": [
+    { "symbol": "Gauge.unit", "report": "none" },
+    { "symbol": "Gauge.scale", "report": "none" },
+    { "symbol": "Meter.unit", "report": "none" },
+    { "symbol": "Meter.scale", "report": "none" },
+    { "symbol": "DialDirective", "report": "DS1703", "confidence": "certain", "symbol_kind": "suppression", "details": { "mechanism": "inline" } }
+  ]
+}

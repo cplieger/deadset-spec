@@ -1,0 +1,11 @@
+{
+  "symbols": {
+    "namedShown": { "file": "target/named.ts", "line": 2 },
+    "namedHidden": { "file": "target/named.ts", "line": 7 },
+    "defaultShown": { "file": "target/grouped.ts", "line": 2 },
+    "defaultHidden": { "file": "target/grouped.ts", "line": 7 },
+    "wholeShown": { "file": "target/whole.ts", "line": 2 },
+    "wholeHidden": { "file": "target/whole.ts", "line": 7 },
+    "barrelSpare": { "file": "target/barrel.ts", "line": 5 }
+  }
+}

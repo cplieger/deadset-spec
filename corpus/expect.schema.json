@@ -30,9 +30,24 @@
       }
     },
     "target_kind": {
-      "description": "The target kind the runner configures for the analysis, which decides the reachability class of every finding. It has no default, as the configuration key it feeds has none.",
-      "type": "string",
-      "enum": ["application", "library"]
+      "description": "The target kind the runner configures for the analysis, which decides the reachability class of every finding. It has no default, as the configuration key it feeds has none. It takes the two shapes target.kind takes in contract/config.schema.json, one kind for every language or an object naming the kind of each, and the runner writes it into target.kind as the fixture writes it, so a fixture of one language can name another kind for the language it does not render and pin that an analyzer reads its own language's.",
+      "oneOf": [
+        {
+          "description": "One kind for every language.",
+          "type": "string",
+          "enum": ["application", "library"]
+        },
+        {
+          "description": "The kind of each language contract/kinds.json declares, every member required.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["go", "ts"],
+          "properties": {
+            "go": { "description": "The kind of the target's Go code.", "type": "string", "enum": ["application", "library"] },
+            "ts": { "description": "The kind of the target's TypeScript code.", "type": "string", "enum": ["application", "library"] }
+          }
+        }
+      ]
     },
     "consumers": {
       "description": "The logical names of the consumers the runner loads beside the target, each rooted at the directory of that name at the rendering root. Absent or empty means the target is analyzed alone.",
@@ -233,9 +248,9 @@
             "enum": ["published-package"]
           },
           "path": {
-            "description": "The directory the note names, relative to the target root.",
+            "description": "The directory the note names, relative to the target root, as contract/report.schema.json spells a note's path: segments joined by /, none of them empty, . or .., so never absolute, with no leading ./ and no trailing /; no control character, U+0000 to U+001F or U+007F; every other character, a space, a backslash, which is no separator, a +, a $, a bracket, a parenthesis or one outside ASCII, written as it is; the target root itself is a single dot.",
             "type": "string",
-            "minLength": 1
+            "pattern": "^(?:\\.|(?:[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.\\.[^/\\x00-\\x1f\\x7f]+)(?:/(?:[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.\\.[^/\\x00-\\x1f\\x7f]+))*)$"
           }
         }
       }
@@ -266,9 +281,9 @@
             "minLength": 1
           },
           "manifest": {
-            "description": "The manifest that declares the enabling package, relative to the target root.",
+            "description": "The manifest that declares the enabling package, relative to the target root, in the path form of contract/finding.schema.json: segments joined by /, none of them empty, . or .., so never absolute, with no leading ./ and no trailing /; no control character, U+0000 to U+001F or U+007F; every other character, a space, a backslash, which is no separator, a +, a $, a bracket, a parenthesis or one outside ASCII, written as it is.",
             "type": "string",
-            "minLength": 1
+            "pattern": "^(?:[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.\\.[^/\\x00-\\x1f\\x7f]+)(?:/(?:[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.\\.[^/\\x00-\\x1f\\x7f]+))*$"
           }
         }
       }

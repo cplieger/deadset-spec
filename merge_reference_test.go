@@ -502,10 +502,15 @@ func admit(inputs []mergeInput, accepted []string) error {
 			return fmt.Errorf("%s: %s omitted %d findings", in.file, in.name, omitted)
 		}
 	}
+	if _, err := claimedKinds(inputs); err != nil {
+		return err
+	}
 	for i, in := range inputs {
 		for _, other := range inputs[i+1:] {
-			if a, b := in.report.get("target"), other.report.get("target"); !sameJSON(a, b) {
-				return fmt.Errorf("%s names the target %s and %s names %s", in.file, a.compactBytes(), other.file, b.compactBytes())
+			for _, member := range []string{"root", "identity"} {
+				if a, b := in.report.at("target", member), other.report.at("target", member); !sameJSON(a, b) {
+					return fmt.Errorf("%s names the target %s %s and %s names %s", in.file, member, a.compactBytes(), other.file, b.compactBytes())
+				}
 			}
 			if entries, id, held := conflictingEntry(in.report, other.report); held {
 				return fmt.Errorf("%s and %s carry %s under the id %q", in.file, other.file, entries, id)
@@ -516,6 +521,72 @@ func admit(inputs []mergeInput, accepted []string) error {
 		}
 	}
 	return nil
+}
+
+// claimedKinds is the kind every input report claims for each language its analyzer.languages
+// names, refusing a mixed kind whose language_kinds is not exactly those languages or names
+// one kind for all of them, and two reports claiming two kinds for one language.
+func claimedKinds(inputs []mergeInput) (map[string]string, error) {
+	claims, from := map[string]string{}, map[string]string{}
+	for _, in := range inputs {
+		kind, perLanguage := in.report.at("target", "kind").str(), in.report.at("target", "language_kinds")
+		var languages []string
+		for _, l := range in.report.at("analyzer", "languages").items {
+			languages = append(languages, l.str())
+		}
+		own := map[string]string{}
+		for _, language := range languages {
+			own[language] = kind
+		}
+		if kind == "mixed" {
+			own = map[string]string{}
+			for _, m := range perLanguage.members {
+				own[m.name] = m.value.str()
+			}
+			distinct := slices.Compact(slices.Sorted(maps.Values(own)))
+			if !slices.Equal(slices.Sorted(maps.Keys(own)), slices.Sorted(slices.Values(languages))) || len(distinct) < 2 {
+				return nil, fmt.Errorf("%s names the kinds %s for the languages %q", in.file, perLanguage.compactBytes(), languages)
+			}
+		}
+		for _, language := range slices.Sorted(maps.Keys(own)) {
+			if prior, ok := claims[language]; ok && prior != own[language] {
+				return nil, fmt.Errorf("%s gives %s the kind %s and %s gives it %s", from[language], language, prior, in.file, own[language])
+			}
+			claims[language], from[language] = own[language], in.file
+		}
+	}
+	return claims, nil
+}
+
+// contractLanguages is the language vocabulary in the order contract/kinds.json lists it,
+// which is the order report.schema.json lists the members of language_kinds in.
+func contractLanguages() []string {
+	var doc struct {
+		Languages []string `json:"languages"`
+	}
+	data, err := fs.ReadFile(spec.Contract, "contract/kinds.json")
+	if err != nil || json.Unmarshal(data, &doc) != nil {
+		return nil
+	}
+	return doc.Languages
+}
+
+// mergedTarget is the target of the merged report: the inputs' root and identity, and the
+// one kind every claimed language shares, or mixed with each language's kind in schema order.
+func mergedTarget(inputs []mergeInput, kinds map[string]string, languageOrder []string) *jsonValue {
+	first := inputs[0].report.get("target")
+	distinct := slices.Compact(slices.Sorted(maps.Values(kinds)))
+	if len(distinct) == 1 {
+		return jsonObjectOf("kind", jsonText(distinct[0]), "root", first.get("root").clone(), "identity", first.get("identity").clone())
+	}
+	perLanguage := jsonObjectOf()
+	for _, language := range languageOrder {
+		if kind, ok := kinds[language]; ok {
+			perLanguage.set(language, jsonText(kind), "")
+		}
+	}
+	return jsonObjectOf("kind", jsonText("mixed"), "language_kinds", perLanguage,
+		"root", first.get("root").clone(), "identity", first.get("identity").clone())
 }
 
 // sameJSON reports whether two values are equal as JSON values: objects by their members in any
@@ -797,6 +868,11 @@ func mergedEnvelope(inputs []mergeInput, accepted []string, caller mergeCaller) 
 	if err != nil {
 		conformance = jsonText(err.Error())
 	}
+	claims, err := claimedKinds(inputs)
+	if err != nil {
+		claims = map[string]string{err.Error(): ""}
+	}
+	target := mergedTarget(inputs, claims, contractLanguages())
 	from := slices.Clone(inputs)
 	slices.SortStableFunc(from, mergedFromOrder)
 	mergedFrom := jsonArrayOf()
@@ -817,7 +893,7 @@ func mergedEnvelope(inputs []mergeInput, accepted []string, caller mergeCaller) 
 			"conformance", conformance,
 		),
 		"merged_from", mergedFrom,
-		"target", inputs[0].report.get("target").clone(),
+		"target", target,
 		"configurations", unionByID(inputs, "configurations"),
 		"configurations_not_built", unionByID(inputs, "configurations_not_built"),
 		"consumers", jsonObjectOf(
@@ -1061,6 +1137,33 @@ func TestMergeReproductionRefuses(t *testing.T) {
 				replaceIn(t, m, at+"/"+mergeExpectedFile, `\u2028`, "\u2028")
 			},
 			wantMsg: "the merged report differs from expected.json",
+		},
+		{
+			name: "two_kinds_merged_as_the_first_reports",
+			dir:  "target-kinds-of-two-languages",
+			mutate: func(t *testing.T, m fstest.MapFS, at string) {
+				t.Helper()
+				replaceIn(t, m, at+"/"+mergeExpectedFile, "\"kind\": \"mixed\",\n    \"language_kinds\": {\n      \"go\": \"application\",\n      \"ts\": \"library\"\n    },", "\"kind\": \"application\",")
+			},
+			wantMsg: "the merged report differs from expected.json",
+		},
+		{
+			name: "two_kinds_claimed_for_one_language_admitted",
+			dir:  "target-kind-claims-differ",
+			mutate: func(t *testing.T, m fstest.MapFS, at string) {
+				t.Helper()
+				replaceIn(t, m, at+"/inputs/01-go.json", "\"kind\": \"library\"", "\"kind\": \"application\"")
+			},
+			wantMsg: "want expected_exit = 3",
+		},
+		{
+			name: "language_kinds_naming_one_kind",
+			dir:  "target-kinds-in-one-report",
+			mutate: func(t *testing.T, m fstest.MapFS, at string) {
+				t.Helper()
+				replaceIn(t, m, at+"/inputs/00-go.json", "\"ts\": \"library\"", "\"ts\": \"application\"")
+			},
+			wantMsg: "want expected_exit = 1",
 		},
 		{
 			name: "no_caller_facts",

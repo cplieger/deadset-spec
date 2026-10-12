@@ -1,0 +1,7 @@
+{
+  "name": "target-kind-member-null",
+  "description": "A repository configuration naming the TypeScript code's kind and writing the Go code's as null. No member admits null, so the run is refused naming the Go member rather than reading it as a language left out.",
+  "covers": [
+    "target-kind-member-null"
+  ]
+}

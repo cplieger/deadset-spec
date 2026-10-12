@@ -1,0 +1,6 @@
+{
+  "symbols": {
+    "NestedDependency": { "file": "target/sub/package.json", "line": 5 },
+    "EntryInEffect": { "file": "target/deadset-ignore.json", "line": 4 }
+  }
+}

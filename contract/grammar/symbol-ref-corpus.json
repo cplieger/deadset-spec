@@ -689,6 +689,22 @@
     "example": "\"peerDependencies\": { \"typescript\": \">=7.0.0\" }"
   },
   {
+    "input": "ts://./static-src/package.json#html-validate:dev-dependency",
+    "language": "ts",
+    "form": "dependency",
+    "accepted": true,
+    "reason": "A nested manifest that carries no name is scoped as a file of it would be: a single dot, then its path from the target root.",
+    "example": "\"devDependencies\": { \"html-validate\": \"11.16.2\" } in static-src/package.json, which names no package"
+  },
+  {
+    "input": "ts://@example/app/tools/package.json#lodash:dependency",
+    "language": "ts",
+    "form": "dependency",
+    "accepted": true,
+    "reason": "A nested manifest that carries no name below a named one takes that name, and its path from the named manifest's directory.",
+    "example": "\"dependencies\": { \"lodash\": \"4.17.21\" } in tools/package.json, below a manifest named @example/app"
+  },
+  {
     "input": "ts://@example/app/src/wire.ts",
     "language": "ts",
     "form": "module",
@@ -876,6 +892,13 @@
     "form": "dependency",
     "accepted": false,
     "reason": "A dependency is scoped by the manifest that declares it, so the scope ends in package.json."
+  },
+  {
+    "input": "ts://./static-src/manifest.json#lodash:dependency",
+    "language": "ts",
+    "form": "dependency",
+    "accepted": false,
+    "reason": "A dependency is scoped by a manifest, whose file name is package.json."
   },
   {
     "input": "ts://@example/app/package.json#lodash:devDependencies",

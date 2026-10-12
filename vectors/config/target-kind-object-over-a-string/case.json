@@ -1,0 +1,7 @@
+{
+  "name": "target-kind-object-over-a-string",
+  "description": "A central configuration naming one kind for the whole target and a repository configuration naming the kind of each language. The repository's object replaces the central string whole, under one provenance entry naming the repository.",
+  "covers": [
+    "target-kind-object-over-a-string"
+  ]
+}

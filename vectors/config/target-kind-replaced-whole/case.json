@@ -1,0 +1,7 @@
+{
+  "name": "target-kind-replaced-whole",
+  "description": "A central configuration naming the kind of each language and a repository configuration naming one kind for the whole target. The repository outranks the central configuration, so its string replaces the whole object, and no member is taken from the central one.",
+  "covers": [
+    "target-kind-replaced-whole"
+  ]
+}

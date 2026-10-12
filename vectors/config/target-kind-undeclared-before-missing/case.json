@@ -1,0 +1,7 @@
+{
+  "name": "target-kind-undeclared-before-missing",
+  "description": "A repository configuration naming the kind of the Go code and of a member the key does not declare, and leaving the TypeScript code out. The undeclared member is the first fault the refusal names, ahead of the language left out.",
+  "covers": [
+    "target-kind-undeclared-before-missing"
+  ]
+}

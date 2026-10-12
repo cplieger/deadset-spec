@@ -1,0 +1,17 @@
+{
+  "description": "The member a parameter property declares and the constructor's unused parameter, each held by its own entry.",
+  "ignore": [
+    {
+      "code": "DS1301",
+      "symbol": "ts://@example/target/meters.ts#Meter.unit",
+      "path": "meters.ts",
+      "reason": "Kept for the next release of the meter."
+    },
+    {
+      "code": "DS1801",
+      "symbol": "ts://@example/target/meters.ts#Meter",
+      "path": "meters.ts",
+      "reason": "Kept for the next release of the meter."
+    }
+  ]
+}

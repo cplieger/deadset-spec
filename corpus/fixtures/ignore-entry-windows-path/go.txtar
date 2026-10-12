@@ -1,0 +1,52 @@
+One main package that calls a function of an internal package, beside an
+unexported function there that nothing calls. An ignore entry names that function
+with its path spelled in Windows separators, and one names it with solidi.
+
+-- fixture.json --
+{
+  "symbols": {
+    "spare": { "file": "target/internal/legacy/catalog.go", "line": 7 },
+    "WindowsEntry": { "file": "target/deadset-ignore.json", "line": 4 },
+    "kept": { "file": "target/internal/legacy/catalog.go", "line": 10 },
+    "SolidusEntry": { "file": "target/deadset-ignore.json", "line": 10 }
+  }
+}
+-- target/go.mod --
+module example.com/app
+
+go 1.27.0
+-- target/main.go --
+package main
+
+import "example.com/app/internal/legacy"
+
+func main() { println(legacy.Resolve()) }
+-- target/internal/legacy/catalog.go --
+// Package legacy resolves names.
+package legacy
+
+// Resolve is called from main.
+func Resolve() string { return "r" }
+
+func spare() string { return "s" }
+
+// kept is reached by nothing, and the entry naming it holds its finding back.
+func kept() string { return "k" }
+-- target/deadset-ignore.json --
+{
+  "description": "One entry whose path uses Windows separators and one whose path uses solidi.",
+  "ignore": [
+    {
+      "code": "DS1002",
+      "symbol": "go://example.com/app/internal/legacy#spare",
+      "path": "internal\\legacy\\catalog.go",
+      "reason": "Kept for the generator."
+    },
+    {
+      "code": "DS1002",
+      "symbol": "go://example.com/app/internal/legacy#kept",
+      "path": "internal/legacy/catalog.go",
+      "reason": "Kept for the generator."
+    }
+  ]
+}

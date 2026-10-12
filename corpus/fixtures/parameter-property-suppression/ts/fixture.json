@@ -1,0 +1,9 @@
+{
+  "symbols": {
+    "Gauge.unit": { "file": "target/meters.ts", "line": 5 },
+    "Gauge.scale": { "file": "target/meters.ts", "line": 6 },
+    "Meter.unit": { "file": "target/meters.ts", "line": 15 },
+    "Meter.scale": { "file": "target/meters.ts", "line": 16 },
+    "DialDirective": { "file": "target/meters.ts", "line": 25 }
+  }
+}
