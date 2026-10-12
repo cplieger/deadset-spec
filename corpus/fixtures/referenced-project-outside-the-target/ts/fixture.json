@@ -1,0 +1,12 @@
+{
+  "symbols": {
+    "orphan": {
+      "file": "target/src/main.ts",
+      "line": 1
+    },
+    "unusedShared": {
+      "file": "shared/src/helper.ts",
+      "line": 1
+    }
+  }
+}

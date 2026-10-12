@@ -1,0 +1,27 @@
+{
+  "name": "overloaded-function-reaching-a-position",
+  "description": "An overloaded function passed for a function-typed parameter reaches it through every one of its overloads, so each member of the values the position passes it that any overload's parameter declares is read, and a member no overload declares is reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Key.order",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    },
+    {
+      "symbol": "Tab.order",
+      "report": "none"
+    },
+    {
+      "symbol": "Tab.title",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member"
+    }
+  ]
+}

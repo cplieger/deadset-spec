@@ -1,0 +1,16 @@
+{
+  "symbols": {
+    "StylesImport": {
+      "file": "target/packages/app/src/main.ts",
+      "line": 1
+    },
+    "orphan": {
+      "file": "target/packages/app/src/main.ts",
+      "line": 4
+    },
+    "used": {
+      "file": "target/packages/ui/src/index.ts",
+      "line": 1
+    }
+  }
+}

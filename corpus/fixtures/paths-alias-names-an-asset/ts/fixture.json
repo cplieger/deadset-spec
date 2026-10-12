@@ -1,0 +1,12 @@
+{
+  "symbols": {
+    "AssetImport": {
+      "file": "target/src/main.ts",
+      "line": 1
+    },
+    "orphan": {
+      "file": "target/src/main.ts",
+      "line": 3
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "name": "serialization-contract-conversion-accessors",
+  "description": "A toJSON member declared as a getter, on a class or on an interface a serialized value carries, is retained as a toJSON method is, because a serializer reads the name and calls what it answers; any other getter of a serialized class is reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Odd.toJSON",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    },
+    {
+      "symbol": "Odd.label",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "class-member"
+    },
+    {
+      "symbol": "Shape.toJSON",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    }
+  ]
+}

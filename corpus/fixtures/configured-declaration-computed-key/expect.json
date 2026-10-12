@@ -1,0 +1,47 @@
+{
+  "name": "configured-declaration-computed-key",
+  "description": "A configured declaration whose path ends in a computed key names the member that key declares, spelled as a stable symbol reference spells it, in the module shape and in the global shape, so neither is reported as naming nothing, and a computed key no member declares still names nothing.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "configured_declarations": {
+    "AbsentComputed": {
+      "key": "ts.injection_registrations",
+      "entry": {
+        "module": "@example/bag",
+        "name": "Bag.[Symbol.asyncIterator]"
+      }
+    },
+    "ArrayIterator": {
+      "key": "ts.injection_registrations",
+      "entry": {
+        "global": "Array.[Symbol.iterator]"
+      }
+    },
+    "BagIterator": {
+      "key": "ts.injection_registrations",
+      "entry": {
+        "module": "@example/bag",
+        "name": "Bag.[Symbol.iterator]"
+      }
+    }
+  },
+  "expect": [
+    {
+      "symbol": "AbsentComputed",
+      "report": "DS1706",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "configured-declaration"
+    },
+    {
+      "symbol": "ArrayIterator",
+      "report": "none"
+    },
+    {
+      "symbol": "BagIterator",
+      "report": "none"
+    }
+  ]
+}

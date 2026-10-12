@@ -1,0 +1,32 @@
+{
+  "name": "overrides-of-augmented-outside-class",
+  "description": "A module augmentation that adds a member to a class a dependency declares leaves the class declared outside the target, so a subclass's overrides of the class's members are called by code outside the analysis and are live, while a method that overrides nothing is reported and the augmented member nothing reads through the class is reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Card.render",
+      "report": "none"
+    },
+    {
+      "symbol": "Card.describe",
+      "report": "none"
+    },
+    {
+      "symbol": "Card.shout",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method"
+    },
+    {
+      "symbol": "Element.describe",
+      "report": "DS1203",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "interface-method"
+    }
+  ]
+}

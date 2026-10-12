@@ -1,0 +1,15 @@
+{
+  "configurations_not_built": [
+    "tools/tsconfig.json"
+  ],
+  "symbols": {
+    "orphan": {
+      "file": "target/src/main.ts",
+      "line": 1
+    },
+    "made": {
+      "file": "target/tools/gen.ts",
+      "line": 1
+    }
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "symbols": {
+    "unused": { "file": "target/main.tsx", "line": 3 }
+  }
+}

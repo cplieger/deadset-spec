@@ -1,0 +1,21 @@
+{
+  "name": "component-comment-by-framework",
+  "description": "A component file's comments end as its framework's parser ends them. In a .vue file <!--> is a whole comment, so the block after it is read and the export it imports is used. In a .svelte file <!--> opens a comment that runs to the next -->, so the block inside it is no block and the export only it imports is reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "readByVue",
+      "report": "none"
+    },
+    {
+      "symbol": "hiddenBySvelte",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "variable"
+    }
+  ]
+}

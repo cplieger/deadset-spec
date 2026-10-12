@@ -1,0 +1,24 @@
+{
+  "name": "serialized-values-through-merged-library-callees",
+  "description": "A script file of the target merges a member into the library's Console and CallableFunction interfaces. A call that resolves to the library's console.log signature still passes its value outside the analysis, and a call through the library's Function.prototype.call is still a call of the function, so the data members of the classes passed are retained.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Mark.id",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    },
+    {
+      "symbol": "Sent.id",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    }
+  ]
+}

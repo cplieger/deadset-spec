@@ -1,0 +1,12 @@
+{
+  "symbols": {
+    "ProvidersImport": {
+      "file": "target/src/main.ts",
+      "line": 1
+    },
+    "orphan": {
+      "file": "target/src/main.ts",
+      "line": 4
+    }
+  }
+}

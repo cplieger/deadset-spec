@@ -1,0 +1,17 @@
+{
+  "name": "inline-directive-in-jsx-text",
+  "description": "JSX text is rendered content, not a comment, so a // inside it starts no line comment and no inline directive, even where the text begins with it. A well-formed directive spelled in JSX text binds nothing and suppresses nothing, and a malformed one ends no run.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "unused",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "name": "referenced-project-outside-the-target",
+  "description": "A derived configuration that references a compiler configuration outside the target root is analyzed, and the referenced project is an outside project: the run is not refused, and nothing about a declaration of the outside project is reported, while a function of the target nothing calls is.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "orphan",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "unusedShared",
+      "report": "none"
+    }
+  ]
+}

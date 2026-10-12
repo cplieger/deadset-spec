@@ -1,0 +1,16 @@
+{
+  "symbols": {
+    "Odd.toJSON": {
+      "file": "target/main.ts",
+      "line": 5
+    },
+    "Odd.label": {
+      "file": "target/main.ts",
+      "line": 8
+    },
+    "Shape.toJSON": {
+      "file": "target/main.ts",
+      "line": 16
+    }
+  }
+}

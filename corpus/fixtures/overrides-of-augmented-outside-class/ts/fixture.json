@@ -1,0 +1,20 @@
+{
+  "symbols": {
+    "Card.render": {
+      "file": "target/main.ts",
+      "line": 6
+    },
+    "Card.describe": {
+      "file": "target/main.ts",
+      "line": 10
+    },
+    "Card.shout": {
+      "file": "target/main.ts",
+      "line": 15
+    },
+    "Element.describe": {
+      "file": "target/augment.ts",
+      "line": 5
+    }
+  }
+}

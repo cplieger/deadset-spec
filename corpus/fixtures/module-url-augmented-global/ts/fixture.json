@@ -1,0 +1,8 @@
+{
+  "symbols": {
+    "Worker": {
+      "file": "target/worker.ts",
+      "line": 1
+    }
+  }
+}

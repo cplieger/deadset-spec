@@ -1,0 +1,12 @@
+{
+  "symbols": {
+    "Source.id": {
+      "file": "target/main.ts",
+      "line": 3
+    },
+    "Source.extra": {
+      "file": "target/main.ts",
+      "line": 4
+    }
+  }
+}
