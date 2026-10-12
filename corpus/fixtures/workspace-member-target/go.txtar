@@ -1,0 +1,40 @@
+The Go rendering: a go.work at the rendering root lists the target and a second
+module, lib, which the target requires through the workspace alone, with no
+replace directive and no module sum entry, so only a workspace build resolves it.
+
+-- fixture.json --
+{
+  "symbols": {
+    "unused": { "file": "target/main.go", "line": 7 }
+  }
+}
+-- go.work --
+go 1.27.0
+
+use (
+	./target
+	./lib
+)
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+
+require example.com/lib v0.0.0
+-- target/main.go --
+package main
+
+import "example.com/lib"
+
+func main() { lib.Used() }
+
+func unused() {}
+-- lib/go.mod --
+module example.com/lib
+
+go 1.27.0
+-- lib/lib.go --
+package lib
+
+// Used is what the target calls.
+func Used() {}

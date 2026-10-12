@@ -1,0 +1,15 @@
+{
+  "name": "workspace-member-target",
+  "description": "A target that a go.work file at or above it lists among its use directives loads through that workspace, as the toolchain builds it there, so a requirement the workspace alone resolves is no setup failure. The workspace's other modules are dependencies of the target, and nothing of them is reported.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "unused",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

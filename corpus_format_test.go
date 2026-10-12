@@ -266,6 +266,8 @@ var (
 
 	errNoDependencyRequire = errors.New("go rendering target requires no dependency module")
 	errNoDependencyReplace = errors.New("go rendering target replaces the dependency module with no relative path")
+	errWorkspaceNoTarget   = errors.New("go rendering workspace file lists no ./target use directive")
+	errWorkspaceUse        = errors.New("go rendering workspace file lists a use directive that is no dependency directory at the rendering root")
 
 	errNoMatrix         = errors.New("expectation names a configuration and the rendering declares no build matrix")
 	errUnknownConfig    = errors.New("expectation names a configuration outside the rendering's build matrix")
@@ -978,16 +980,18 @@ func topLevelDirectories(files map[string][]byte) []string {
 // neither the target nor a consumer holds a module the target's own module file
 // requires and replaces with that directory's path relative to the target, so the
 // target resolves the requirement from the rendering rather than from a network.
+// A dependency the rendering root's go.work lists beside the target resolves
+// through that workspace and needs no replace.
 func checkGoDependencyModules(consumers []string, files map[string][]byte) []error {
 	dependencies := slices.DeleteFunc(topLevelDirectories(files), func(dir string) bool {
 		return dir == targetDir || slices.Contains(consumers, dir)
 	})
+	workspace, errs := checkGoWorkspace(dependencies, files)
 	if len(dependencies) == 0 {
-		return nil
+		return errs
 	}
 	targetMod := path.Join(targetDir, goModFile)
 	_, requires, replaces := goModDirectives(files[targetMod])
-	var errs []error
 	for _, dependency := range dependencies {
 		file := path.Join(dependency, goModFile)
 		module, _, _ := goModDirectives(files[file])
@@ -998,12 +1002,67 @@ func checkGoDependencyModules(consumers []string, files map[string][]byte) []err
 		if !slices.Contains(requires, module) {
 			errs = append(errs, fmt.Errorf("%w: %s names no require of %q", errNoDependencyRequire, targetMod, module))
 		}
+		if workspace[dependency] {
+			continue
+		}
 		want := "../" + dependency
 		if got := replaces[module]; got != want {
 			errs = append(errs, fmt.Errorf("%w: %s replaces %q with %q, want %q", errNoDependencyReplace, targetMod, module, got, want))
 		}
 	}
 	return errs
+}
+
+// goWorkFile is the workspace file a Go rendering may carry at its root.
+const goWorkFile = "go.work"
+
+// checkGoWorkspace reads the rendering root's go.work, if any, and returns the
+// dependency directories it resolves through the workspace: every one it lists
+// when it lists the target too, and none otherwise. A use directive naming
+// anything but the target or a dependency directory, in any spelling the
+// toolchain reads as that directory, is an error, a consumer among them, because a
+// workspace member is a dependency and never a consumer.
+func checkGoWorkspace(dependencies []string, files map[string][]byte) (map[string]bool, []error) {
+	data, held := files[goWorkFile]
+	if !held {
+		return nil, nil
+	}
+	listed := map[string]bool{}
+	var errs []error
+	for _, use := range goWorkUses(data) {
+		dir := path.Clean(use)
+		if path.IsAbs(use) || strings.Contains(dir, "/") || (dir != targetDir && !slices.Contains(dependencies, dir)) {
+			errs = append(errs, fmt.Errorf("%w: %s uses %q", errWorkspaceUse, goWorkFile, use))
+			continue
+		}
+		listed[dir] = true
+	}
+	if !listed[targetDir] {
+		return nil, append(errs, fmt.Errorf("%w: %s", errWorkspaceNoTarget, goWorkFile))
+	}
+	return listed, errs
+}
+
+// goWorkUses is every path a go.work file's use directives list, in the
+// single-line and the block form.
+func goWorkUses(data []byte) []string {
+	var uses []string
+	inBlock := false
+	for line := range strings.SplitSeq(string(data), "\n") {
+		fields := strings.Fields(strings.TrimSpace(line))
+		switch {
+		case len(fields) == 0:
+		case inBlock && fields[0] == ")":
+			inBlock = false
+		case inBlock:
+			uses = append(uses, fields[0])
+		case fields[0] == "use" && len(fields) == 2 && fields[1] == "(":
+			inBlock = true
+		case fields[0] == "use" && len(fields) > 1:
+			uses = append(uses, fields[1])
+		}
+	}
+	return uses
 }
 
 // checkGoConsumerModules pins the rule corpus/corpus.json states for a Go
@@ -1943,6 +2002,28 @@ func TestCheckFixtureAcceptsAWellFormedFixture(t *testing.T) {
 	}
 }
 
+func TestCheckFixtureAcceptsAWorkspaceDependencyWithNoReplace(t *testing.T) {
+	spellings := map[string][2]string{
+		"dot_prefixed":   {"./target", "./dep"},
+		"bare":           {"target", "dep"},
+		"trailing_slash": {"./target/", "dep/"},
+	}
+	for name, uses := range spellings {
+		t.Run(name, func(t *testing.T) {
+			fsys := plantedFixture()
+			archive := fsys["corpus/fixtures/planted/go.txtar"]
+			archive.Data = bytes.Replace(archive.Data,
+				[]byte("-- target/go.mod --\nmodule example.test/target\n"),
+				[]byte("-- target/go.mod --\nmodule example.test/target\n\nrequire example.test/dep v0.0.0\n"), 1)
+			archive.Data = append(archive.Data,
+				"-- go.work --\ngo 1.27.0\n\nuse (\n\t"+uses[0]+"\n\t"+uses[1]+"\n)\n-- dep/go.mod --\nmodule example.test/dep\n"...)
+			if err := checkFixture(fsys, "corpus/fixtures/planted"); err != nil {
+				t.Errorf("checkFixture(planted with a workspace dependency used as %q) = %v, want nil", uses, err)
+			}
+		})
+	}
+}
+
 func TestCheckFixtureRefuses(t *testing.T) {
 	cases := []struct {
 		mutate  func(fstest.MapFS)
@@ -2032,6 +2113,54 @@ func TestCheckFixtureRefuses(t *testing.T) {
 					[]byte("-- target/go.mod --\nmodule example.test/target\n\nreplace example.test/dep v0.0.0 => ../dep\n"), 1)
 				m["corpus/fixtures/planted/go.txtar"].Data = append(m["corpus/fixtures/planted/go.txtar"].Data,
 					"-- dep/go.mod --\nmodule example.test/dep\n"...)
+			},
+			wantMsg: errNoDependencyRequire.Error() + `: target/go.mod names no require of "example.test/dep"`,
+		},
+		{
+			name: "go_workspace_without_the_target",
+			mutate: func(m fstest.MapFS) {
+				m["corpus/fixtures/planted/go.txtar"].Data = append(m["corpus/fixtures/planted/go.txtar"].Data,
+					"-- go.work --\ngo 1.27.0\n\nuse ./dep\n-- dep/go.mod --\nmodule example.test/dep\n"...)
+			},
+			wantMsg: errWorkspaceNoTarget.Error() + `: go.work`,
+		},
+		{
+			name: "go_workspace_without_the_target_still_needs_the_replace",
+			mutate: func(m fstest.MapFS) {
+				m["corpus/fixtures/planted/go.txtar"].Data = append(m["corpus/fixtures/planted/go.txtar"].Data,
+					"-- go.work --\ngo 1.27.0\n\nuse ./dep\n-- dep/go.mod --\nmodule example.test/dep\n"...)
+			},
+			wantMsg: errNoDependencyReplace.Error() + `: target/go.mod replaces "example.test/dep" with ""`,
+		},
+		{
+			name: "go_workspace_lists_a_consumer",
+			mutate: func(m fstest.MapFS) {
+				m["corpus/fixtures/planted/go.txtar"].Data = append(m["corpus/fixtures/planted/go.txtar"].Data,
+					"-- go.work --\ngo 1.27.0\n\nuse (\n\t./target\n\t./consumer\n)\n"...)
+			},
+			wantMsg: errWorkspaceUse.Error() + `: go.work uses "./consumer"`,
+		},
+		{
+			name: "go_workspace_uses_a_directory_below_the_target",
+			mutate: func(m fstest.MapFS) {
+				m["corpus/fixtures/planted/go.txtar"].Data = append(m["corpus/fixtures/planted/go.txtar"].Data,
+					"-- go.work --\ngo 1.27.0\n\nuse (\n\t./target\n\t./target/sub\n)\n"...)
+			},
+			wantMsg: errWorkspaceUse.Error() + `: go.work uses "./target/sub"`,
+		},
+		{
+			name: "go_workspace_uses_an_absolute_path",
+			mutate: func(m fstest.MapFS) {
+				m["corpus/fixtures/planted/go.txtar"].Data = append(m["corpus/fixtures/planted/go.txtar"].Data,
+					"-- go.work --\ngo 1.27.0\n\nuse (\n\t./target\n\t/target\n)\n"...)
+			},
+			wantMsg: errWorkspaceUse.Error() + `: go.work uses "/target"`,
+		},
+		{
+			name: "go_workspace_dependency_the_target_does_not_require",
+			mutate: func(m fstest.MapFS) {
+				m["corpus/fixtures/planted/go.txtar"].Data = append(m["corpus/fixtures/planted/go.txtar"].Data,
+					"-- go.work --\ngo 1.27.0\n\nuse (\n\t./target\n\t./dep\n)\n-- dep/go.mod --\nmodule example.test/dep\n"...)
 			},
 			wantMsg: errNoDependencyRequire.Error() + `: target/go.mod names no require of "example.test/dep"`,
 		},

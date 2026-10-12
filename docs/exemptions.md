@@ -114,7 +114,7 @@ A member of an enumerated type whose values can arrive by conversion rather than
 
 Retains: Every member of the enumerated type.
 
-Mechanism in Go: The enumerated type is a defined type whose constants are declared in an `iota` group. The class fires when the type has a `String`, `MarshalText`, `UnmarshalText`, `MarshalJSON` or `UnmarshalJSON` method, or when a value of the type is produced by a conversion from an integer type or from a decoded value (an `encoding/json` or `encoding/xml` target, a `database/sql` scan target, a `strconv` result). Retain every constant of the type.
+Mechanism in Go: The enumerated type is a defined type the target declares whose constants are declared in an `iota` group. A group whose constants carry a type declared in no file under the target root, a standard-library or a module cache type among them, is no enumerated type of the target: the class retains none of its members, and reading that type's methods needs no source outside the target. The class fires when the type has a `String`, `MarshalText`, `UnmarshalText`, `MarshalJSON` or `UnmarshalJSON` method, or when a value of the type is produced by a conversion from an integer type or from a decoded value (an `encoding/json` or `encoding/xml` target, a `database/sql` scan target, a `strconv` result). Retain every constant of the type.
 
 Mechanism in TypeScript: The enumerated type is an `enum` declaration. The class fires when a value of the enum is produced by a type assertion from `number` or `string`, by the reverse mapping `E[n]`, or by a decoded value typed as `E`. Retain every member of the enum.
 

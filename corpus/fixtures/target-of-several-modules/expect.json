@@ -1,0 +1,38 @@
+{
+  "name": "target-of-several-modules",
+  "description": "A target whose root holds no module file is every module below it. One report covers both modules, each position relative to the target root; a reference from one module to a declaration of another that it builds from that module's own directory holds the declaration live, and a directive is reported against the module file that writes it.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Used",
+      "report": "none"
+    },
+    {
+      "symbol": "Unused",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "unusedA",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "UnusedReplace",
+      "report": "DS1605",
+      "symbol_kind": "module-directive",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "details": {
+        "replacement": "../absent"
+      }
+    }
+  ]
+}
