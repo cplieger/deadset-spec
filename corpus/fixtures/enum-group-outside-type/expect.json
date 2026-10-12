@@ -1,0 +1,16 @@
+{
+  "name": "enum-group-outside-type",
+  "description": "An iota group whose constants carry a type the target does not declare is no enumerated type of the target, so the enum-group class retains none of its members, though the type has a String method and a conversion from an integer produces it, and reading that type's methods needs no source outside the target. A member no source names is reported as an unused enum member.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "expect": [
+    { "symbol": "rttFailed", "report": "none" },
+    {
+      "symbol": "rttUntested",
+      "report": "DS1302",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

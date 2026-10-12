@@ -1,0 +1,49 @@
+The Go rendering: an application declaring one iota group whose constants carry
+a type the standard library declares, which has a String method and which a
+conversion from an integer produces, naming the first member and no other.
+
+-- fixture.json --
+{
+  "symbols": {
+    "rttFailed": { "file": "target/rtt.go", "line": 11 },
+    "rttUntested": { "file": "target/rtt.go", "line": 12 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target measures the argument count and reports the failure value.
+package main
+
+import (
+	"fmt"
+	"os"
+)
+
+func main() {
+	fmt.Println(measure(int64(len(os.Args))))
+}
+-- target/rtt.go --
+package main
+
+import (
+	"math"
+	"time"
+)
+
+// The two durations an iota group declares carry a type the standard library
+// declares, which has a String method and which measure converts an integer to.
+const (
+	rttFailed = time.Duration(math.MaxInt64 - iota)
+	rttUntested
+)
+
+// measure converts an integer to a duration, or returns the failure value.
+func measure(n int64) time.Duration {
+	if n < 0 {
+		return rttFailed
+	}
+	return time.Duration(n)
+}
