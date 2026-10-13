@@ -5,6 +5,9 @@
     "ts"
   ],
   "target_kind": "application",
+  "closed_world": [
+    "roots"
+  ],
   "suppressions_in_effect": 2,
   "expect": [
     {

@@ -1,0 +1,12 @@
+{
+  "symbols": {
+    "deadCaller": {
+      "file": "target/src/main.ts",
+      "line": 1
+    },
+    "calledOnlyByDead": {
+      "file": "target/src/main.ts",
+      "line": 5
+    }
+  }
+}

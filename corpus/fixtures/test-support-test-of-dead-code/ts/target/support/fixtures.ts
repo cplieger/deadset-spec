@@ -1,3 +1,4 @@
+import "vitest";
 import { decode } from "../codec.js";
 
 // fixture is called by a test and by check.

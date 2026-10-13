@@ -1,0 +1,30 @@
+{
+  "name": "type-error-innermost-function",
+  "description": "A type error skips the innermost function holding it, so a sibling function of the same statement is still evaluated: an unread catch binding beside the skipped callback is reported, the one inside it is not, and the error is listed.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "type_error_skips": [
+    "TypeError"
+  ],
+  "expect": [
+    {
+      "symbol": "Unread",
+      "report": "DS1807",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "store",
+      "details": {
+        "overlap": [
+          "eslint no-useless-assignment",
+          "@typescript-eslint/no-unused-vars"
+        ]
+      }
+    },
+    {
+      "symbol": "Hidden",
+      "report": "none"
+    }
+  ]
+}

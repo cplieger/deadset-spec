@@ -1,0 +1,20 @@
+{
+  "symbols": {
+    "Demo": {
+      "file": "target/src/demo.ts",
+      "line": 1
+    },
+    "Unimported": {
+      "file": "target/src/demo.ts",
+      "line": 4
+    },
+    "SampleFile": {
+      "file": "target/src/sample.ts",
+      "line": 1
+    },
+    "sample": {
+      "file": "target/src/sample.ts",
+      "line": 2
+    }
+  }
+}

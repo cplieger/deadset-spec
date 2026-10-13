@@ -1,0 +1,30 @@
+{
+  "name": "redundant-export-keyword-script-file",
+  "description": "A file only a script token names is no entry file, because the script runs the file and reads no name it exports, so an export used only inside it is a redundant export keyword, while an export of a file an entry rule names is not.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "closed_world": [
+    "consumers"
+  ],
+  "entry_files": [
+    "entry.ts"
+  ],
+  "expect": [
+    {
+      "symbol": "Step",
+      "report": "DS1104",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "details": {
+        "narrower_visibility": "file"
+      }
+    },
+    {
+      "symbol": "Label",
+      "report": "none"
+    }
+  ]
+}

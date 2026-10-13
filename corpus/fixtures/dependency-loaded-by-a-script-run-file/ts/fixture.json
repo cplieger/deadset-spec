@@ -1,0 +1,12 @@
+{
+  "symbols": {
+    "Bundler": {
+      "file": "target/package.json",
+      "line": 11
+    },
+    "NeverLoaded": {
+      "file": "target/package.json",
+      "line": 12
+    }
+  }
+}

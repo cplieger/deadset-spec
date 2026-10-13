@@ -1,17 +1,18 @@
 The Go rendering: a command calling one function of a package, a helper package
 under an internal directory that nothing imports and that only its own test file
 uses, and a second helper package that only the first one imports. The second
-helper calls a second function of the first package. Nothing imports anything
-outside the standard library, so the rendering loads with no network access.
+helper calls a second function of the first package. Each helper takes the
+test's testing.TB. Nothing imports anything outside the standard library, so the
+rendering loads with no network access.
 
 -- fixture.json --
 {
   "symbols": {
     "Live": { "file": "target/catalog/catalog.go", "line": 4 },
     "Seed": { "file": "target/catalog/catalog.go", "line": 7 },
-    "NewService": { "file": "target/internal/apitest/apitest.go", "line": 6 },
-    "Open": { "file": "target/teststore/teststore.go", "line": 6 },
-    "Unused": { "file": "target/teststore/teststore.go", "line": 9 }
+    "NewService": { "file": "target/internal/apitest/apitest.go", "line": 10 },
+    "Open": { "file": "target/teststore/teststore.go", "line": 10 },
+    "Unused": { "file": "target/teststore/teststore.go", "line": 16 }
   }
 }
 -- target/go.mod --
@@ -35,27 +36,41 @@ func Seed() int { return 2 }
 -- target/internal/apitest/apitest.go --
 package apitest
 
-import "example.com/target/teststore"
+import (
+	"testing"
+
+	"example.com/target/teststore"
+)
 
 // NewService is called by this package's own test.
-func NewService() int { return teststore.Open() + 1 }
+func NewService(t testing.TB) int {
+	t.Helper()
+	return teststore.Open(t) + 1
+}
 -- target/internal/apitest/apitest_test.go --
 package apitest
 
 import "testing"
 
 func TestNewService(t *testing.T) {
-	if NewService() != 4 {
+	if NewService(t) != 4 {
 		t.Error("NewService is not 4")
 	}
 }
 -- target/teststore/teststore.go --
 package teststore
 
-import "example.com/target/catalog"
+import (
+	"testing"
+
+	"example.com/target/catalog"
+)
 
 // Open is called by the first helper package alone, and calls a live function beside the one only it calls.
-func Open() int { return catalog.Seed() + catalog.Live() }
+func Open(t testing.TB) int {
+	t.Helper()
+	return catalog.Seed() + catalog.Live()
+}
 
 // Unused is called by nothing.
 func Unused() int { return 5 }

@@ -1,0 +1,25 @@
+{
+  "name": "encoding-reflection-template-set-read-whole",
+  "description": "In Go, where every template that receives a value is one the analysis reads, a template engine reads only the fields those templates name: a set a variable holds that one chain of constant parses writes and that the program only executes. So a field of the page no template names is reported as written and never read, while a value executed through a template whose file name the program computes keeps every field.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "page.Title",
+      "report": "none"
+    },
+    {
+      "symbol": "page.Footer",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field"
+    },
+    {
+      "symbol": "report.Count",
+      "report": "none"
+    }
+  ]
+}

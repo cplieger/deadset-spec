@@ -1,0 +1,32 @@
+{
+  "name": "test-file-non-function-export-judged",
+  "description": "A test runner calls the functions a test file's top level registers and none of its other exports, so an exported constant of a test file that nothing references is reported as in any file, and one only its own file references is a redundant export keyword, while an exported function stays a test.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "fixtures",
+      "report": "DS1104",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "variable",
+      "details": {
+        "narrower_visibility": "file"
+      }
+    },
+    {
+      "symbol": "nobody",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "variable",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "testFixtures",
+      "report": "none"
+    }
+  ]
+}

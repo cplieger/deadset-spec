@@ -1,0 +1,55 @@
+The Go rendering: a command calling function literals where it writes them, under
+a go statement, under a defer statement and in place, one of them reading its
+parameter, and a blank variable's initializer calling one in place. Each sits in
+a function of its own, so each finding names a declaration of its own.
+
+-- fixture.json --
+{
+  "symbols": {
+    "InitializerCallee": { "file": "target/main.go", "line": 6 },
+    "GoCallee": { "file": "target/main.go", "line": 11 },
+    "DeferCallee": { "file": "target/main.go", "line": 17 },
+    "InPlaceCallee": { "file": "target/main.go", "line": 22 },
+    "ReadCallee": { "file": "target/main.go", "line": 27 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target calls function literals where it writes them.
+package main
+
+import "fmt"
+
+var _ = func(n int) bool { return true }(1)
+
+// spawn runs a goroutine and waits for it.
+func spawn() {
+	done := make(chan bool)
+	go func(i int) { done <- true }(1)
+	<-done
+}
+
+// deferred prints when it returns.
+func deferred() {
+	defer func(label string) { fmt.Println("done") }("deferred")
+}
+
+// inPlace prints at once.
+func inPlace() {
+	func(n int) { fmt.Println("now") }(2)
+}
+
+// reading prints its argument.
+func reading() {
+	func(n int) { fmt.Println(n) }(3)
+}
+
+func main() {
+	spawn()
+	deferred()
+	inPlace()
+	reading()
+}

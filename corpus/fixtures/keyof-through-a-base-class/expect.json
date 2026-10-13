@@ -1,0 +1,22 @@
+{
+  "name": "keyof-through-a-base-class",
+  "description": "A call through a value of a class that extends an instantiation of a generic class fixes the base class's type arguments for the method it calls, through this as through any value, so the key a literal argument names is read on the type the base class is instantiated with.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Open",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Close",
+      "report": "none"
+    }
+  ]
+}

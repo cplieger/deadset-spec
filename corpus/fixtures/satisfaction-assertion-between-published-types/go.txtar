@@ -1,0 +1,37 @@
+One published library package asserting its exported interface on an exported
+type and on an unexported type. Nothing names the interface as a type.
+
+-- fixture.json --
+{
+  "symbols": {
+    "CheckerMethod": { "file": "target/lib.go", "line": 6 },
+    "PublishedPairAssertion": { "file": "target/lib.go", "line": 19 },
+    "UnexportedTypeAssertion": { "file": "target/lib.go", "line": 21 }
+  }
+}
+-- target/go.mod --
+module example.com/lib
+
+go 1.27.0
+-- target/lib.go --
+// Package lib checks values.
+package lib
+
+// Checker checks one value.
+type Checker interface {
+	Check() bool
+}
+
+// Limiter is a published checker.
+type Limiter struct{}
+
+// Check reports true.
+func (*Limiter) Check() bool { return true }
+
+type quiet struct{}
+
+func (quiet) Check() bool { return false }
+
+var _ Checker = (*Limiter)(nil)
+
+var _ Checker = quiet{}

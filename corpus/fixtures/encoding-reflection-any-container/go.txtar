@@ -1,0 +1,58 @@
+The Go rendering: a command that encodes a map literal a function returns as any,
+and a result whose any field it assigns a map literal, beside a map literal it only
+stores.
+
+-- fixture.json --
+{
+  "symbols": {
+    "kernel.OS": { "file": "target/main.go", "line": 11 },
+    "node.Label": { "file": "target/main.go", "line": 16 },
+    "stored.Level": { "file": "target/main.go", "line": 26 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target encodes values held in containers of interface values.
+package main
+
+import (
+	"encoding/json"
+	"os"
+)
+
+// kernel is encoded in a map literal payload returns.
+type kernel struct {
+	OS string
+}
+
+// node is encoded in a map literal assigned to result.Data.
+type node struct {
+	Label string
+}
+
+// result carries any value in Data.
+type result struct {
+	Data any
+}
+
+// stored is held in a map literal nothing encodes.
+type stored struct {
+	Level int
+}
+
+// held keeps what main stores.
+var held any
+
+func payload() any { return map[string]any{"kernels": []kernel{{OS: "linux"}}} }
+
+func main() {
+	_ = json.NewEncoder(os.Stdout).Encode(payload())
+	ret := &result{}
+	ret.Data = map[string]any{"node": node{Label: "n"}}
+	_ = json.NewEncoder(os.Stdout).Encode(ret)
+	held = map[string]any{"stored": stored{Level: 1}}
+	println(held != nil)
+}

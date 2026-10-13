@@ -1,0 +1,24 @@
+{
+  "symbols": {
+    "A": {
+      "file": "target/main.ts",
+      "line": 4
+    },
+    "B": {
+      "file": "target/main.ts",
+      "line": 5
+    },
+    "C": {
+      "file": "target/main.ts",
+      "line": 6
+    },
+    "Click": {
+      "file": "target/main.ts",
+      "line": 10
+    },
+    "Key": {
+      "file": "target/main.ts",
+      "line": 11
+    }
+  }
+}

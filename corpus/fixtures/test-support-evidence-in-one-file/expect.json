@@ -1,0 +1,30 @@
+{
+  "name": "test-support-evidence-in-one-file",
+  "description": "A Go package carries test evidence when one of its files other than its test files imports the testing package, and then every file of the package is test-support code. A function of the file that imports it, which a test calls, and a function of the other file, which only that function calls, are test code that test code references and are reported under no code, and a function of the other file nothing calls is reported under the unused code its visibility selects.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "run",
+      "report": "none"
+    },
+    {
+      "symbol": "Expect",
+      "report": "none"
+    },
+    {
+      "symbol": "want",
+      "report": "none"
+    },
+    {
+      "symbol": "Orphan",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

@@ -6,7 +6,7 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/cplieger/deadset-spec/v7"
+	"github.com/cplieger/deadset-spec/v8"
 )
 
 const (
@@ -198,7 +198,7 @@ func TestReportSchemaRequiredMembers(t *testing.T) {
 		{name: "declared_gap", at: "properties/declared_gaps/items", want: []string{"fixture", "capability", "reason"}},
 		{name: "test_file_rule", at: "properties/test_file_rules/items", want: []string{"rule", "matched"}},
 		{name: "type_error_skip", at: "properties/type_error_skips/items", want: []string{"path", "line", "message"}},
-		{name: "note", at: "properties/notes/items", want: []string{"kind", "path", "key", "message"}},
+		{name: "note", at: "properties/notes/items", want: []string{"kind", "path", "message"}},
 		{name: "unanswered_question", at: "properties/unanswered_questions/items", want: []string{"configuration", "questions", "declarations"}},
 		{name: "convention_applied", at: "properties/conventions_applied/items", want: []string{"name", "package", "version", "manifest"}},
 		{

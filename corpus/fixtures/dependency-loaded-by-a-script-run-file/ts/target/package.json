@@ -1,0 +1,14 @@
+{
+  "name": "@example/target",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./main.ts",
+  "scripts": {
+    "build": "node ./scripts/build.mjs --fast"
+  },
+  "devDependencies": {
+    "bundler": "1.0.0",
+    "never-loaded": "1.0.0"
+  }
+}

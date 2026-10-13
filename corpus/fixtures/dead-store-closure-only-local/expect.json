@@ -1,0 +1,27 @@
+{
+  "name": "dead-store-closure-only-local",
+  "description": "A local nothing reads has every write dead, one a nested function makes included, each a dead store at the name it writes, while a local a nested function reads is no subject, because the function may read it at any time.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Seen",
+      "report": "DS1807",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "store",
+      "details": {
+        "overlap": [
+          "eslint no-useless-assignment",
+          "@typescript-eslint/no-unused-vars"
+        ]
+      }
+    },
+    {
+      "symbol": "Read",
+      "report": "none"
+    }
+  ]
+}

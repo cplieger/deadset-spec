@@ -1,0 +1,32 @@
+{
+  "name": "generated-file-notice",
+  "description": "A file whose leading comments say it was generated and ask not to edit it, across several comments, is a generated file, and so is one whose first line names the tool that generated it; their declarations are retained.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "routeTree",
+      "report": "none",
+      "retained_by": [
+        "generated-file"
+      ]
+    },
+    {
+      "symbol": "bundled",
+      "report": "none",
+      "retained_by": [
+        "generated-file"
+      ]
+    },
+    {
+      "symbol": "RoutesFile",
+      "report": "none"
+    },
+    {
+      "symbol": "BundleFile",
+      "report": "none"
+    }
+  ]
+}

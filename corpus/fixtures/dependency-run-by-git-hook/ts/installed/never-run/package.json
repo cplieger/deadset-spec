@@ -1,0 +1,8 @@
+{
+  "name": "never-run",
+  "private": true,
+  "version": "1.0.0",
+  "bin": {
+    "never-run": "cli.js"
+  }
+}

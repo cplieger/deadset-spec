@@ -1,0 +1,103 @@
+{
+  "name": "dependency-used-only-by-dead-code",
+  "description": "A dependency whose every use is written inside declarations of the run's dead components, or at the top level of a file reported as never imported, is reported, found dead only through that code: at the class its deadness carries, certain where they are referenced by nothing, and found under reachability alone, so at probable unless the roots are declared complete, where one of them only dead declarations reference. A dependency live code also uses is needed. Such a dependency names the component of that code, as a member falling with it, and a file reported as never imported roots the component of the declarations it holds.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "DeadFile",
+      "report": "DS1502",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file",
+      "component": {
+        "root": true,
+        "symbol_count": 4
+      }
+    },
+    {
+      "symbol": "DeadOnly",
+      "report": "DS1601",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "dependency",
+      "details": {
+        "dependency_class": "dependency"
+      },
+      "component": {
+        "root": false,
+        "symbol_count": 4
+      }
+    },
+    {
+      "symbol": "FileLevel",
+      "report": "DS1601",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "dependency",
+      "details": {
+        "dependency_class": "dependency"
+      },
+      "component": {
+        "root": false,
+        "symbol_count": 4
+      }
+    },
+    {
+      "symbol": "Live",
+      "report": "none"
+    },
+    {
+      "symbol": "Reached",
+      "report": "DS1601",
+      "confidence": "probable",
+      "reachability_class": "certain",
+      "symbol_kind": "dependency",
+      "details": {
+        "dependency_class": "dependency"
+      },
+      "component": {
+        "root": false,
+        "symbol_count": 4
+      }
+    },
+    {
+      "symbol": "first",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting",
+      "component": {
+        "root": false,
+        "symbol_count": 4
+      }
+    },
+    {
+      "symbol": "inner",
+      "report": "DS1002",
+      "confidence": "probable",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reachability",
+      "component": {
+        "root": false,
+        "symbol_count": 4
+      }
+    },
+    {
+      "symbol": "second",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting",
+      "component": {
+        "root": false,
+        "symbol_count": 4
+      }
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "name": "decorated-class-parameter-property",
+  "description": "A decorator on a class retains no member a parameter property of its constructor declares, because the code it runs may construct the class, which keeps the parameter, so an unread parameter property's member is reported as written and never read, while the class's other members are retained.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Dialog",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "class-member"
+    },
+    {
+      "symbol": "Title",
+      "report": "none"
+    }
+  ]
+}

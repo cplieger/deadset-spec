@@ -1,3 +1,4 @@
+import "vitest";
 import { open } from "./store.js";
 
 // newService is called by a test.

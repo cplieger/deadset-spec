@@ -1,0 +1,14 @@
+{
+  "name": "encoding-reflection-interface-field-read",
+  "description": "A read of an interface-typed field holds what the program stores in that field, so a value a composite literal stores in such a field reaches the encoder that the field's value is handed to, through a wrapper of the program and a closure it returns, and its exported field is read.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "env.Name",
+      "report": "none"
+    }
+  ]
+}

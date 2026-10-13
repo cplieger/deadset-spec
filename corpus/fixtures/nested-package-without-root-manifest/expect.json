@@ -1,6 +1,6 @@
 {
   "name": "nested-package-without-root-manifest",
-  "description": "A run at a root that holds no package.json reads the manifest of each nested package that holds a compiler configuration, so it applies the convention rows that manifest declares and judges its dependencies, as a run at that package does. A string at the stryker row's selection key roots nothing, so a hook only a test calls is reported, a file the vitest row's setupFiles names is test code, and a development dependency nothing runs is reported. A command a workflow step of the root runs is a use of the dependency of a nested package that declares it.",
+  "description": "A run at a root that holds no package.json reads the manifest of each nested package that holds a compiler configuration, so it applies the convention rows that manifest declares and judges its dependencies, as a run at that package does. A string at the stryker row's selection key roots nothing, so a hook only a test calls is reported, a file the vitest row's setupFiles names is test code, and so is the file only it and the tests reach, and a development dependency nothing runs is reported. A command a workflow step of the root runs is a use of the dependency of a nested package that declares it.",
   "languages": [
     "ts"
   ],
@@ -34,10 +34,7 @@
     },
     {
       "symbol": "Register",
-      "report": "DS1004",
-      "confidence": "possible",
-      "reachability_class": "possible",
-      "symbol_kind": "function"
+      "report": "none"
     },
     {
       "symbol": "StrykerDependency",

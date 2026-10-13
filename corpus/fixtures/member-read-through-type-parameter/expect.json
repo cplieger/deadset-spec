@@ -1,0 +1,21 @@
+{
+  "name": "member-read-through-type-parameter",
+  "description": "A member read through a value typed by a type parameter of a generic function reads the member of that name on each type a call passes for the parameter, so the member of an object type a call passes is read where the function reads its constraint's member, and one no read names is reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Kind",
+      "report": "none"
+    },
+    {
+      "symbol": "Spare",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member"
+    }
+  ]
+}

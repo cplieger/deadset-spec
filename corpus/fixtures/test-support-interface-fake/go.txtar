@@ -1,17 +1,18 @@
 The Go rendering: a command passing a production implementation of an interface
 to a function that calls through the interface, and a fake package that only an
 external test file imports, whose type implements the same interface and whose
-method calls a production function nothing else calls. Nothing imports anything
-outside the standard library, so the rendering loads with no network access.
+method calls a production function nothing else calls, and whose constructor
+takes the test's testing.TB. Nothing imports anything outside the standard
+library, so the rendering loads with no network access.
 
 -- fixture.json --
 {
   "symbols": {
     "Total": { "file": "target/store/store.go", "line": 15 },
     "Seed": { "file": "target/store/store.go", "line": 18 },
-    "New": { "file": "target/fake/fake.go", "line": 9 },
-    "Get": { "file": "target/fake/fake.go", "line": 12 },
-    "Unused": { "file": "target/fake/fake.go", "line": 15 }
+    "New": { "file": "target/fake/fake.go", "line": 13 },
+    "Get": { "file": "target/fake/fake.go", "line": 19 },
+    "Unused": { "file": "target/fake/fake.go", "line": 22 }
   }
 }
 -- target/go.mod --
@@ -46,13 +47,20 @@ func Seed() int { return 2 }
 -- target/fake/fake.go --
 package fake
 
-import "example.com/target/store"
+import (
+	"testing"
+
+	"example.com/target/store"
+)
 
 // Memory implements store.Store for tests.
 type Memory struct{ n int }
 
 // New is called by a test.
-func New(n int) Memory { return Memory{n: n} }
+func New(t testing.TB, n int) Memory {
+	t.Helper()
+	return Memory{n: n}
+}
 
 // Get is called through the interface alone, and calls a live method beside the function only it calls.
 func (m Memory) Get(key string) int { return store.Seed() + store.Disk{}.Get(key) + m.n }
@@ -70,7 +78,7 @@ import (
 )
 
 func TestTotal(t *testing.T) {
-	if store.Total(fake.New(4)) != 8 {
+	if store.Total(fake.New(t, 4)) != 8 {
 		t.Error("Total is not 8")
 	}
 }

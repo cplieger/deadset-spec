@@ -1,0 +1,32 @@
+{
+  "name": "encoding-reflection-field-walk-assertion",
+  "description": "A call of Interface on a reflect.Value that holds a field of a struct, read by Field, FieldByIndex, FieldByName or FieldByNameFunc from a value reflect.ValueOf gives, through Elem and reflect.Indirect, converts the value of each exported field of that struct to the empty interface, so an assertion of the result to an interface type is a conversion of each exported field type that implements it, which retains the methods by which each implements it. A method of a field type that the interface does not require is reported.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "email.Validate",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "chat.Validate",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "chat.Mute",
+      "report": "DS1103",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

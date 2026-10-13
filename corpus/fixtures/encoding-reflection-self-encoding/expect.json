@@ -1,0 +1,39 @@
+{
+  "name": "encoding-reflection-self-encoding",
+  "description": "A destination that reads fields does not read the fields of a type whose method set holds the encoding method it calls for its direction, MarshalJSON, MarshalJSONTo or MarshalText for a JSON encoder, MarshalXML or MarshalText for XML, GobEncode or MarshalBinary for gob, and does not walk on through them. A method with a pointer receiver counts only where every value of the type the walk meets is addressable. So a field the method does not read, and a type reached only through such a field, are reported as written and never read, while a value encoded as a value, whose pointer-receiver method the encoder cannot call, keeps its fields.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "call.ID",
+      "report": "none"
+    },
+    {
+      "symbol": "call.Hidden",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    },
+    {
+      "symbol": "call.Unit",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    },
+    {
+      "symbol": "unit.Label",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    },
+    {
+      "symbol": "copied.Shown",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    }
+  ]
+}

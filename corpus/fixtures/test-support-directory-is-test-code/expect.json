@@ -1,0 +1,31 @@
+{
+  "name": "test-support-directory-is-test-code",
+  "description": "A test-support file, one only tests reach, is test code whether its directory holds production files or not: a test's reference keeps its declaration live and nothing is reported about it, and one nothing references is reported as in any file.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "expect": [
+    {
+      "symbol": "make",
+      "report": "none"
+    },
+    {
+      "symbol": "spare",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "onlyTested",
+      "report": "none"
+    },
+    {
+      "symbol": "testMake",
+      "report": "none"
+    }
+  ]
+}

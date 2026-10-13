@@ -1,0 +1,20 @@
+{
+  "name": "@example/target",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "source": "src/entry.ts",
+  "targets": {
+    "web": {
+      "source": [
+        "src/web.ts"
+      ]
+    }
+  },
+  "devDependencies": {
+    "parcel": "2.999.0"
+  },
+  "scripts": {
+    "build": "parcel build"
+  }
+}

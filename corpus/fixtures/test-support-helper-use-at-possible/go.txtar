@@ -1,18 +1,19 @@
 The Go rendering: a command calling one function of a package, and a second
 package that only test files import, the first package's external test file and
-the second package's own test file. Nothing imports anything outside the
-standard library, so the rendering loads with no network access.
+the second package's own test file. A function of the second package takes the
+test's testing.TB. Nothing imports anything outside the standard library, so the
+rendering loads with no network access.
 
 -- fixture.json --
 {
   "symbols": {
     "Live": { "file": "target/catalog/catalog.go", "line": 4 },
     "Unused": { "file": "target/catalog/catalog.go", "line": 7 },
-    "Detached": { "file": "target/testsupport/testsupport.go", "line": 4 },
-    "Sink": { "file": "target/testsupport/testsupport.go", "line": 7 },
-    "Sink.Put": { "file": "target/testsupport/testsupport.go", "line": 8 },
-    "Drain": { "file": "target/testsupport/testsupport.go", "line": 12 },
-    "Spare": { "file": "target/testsupport/testsupport.go", "line": 15 },
+    "Detached": { "file": "target/testsupport/testsupport.go", "line": 6 },
+    "Sink": { "file": "target/testsupport/testsupport.go", "line": 9 },
+    "Sink.Put": { "file": "target/testsupport/testsupport.go", "line": 10 },
+    "Drain": { "file": "target/testsupport/testsupport.go", "line": 14 },
+    "Spare": { "file": "target/testsupport/testsupport.go", "line": 20 },
     "TestDetached": { "file": "target/testsupport/testsupport_test.go", "line": 5 },
     "fixture": { "file": "target/catalog/catalog_test.go", "line": 15 },
     "TestDrain": { "file": "target/catalog/catalog_test.go", "line": 17 }
@@ -39,6 +40,8 @@ func Unused() int { return 2 }
 -- target/testsupport/testsupport.go --
 package testsupport
 
+import "testing"
+
 // Detached is called by tests and by a test-file helper.
 func Detached() int { return 7 }
 
@@ -48,7 +51,10 @@ type Sink interface {
 }
 
 // Drain puts one value into the sink a test hands it.
-func Drain(s Sink) { s.Put(1) }
+func Drain(t testing.TB, s Sink) {
+	t.Helper()
+	s.Put(1)
+}
 
 // Spare is referenced by nothing.
 type Spare interface {
@@ -83,7 +89,7 @@ func fixture() int { return testsupport.Detached() }
 
 func TestDrain(t *testing.T) {
 	r := &recorder{}
-	testsupport.Drain(r)
+	testsupport.Drain(t, r)
 	if r.n+fixture() != 8 {
 		t.Errorf("drained %d", r.n)
 	}

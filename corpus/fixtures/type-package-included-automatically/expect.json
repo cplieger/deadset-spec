@@ -1,0 +1,38 @@
+{
+  "name": "type-package-included-automatically",
+  "description": "A type package a type root holds, under a compiler configuration that lists no types, is needed by a use of a global name or an ambient module one of its declaration files declares, which resolves to no declaration of the program, because a compiler before version 6 includes every such package and version 6 includes none, so each such use is also a type error the run skips. A type package whose declarations no file uses, and one that declares no global and no ambient module and that no import names, is reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "type_error_skips": [
+    "AmbientModuleImport",
+    "GlobalCall"
+  ],
+  "expect": [
+    {
+      "symbol": "IdleTypes",
+      "report": "DS1601",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "dependency",
+      "details": {
+        "dependency_class": "dev-dependency"
+      }
+    },
+    {
+      "symbol": "ModularTypes",
+      "report": "DS1601",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "dependency",
+      "details": {
+        "dependency_class": "dev-dependency"
+      }
+    },
+    {
+      "symbol": "RunnerTypes",
+      "report": "none"
+    }
+  ]
+}

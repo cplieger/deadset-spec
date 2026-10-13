@@ -1,5 +1,7 @@
+import "vitest";
+
 // A test imports this file for its effects alone.
-export function seed(): number {
+function seed(): number {
   return 2;
 }
 

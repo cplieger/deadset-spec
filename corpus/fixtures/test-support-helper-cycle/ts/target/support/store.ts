@@ -1,3 +1,4 @@
+import "vitest";
 import { live, seed } from "../catalog.js";
 import { label } from "./service.js";
 

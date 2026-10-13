@@ -1,0 +1,20 @@
+{
+  "symbols": {
+    "make": {
+      "file": "target/test/helpers/make.ts",
+      "line": 3
+    },
+    "spare": {
+      "file": "target/test/helpers/make.ts",
+      "line": 7
+    },
+    "onlyTested": {
+      "file": "target/src/only-tested.ts",
+      "line": 3
+    },
+    "testMake": {
+      "file": "target/test/a.test.ts",
+      "line": 4
+    }
+  }
+}

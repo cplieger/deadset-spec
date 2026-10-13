@@ -1,0 +1,70 @@
+The Go rendering: a command linking one package, beside a driver package and an
+internal plugin package nothing imports, each registering itself from an init
+function, and a dialect package only a blank import of a program under the ignore
+tag links.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Serve": { "file": "target/server/server.go", "line": 3 },
+    "TemplateFile": { "file": "target/drivers/template/template.go", "line": 1 },
+    "templateInit": { "file": "target/drivers/template/template.go", "line": 5 },
+    "New": { "file": "target/drivers/template/template.go", "line": 8 },
+    "Driver": { "file": "target/drivers/template/template.go", "line": 11 },
+    "PluginFile": { "file": "target/internal/plugin/plugin.go", "line": 1 },
+    "pluginInit": { "file": "target/internal/plugin/plugin.go", "line": 4 },
+    "load": { "file": "target/internal/plugin/plugin.go", "line": 7 },
+    "dialectInit": { "file": "target/dialect/dialect.go", "line": 4 },
+    "register": { "file": "target/dialect/dialect.go", "line": 7 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+package main
+
+import "example.com/target/server"
+
+func main() { server.Serve() }
+-- target/server/server.go --
+package server
+
+func Serve() { println("server") }
+-- target/drivers/template/template.go --
+package template
+
+import "example.com/target/server"
+
+func init() { server.Serve(); println(New()) }
+
+// New builds the driver.
+func New() *Driver { return &Driver{} }
+
+// Driver is what New builds.
+type Driver struct{}
+-- target/internal/plugin/plugin.go --
+package plugin
+
+// init registers the plugin.
+func init() { load() }
+
+// load is what init runs.
+func load() {}
+-- target/dialect/dialect.go --
+package dialect
+
+// init registers the dialect.
+func init() { register() }
+
+// register is what init runs.
+func register() {}
+-- target/gen.go --
+//go:build ignore
+
+package main
+
+import _ "example.com/target/dialect"
+
+func main() {}

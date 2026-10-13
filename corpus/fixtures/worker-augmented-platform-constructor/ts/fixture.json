@@ -1,0 +1,12 @@
+{
+  "symbols": {
+    "WorkerFile": {
+      "file": "target/src/worker.ts",
+      "line": 1
+    },
+    "tag": {
+      "file": "target/src/env.d.ts",
+      "line": 2
+    }
+  }
+}

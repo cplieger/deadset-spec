@@ -5,6 +5,9 @@
     "ts"
   ],
   "target_kind": "application",
+  "closed_world": [
+    "roots"
+  ],
   "expect": [
     {
       "symbol": "Store.get",

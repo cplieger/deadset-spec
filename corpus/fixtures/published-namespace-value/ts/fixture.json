@@ -1,0 +1,12 @@
+{
+  "symbols": {
+    "format": {
+      "file": "target/src/helpers.ts",
+      "line": 1
+    },
+    "api": {
+      "file": "target/src/index.ts",
+      "line": 3
+    }
+  }
+}

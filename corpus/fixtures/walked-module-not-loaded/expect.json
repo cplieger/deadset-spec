@@ -1,0 +1,15 @@
+{
+  "name": "walked-module-not-loaded",
+  "description": "A module the analysis finds below a target root that is no module, and that does not load, is dropped with a module-not-loaded note naming its directory, and the run analyzes the modules left. A module the dropped one requires has it as a consumer the run did not analyze, so an exported declaration of that module nothing references is reported at the reachability class possible.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "notes": [
+    { "kind": "module-not-loaded", "path": "tool" }
+  ],
+  "expect": [
+    { "symbol": "Used", "report": "none" },
+    { "symbol": "Spare", "report": "DS1001", "confidence": "possible", "reachability_class": "possible", "symbol_kind": "function", "liveness_relation": "reference-counting" },
+    { "symbol": "spare", "report": "DS1002", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "function", "liveness_relation": "reference-counting" }
+  ]
+}

@@ -27,6 +27,7 @@ Two cases whose `existing.json` holds the same bytes, and whose reports come fro
 | `declarations-and-parts` | One row per finding in report order, each with the finding's code, its symbol reference and its path, and the reason naming the analyzer and its version: a declaration, a member, a narrowing finding, a write-only member and a part, the two parts of one declaration under one code recorded as one row. |
 | `document-rows-left-out` | No row for a finding about a file, a suppression record or a configured root, and a row for the declaration beside them and for each dependency row, a requirement and a replace directive. |
 | `nothing-to-record` | A round whose every finding is about a document row records an empty baseline. |
+| `typescript-parameters` | A TypeScript round with two unused parameters of one function on one line: each finding carries its parameter's own reference, so the round records two rows. |
 | `typescript-rows` | A TypeScript round: a row for a private class member, and none for a file or a configured declaration. |
 | `other-scheme-rows-kept` | A Go round over a document holding rows of both schemes: its own old row is replaced, and the TypeScript rows follow its own, in document order, each with exactly the members it held, one without a reason and one without a path. |
 | `one-document-written-by-go` | A Go round over a document holding the TypeScript rows before the Go rows: the Go rows come first, and the document is the one `one-document-written-by-typescript` writes. |

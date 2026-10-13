@@ -1,0 +1,18 @@
+{
+  "name": "worker-augmented-platform-constructor",
+  "description": "A worker constructor the target augments with an interface of its own is still the platform's, so the file its literal names is entered.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "WorkerFile",
+      "report": "none"
+    },
+    {
+      "symbol": "tag",
+      "report": "none"
+    }
+  ]
+}

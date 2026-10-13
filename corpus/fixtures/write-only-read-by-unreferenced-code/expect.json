@@ -1,0 +1,24 @@
+{
+  "name": "write-only-read-by-unreferenced-code",
+  "description": "In Go a read counts only from a declaration that is live under the write-only finding's relation, reference counting, so a variable that live code writes and that only a function nothing references reads is reported as write-only. A variable live code reads is not reported. The run allows the unreferenced function's own code, because a record suppressing that finding would hold the function live, and its read with it.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "severity": {
+    "DS1002": "allow"
+  },
+  "expect": [
+    {
+      "symbol": "pattern",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "variable"
+    },
+    {
+      "symbol": "greeting",
+      "report": "none"
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+The Go rendering: a command and a package whose interface declares one method the
+command calls through it and one method only a test of the package calls through
+it.
+
+-- fixture.json --
+{
+  "symbols": {
+    "TestCalledMethod": { "file": "target/store/store.go", "line": 7 },
+    "TestCalledImplementation": { "file": "target/store/store.go", "line": 17 },
+    "ProductionCalledMethod": { "file": "target/store/store.go", "line": 6 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target reads one key of a store.
+package main
+
+import (
+	"fmt"
+
+	"example.com/target/store"
+)
+
+func main() { fmt.Println(store.New().Get("a")) }
+-- target/store/store.go --
+// Package store holds values by key.
+package store
+
+// Store holds values by key.
+type Store interface {
+	Get(key string) string
+	Count() int
+}
+
+type memory struct{ values map[string]string }
+
+// New returns an empty store.
+func New() Store { return &memory{values: map[string]string{}} }
+
+func (s *memory) Get(key string) string { return s.values[key] }
+
+func (s *memory) Count() int { return len(s.values) }
+-- target/store/store_test.go --
+package store
+
+import "testing"
+
+func TestCount(t *testing.T) {
+	if New().Count() != 0 {
+		t.Fatal("a new store holds a value")
+	}
+}

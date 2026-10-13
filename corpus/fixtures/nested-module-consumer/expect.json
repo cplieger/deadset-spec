@@ -1,0 +1,12 @@
+{
+  "name": "nested-module-consumer",
+  "description": "A module below the target root that requires a module of the target and replaces it with that module's own directory builds against the target's tree, so the run loads it as a consumer: a declaration only it references is live. It is no declared consumer, so the published API it does not use keeps the class of a run with no consumer information, and the report's consumer set is empty.",
+  "languages": ["go"],
+  "target_kind": "library",
+  "min_confidence": "possible",
+  "expect": [
+    { "symbol": "Used", "report": "none" },
+    { "symbol": "helper", "report": "none" },
+    { "symbol": "Spare", "report": "DS1001", "confidence": "possible", "reachability_class": "possible", "symbol_kind": "function", "liveness_relation": "reference-counting" }
+  ]
+}

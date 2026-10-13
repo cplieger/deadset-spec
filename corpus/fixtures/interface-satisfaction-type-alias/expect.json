@@ -1,0 +1,26 @@
+{
+  "name": "interface-satisfaction-type-alias",
+  "description": "An object type literal a type alias names is an interface for satisfaction, so the members a class's value must have to reach a position it types are retained, as an interface's are, and a member no such type requires is reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Kind",
+      "report": "none"
+    },
+    {
+      "symbol": "Area",
+      "report": "none"
+    },
+    {
+      "symbol": "Spare",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

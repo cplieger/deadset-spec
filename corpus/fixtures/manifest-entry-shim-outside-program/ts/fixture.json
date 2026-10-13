@@ -1,0 +1,16 @@
+{
+  "symbols": {
+    "main": {
+      "file": "target/src/cli.ts",
+      "line": 1
+    },
+    "helper": {
+      "file": "target/src/cli.ts",
+      "line": 5
+    },
+    "unused": {
+      "file": "target/src/cli.ts",
+      "line": 7
+    }
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "contract_version": "7.2.0",
+  "contract_version": "8.0.0",
   "target": { "kind": "library" },
   "analysis": {
     "languages": ["go", "ts"],
@@ -61,7 +61,8 @@
     "serializers": [
       { "symbol": "ts://@example/app/src/wire.ts#encode" },
       { "global": "structuredClone" }
-    ]
+    ],
+    "roots_complete": false
   },
   "provenance": {
     "contract_version": "repository: repository.json",
@@ -91,6 +92,7 @@
     "ts.disabled_conventions": "repository: repository.json",
     "ts.injection_registrations": "repository: repository.json",
     "ts.lifecycle_contracts": "repository: repository.json",
-    "ts.serializers": "repository: repository.json"
+    "ts.serializers": "repository: repository.json",
+    "ts.roots_complete": "repository: repository.json"
   }
 }

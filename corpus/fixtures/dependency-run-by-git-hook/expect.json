@@ -1,0 +1,28 @@
+{
+  "name": "dependency-run-by-git-hook",
+  "description": "A file below .husky or .githooks is read as a workflow step's run command is, up to a shell comment, and so are the run commands of a lefthook file and the entry commands of .pre-commit-config.yaml, so a dependency whose command a git hook runs is needed and one whose command no hook, script or workflow runs, only a hook's comment naming it, is reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "HookTool",
+      "report": "none"
+    },
+    {
+      "symbol": "NeverRun",
+      "report": "DS1601",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "dependency",
+      "details": {
+        "dependency_class": "dev-dependency"
+      }
+    },
+    {
+      "symbol": "StagedLint",
+      "report": "none"
+    }
+  ]
+}

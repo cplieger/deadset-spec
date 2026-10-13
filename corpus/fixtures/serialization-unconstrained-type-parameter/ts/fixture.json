@@ -1,0 +1,16 @@
+{
+  "symbols": {
+    "Title": {
+      "file": "target/main.ts",
+      "line": 4
+    },
+    "Id": {
+      "file": "target/main.ts",
+      "line": 8
+    },
+    "Note": {
+      "file": "target/main.ts",
+      "line": 9
+    }
+  }
+}

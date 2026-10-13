@@ -1,0 +1,26 @@
+{
+  "name": "manifest-entry-shipped-from-build-directory",
+  "description": "A manifest target that reads back to no source file by the emit mappings is read as if the manifest's directory were a configuration's output directory, back to the configuration's root directory, so a package published from its build directory roots its source entry.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "library",
+  "expect": [
+    {
+      "symbol": "add",
+      "report": "none"
+    },
+    {
+      "symbol": "IndexFile",
+      "report": "none"
+    },
+    {
+      "symbol": "spare",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

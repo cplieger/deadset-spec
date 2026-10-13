@@ -1,0 +1,12 @@
+{
+  "symbols": {
+    "Step": {
+      "file": "target/run.ts",
+      "line": 2
+    },
+    "Label": {
+      "file": "target/entry.ts",
+      "line": 2
+    }
+  }
+}

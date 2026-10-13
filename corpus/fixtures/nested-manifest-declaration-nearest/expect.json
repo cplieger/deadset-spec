@@ -1,0 +1,24 @@
+{
+  "name": "nested-manifest-declaration-nearest",
+  "description": "A use written below a nested manifest that declares the same dependency as a manifest above it needs the nested manifest's declaration only, so the enclosing manifest's declaration of that name, which no other use needs, is reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "NestedCharts",
+      "report": "none"
+    },
+    {
+      "symbol": "RootCharts",
+      "report": "DS1601",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "dependency",
+      "details": {
+        "dependency_class": "dependency"
+      }
+    }
+  ]
+}

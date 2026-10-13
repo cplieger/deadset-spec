@@ -1,0 +1,24 @@
+{
+  "name": "dependency-loaded-by-a-script-run-file",
+  "description": "A script token naming a JavaScript file below the target root that no program holds starts the configuration-file chain at that file, read against the script's manifest, so a dependency a string of that file, or of a file it loads by a relative specifier, spells is needed.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Bundler",
+      "report": "none"
+    },
+    {
+      "symbol": "NeverLoaded",
+      "report": "DS1601",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "dependency",
+      "details": {
+        "dependency_class": "dev-dependency"
+      }
+    }
+  ]
+}

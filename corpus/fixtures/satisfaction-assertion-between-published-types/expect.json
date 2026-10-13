@@ -1,0 +1,29 @@
+{
+  "name": "satisfaction-assertion-between-published-types",
+  "description": "In a library, an assertion whose interface and whose concrete type are both published API is not reported, because it states to every importer a promise of the published API. An assertion whose interface alone is published API is reported at the reachability class possible.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "library",
+  "min_confidence": "possible",
+  "expect": [
+    {
+      "symbol": "PublishedPairAssertion",
+      "report": "none"
+    },
+    {
+      "symbol": "UnexportedTypeAssertion",
+      "report": "DS1204",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "satisfaction-assertion"
+    },
+    {
+      "symbol": "CheckerMethod",
+      "report": "DS1203",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "interface-method"
+    }
+  ]
+}

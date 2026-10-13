@@ -1,6 +1,6 @@
 {
   "name": "satisfaction-assertion-published-interface",
-  "description": "In a library, an assertion whose interface is published API has the reachability class possible whatever consumers the run declares and loads, because a program the run does not hold may name the interface as a type, while the interface itself, which only its own package names, stays a certain candidate for unexporting under the complete consumer set. An assertion on an unexported interface and on an exported interface of an internal tree is certain, and an assertion whose interface a loaded consumer names as a type is a use and is not reported, under a consumer set declared complete.",
+  "description": "In a library, an assertion whose interface is published API and whose concrete type is published API too is not reported, because it states to every importer a promise of the published API, while the interface itself, which only its own package names, stays a certain candidate for unexporting under the complete consumer set. An assertion on an unexported interface and on an exported interface of an internal tree is certain, an assertion whose interface a loaded consumer names as a type is a use and is not reported, under a consumer set declared complete, and the method of the unexported interface that no call site invokes through it is reported, because an unexported interface restricts no implementor outside its package.",
   "languages": [
     "go"
   ],
@@ -15,10 +15,7 @@
   "expect": [
     {
       "symbol": "PublishedAssertion",
-      "report": "DS1204",
-      "confidence": "possible",
-      "reachability_class": "possible",
-      "symbol_kind": "satisfaction-assertion"
+      "report": "none"
     },
     {
       "symbol": "NamedAssertion",
@@ -37,6 +34,13 @@
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "satisfaction-assertion"
+    },
+    {
+      "symbol": "UnexportedInterfaceMethod",
+      "report": "DS1203",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "interface-method"
     },
     {
       "symbol": "PublishedInterface",

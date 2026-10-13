@@ -1,0 +1,72 @@
+{
+  "name": "dead-store-around-a-closure",
+  "description": "In Go a function literal reads each variable it names where it is written, and a store that a literal naming its variable may precede on some path of the control-flow graph, a literal of an earlier iteration of a loop included, is not dead, because a call of the literal the graph does not order may read it. A store no such literal precedes is judged as any other, so a store overwritten before the literal is written is dead. A literal called where it is written, outside a go or defer statement, runs there, so a store after the call is judged as any other, while one a goroutine's literal precedes is not dead.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "OverwrittenBeforeClosure",
+      "report": "DS1807",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "store",
+      "details": {
+        "overlap": [
+          "ineffassign",
+          "wastedassign",
+          "staticcheck SA4006"
+        ]
+      }
+    },
+    {
+      "symbol": "ReadByClosure",
+      "report": "none"
+    },
+    {
+      "symbol": "StoredAfterClosure",
+      "report": "none"
+    },
+    {
+      "symbol": "BeforeLoop",
+      "report": "DS1807",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "store",
+      "details": {
+        "overlap": [
+          "ineffassign",
+          "wastedassign",
+          "staticcheck SA4006"
+        ]
+      }
+    },
+    {
+      "symbol": "LoopBeforeClosure",
+      "report": "none"
+    },
+    {
+      "symbol": "LoopAfterClosure",
+      "report": "none"
+    },
+    {
+      "symbol": "StoredAfterACall",
+      "report": "DS1807",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "store",
+      "details": {
+        "overlap": [
+          "ineffassign",
+          "wastedassign",
+          "staticcheck SA4006"
+        ]
+      }
+    },
+    {
+      "symbol": "StoredAfterAGoroutine",
+      "report": "none"
+    }
+  ]
+}

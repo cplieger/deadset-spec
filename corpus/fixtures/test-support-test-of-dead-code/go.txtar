@@ -1,8 +1,9 @@
 The Go rendering: a command calling one function of a package, and a second
-package that only the first package's external test file imports. One test
-calls test-support code and a function of the first package, and a second test
-calls only test-support code. Nothing imports anything outside the standard
-library, so the rendering loads with no network access.
+package that only the first package's external test file imports, whose
+functions take the test's testing.TB. One test calls test-support code and a
+function of the first package, and a second test calls only test-support code.
+Nothing imports anything outside the standard library, so the rendering loads
+with no network access.
 
 -- fixture.json --
 {
@@ -10,8 +11,8 @@ library, so the rendering loads with no network access.
     "Live": { "file": "target/codec/codec.go", "line": 4 },
     "Encode": { "file": "target/codec/codec.go", "line": 7 },
     "Decode": { "file": "target/codec/codec.go", "line": 10 },
-    "Fixture": { "file": "target/testsupport/testsupport.go", "line": 6 },
-    "Check": { "file": "target/testsupport/testsupport.go", "line": 9 },
+    "Fixture": { "file": "target/testsupport/testsupport.go", "line": 10 },
+    "Check": { "file": "target/testsupport/testsupport.go", "line": 16 },
     "TestEncode": { "file": "target/codec/codec_test.go", "line": 10 },
     "TestDecode": { "file": "target/codec/codec_test.go", "line": 16 }
   }
@@ -40,13 +41,23 @@ func Decode() int { return 3 }
 -- target/testsupport/testsupport.go --
 package testsupport
 
-import "example.com/target/codec"
+import (
+	"testing"
+
+	"example.com/target/codec"
+)
 
 // Fixture is called by a test and by Check.
-func Fixture() int { return 4 }
+func Fixture(t testing.TB) int {
+	t.Helper()
+	return 4
+}
 
 // Check calls Fixture and a production function only it calls.
-func Check() int { return codec.Decode() + Fixture() }
+func Check(t testing.TB) int {
+	t.Helper()
+	return codec.Decode() + Fixture(t)
+}
 -- target/codec/codec_test.go --
 package codec_test
 
@@ -58,13 +69,13 @@ import (
 )
 
 func TestEncode(t *testing.T) {
-	if codec.Encode()+testsupport.Fixture() != 6 {
+	if codec.Encode()+testsupport.Fixture(t) != 6 {
 		t.Error("Encode and Fixture do not add up to 6")
 	}
 }
 
 func TestDecode(t *testing.T) {
-	if testsupport.Check() != 7 {
+	if testsupport.Check(t) != 7 {
 		t.Error("Check is not 7")
 	}
 }

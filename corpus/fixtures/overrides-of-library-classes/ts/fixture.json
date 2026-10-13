@@ -1,0 +1,16 @@
+{
+  "symbols": {
+    "AppError.name": {
+      "file": "target/main.ts",
+      "line": 2
+    },
+    "AppError.toString": {
+      "file": "target/main.ts",
+      "line": 6
+    },
+    "AppError.detail": {
+      "file": "target/main.ts",
+      "line": 9
+    }
+  }
+}

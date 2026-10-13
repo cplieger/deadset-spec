@@ -1,0 +1,59 @@
+The Go rendering: a command that reads a field of its configuration by reflection
+and asserts the field's value to an interface it calls.
+
+-- fixture.json --
+{
+  "symbols": {
+    "email.Validate": { "file": "target/main.go", "line": 18 },
+    "chat.Validate": { "file": "target/main.go", "line": 24 },
+    "chat.Mute": { "file": "target/main.go", "line": 27 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target validates each provider its configuration holds.
+package main
+
+import (
+	"os"
+	"reflect"
+)
+
+// provider is what each field of config holds.
+type provider interface {
+	Validate() error
+}
+
+// email is one provider.
+type email struct{}
+
+// Validate is called through provider.
+func (*email) Validate() error { return nil }
+
+// chat is another provider.
+type chat struct{}
+
+// Validate is called through provider.
+func (*chat) Validate() error { return nil }
+
+// Mute is called by nothing.
+func (*chat) Mute() {}
+
+// config holds one provider per field.
+type config struct {
+	Email *email
+	Chat  *chat
+}
+
+func main() {
+	c := &config{Email: &email{}, Chat: &chat{}}
+	for i := range reflect.TypeOf(c).Elem().NumField() {
+		field := reflect.ValueOf(c).Elem().Field(i)
+		if err := field.Interface().(provider).Validate(); err != nil {
+			os.Exit(1)
+		}
+	}
+}

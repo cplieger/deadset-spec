@@ -1,0 +1,33 @@
+{
+  "name": "test-support-export-used-in-its-own-file",
+  "description": "A test-support file's exports are judged as a test file's are: one only its own file reads is reported for narrowing at certain, one nothing references is reported unused, and one a test imports is reported under no code.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "expect": [
+    {
+      "symbol": "FakeNow",
+      "report": "none"
+    },
+    {
+      "symbol": "FakeRequest",
+      "report": "DS1104",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "variable",
+      "details": {
+        "narrower_visibility": "file"
+      }
+    },
+    {
+      "symbol": "FakeNever",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "variable",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "symbols": {
+    "home": {
+      "file": "target/src/pages/home.page.ts",
+      "line": 1
+    },
+    "HelperFile": {
+      "file": "target/src/pages/helper.ts",
+      "line": 1
+    },
+    "helper": {
+      "file": "target/src/pages/helper.ts",
+      "line": 2
+    }
+  }
+}

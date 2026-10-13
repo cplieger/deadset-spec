@@ -1,0 +1,54 @@
+The Go rendering: a command calling a package whose constant names a signal the
+windows syscall package lacks, with a windows file that derives the windows
+configuration, and a package whose constant no configuration resolves.
+
+-- fixture.json --
+{
+  "configurations": ["linux-amd64", "windows-amd64"],
+  "configurations_not_built": [],
+  "symbols": {
+    "Reload": { "file": "target/sig/sig.go", "line": 5 },
+    "Watch": { "file": "target/sig/sig.go", "line": 7 },
+    "MissingError": { "file": "target/broken/broken.go", "line": 3 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+package main
+
+import (
+	"example.com/target/broken"
+	"example.com/target/sig"
+)
+
+func main() {
+	sig.Watch()
+	broken.Run()
+}
+-- target/sig/sig.go --
+package sig
+
+import "syscall"
+
+const Reload = syscall.SIGUSR1
+
+func Watch() { println(separator()) }
+-- target/sig/separator_windows.go --
+package sig
+
+func separator() string { return `\` }
+-- target/sig/separator_other.go --
+//go:build !windows
+
+package sig
+
+func separator() string { return "/" }
+-- target/broken/broken.go --
+package broken
+
+const Missing = undefinedEverywhere
+
+func Run() {}

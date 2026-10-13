@@ -1,0 +1,20 @@
+{
+  "symbols": {
+    "Closed": {
+      "file": "target/main.ts",
+      "line": 2
+    },
+    "Opened": {
+      "file": "target/main.ts",
+      "line": 3
+    },
+    "A": {
+      "file": "target/main.ts",
+      "line": 7
+    },
+    "B": {
+      "file": "target/main.ts",
+      "line": 8
+    }
+  }
+}

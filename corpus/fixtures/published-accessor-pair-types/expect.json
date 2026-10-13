@@ -1,0 +1,18 @@
+{
+  "name": "published-accessor-pair-types",
+  "description": "A published class's getter and setter of one name are one declaration whose types are both published: the type the getter returns and the type the setter takes, whichever accessor comes first, so a consumer's write of a member of the setter's type is a use the library cannot see.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "library",
+  "expect": [
+    {
+      "symbol": "label",
+      "report": "none"
+    },
+    {
+      "symbol": "Panel",
+      "report": "none"
+    }
+  ]
+}

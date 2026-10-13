@@ -1,0 +1,22 @@
+{
+  "name": "unlinked-application-package",
+  "description": "In an application, a package no command, test or other package links holds no root by its init function, because the function never runs. Every declaration of such a package outside an internal tree is reported at the reachability class possible, because outside programs may import the package, and one under an internal tree at certain. A program a blank import links runs the package's init function.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "notes": [
+    { "kind": "published-package", "path": "drivers/template" }
+  ],
+  "expect": [
+    { "symbol": "Serve", "report": "none" },
+    { "symbol": "TemplateFile", "report": "DS1502", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "file" },
+    { "symbol": "templateInit", "report": "DS1002", "confidence": "possible", "reachability_class": "possible", "symbol_kind": "function", "liveness_relation": "reference-counting" },
+    { "symbol": "New", "report": "DS1001", "confidence": "possible", "reachability_class": "possible", "symbol_kind": "function", "liveness_relation": "reachability" },
+    { "symbol": "Driver", "report": "DS1001", "confidence": "possible", "reachability_class": "possible", "symbol_kind": "type", "liveness_relation": "reachability" },
+    { "symbol": "PluginFile", "report": "DS1502", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "file" },
+    { "symbol": "pluginInit", "report": "DS1002", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "function", "liveness_relation": "reference-counting" },
+    { "symbol": "load", "report": "DS1002", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "function", "liveness_relation": "reachability" },
+    { "symbol": "dialectInit", "report": "none" },
+    { "symbol": "register", "report": "none" }
+  ]
+}

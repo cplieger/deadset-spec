@@ -1,0 +1,37 @@
+{
+  "name": "document-import-mdx",
+  "description": "A Markdown or MDX document below the target root is read as text: an import declaration at the start of a line outside a fenced code block roots the source file its relative specifier names, with the exports it names, so an export of that file the import does not name is judged by its references.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Demo",
+      "report": "none"
+    },
+    {
+      "symbol": "Unimported",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "variable",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "SampleFile",
+      "report": "DS1502",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "sample",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "variable",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

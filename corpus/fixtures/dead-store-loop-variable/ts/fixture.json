@@ -1,0 +1,24 @@
+{
+  "symbols": {
+    "Key": {
+      "file": "target/main.ts",
+      "line": 5
+    },
+    "Value": {
+      "file": "target/main.ts",
+      "line": 6
+    },
+    "ForIn": {
+      "file": "target/main.ts",
+      "line": 10
+    },
+    "ReadForIn": {
+      "file": "target/main.ts",
+      "line": 13
+    },
+    "Underscore": {
+      "file": "target/main.ts",
+      "line": 16
+    }
+  }
+}

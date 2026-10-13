@@ -1,0 +1,38 @@
+The Go rendering: a command whose package-level variables hold function literals,
+one a blank variable's initializer calls in place and one a named variable holds,
+each overwriting a local before anything reads it.
+
+-- fixture.json --
+{
+  "symbols": {
+    "BlankInitializerStore": { "file": "target/main.go", "line": 10 },
+    "NamedInitializerStore": { "file": "target/main.go", "line": 17 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target runs function literals its package-level variables hold.
+package main
+
+import "fmt"
+
+// next returns its argument.
+func next(n int) int { return n }
+
+var _ = func() bool {
+	count := next(1)
+	count = next(2)
+	return count > 0
+}()
+
+// handler is a function literal the command calls.
+var handler = func() int {
+	total := next(3)
+	total = next(4)
+	return total
+}
+
+func main() { fmt.Println(handler()) }

@@ -1,0 +1,12 @@
+{
+  "symbols": {
+    "Dialog": {
+      "file": "target/main.ts",
+      "line": 7
+    },
+    "Title": {
+      "file": "target/main.ts",
+      "line": 8
+    }
+  }
+}

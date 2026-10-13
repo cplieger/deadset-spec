@@ -1,0 +1,16 @@
+{
+  "symbols": {
+    "fixtures": {
+      "file": "target/src/a.test.ts",
+      "line": 1
+    },
+    "nobody": {
+      "file": "target/src/a.test.ts",
+      "line": 2
+    },
+    "testFixtures": {
+      "file": "target/src/a.test.ts",
+      "line": 4
+    }
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "name": "uncalled-method-of-an-unexported-sealed-interface",
+  "description": "In Go every method of an exported interface that declares an unexported method is exempt from DS1203, a method of an interface it embeds included, because that method set fixes which types outside the package implement the interface. An unexported interface restricts no implementor outside its package, so its method no call site invokes through it is reported, and the method implementing it that nothing else keeps falls with it under the code its own references select.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "UnexportedInterfaceUncalled",
+      "report": "DS1203",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "interface-method",
+      "component": {
+        "root": true
+      }
+    },
+    {
+      "symbol": "UnexportedImplementation",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method",
+      "liveness_relation": "reachability",
+      "component": {
+        "root": false
+      }
+    },
+    {
+      "symbol": "ExportedInterfaceUncalled",
+      "report": "none"
+    },
+    {
+      "symbol": "ExportedImplementation",
+      "report": "none"
+    },
+    {
+      "symbol": "ExportedInterface",
+      "report": "DS1101",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "interface",
+      "details": {
+        "narrower_visibility": "file"
+      }
+    },
+    {
+      "symbol": "EmbeddedInSealed",
+      "report": "none"
+    },
+    {
+      "symbol": "EmbeddedImplementation",
+      "report": "none"
+    },
+    {
+      "symbol": "SealedEmbedder",
+      "report": "DS1101",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "interface",
+      "details": {
+        "narrower_visibility": "file"
+      }
+    }
+  ]
+}

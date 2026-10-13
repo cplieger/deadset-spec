@@ -1,7 +1,4 @@
 {
-  "configurations_not_built": [
-    "tools/tsconfig.json"
-  ],
   "symbols": {
     "orphan": {
       "file": "target/src/main.ts",

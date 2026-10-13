@@ -775,6 +775,21 @@
     "reason": "export is not a selector; an export specifier's symbol carries the alias selector."
   },
   {
+    "input": "ts://@example/app/src/main.ts#basename:import",
+    "language": "ts",
+    "form": "import",
+    "accepted": true,
+    "reason": "An import binding is a symbol of its own file, spelled by its local name and the import selector.",
+    "example": "import { basename } from 'node:path';"
+  },
+  {
+    "input": "ts://@example/app/src/main.ts#path.basename:import",
+    "language": "ts",
+    "form": "import",
+    "accepted": false,
+    "reason": "A binding is a name of its file and no member, so no component comes before the import selector."
+  },
+  {
     "input": "ts://@example/app/src/features/tabs/index.ts#TabStrip#cachedLayout",
     "language": "ts",
     "form": "class-member",
@@ -913,5 +928,50 @@
     "form": "dependency",
     "accepted": false,
     "reason": "A dependency always carries its section selector, and package.json is not a module, so no symbol form applies either."
+  },
+  {
+    "input": "ts://@example/app/src/main.ts#partial(unread)",
+    "language": "ts",
+    "form": "parameter",
+    "accepted": true,
+    "reason": "A parameter is its function's reference followed by its name in parentheses, so two parameters of one function are two references.",
+    "example": "function partial(read: number, unread: number): number {"
+  },
+  {
+    "input": "ts://@example/app/src/wire.ts#Codec.of:static(raw)",
+    "language": "ts",
+    "form": "parameter",
+    "accepted": true,
+    "reason": "On a static method the static selector comes first and the parameter last.",
+    "example": "static of(raw: string): Codec {"
+  },
+  {
+    "input": "ts://@example/app/src/main.ts#(first)",
+    "language": "ts",
+    "form": "parameter",
+    "accepted": true,
+    "reason": "A parameter of a function expression the module's top level holds is spelled under the module's empty fragment.",
+    "example": "export const total = apply((first, second) => second);"
+  },
+  {
+    "input": "ts://@example/app/src/main.ts#partial(unread: number)",
+    "language": "ts",
+    "form": "parameter",
+    "accepted": false,
+    "reason": "A parameter carries no type in its spelling; only its name is."
+  },
+  {
+    "input": "ts://@example/app/src/main.ts#partial()",
+    "language": "ts",
+    "form": "parameter",
+    "accepted": false,
+    "reason": "Empty parentheses name no parameter."
+  },
+  {
+    "input": "ts://@example/app/src/main.ts#partial(unread).x",
+    "language": "ts",
+    "form": "parameter",
+    "accepted": false,
+    "reason": "A parameter ends the reference; no component follows it."
   }
 ]

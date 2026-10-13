@@ -1,0 +1,12 @@
+{
+  "name": "underscore-directory-package-consumer",
+  "description": "A package of the target's own module below a directory whose name starts with an underscore, which the go tool's wildcard pattern skips, is loaded as a consumer: a declaration only it references is live. It is no declared consumer, so the published API it does not use keeps the class of a run with no consumer information, and nothing of it is reported.",
+  "languages": ["go"],
+  "target_kind": "library",
+  "min_confidence": "possible",
+  "expect": [
+    { "symbol": "Throttle", "report": "none" },
+    { "symbol": "limit", "report": "none" },
+    { "symbol": "Spare", "report": "DS1001", "confidence": "possible", "reachability_class": "possible", "symbol_kind": "function", "liveness_relation": "reference-counting" }
+  ]
+}

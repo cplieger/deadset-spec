@@ -1,0 +1,70 @@
+{
+  "name": "function-literal-called-where-written",
+  "description": "In Go a function literal that is the callee of the call it is written in, the call of a go or a defer statement included, has a free signature, wherever the literal is written, so a parameter its body never reads is reported and one its body reads is not.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "InitializerCallee",
+      "report": "DS1801",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "parameter",
+      "details": {
+        "overlap": [
+          "revive unused-parameter",
+          "gopls unusedparams",
+          "unparam"
+        ]
+      }
+    },
+    {
+      "symbol": "GoCallee",
+      "report": "DS1801",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "parameter",
+      "details": {
+        "overlap": [
+          "revive unused-parameter",
+          "gopls unusedparams",
+          "unparam"
+        ]
+      }
+    },
+    {
+      "symbol": "DeferCallee",
+      "report": "DS1801",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "parameter",
+      "details": {
+        "overlap": [
+          "revive unused-parameter",
+          "gopls unusedparams",
+          "unparam"
+        ]
+      }
+    },
+    {
+      "symbol": "InPlaceCallee",
+      "report": "DS1801",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "parameter",
+      "details": {
+        "overlap": [
+          "revive unused-parameter",
+          "gopls unusedparams",
+          "unparam"
+        ]
+      }
+    },
+    {
+      "symbol": "ReadCallee",
+      "report": "none"
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+The Go rendering: a command that encodes a type whose encoding method has a pointer
+receiver through a pointer, and a type with the same method as a value.
+
+-- fixture.json --
+{
+  "symbols": {
+    "call.ID": { "file": "target/main.go", "line": 11 },
+    "call.Hidden": { "file": "target/main.go", "line": 12 },
+    "call.Unit": { "file": "target/main.go", "line": 13 },
+    "unit.Label": { "file": "target/main.go", "line": 18 },
+    "copied.Shown": { "file": "target/main.go", "line": 25 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target encodes values that encode themselves.
+package main
+
+import (
+	"encoding/json"
+	"os"
+)
+
+// call encodes itself and names only its ID.
+type call struct {
+	ID     int
+	Hidden int
+	Unit   unit
+}
+
+// unit is reached only through a field of call.
+type unit struct {
+	Label string
+}
+
+func (c *call) MarshalJSON() ([]byte, error) { return json.Marshal(map[string]int{"id": c.ID}) }
+
+// copied has a pointer-receiver encoding method and is encoded as a value.
+type copied struct {
+	Shown int
+}
+
+func (*copied) MarshalJSON() ([]byte, error) { return []byte("0"), nil }
+
+func main() {
+	_ = json.NewEncoder(os.Stdout).Encode(&call{ID: 1, Hidden: 2, Unit: unit{Label: "u"}})
+	_ = json.NewEncoder(os.Stdout).Encode(copied{Shown: 1})
+}

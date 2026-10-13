@@ -1,0 +1,30 @@
+{
+  "name": "encoding-reflection-any-container",
+  "description": "A value stored in an interface-typed place that is a composite literal of a slice, array or map type holding interface values carries what that literal holds, so a destination reached by the place reaches the types of the values the literal stores: a map literal a function returns as any and a map literal assigned to an any field keep the exported fields of the values they hold. A map literal nothing hands to a destination keeps nothing, so a field only its value carries is reported as written and never read.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "kernel.OS",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "node.Label",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "stored.Level",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    }
+  ]
+}

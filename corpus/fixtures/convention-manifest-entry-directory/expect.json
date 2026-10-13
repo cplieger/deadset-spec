@@ -1,0 +1,41 @@
+{
+  "name": "convention-manifest-entry-directory",
+  "description": "A string under a manifest entry key of an applied convention row names the tool's entries: a directory of entries or one entry, its extension optional. A string naming build output reads back through the emit mappings to the source that emits it, so the command and the hook it names are roots and a module nothing names is reported. The fixture assumes the analyzer carries a row named oclif for the package @oclif/core whose manifest entry keys are oclif.commands, naming a directory, and oclif.hooks, naming files, its range holding the installed version.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "conventions_applied": [
+    {
+      "name": "oclif",
+      "package": "@oclif/core",
+      "version": "4.999.0",
+      "manifest": "package.json"
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "Run",
+      "report": "none"
+    },
+    {
+      "symbol": "init",
+      "report": "none"
+    },
+    {
+      "symbol": "Unused",
+      "report": "DS1502",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "unused",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "variable",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

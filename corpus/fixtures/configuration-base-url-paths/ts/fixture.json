@@ -1,0 +1,16 @@
+{
+  "symbols": {
+    "mapped": {
+      "file": "target/src/lib/mapped.ts",
+      "line": 1
+    },
+    "spare": {
+      "file": "target/src/lib/mapped.ts",
+      "line": 2
+    },
+    "bare": {
+      "file": "target/src/bare.ts",
+      "line": 1
+    }
+  }
+}

@@ -1,6 +1,6 @@
 {
   "name": "target-kind-per-language-go-application",
-  "description": "A target kind written per language names the Go code an application and the TypeScript code a library, so the Go analysis applies the application's rules: a package nothing imports is reported with its declarations and carries the published-package note, as published-package-note pins under one kind for the whole target. An analyzer that reads the TypeScript member, or that treats the target as a library because one language is, withholds them.",
+  "description": "A target kind written per language names the Go code an application and the TypeScript code a library, so the Go analysis applies the application's rules: a package nothing imports is reported with its declarations, at possible because no build links it, and carries the published-package note, as published-package-note pins under one kind for the whole target. An analyzer that reads the TypeScript member, or that treats the target as a library because one language is, withholds them.",
   "languages": [
     "go"
   ],
@@ -8,6 +8,7 @@
     "go": "application",
     "ts": "library"
   },
+  "min_confidence": "possible",
   "notes": [
     {
       "kind": "published-package",
@@ -29,8 +30,8 @@
     {
       "symbol": "Fetch",
       "report": "DS1001",
-      "confidence": "certain",
-      "reachability_class": "certain",
+      "confidence": "possible",
+      "reachability_class": "possible",
       "symbol_kind": "function",
       "liveness_relation": "reference-counting"
     }

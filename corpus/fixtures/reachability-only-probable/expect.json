@@ -1,0 +1,26 @@
+{
+  "name": "reachability-only-probable",
+  "description": "A TypeScript declaration that only declarations themselves dead reference is found dead because no root the analysis knows reaches it, and a root it cannot see would keep it live, so its finding is probable unless the configuration declares the roots complete; a declaration nothing references stays certain.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "deadCaller",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "calledOnlyByDead",
+      "report": "DS1002",
+      "confidence": "probable",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reachability"
+    }
+  ]
+}

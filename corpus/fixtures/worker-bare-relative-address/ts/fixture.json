@@ -1,0 +1,12 @@
+{
+  "symbols": {
+    "BareFile": {
+      "file": "target/src/bare.ts",
+      "line": 1
+    },
+    "RemoteFile": {
+      "file": "target/src/remote.ts",
+      "line": 1
+    }
+  }
+}

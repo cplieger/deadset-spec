@@ -1,0 +1,98 @@
+The Go rendering: a command that fills two requests through a dependency module's
+binder, one through a method that fills its argument through an interface the
+dependency declares and one through a method that also prints it. The dependency is a
+local module the target requires and replaces, so the rendering loads with no network
+access.
+
+-- fixture.json --
+{
+  "symbols": {
+    "login.Name": { "file": "target/main.go", "line": 12 },
+    "login.Remember": { "file": "target/main.go", "line": 13 },
+    "audit.Note": { "file": "target/main.go", "line": 18 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+
+require example.com/binder v0.0.0
+
+replace example.com/binder => ../binder
+-- target/main.go --
+// Command target fills two requests from standard input.
+package main
+
+import (
+	"os"
+
+	"example.com/binder"
+)
+
+// login is filled through a binder that fills it, and only its name is read.
+type login struct {
+	Name     string `json:"name"`
+	Remember bool   `json:"remember"`
+}
+
+// audit is filled through a binder that also prints it, and nothing reads it.
+type audit struct {
+	Note string `json:"note"`
+}
+
+func main() {
+	c := binder.New(os.Stdin)
+	var l login
+	if err := c.BindJSON(&l); err != nil {
+		os.Exit(1)
+	}
+	var a audit
+	if err := c.DecodeAndPrint(&a); err != nil {
+		os.Exit(1)
+	}
+	println(l.Name)
+}
+-- binder/go.mod --
+module example.com/binder
+
+go 1.27.0
+-- binder/binder.go --
+// Package binder fills request values from a reader.
+package binder
+
+import (
+	"encoding/json"
+	"fmt"
+	"io"
+)
+
+// Binding fills a value from a reader.
+type Binding interface {
+	Bind(r io.Reader, v any) error
+}
+
+type jsonBinding struct{}
+
+func (jsonBinding) Bind(r io.Reader, v any) error { return json.NewDecoder(r).Decode(v) }
+
+// Context fills values from one reader.
+type Context struct {
+	r       io.Reader
+	binding Binding
+}
+
+// New returns a Context reading r.
+func New(r io.Reader) *Context { return &Context{r: r, binding: jsonBinding{}} }
+
+// BindJSON fills v through the context's binding.
+func (c *Context) BindJSON(v any) error { return c.binding.Bind(c.r, v) }
+
+// DecodeAndPrint fills v and prints it.
+func (c *Context) DecodeAndPrint(v any) error {
+	if err := json.NewDecoder(c.r).Decode(v); err != nil {
+		return err
+	}
+	fmt.Println(v)
+	return nil
+}

@@ -1,0 +1,38 @@
+{
+  "name": "dead-store-in-a-package-level-initializer",
+  "description": "In Go a function literal a package-level variable's initializer holds is a body of its own, judged as a function body is: a store no read reaches before the next store is reported, under the reference of the variable the literal initializes, which for a blank variable is its package's.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "BlankInitializerStore",
+      "report": "DS1807",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "store",
+      "details": {
+        "overlap": [
+          "ineffassign",
+          "wastedassign",
+          "staticcheck SA4006"
+        ]
+      }
+    },
+    {
+      "symbol": "NamedInitializerStore",
+      "report": "DS1807",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "store",
+      "details": {
+        "overlap": [
+          "ineffassign",
+          "wastedassign",
+          "staticcheck SA4006"
+        ]
+      }
+    }
+  ]
+}

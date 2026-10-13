@@ -2,7 +2,7 @@
   "symbols": {
     "Live": { "file": "target/codec.ts", "line": 2 },
     "Encode": { "file": "target/codec.ts", "line": 7 },
-    "Fixture": { "file": "target/support/fixtures.ts", "line": 4 },
-    "Unused": { "file": "target/support/fixtures.ts", "line": 9 }
+    "Fixture": { "file": "target/support/fixtures.ts", "line": 5 },
+    "Unused": { "file": "target/support/fixtures.ts", "line": 10 }
   }
 }

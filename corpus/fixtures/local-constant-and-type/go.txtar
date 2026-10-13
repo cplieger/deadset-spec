@@ -1,0 +1,65 @@
+The Go rendering: a command whose function bodies declare constants and types: a
+constant and a type nothing references, a constant and a type the body references,
+a type only its own declaration references, a constant only another unreferenced
+constant references, and a blank variable's initializer literal declaring a
+constant it never names. Each unreferenced one sits in a function of its own, so
+each finding names a declaration of its own.
+
+-- fixture.json --
+{
+  "symbols": {
+    "InitializerConstant": { "file": "target/main.go", "line": 7 },
+    "InitializerUsedConstant": { "file": "target/main.go", "line": 8 },
+    "UnusedConstant": { "file": "target/main.go", "line": 14 },
+    "UsedConstant": { "file": "target/main.go", "line": 15 },
+    "UnusedType": { "file": "target/main.go", "line": 21 },
+    "UsedType": { "file": "target/main.go", "line": 22 },
+    "SelfReferencedType": { "file": "target/main.go", "line": 28 },
+    "BaseConstant": { "file": "target/main.go", "line": 34 },
+    "DerivedConstant": { "file": "target/main.go", "line": 35 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target declares constants and types in function bodies.
+package main
+
+import "fmt"
+
+var _ = func() int {
+	const width = 4
+	const height = 2
+	return height
+}()
+
+// constants declares a constant it never names.
+func constants() int {
+	const unused = 1
+	const used = 2
+	return used
+}
+
+// types declares a type it never names.
+func types() int {
+	type label string
+	type count int
+	return int(count(3))
+}
+
+// linked declares a type only its own declaration names.
+func linked() int {
+	type node struct{ next *node }
+	return 4
+}
+
+// derived declares a constant only an unreferenced constant names.
+func derived() int {
+	const base = 3
+	const twice = base * 2
+	return 5
+}
+
+func main() { fmt.Println(constants(), types(), linked(), derived()) }

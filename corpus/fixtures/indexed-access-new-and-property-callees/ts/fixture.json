@@ -1,0 +1,20 @@
+{
+  "symbols": {
+    "A": {
+      "file": "target/main.ts",
+      "line": 2
+    },
+    "B": {
+      "file": "target/main.ts",
+      "line": 3
+    },
+    "C": {
+      "file": "target/main.ts",
+      "line": 4
+    },
+    "D": {
+      "file": "target/main.ts",
+      "line": 5
+    }
+  }
+}

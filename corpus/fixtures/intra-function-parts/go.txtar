@@ -55,8 +55,8 @@ func overwritten() int {
 	return count
 }
 
-// stringer spells a value as text, and its unexported method set fixes which
-// types implement it.
+// stringer spells a value as text, which classify reads through the
+// interface.
 type stringer interface {
 	str() string
 }
@@ -68,9 +68,9 @@ func (node) str() string { return "n" }
 
 // classify names the stringer interface ahead of a type that implements it.
 func classify(v any) string {
-	switch v.(type) {
+	switch x := v.(type) {
 	case stringer:
-		return "stringer"
+		return x.str()
 	case node:
 		return "node"
 	}

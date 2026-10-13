@@ -1,0 +1,43 @@
+The Go rendering: a command that renders a page through a template file it parses
+by a constant name, which names the page's title alone, and a report through a
+template whose name it computes.
+
+-- fixture.json --
+{
+  "symbols": {
+    "page.Title": { "file": "target/main.go", "line": 10 },
+    "page.Footer": { "file": "target/main.go", "line": 11 },
+    "report.Count": { "file": "target/main.go", "line": 16 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target renders a page and a report.
+package main
+
+import (
+	"os"
+	"text/template"
+)
+
+type page struct {
+	Title  string
+	Footer string
+}
+
+var pages = template.Must(template.ParseFiles("page.tmpl"))
+
+type report struct {
+	Count int
+}
+
+func main() {
+	_ = pages.Execute(os.Stdout, page{Title: "t", Footer: "f"})
+	reports := template.Must(template.ParseFiles(os.Args[1]))
+	_ = reports.Execute(os.Stdout, report{Count: 1})
+}
+-- target/page.tmpl --
+<h1>{{.Title}}</h1>

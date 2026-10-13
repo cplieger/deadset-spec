@@ -1,0 +1,41 @@
+{
+  "name": "convention-manifest-entry-files",
+  "description": "A string under a manifest entry key of an applied convention row whose path holds a wildcard key names an entry under every member that key stands for. The fixture assumes the analyzer carries a row named parcel for the package parcel whose manifest entry keys are source and targets.*.source, each naming files, its range holding the installed version.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "conventions_applied": [
+    {
+      "name": "parcel",
+      "package": "parcel",
+      "version": "2.999.0",
+      "manifest": "package.json"
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "entry",
+      "report": "none"
+    },
+    {
+      "symbol": "web",
+      "report": "none"
+    },
+    {
+      "symbol": "Unused",
+      "report": "DS1502",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "unused",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "variable",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

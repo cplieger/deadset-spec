@@ -1,0 +1,35 @@
+{
+  "name": "underscore-parameter-declared-unread",
+  "description": "A parameter name that starts with an underscore, a binding pattern's names included, is never reported: a trailing one a free signature declares, one a binding pattern binds, and an annotated trailing one of a callback, while the same parameter spelled without the underscore is reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Plain",
+      "report": "DS1801",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "parameter",
+      "details": {
+        "overlap": [
+          "tsc --noUnusedParameters",
+          "@typescript-eslint/no-unused-vars"
+        ]
+      }
+    },
+    {
+      "symbol": "Trailing",
+      "report": "none"
+    },
+    {
+      "symbol": "Bound",
+      "report": "none"
+    },
+    {
+      "symbol": "Callback",
+      "report": "none"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "symbols": {
+    "Overwritten": {
+      "file": "target/main.ts",
+      "line": 3
+    },
+    "Nested": {
+      "file": "target/main.ts",
+      "line": 11
+    },
+    "Kept": {
+      "file": "target/main.ts",
+      "line": 12
+    }
+  }
+}

@@ -1,10 +1,13 @@
 {
   "name": "configuration-error-in-no-file",
-  "description": "A derived configuration whose only error the compiler places in no file, a missing global type, cannot be built: it is dropped and listed in configurations_not_built, nothing about its files is reported, and the run analyzes the configurations left.",
+  "description": "A derived configuration whose only error the compiler places in no file is a missing global type is built: the checker types every use of it against nothing and places no error in a file, so each file of the configuration is skipped whole as a type error at its first line, nothing about it is reported, and the run analyzes the other configurations as before.",
   "languages": [
     "ts"
   ],
   "target_kind": "application",
+  "type_error_skips": [
+    "made"
+  ],
   "expect": [
     {
       "symbol": "orphan",
@@ -13,10 +16,6 @@
       "reachability_class": "certain",
       "symbol_kind": "function",
       "liveness_relation": "reference-counting"
-    },
-    {
-      "symbol": "made",
-      "report": "none"
     }
   ]
 }

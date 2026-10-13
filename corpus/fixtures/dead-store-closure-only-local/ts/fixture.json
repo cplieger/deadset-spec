@@ -1,0 +1,12 @@
+{
+  "symbols": {
+    "Seen": {
+      "file": "target/main.ts",
+      "line": 6
+    },
+    "Read": {
+      "file": "target/main.ts",
+      "line": 7
+    }
+  }
+}

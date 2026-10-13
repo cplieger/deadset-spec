@@ -1,0 +1,33 @@
+The Go rendering: a module whose workspace lists a member below it, whose command
+imports a package of the member's own module that a generator writes and the
+rendering does not hold.
+
+-- fixture.json --
+{
+  "symbols": {}
+}
+-- target/go.work --
+go 1.27.0
+
+use (
+	.
+	./sub
+)
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+package main
+
+func main() {}
+-- target/sub/go.mod --
+module example.com/sub
+
+go 1.27.0
+-- target/sub/main.go --
+package main
+
+import "example.com/sub/gen"
+
+func main() { println(gen.Version) }

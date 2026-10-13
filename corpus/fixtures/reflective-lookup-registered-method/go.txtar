@@ -1,0 +1,62 @@
+The Go rendering: a command that registers a controller's methods by name with a
+dependency module's router. The dependency is a local module the target requires and
+replaces, so the rendering loads with no network access.
+
+-- fixture.json --
+{
+  "symbols": {
+    "controller.Login": { "file": "target/main.go", "line": 12 },
+    "controller.Logout": { "file": "target/main.go", "line": 15 },
+    "controller.Update": { "file": "target/main.go", "line": 18 },
+    "controller.Archive": { "file": "target/main.go", "line": 21 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+
+require example.com/router v0.0.0
+
+replace example.com/router => ../router
+-- target/main.go --
+// Command target routes requests to a controller's methods.
+package main
+
+import "example.com/router"
+
+// controller handles the routed requests.
+type controller struct {
+	name string
+}
+
+// Login is routed by name.
+func (c *controller) Login() { println(c.name) }
+
+// Logout is routed by name.
+func (c *controller) Logout() { println(c.name) }
+
+// Update is routed by name.
+func (c *controller) Update() { println(c.name) }
+
+// Archive is routed by nothing.
+func (c *controller) Archive() { println(c.name) }
+
+func main() {
+	router.Handle("/login", &controller{}, "post:Login")
+	router.Handle("/session", &controller{}, "get,post:Logout;put:Update")
+}
+-- router/go.mod --
+module example.com/router
+
+go 1.27.0
+-- router/router.go --
+// Package router routes requests to the methods of a controller by name.
+package router
+
+import "reflect"
+
+// Handle routes path to the methods of c that each mapping names after its verbs.
+func Handle(path string, c any, mappings ...string) {
+	_, _, _ = path, reflect.ValueOf(c), mappings
+}

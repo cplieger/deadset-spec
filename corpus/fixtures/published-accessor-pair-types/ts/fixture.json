@@ -1,0 +1,12 @@
+{
+  "symbols": {
+    "Panel": {
+      "file": "target/src/index.ts",
+      "line": 10
+    },
+    "label": {
+      "file": "target/src/index.ts",
+      "line": 7
+    }
+  }
+}

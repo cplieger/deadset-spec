@@ -2,6 +2,7 @@
   "name": "vitest",
   "version": "5.999.0",
   "private": true,
+  "types": "./index.d.ts",
   "bin": {
     "vitest": "./cli.js"
   }

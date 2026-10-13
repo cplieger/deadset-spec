@@ -1,3 +1,4 @@
+import "vitest";
 import { encode, live } from "../codec.js";
 
 // fixture is called by a test, and calls a live function beside the one only it calls.

@@ -1,6 +1,6 @@
 // A parameter decorator a container reads to choose what it injects.
 function Inject(token: string) {
-  return (target: object, key: string | undefined, index: number): void => {
+  return (_target: object, _key: string | undefined, index: number): void => {
     console.log(token, index);
   };
 }

@@ -1,3 +1,4 @@
+import "vitest";
 import { live, seed } from "../catalog.js";
 
 // open is called by the first helper file alone, and calls a live function beside the one only it calls.

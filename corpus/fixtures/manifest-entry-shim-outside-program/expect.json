@@ -1,0 +1,26 @@
+{
+  "name": "manifest-entry-shim-outside-program",
+  "description": "A manifest target that names a file no program holds is read as a configuration file outside the program is, and each program file its relative imports and requires name, through the emit mappings, is the entry point, as a command's shim loads the compiled entry it runs.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "main",
+      "report": "none"
+    },
+    {
+      "symbol": "helper",
+      "report": "none"
+    },
+    {
+      "symbol": "unused",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

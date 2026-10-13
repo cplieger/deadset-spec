@@ -1,0 +1,16 @@
+{
+  "symbols": {
+    "one": {
+      "file": "target/src/index.ts",
+      "line": 2
+    },
+    "IndexFile": {
+      "file": "target/src/index.ts",
+      "line": 1
+    },
+    "demo": {
+      "file": "target/examples/demo/index.ts",
+      "line": 1
+    }
+  }
+}

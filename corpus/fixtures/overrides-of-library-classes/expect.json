@@ -1,0 +1,25 @@
+{
+  "name": "overrides-of-library-classes",
+  "description": "A class of the compiler's library declarations is an interface and a variable of one name, as Error is, so a member that overrides a member of it is read by the runtime and live while its class is, and a class extending Error overrides its toString, which the runtime calls to print the error. A method that overrides nothing is reported when nothing calls it.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "AppError.name",
+      "report": "none"
+    },
+    {
+      "symbol": "AppError.toString",
+      "report": "none"
+    },
+    {
+      "symbol": "AppError.detail",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method"
+    }
+  ]
+}

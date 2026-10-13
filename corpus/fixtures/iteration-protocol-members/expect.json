@@ -1,0 +1,26 @@
+{
+  "name": "iteration-protocol-members",
+  "description": "A for-of statement and a spread element read the Symbol.iterator member of their operand's type, and a for-await-of statement reads its Symbol.asyncIterator member, so a class's iteration member is used where the program iterates its value, and one nothing iterates is reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "BagIterator",
+      "report": "none"
+    },
+    {
+      "symbol": "BagAsync",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "PairIterator",
+      "report": "none"
+    }
+  ]
+}

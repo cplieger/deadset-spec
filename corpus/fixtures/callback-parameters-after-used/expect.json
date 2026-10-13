@@ -1,6 +1,6 @@
 {
   "name": "callback-parameters-after-used",
-  "description": "A function used as a value may be passed more arguments than it declares, so a callback's unread parameter is reported only when no parameter after it is read, while an unread parameter before the last read one is not. A function whose signature is free has every unread parameter reported, and no name exempts a parameter, so one whose name starts with an underscore is reported too. A callback's parameter that is an object binding pattern reads the properties it names from the argument, so neither it nor any name it binds is reported. A declared function's parameter that destructures its argument is judged by the names it binds: each unread name is reported, except a name beside a rest element of the same object pattern. A rest parameter is judged as the last parameter, and a this parameter receives no argument and is never reported.",
+  "description": "A function used as a value may be passed more arguments than it declares, so a callback's unread parameter is reported for deletion only when no parameter after it is read, and an unread parameter before the last read one is reported for a rename to an underscore name, unless its name has one. A function whose signature is free has every unread parameter reported but one whose name starts with an underscore, which declares it unread. A callback's parameter that is an object binding pattern reads the properties it names from the argument, so neither it nor any name it binds is reported. A declared function's parameter that destructures its argument is judged by the names it binds: each unread name is reported, except a name beside a rest element of the same object pattern. A rest parameter is judged as the last parameter, and a this parameter receives no argument and is never reported.",
   "languages": [
     "ts"
   ],
@@ -8,6 +8,10 @@
   "expect": [
     {
       "symbol": "Unused",
+      "report": "none"
+    },
+    {
+      "symbol": "First",
       "report": "DS1801",
       "confidence": "certain",
       "reachability_class": "certain",
@@ -18,10 +22,6 @@
           "@typescript-eslint/no-unused-vars"
         ]
       }
-    },
-    {
-      "symbol": "First",
-      "report": "none"
     },
     {
       "symbol": "Second",
@@ -67,7 +67,16 @@
     },
     {
       "symbol": "BeforeReadPattern",
-      "report": "none"
+      "report": "DS1801",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "parameter",
+      "details": {
+        "overlap": [
+          "tsc --noUnusedParameters",
+          "@typescript-eslint/no-unused-vars"
+        ]
+      }
     },
     {
       "symbol": "RestSibling",
@@ -92,7 +101,16 @@
     },
     {
       "symbol": "BeforeReadRest",
-      "report": "none"
+      "report": "DS1801",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "parameter",
+      "details": {
+        "overlap": [
+          "tsc --noUnusedParameters",
+          "@typescript-eslint/no-unused-vars"
+        ]
+      }
     },
     {
       "symbol": "ThisParameter",

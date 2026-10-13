@@ -1,0 +1,12 @@
+{
+  "symbols": {
+    "MissingModule": {
+      "file": "target/tool/pad.ts",
+      "line": 1
+    },
+    "Unused": {
+      "file": "target/tool/pad.ts",
+      "line": 9
+    }
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "name": "reflective-lookup-registered-method",
+  "description": "A method of a defined type T is retained by reflective-lookup where a string literal spells its name in a call that passes a value of T or *T to a function or method outside the analyzed program: each item of the string separated by a semicolon spells one name, after an optional prefix ending in a colon, the verbs a router maps to the method. An exported method no such string names is reported.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "controller.Login",
+      "report": "none",
+      "retained_by": [
+        "reflective-lookup"
+      ]
+    },
+    {
+      "symbol": "controller.Logout",
+      "report": "none",
+      "retained_by": [
+        "reflective-lookup"
+      ]
+    },
+    {
+      "symbol": "controller.Update",
+      "report": "none",
+      "retained_by": [
+        "reflective-lookup"
+      ]
+    },
+    {
+      "symbol": "controller.Archive",
+      "report": "DS1103",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}
