@@ -1,7 +1,7 @@
 {
   "symbols": {
     "routeTree": {
-      "file": "target/src/routes.gen.ts",
+      "file": "target/src/route-tree.ts",
       "line": 4
     },
     "bundled": {
@@ -9,7 +9,7 @@
       "line": 2
     },
     "RoutesFile": {
-      "file": "target/src/routes.gen.ts",
+      "file": "target/src/route-tree.ts",
       "line": 1
     },
     "BundleFile": {
