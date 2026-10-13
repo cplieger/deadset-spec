@@ -1,0 +1,12 @@
+{
+  "name": "@example/target",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./main.ts",
+  "devDependencies": {
+    "@testing-library/dom": "1.0.0",
+    "fake-server": "1.0.0",
+    "build-kit": "1.0.0"
+  }
+}

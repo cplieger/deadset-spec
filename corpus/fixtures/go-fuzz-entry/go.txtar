@@ -1,0 +1,49 @@
+The Go rendering: a command calling a parser, whose package holds a file only the
+gofuzz tag builds, with three go-fuzz entry points, one of which reads no parameter, and a
+function of another signature, and a file the tag excludes.
+
+-- fixture.json --
+{
+  "configurations": ["linux-amd64", "linux-amd64-gofuzz"],
+  "configurations_not_built": [],
+  "symbols": {
+    "Parse": { "file": "target/parse/parse.go", "line": 3 },
+    "Fuzz": { "file": "target/parse/fuzz.go", "line": 5 },
+    "FuzzParse": { "file": "target/parse/fuzz.go", "line": 7 },
+    "FuzzText": { "file": "target/parse/fuzz.go", "line": 9 },
+    "FuzzUnread": { "file": "target/parse/fuzz.go", "line": 11 },
+    "FuzzNegated": { "file": "target/parse/plain.go", "line": 5 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+package main
+
+import "example.com/target/parse"
+
+func main() { println(parse.Parse(nil)) }
+-- target/parse/parse.go --
+package parse
+
+func Parse(data []byte) int { return len(data) }
+-- target/parse/fuzz.go --
+//go:build gofuzz
+
+package parse
+
+func Fuzz(data []byte) int { return Parse(data) }
+
+func FuzzParse(data []byte) int { return Parse(data) }
+
+func FuzzText(data string) int { return len(data) }
+
+func FuzzUnread(data []byte) int { return 0 }
+-- target/parse/plain.go --
+//go:build !gofuzz
+
+package parse
+
+func FuzzNegated(data []byte) int { return len(data) }

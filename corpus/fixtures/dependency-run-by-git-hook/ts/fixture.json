@@ -1,0 +1,16 @@
+{
+  "symbols": {
+    "HookTool": {
+      "file": "target/package.json",
+      "line": 8
+    },
+    "NeverRun": {
+      "file": "target/package.json",
+      "line": 9
+    },
+    "StagedLint": {
+      "file": "target/package.json",
+      "line": 10
+    }
+  }
+}

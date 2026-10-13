@@ -1,0 +1,48 @@
+{
+  "name": "go-fuzz-entry",
+  "description": "A function named Fuzz, or Fuzz followed by a name that does not open with a lower-case letter, of type func([]byte) int, in a file whose build constraint names the gofuzz tag outside a negation, is a root, because go-fuzz calls it by name. A function of another type in that file, and one of that type in a file the tag does not select, are reported. go-fuzz fixes an entry point's signature, so a parameter it does not read is not reported.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Fuzz",
+      "report": "none"
+    },
+    {
+      "symbol": "FuzzParse",
+      "report": "none"
+    },
+    {
+      "symbol": "FuzzUnread",
+      "report": "none"
+    },
+    {
+      "symbol": "Parse",
+      "report": "none"
+    },
+    {
+      "symbol": "FuzzText",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting",
+      "configurations": [
+        "linux-amd64-gofuzz"
+      ]
+    },
+    {
+      "symbol": "FuzzNegated",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting",
+      "configurations": [
+        "linux-amd64"
+      ]
+    }
+  ]
+}

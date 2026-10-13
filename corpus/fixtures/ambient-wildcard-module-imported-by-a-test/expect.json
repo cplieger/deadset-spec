@@ -1,0 +1,28 @@
+{
+  "name": "ambient-wildcard-module-imported-by-a-test",
+  "description": "A declare module declaration whose name holds a wildcard is how the compiler types the file a matching specifier names, so an import a test file writes uses it and the member it imports as an import of production code does, and neither is reported. A wildcard declaration no specifier matches is reported whole.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "RawModule",
+      "report": "none"
+    },
+    {
+      "symbol": "RawContents",
+      "report": "none"
+    },
+    {
+      "symbol": "UnmatchedModule",
+      "report": "DS1002",
+      "confidence": "probable",
+      "reachability_class": "certain",
+      "symbol_kind": "namespace",
+      "component": {
+        "root": true
+      }
+    }
+  ]
+}

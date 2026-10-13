@@ -1,0 +1,29 @@
+{
+  "name": "reachability-only-roots-complete",
+  "description": "Where the configuration declares the roots complete, a TypeScript declaration only dead declarations reference is certain, as a declaration nothing references is.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "closed_world": [
+    "roots"
+  ],
+  "expect": [
+    {
+      "symbol": "deadCaller",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "calledOnlyByDead",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reachability"
+    }
+  ]
+}

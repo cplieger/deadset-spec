@@ -1,0 +1,27 @@
+{
+  "name": "callback-parameter-before-a-read-one",
+  "description": "A callback's unread parameter that a read parameter follows keeps the arguments after it in place, so it is reported for a rename to a name with a leading underscore, and a parameter already spelled so is reported under no code.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "First",
+      "report": "DS1801",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "parameter",
+      "details": {
+        "overlap": [
+          "tsc --noUnusedParameters",
+          "@typescript-eslint/no-unused-vars"
+        ]
+      }
+    },
+    {
+      "symbol": "Underscored",
+      "report": "none"
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "name": "dead-store-of-a-range-variable",
+  "description": "In Go a range statement stores its key and its value at the start of every iteration, so a store to a range variable that the loop body makes before any later read is dead, and so is a store before the loop that no read after the loop reaches, while one a read after the loop reaches is not, because an empty range assigns nothing.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "MaskedValue",
+      "report": "DS1807",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "store",
+      "details": {
+        "overlap": [
+          "ineffassign",
+          "wastedassign",
+          "staticcheck SA4006"
+        ]
+      }
+    },
+    {
+      "symbol": "ReadKeyInitial",
+      "report": "none"
+    },
+    {
+      "symbol": "UnreadKeyInitial",
+      "report": "DS1807",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "store",
+      "details": {
+        "overlap": [
+          "ineffassign",
+          "wastedassign",
+          "staticcheck SA4006"
+        ]
+      }
+    }
+  ]
+}

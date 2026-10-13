@@ -1,0 +1,48 @@
+{
+  "name": "dead-store-loop-variable",
+  "description": "The variable a let or const declaration of a for-of or for-in statement binds is written at each iteration, so one the loop body never reads is a dead store at the binding, an element of an array pattern included, except a name that starts with an underscore, which declares a binding the loop requires unread.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Key",
+      "report": "DS1807",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "store",
+      "details": {
+        "overlap": [
+          "eslint no-useless-assignment",
+          "@typescript-eslint/no-unused-vars"
+        ]
+      }
+    },
+    {
+      "symbol": "Value",
+      "report": "none"
+    },
+    {
+      "symbol": "ForIn",
+      "report": "DS1807",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "store",
+      "details": {
+        "overlap": [
+          "eslint no-useless-assignment",
+          "@typescript-eslint/no-unused-vars"
+        ]
+      }
+    },
+    {
+      "symbol": "ReadForIn",
+      "report": "none"
+    },
+    {
+      "symbol": "Underscore",
+      "report": "none"
+    }
+  ]
+}

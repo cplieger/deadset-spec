@@ -82,7 +82,7 @@ A `require` directive is the required module path followed by `:require`, scoped
 
 Each of the following has no reference of its own. A finding whose subject is one of them carries the reference of the nearest enclosing symbol that has one, and its `position` and `symbol.name` say which part of that symbol it concerns.
 
-- **A declaration inside a function body**: a local type, constant, variable or closure. A local name has no container chain from the package scope, and an ordinal within the body would change when a declaration is added above it. The enclosing function's reference stands for it.
+- **A declaration inside a function body**: a local type, constant, variable or closure. A local name has no container chain from the package scope, and an ordinal within the body would change when a declaration is added above it. The enclosing function's reference stands for it. `DS1002` reports an unreferenced local constant or type this way, at its own position, under the `symbol.kind` its declaration's kind gives it.
 - **A parameter, a named result, an unnamed result, a receiver, a statement, a case clause and a store** (`DS1801` to `DS1809`). These are parts of a declaration, not declarations the analysis enumerates as symbols, and a statement has no name at all. The enclosing function or method is the reference; the finding's position locates the site. Two `DS1801` findings on one function share a reference and differ in position and `symbol.name`.
 - **A blank-identifier declaration**, `var _ Iface = (*T)(nil)`. A package may hold any number of them, all named `_`, so the name cannot identify one, and an ordinal would not survive an insertion. Such a declaration is a root and is never itself reported dead; the one kind that reports at one, `DS1204`, carries the reference of the interface the assertion names, at the assertion's position. A satisfaction assertion of a type only dead code builds is no root and falls with that type, as the `interface-satisfaction` class of [`exemptions.json`](../exemptions.json) states.
 - **`init` functions.** A package may declare several, all named `init`, and all are roots. A reference `#init` denotes every one of them in its package; a finding inside one is told apart by position.
@@ -131,6 +131,10 @@ A default export is spelled `default`, its export name: `export default class Ap
 
 An export specifier creates an alias symbol distinct from the declaration it names, and the analysis reports the two separately: a re-export nothing imports is a finding on the alias while the declaration behind it may be live. The alias is spelled by its exported name followed by `:alias`: `TabStrip:alias` for `export { TabStrip } from './features/tabs'`, `Strip:alias` for `export { TabStrip as Strip }`, `default:alias` for `export default App;` written as a statement, and `ns:alias` for `export * as ns from './m'`. The selector is what keeps `const a = 1; export { a };` apart, where the module holds a local `a` and an export alias `a` with one name. The alias is marked rather than the local, because the unexported local is the more frequent subject and reads better unmarked. An exported name that is not an identifier, `export { x as 'my-name' }`, is a quoted component with the selector: `'my-name':alias`. An export specifier inside a `declare module` block, an ambient module declaration or a module augmentation, creates its alias inside that block, so the block's own component comes first: `'*.vue'.default:alias` for `export default component;` inside `declare module '*.vue' { }`. The block's component is always quoted, whatever the module name, so `declare module 'lodash'` gives `'lodash'.default:alias` while the module declaration itself is `lodash`. The aliases two such blocks of one file declare under one exported name are therefore two references.
 
+A name an import declaration binds is a symbol of its own file, distinct from the declaration it imports, because a binding nothing in the file reads is a finding while the declaration behind it may be live. It is spelled by its local name followed by `:import`: `basename:import` for `import { basename } from 'node:path'`, `path:import` for `import * as path from 'node:path'` and for `import path = require('node:path')`, and `React:import` for `import React from 'react'`. A file binds one name once, so the spelling is unambiguous.
+
+A name a module-level destructuring declaration binds is a module-level variable of its own, spelled by that name: `export const { useField, useForm } = createHooks()` declares `useField` and `useForm`.
+
 ### Members
 
 A member is its container's component, a dot and its own component. The containers and their members:
@@ -153,6 +157,10 @@ A member of a type alias is a member of the object type literal the alias declar
 
 A type parameter of a function or method is the function's or method's reference followed by the parameter name in angle brackets, the language's type-argument syntax: `decode<T>` for `export function decode<T>(raw: string): T`, `Codec.decode<T>` for a method, and `Codec.of:static<T>` for a static method, the selector first and the type parameter last. The chain carries any depth, because a container may nest: a class inside a namespace is a namespace member, so the type parameter of that class's method is `Wire.Server.Codec.decode<T>`. The constraint never appears, and a type's own parameters have no form, for the reason `DS1303` states. Go spells the same subject with square brackets; each language keeps its own bracket, and the two never meet in one reference.
 
+### Parameters
+
+A parameter a `DS1801` finding names is the reference of the declaration whose part it is, followed by the parameter's name in parentheses, the language's own parameter-list syntax: `partial(unread)` for `function partial(read: number, unread: number)`, `Codec.decode(raw)` for a method, `Codec.of:static(raw)` for a static method, the selector first and the parameter last, and `TabStrip(label)` for a constructor parameter that carries no modifier, which is a part of its class. A name a binding pattern of a parameter binds is spelled by that name, `measure(right)` for `function measure({ left, right })`. A function expression or an arrow function that no declaration declares has its parameters spelled under the declaration that holds it, or under the module's empty fragment where the module's top level holds it: `total(first)`, and `ts://@example/app/src/main.ts#(first)`. One parameter list declares a name once, so two parameters of one function are two references. Two functions one declaration or one module's top level holds may each declare a name, and their parameters of that name share one reference, as two parts of one declaration share its reference: an ignore entry or a baseline row naming that reference matches the finding of each. No spelling tells two such functions apart without a position or an ordinal, either of which an edit elsewhere in the holder would change. A parameter has no type, no default and no position in its spelling, so adding a parameter changes no other parameter's reference.
+
 ### The module and a dependency
 
 The module itself is the empty fragment, `ts://@example/app/src/wire.ts#`. It is the `symbol.parent` of every module-level declaration and the reference of a file-level finding (`DS1501`, `DS1502`).
@@ -171,7 +179,7 @@ The declared version range is the entry's value, not its identity, and never app
 
 - **An overload signature.** A function with three overload signatures is one symbol with one reference. An index over the signatures would shift when a signature is inserted above it, which is the instability this grammar exists to avoid.
 - **A constructor, a call signature, a construct signature and an index signature.** None has a name. The class or interface stands for them.
-- **A declaration inside a function body, a parameter, a binding element of a destructuring pattern, a statement and a store**, for the reasons the Go section gives. The enclosing function or method is the reference.
+- **A declaration inside a function body, a binding element of a destructuring pattern inside a function body, a statement and a store**, for the reasons the Go section gives. The enclosing function or method is the reference. A parameter is the exception, spelled as [Parameters](#parameters) states.
 - **A member of a class expression**, and a member whose computed key contains `]`.
 - **An `export =` assignment**, whose export name the compiler spells `export=`.
 - **One meaning of a merged symbol**: the type half of a value-and-type pair, the namespace half of an enum-and-namespace merge. The symbol is the unit of analysis.
@@ -229,14 +237,16 @@ Each row is anchored, `^` to `$`, and is the whole reference. The corpus names t
 | ts | `module` | `^ts://TS_PACKAGE/TS_FILE#$` |
 | ts | `module-level`, `default-export` | `^ts://TS_PACKAGE/TS_FILE#TS_HEAD$` |
 | ts | `alias` | `^ts://TS_PACKAGE/TS_FILE#(?:TS_QUOTED\.)?TS_HEAD:alias$` |
+| ts | `import` | `^ts://TS_PACKAGE/TS_FILE#TS_HEAD:import$` |
 | ts | `class-member`, `private-member`, `interface-member`, `type-member`, `enum-member`, `namespace-member`, `computed-member` | `^ts://TS_PACKAGE/TS_FILE#TS_HEAD(?:\.TS_MEMBER)+$` |
 | ts | `static-member` | `^ts://TS_PACKAGE/TS_FILE#TS_HEAD(?:\.TS_MEMBER)+:static$` |
 | ts | `type-parameter` | `^ts://TS_PACKAGE/TS_FILE#TS_HEAD(?:\.TS_MEMBER)*(?::static)?<TS_IDENT>$` |
+| ts | `parameter` | `^ts://TS_PACKAGE/TS_FILE#(?:TS_HEAD(?:\.TS_MEMBER)*(?::static)?)?\(TS_IDENT\)$` |
 | ts | `dependency` | `^ts://TS_PACKAGE/(?:[^/#\r\n]+/)*package\.json#TS_PACKAGE:(?:dependency\|dev-dependency\|peer-dependency)$` |
 
 ### Expanded
 
-The same fourteen expressions with every block substituted, one per line under its language and form, for copying into a test. Every line compiles under Go's `regexp` and under an ECMAScript `RegExp` with no flags.
+The same sixteen expressions with every block substituted, one per line under its language and form, for copying into a test. Every line compiles under Go's `regexp` and under an ECMAScript `RegExp` with no flags.
 
 ```text
 go package
@@ -269,6 +279,9 @@ ts module-level, default-export
 ts alias
 ^ts://(?:@[A-Za-z0-9._-]+/)?[A-Za-z0-9._-]+/(?:[^/#\r\n]+/)*[^/#\r\n]+(?:(?:\.d)?\.[mc]?ts|\.tsx|\.[mc]?js|\.jsx)#(?:'(?:[^'\\\r\n]|\\['\\nr])*'\.)?(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*'):alias$
 
+ts import
+^ts://(?:@[A-Za-z0-9._-]+/)?[A-Za-z0-9._-]+/(?:[^/#\r\n]+/)*[^/#\r\n]+(?:(?:\.d)?\.[mc]?ts|\.tsx|\.[mc]?js|\.jsx)#(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*'):import$
+
 ts class-member, private-member, interface-member, type-member, enum-member, namespace-member, computed-member
 ^ts://(?:@[A-Za-z0-9._-]+/)?[A-Za-z0-9._-]+/(?:[^/#\r\n]+/)*[^/#\r\n]+(?:(?:\.d)?\.[mc]?ts|\.tsx|\.[mc]?js|\.jsx)#(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*')(?:\.(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|#(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*'|\[[^\]\r\n\t ]+\]))+$
 
@@ -277,6 +290,9 @@ ts static-member
 
 ts type-parameter
 ^ts://(?:@[A-Za-z0-9._-]+/)?[A-Za-z0-9._-]+/(?:[^/#\r\n]+/)*[^/#\r\n]+(?:(?:\.d)?\.[mc]?ts|\.tsx|\.[mc]?js|\.jsx)#(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*')(?:\.(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|#(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*'|\[[^\]\r\n\t ]+\]))*(?::static)?<(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*>$
+
+ts parameter
+^ts://(?:@[A-Za-z0-9._-]+/)?[A-Za-z0-9._-]+/(?:[^/#\r\n]+/)*[^/#\r\n]+(?:(?:\.d)?\.[mc]?ts|\.tsx|\.[mc]?js|\.jsx)#(?:(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*')(?:\.(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|#(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*'|\[[^\]\r\n\t ]+\]))*(?::static)?)?\((?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*\)$
 
 ts dependency
 ^ts://(?:@[A-Za-z0-9._-]+/)?[A-Za-z0-9._-]+/(?:[^/#\r\n]+/)*package\.json#(?:@[A-Za-z0-9._-]+/)?[A-Za-z0-9._-]+:(?:dependency|dev-dependency|peer-dependency)$

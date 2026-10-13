@@ -1,0 +1,21 @@
+{
+  "name": "nested-package-dependency-not-installed",
+  "description": "An import of a dependency that a nested package's manifest declares and nothing installs is a type error of the importing statement rather than a setup failure, because no run requires a nested package to be installed, so the run goes on and judges the rest of the file.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "type_error_skips": [
+    "MissingModule"
+  ],
+  "expect": [
+    {
+      "symbol": "Unused",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

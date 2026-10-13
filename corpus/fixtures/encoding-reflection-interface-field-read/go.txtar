@@ -1,0 +1,38 @@
+The Go rendering: a command that keeps its environment in an interface-typed field
+of a table of cases and hands each field it reads back to its own wrapper, which
+captures the value in a closure that encodes it later.
+
+-- fixture.json --
+{
+  "symbols": {
+    "env.Name": { "file": "target/main.go", "line": 9 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target encodes its environments.
+package main
+
+import (
+	"encoding/json"
+	"os"
+)
+
+type env struct {
+	Name string
+}
+
+type option func() error
+
+func with(v any) option {
+	return func() error { return json.NewEncoder(os.Stdout).Encode(v) }
+}
+
+func main() {
+	for _, tc := range []struct{ value any }{{value: env{Name: "a"}}} {
+		_ = with(tc.value)()
+	}
+}

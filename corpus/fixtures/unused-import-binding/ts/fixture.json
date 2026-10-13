@@ -1,0 +1,24 @@
+{
+  "symbols": {
+    "ImportedUnread": {
+      "file": "target/lib.ts",
+      "line": 3
+    },
+    "Read": {
+      "file": "target/main.ts",
+      "line": 3
+    },
+    "Unread": {
+      "file": "target/main.ts",
+      "line": 4
+    },
+    "TypeRead": {
+      "file": "target/main.ts",
+      "line": 7
+    },
+    "Whole": {
+      "file": "target/main.ts",
+      "line": 9
+    }
+  }
+}

@@ -1,0 +1,31 @@
+The Go rendering: a command whose init writes two variables, one read only by a
+function nothing calls and one read by a function the command calls.
+
+-- fixture.json --
+{
+  "symbols": {
+    "pattern": { "file": "target/main.go", "line": 5 },
+    "greeting": { "file": "target/main.go", "line": 6 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target greets.
+package main
+
+var (
+	pattern  string
+	greeting string
+)
+
+func init() {
+	pattern = "a"
+	greeting = "b"
+}
+
+func valid(s string) bool { return s == pattern }
+
+func main() { println(greeting) }

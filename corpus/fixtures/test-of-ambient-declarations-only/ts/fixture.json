@@ -1,0 +1,32 @@
+{
+  "symbols": {
+    "TestGlob": {
+      "file": "target/assets.test.ts",
+      "line": 5
+    },
+    "TestDead": {
+      "file": "target/assets.test.ts",
+      "line": 12
+    },
+    "Unused": {
+      "file": "target/catalog.ts",
+      "line": 2
+    },
+    "ImportMetaScript": {
+      "file": "target/import-meta.d.ts",
+      "line": 1
+    },
+    "ImportMeta": {
+      "file": "target/import-meta.d.ts",
+      "line": 2
+    },
+    "TestBoth": {
+      "file": "target/assets.test.ts",
+      "line": 19
+    },
+    "UnusedToo": {
+      "file": "target/catalog.ts",
+      "line": 7
+    }
+  }
+}

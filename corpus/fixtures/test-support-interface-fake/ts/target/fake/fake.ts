@@ -1,7 +1,8 @@
+import "vitest";
 import { Disk, seed, type Store } from "../store.js";
 
 // Memory implements Store for tests.
-export class Memory implements Store {
+class Memory implements Store {
   // get is called through the interface alone, and calls a live method beside the function only it calls.
   get(key: string): number {
     return seed() + new Disk().get(key) + 4;

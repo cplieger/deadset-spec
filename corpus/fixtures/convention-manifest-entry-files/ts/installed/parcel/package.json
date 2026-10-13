@@ -1,0 +1,8 @@
+{
+  "name": "parcel",
+  "version": "2.999.0",
+  "private": true,
+  "bin": {
+    "parcel": "./bin.js"
+  }
+}

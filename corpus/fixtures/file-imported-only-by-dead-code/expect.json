@@ -1,0 +1,56 @@
+{
+  "name": "file-imported-only-by-dead-code",
+  "description": "A file whose every importer is itself a file only dead code reaches is reported as never imported, under reachability alone, so at probable unless the roots are declared complete. The file is deleted with the declarations it holds and the dead code only it imports, in one component rooted at the file.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "DeadFile",
+      "report": "DS1502",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file",
+      "component": {
+        "root": true,
+        "symbol_count": 4
+      }
+    },
+    {
+      "symbol": "deadImporter",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "variable",
+      "liveness_relation": "reference-counting",
+      "component": {
+        "root": false,
+        "symbol_count": 4
+      }
+    },
+    {
+      "symbol": "ZodFile",
+      "report": "DS1502",
+      "confidence": "probable",
+      "reachability_class": "certain",
+      "symbol_kind": "file",
+      "component": {
+        "root": false,
+        "symbol_count": 4
+      }
+    },
+    {
+      "symbol": "z",
+      "report": "DS1001",
+      "confidence": "probable",
+      "reachability_class": "certain",
+      "symbol_kind": "variable",
+      "liveness_relation": "reachability",
+      "component": {
+        "root": false,
+        "symbol_count": 4
+      }
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "symbols": {
+    "Free": {
+      "file": "target/main.ts",
+      "line": 6
+    },
+    "Steered": {
+      "file": "target/main.ts",
+      "line": 9
+    }
+  }
+}

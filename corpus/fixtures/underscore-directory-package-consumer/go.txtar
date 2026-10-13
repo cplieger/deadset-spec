@@ -1,0 +1,32 @@
+The Go rendering: a library whose example program sits in a directory an
+underscore starts, inside the library's own module, and calls one of its two
+functions.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Throttle": { "file": "target/lib.go", "line": 4 },
+    "limit": { "file": "target/lib.go", "line": 6 },
+    "Spare": { "file": "target/lib.go", "line": 9 }
+  }
+}
+-- target/go.mod --
+module example.com/lib
+
+go 1.27.0
+-- target/lib.go --
+package lib
+
+// Throttle is what the example calls.
+func Throttle() int { return limit() }
+
+func limit() int { return 1 }
+
+// Spare is called by nothing.
+func Spare() {}
+-- target/_examples/limits/main.go --
+package main
+
+import "example.com/lib"
+
+func main() { println(lib.Throttle()) }

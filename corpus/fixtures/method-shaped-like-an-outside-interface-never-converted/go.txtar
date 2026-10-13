@@ -1,0 +1,42 @@
+The Go rendering: a command and a package whose type declares a method of the
+name and signature of io.Reader's, which no call site invokes and no conversion
+of the type to an interface reaches.
+
+-- fixture.json --
+{
+  "symbols": {
+    "ShapedMethod": { "file": "target/store/store.go", "line": 13 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target reads the size of a store.
+package main
+
+import (
+	"fmt"
+
+	"example.com/target/store"
+)
+
+func main() { fmt.Println(store.New().Size()) }
+-- target/store/store.go --
+// Package store holds bytes.
+package store
+
+import "io"
+
+// Store holds bytes.
+type Store struct{ data []byte }
+
+// New returns an empty store.
+func New() *Store { return &Store{} }
+
+// Read has the signature io.Reader fixes.
+func (s *Store) Read(p []byte) (int, error) { return copy(p, s.data), io.EOF }
+
+// Size is the number of bytes held.
+func (s *Store) Size() int { return len(s.data) }

@@ -1,0 +1,16 @@
+{
+  "symbols": {
+    "BagIterator": {
+      "file": "target/main.ts",
+      "line": 3
+    },
+    "BagAsync": {
+      "file": "target/main.ts",
+      "line": 6
+    },
+    "PairIterator": {
+      "file": "target/main.ts",
+      "line": 14
+    }
+  }
+}

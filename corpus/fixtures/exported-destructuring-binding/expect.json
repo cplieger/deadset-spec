@@ -1,0 +1,22 @@
+{
+  "name": "exported-destructuring-binding",
+  "description": "A name a module-level destructuring declaration binds is a module-level declaration of its own, so an exported one nothing imports is reported while its sibling another file imports is not.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Imported",
+      "report": "none"
+    },
+    {
+      "symbol": "Unimported",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "variable",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

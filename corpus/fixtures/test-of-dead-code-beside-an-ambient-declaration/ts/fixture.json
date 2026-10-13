@@ -1,0 +1,16 @@
+{
+  "symbols": {
+    "Platform": {
+      "file": "target/main.ts",
+      "line": 2
+    },
+    "Unused": {
+      "file": "target/catalog.ts",
+      "line": 2
+    },
+    "TestUnused": {
+      "file": "target/catalog.test.ts",
+      "line": 6
+    }
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "name": "unused-import-binding",
+  "description": "A name an import declaration binds is a symbol of its file, so a binding nothing in the file reads is reported under the unexported code at the binding, a named and a namespace binding alike, while a binding a type position reads is reported under no code. A binding nothing reads is no use of the export it names, which is reported as unused.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "ImportedUnread",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "variable"
+    },
+    {
+      "symbol": "Read",
+      "report": "none"
+    },
+    {
+      "symbol": "Unread",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "import"
+    },
+    {
+      "symbol": "TypeRead",
+      "report": "none"
+    },
+    {
+      "symbol": "Whole",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "import"
+    }
+  ]
+}

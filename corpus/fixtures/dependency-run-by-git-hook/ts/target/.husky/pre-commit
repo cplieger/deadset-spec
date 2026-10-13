@@ -1,0 +1,3 @@
+#!/bin/sh
+# never-run
+npx staged-lint # never-run

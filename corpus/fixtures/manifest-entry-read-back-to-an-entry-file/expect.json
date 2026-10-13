@@ -1,0 +1,21 @@
+{
+  "name": "manifest-entry-read-back-to-an-entry-file",
+  "description": "A manifest entry that names build output the run does not build is not noted where it reads back by name to a file ts.entry_files or another entry of the manifest roots: the binary reads back to the entry file and the default export condition to the file its types condition names, so neither file is reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "entry_files": [
+    "bin/app.ts"
+  ],
+  "expect": [
+    {
+      "symbol": "AppFile",
+      "report": "none"
+    },
+    {
+      "symbol": "one",
+      "report": "none"
+    }
+  ]
+}

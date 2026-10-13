@@ -1,0 +1,11 @@
+{
+  "name": "@example/target",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./main.ts",
+  "devDependencies": {
+    "@types/idle": "1.0.0",
+    "@types/modular": "1.0.0",
+    "@types/runner": "1.0.0"
+  }
+}

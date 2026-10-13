@@ -1,0 +1,67 @@
+The Go rendering: a command and a package whose interface only the field of a
+struct nothing live references names as a type, and whose second interface only
+the signature of an uncalled method of a live interface names.
+
+-- fixture.json --
+{
+  "symbols": {
+    "DialerInterface": { "file": "target/pop/pop.go", "line": 7 },
+    "OptionsType": { "file": "target/pop/pop.go", "line": 12 },
+    "ConnectFunction": { "file": "target/pop/pop.go", "line": 18 },
+    "ReturnInterface": { "file": "target/pop/pop.go", "line": 21 },
+    "UncalledMethod": { "file": "target/pop/pop.go", "line": 26 },
+    "UncalledImplementation": { "file": "target/pop/pop.go", "line": 33 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target names a source.
+package main
+
+import (
+	"fmt"
+
+	"example.com/target/pop"
+)
+
+func main() { fmt.Println(pop.NewSource().Name()) }
+-- target/pop/pop.go --
+// Package pop connects to servers.
+package pop
+
+import "net"
+
+// Dialer opens connections.
+type Dialer interface {
+	Dial(network, address string) (net.Conn, error)
+}
+
+// Options configures a connection.
+type Options struct {
+	Host   string
+	dialer Dialer
+}
+
+// Connect names the host it would connect to.
+func Connect(o Options) string { return o.Host }
+
+// Value is any value a source returns.
+type Value any
+
+// Source names and reads values.
+type Source interface {
+	Name() string
+	Read() Value
+}
+
+type source struct{}
+
+func (source) Name() string { return "source" }
+
+func (source) Read() Value { return nil }
+
+// NewSource returns a source.
+func NewSource() Source { return source{} }

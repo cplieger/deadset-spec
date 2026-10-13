@@ -1,10 +1,12 @@
+import "vitest";
+
 // detached is called by a test and by a test-file helper.
 export function detached(): number {
   return 7;
 }
 
 // Sink is the parameter type of drain, which only tests call.
-export interface Sink {
+interface Sink {
   put(v: number): void;
 }
 

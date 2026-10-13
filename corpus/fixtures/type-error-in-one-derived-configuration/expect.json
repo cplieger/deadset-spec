@@ -1,0 +1,29 @@
+{
+  "name": "type-error-in-one-derived-configuration",
+  "description": "A derived configuration in which a package of the target does not type-check holds no roots for that package and lists no type error of it, because the configurations that build the package judge it: a constant nothing references, whose value names a signal one platform lacks, is reported. A package no configuration type-checks keeps the type-error rule, its error listed once.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "type_error_skips": [
+    "MissingError"
+  ],
+  "expect": [
+    {
+      "symbol": "Watch",
+      "report": "none"
+    },
+    {
+      "symbol": "Reload",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "constant",
+      "liveness_relation": "reference-counting",
+      "configurations": [
+        "linux-amd64",
+        "windows-amd64"
+      ]
+    }
+  ]
+}

@@ -69,7 +69,7 @@
           "x-owner": "orchestrator"
         },
         "min_confidence": {
-          "description": "The lowest reachability class a finding must reach to be reported. probable, the default, omits the DS1004 and DS1201 findings about test-support code that test code references, which are possible in every target kind, and the findings about a library's published API, a member of a type the published API names included, when the run holds no consumer information, and reports every other finding; possible reports every finding; certain reports only findings whose every caller is in the analyzed graph. The dial is the one place a library's published API is withheld: no kind carries a default that depends on the target kind. When the minimum withholds a root finding, it withholds with it every finding whose component.id names the root's component, whatever confidence those findings carry: every other root member of the component, the other root members of the root's own cycle among them, and every symbol that falls with a root, which is dead only through it.",
+          "description": "The lowest reachability class a finding must reach to be reported. probable, the default, omits the findings about a library's published API, a member of a type the published API names included, when the run holds no consumer information, and the other findings grammar/analysis.md places at possible, and reports every other finding; possible reports every finding; certain reports only findings whose every caller is in the analyzed graph. The dial is the one place a library's published API is withheld: no kind carries a default that depends on the target kind. When the minimum withholds a root finding, it withholds with it every finding whose component.id names the root's component, whatever confidence those findings carry: every other root member of the component, the other root members of the root's own cycle among them, and every symbol that falls with a root, which is dead only through it.",
           "type": "string",
           "enum": ["certain", "probable", "possible"],
           "default": "probable",
@@ -745,6 +745,12 @@
             ]
           },
           "default": [],
+          "x-owner": "ts-analyzer"
+        },
+        "roots_complete": {
+          "description": "Declares that the roots the analysis finds are every root the target has: a TypeScript finding about a declaration only dead declarations reference, or a file only dead code imports, is then certain rather than probable.",
+          "type": "boolean",
+          "default": false,
           "x-owner": "ts-analyzer"
         }
       }

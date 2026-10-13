@@ -1,0 +1,20 @@
+{
+  "symbols": {
+    "DeadFile": {
+      "file": "target/src/dead.ts",
+      "line": 1
+    },
+    "deadImporter": {
+      "file": "target/src/dead.ts",
+      "line": 3
+    },
+    "ZodFile": {
+      "file": "target/src/zod.ts",
+      "line": 1
+    },
+    "z": {
+      "file": "target/src/zod.ts",
+      "line": 2
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "symbols": {
+    "IdleTypes": {
+      "file": "target/package.json",
+      "line": 7
+    },
+    "ModularTypes": {
+      "file": "target/package.json",
+      "line": 8
+    },
+    "RunnerTypes": {
+      "file": "target/package.json",
+      "line": 9
+    },
+    "AmbientModuleImport": {
+      "file": "target/main.ts",
+      "line": 1
+    },
+    "GlobalCall": {
+      "file": "target/main.ts",
+      "line": 3
+    }
+  }
+}

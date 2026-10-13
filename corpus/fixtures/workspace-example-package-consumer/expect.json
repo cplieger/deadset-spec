@@ -1,0 +1,29 @@
+{
+  "name": "workspace-example-package-consumer",
+  "description": "A package below the target that no workspace lists and whose manifest depends on a member, with no package manager link, imports the member's source as a member does, so the member's published export it uses is live and one it does not use is reported as the published API is.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "expect": [
+    {
+      "symbol": "used",
+      "report": "none"
+    },
+    {
+      "symbol": "spare",
+      "report": "DS1001",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "unusedInternal",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    }
+  ]
+}

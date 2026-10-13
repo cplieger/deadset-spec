@@ -1,0 +1,12 @@
+{
+  "name": "@example/target",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./main.ts",
+  "devDependencies": {
+    "hook-tool": "1.0.0",
+    "never-run": "1.0.0",
+    "staged-lint": "1.0.0"
+  }
+}

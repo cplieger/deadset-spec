@@ -1,0 +1,15 @@
+{
+  "name": "test-support-is-test-code",
+  "description": "Test-support code is test code, so a reference from test code keeps a declaration of it live at every minimum confidence: the constructor a test calls, the type it returns and the interface a test names are reported under no code. A declaration of it nothing references is reported under the unused code its visibility selects, and one only that declaration references is referenced by test code and so is reported under no code.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "expect": [
+    { "symbol": "run", "report": "none" },
+    { "symbol": "New", "report": "none" },
+    { "symbol": "Fake", "report": "none" },
+    { "symbol": "Store", "report": "none" },
+    { "symbol": "Orphan", "report": "DS1001", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "function", "liveness_relation": "reference-counting", "component": { "root": true, "symbol_count": 1 } },
+    { "symbol": "stranded", "report": "none" }
+  ]
+}

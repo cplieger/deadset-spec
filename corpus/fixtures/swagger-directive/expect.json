@@ -1,0 +1,14 @@
+{
+  "name": "swagger-directive",
+  "description": "A declaration whose doc comment holds a line opening with a swagger: directive is a root, and so is every field of a struct type it declares, an anonymous struct's included, because the go-swagger generator reads each one. A declaration with no such line is reported.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "expect": [
+    { "symbol": "Serve", "report": "none" },
+    { "symbol": "notFoundResponse", "report": "none" },
+    { "symbol": "Body", "report": "none" },
+    { "symbol": "Message", "report": "none" },
+    { "symbol": "handler", "report": "none" },
+    { "symbol": "plain", "report": "DS1002", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "type", "liveness_relation": "reference-counting" }
+  ]
+}

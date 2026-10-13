@@ -1,0 +1,35 @@
+{
+  "name": "manifest-entry-unmapped-note",
+  "description": "A manifest entry that reads back to no source file of the target roots nothing, and the report notes it with the key that names the file it is built from; an entry read back by name reaches no rooted file of another package.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "notes": [
+    {
+      "kind": "unmapped-entry",
+      "path": "."
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "IndexFile",
+      "report": "DS1502",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "one",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "variable",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "demo",
+      "report": "none"
+    }
+  ]
+}

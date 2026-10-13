@@ -1,0 +1,74 @@
+{
+  "name": "test-of-ambient-declarations-only",
+  "description": "An ambient declaration describes code the target does not implement, so it is no target symbol of a test: a test that references only a member a script's interface merges into a library interface is no test of dead code, a test that references only dead target code is reported, and so is one that references dead target code and the ambient member, whose confidence the ambient member does not lower. The script and its interface, which only tests read, are test-only code that falls with the test that reads them.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "expect": [
+    {
+      "symbol": "TestGlob",
+      "report": "none"
+    },
+    {
+      "symbol": "TestDead",
+      "report": "DS1005",
+      "symbol_kind": "function",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting",
+      "component": {
+        "root": true
+      }
+    },
+    {
+      "symbol": "TestBoth",
+      "report": "DS1005",
+      "symbol_kind": "function",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting",
+      "component": {
+        "root": true
+      }
+    },
+    {
+      "symbol": "Unused",
+      "report": "DS1004",
+      "symbol_kind": "function",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "UnusedToo",
+      "report": "DS1004",
+      "symbol_kind": "function",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "ImportMetaScript",
+      "report": "DS1502",
+      "symbol_kind": "file",
+      "confidence": "probable",
+      "reachability_class": "certain",
+      "component": {
+        "root": false
+      }
+    },
+    {
+      "symbol": "ImportMeta",
+      "report": "DS1201",
+      "symbol_kind": "interface",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting",
+      "component": {
+        "root": false
+      }
+    }
+  ]
+}

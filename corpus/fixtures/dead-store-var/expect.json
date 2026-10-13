@@ -1,0 +1,40 @@
+{
+  "name": "dead-store-var",
+  "description": "A var declaration of a function declares a local judged in the block that declares it, so a write to it no read reaches is a dead store, while the last write a var of a nested block makes is kept, because the function scope holds it past the block's end.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Overwritten",
+      "report": "DS1807",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "store",
+      "details": {
+        "overlap": [
+          "eslint no-useless-assignment",
+          "@typescript-eslint/no-unused-vars"
+        ]
+      }
+    },
+    {
+      "symbol": "Nested",
+      "report": "DS1807",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "store",
+      "details": {
+        "overlap": [
+          "eslint no-useless-assignment",
+          "@typescript-eslint/no-unused-vars"
+        ]
+      }
+    },
+    {
+      "symbol": "Kept",
+      "report": "none"
+    }
+  ]
+}

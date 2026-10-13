@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/cplieger/deadset-spec/v7"
+	"github.com/cplieger/deadset-spec/v8"
 )
 
 // duplicateMemberTrees are the embedded trees whose JSON documents a product decodes: the

@@ -1,5 +1,5 @@
 {
-  "contract_version": "7.2.0",
+  "contract_version": "8.0.0",
   "target": { "kind": "application" },
   "analysis": {
     "languages": ["ts"],
@@ -39,7 +39,8 @@
     "disabled_conventions": [],
     "injection_registrations": [],
     "lifecycle_contracts": [],
-    "serializers": []
+    "serializers": [],
+    "roots_complete": false
   },
   "provenance": {
     "contract_version": "default",
@@ -68,6 +69,7 @@
     "ts.disabled_conventions": "default",
     "ts.injection_registrations": "default",
     "ts.lifecycle_contracts": "default",
-    "ts.serializers": "default"
+    "ts.serializers": "default",
+    "ts.roots_complete": "default"
   }
 }

@@ -1,7 +1,7 @@
 import { apply, type Box, each, withBox, withPair, withScaled } from "./calls.js";
 
-// scale is called by name, so its signature is free and a parameter its body never
-// reads is reported whatever its name.
+// scale is called by name, so its signature is free, and a parameter whose name starts
+// with an underscore is declared unread.
 function scale(
   factor: number,
   _unused: number,

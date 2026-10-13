@@ -11,7 +11,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/cplieger/deadset-spec/v7"
+	"github.com/cplieger/deadset-spec/v8"
 )
 
 const (
@@ -47,9 +47,9 @@ var findingOptionalFields = []string{"analyzer", "liveness_relation"}
 // and a declared cross-language edge. Six are parts of the declaration the
 // finding's symbol.ref names: a parameter, a receiver, a result, a statement, a
 // case and a store, each decided inside its declaration rather than by a
-// relation over the reference graph.
+// relation over the reference graph, and an import binding is a part of its file.
 var findingNoRelationKinds = []string{
-	"case", "configured-declaration", "dependency", "edge", "file", "module-directive",
+	"case", "configured-declaration", "dependency", "edge", "file", "import", "module-directive",
 	"parameter", "receiver", "result", "root", "statement", "store", "suppression",
 }
 

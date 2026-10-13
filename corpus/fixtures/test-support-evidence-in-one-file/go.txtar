@@ -1,0 +1,55 @@
+The Go rendering: a command and its test, and a package only that test imports,
+one of whose two files imports the testing package. Nothing imports anything
+outside the standard library, so the rendering loads with no network access.
+
+-- fixture.json --
+{
+  "symbols": {
+    "run": { "file": "target/main.go", "line": 5 },
+    "Expect": { "file": "target/testkit/expect.go", "line": 6 },
+    "want": { "file": "target/testkit/values.go", "line": 4 },
+    "Orphan": { "file": "target/testkit/values.go", "line": 7 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+package main
+
+func main() { println(run()) }
+
+func run() int { return 1 }
+-- target/main_test.go --
+package main
+
+import (
+	"testing"
+
+	"example.com/target/testkit"
+)
+
+func TestRun(t *testing.T) {
+	testkit.Expect(t, run())
+}
+-- target/testkit/expect.go --
+package testkit
+
+import "testing"
+
+// Expect fails the test when got is not the value the package wants.
+func Expect(t testing.TB, got int) {
+	t.Helper()
+	if got != want() {
+		t.Errorf("got %d, want %d", got, want())
+	}
+}
+-- target/testkit/values.go --
+package testkit
+
+// want is what Expect compares with.
+func want() int { return 1 }
+
+// Orphan is called by nothing.
+func Orphan() int { return 2 }

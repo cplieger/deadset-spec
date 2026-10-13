@@ -1,0 +1,20 @@
+{
+  "symbols": {
+    "Rendered": {
+      "file": "target/support/render.ts",
+      "line": 3
+    },
+    "Mocked": {
+      "file": "target/support/server.ts",
+      "line": 3
+    },
+    "Bare": {
+      "file": "target/support/bare.ts",
+      "line": 1
+    },
+    "Shared": {
+      "file": "target/support/shared.ts",
+      "line": 3
+    }
+  }
+}

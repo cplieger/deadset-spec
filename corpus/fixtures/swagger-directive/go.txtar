@@ -1,0 +1,46 @@
+The Go rendering: a command calling one function of a package whose response type
+and route handler carry go-swagger directives, beside a type with none.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Serve": { "file": "target/api/api.go", "line": 3 },
+    "notFoundResponse": { "file": "target/api/api.go", "line": 8 },
+    "Body": { "file": "target/api/api.go", "line": 10 },
+    "Message": { "file": "target/api/api.go", "line": 11 },
+    "handler": { "file": "target/api/api.go", "line": 18 },
+    "plain": { "file": "target/api/api.go", "line": 21 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+package main
+
+import "example.com/target/api"
+
+func main() { api.Serve() }
+-- target/api/api.go --
+package api
+
+func Serve() {}
+
+// notFoundResponse is what a missing item answers.
+//
+// swagger:response notFoundResponse
+type notFoundResponse struct {
+	// in: body
+	Body struct {
+		Message string
+	}
+}
+
+// handler serves one route.
+//
+// swagger:route GET /items items
+func handler() {}
+
+// plain carries no directive.
+type plain struct{}

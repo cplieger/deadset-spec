@@ -1,0 +1,12 @@
+{
+  "symbols": {
+    "AppFile": {
+      "file": "target/bin/app.ts",
+      "line": 1
+    },
+    "one": {
+      "file": "target/src/index.ts",
+      "line": 1
+    }
+  }
+}

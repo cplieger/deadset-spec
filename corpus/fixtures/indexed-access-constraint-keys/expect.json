@@ -1,0 +1,38 @@
+{
+  "name": "indexed-access-constraint-keys",
+  "description": "An indexed access by a type parameter whose constraint is a union of literal types requires each key the constraint names, and an index mixing literal types with another type requires its literal keys, so those members are read and a member no index requires is reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "A",
+      "report": "none"
+    },
+    {
+      "symbol": "B",
+      "report": "none"
+    },
+    {
+      "symbol": "C",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Click",
+      "report": "none"
+    },
+    {
+      "symbol": "Key",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

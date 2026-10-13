@@ -1,0 +1,33 @@
+{
+  "name": "makefile-recipe-entry",
+  "description": "The recipe lines of the target root's makefile are read as workflow run commands, each line up to its shell comment, and a cd command moves the directory the later commands of its line are read against, so a file a recipe names is rooted and one only a comment names is reported as never imported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "AppFile",
+      "report": "none"
+    },
+    {
+      "symbol": "GenFile",
+      "report": "none"
+    },
+    {
+      "symbol": "UnusedFile",
+      "report": "DS1502",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "unused",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "variable",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

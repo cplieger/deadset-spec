@@ -1,0 +1,33 @@
+{
+  "name": "test-of-dead-code-beside-an-ambient-declaration",
+  "description": "A test that references dead target code and a live, published ambient declaration is a test of dead code, because the ambient declaration describes code the target does not implement and is no target symbol of the test, and the declaration's own reachability class does not lower the test's confidence.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "library",
+  "expect": [
+    {
+      "symbol": "Platform",
+      "report": "none"
+    },
+    {
+      "symbol": "Unused",
+      "report": "DS1004",
+      "symbol_kind": "function",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "TestUnused",
+      "report": "DS1005",
+      "symbol_kind": "function",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting",
+      "component": {
+        "root": true
+      }
+    }
+  ]
+}

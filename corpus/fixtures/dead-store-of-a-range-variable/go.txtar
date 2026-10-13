@@ -1,0 +1,51 @@
+The Go rendering: a command whose loop bodies overwrite a range value before any
+later read, store a range key a read after the loop reaches, and store one no read
+after the loop reaches.
+
+-- fixture.json --
+{
+  "symbols": {
+    "MaskedValue": { "file": "target/main.go", "line": 10 },
+    "ReadKeyInitial": { "file": "target/main.go", "line": 18 },
+    "UnreadKeyInitial": { "file": "target/main.go", "line": 27 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target ranges over slices.
+package main
+
+import "fmt"
+
+// masked overwrites each element's copy, which nothing reads afterwards.
+func masked(xs []string) int {
+	n := 0
+	for _, x := range xs {
+		x = x + "*"
+		n++
+	}
+	return n
+}
+
+// last returns the last index, or the initial value of an empty slice.
+func last(xs []string) int {
+	k := -1
+	for k = range xs {
+	}
+	return k
+}
+
+// counted sums the indexes, and reads its key only inside the loop.
+func counted(xs []string) int {
+	n := 0
+	k := 5
+	for k = range xs {
+		n += k
+	}
+	return n
+}
+
+func main() { fmt.Println(masked(nil), last(nil), counted(nil)) }

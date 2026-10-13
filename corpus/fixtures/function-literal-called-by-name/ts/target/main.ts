@@ -9,6 +9,6 @@ const check = (name: string, n: number): boolean => n > 0;
 export const results = [
   check("a", 1),
   apply(
-    (name, n) => n > 1,
+    (_name, n) => n > 1,
   ),
 ];

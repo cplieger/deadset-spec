@@ -1,0 +1,20 @@
+{
+  "symbols": {
+    "AppFile": {
+      "file": "target/web/app.ts",
+      "line": 1
+    },
+    "GenFile": {
+      "file": "target/tools/gen.ts",
+      "line": 1
+    },
+    "UnusedFile": {
+      "file": "target/tools/unused.ts",
+      "line": 1
+    },
+    "unused": {
+      "file": "target/tools/unused.ts",
+      "line": 2
+    }
+  }
+}

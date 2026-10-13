@@ -1,0 +1,71 @@
+The Go rendering: a command declaring an unexported interface whose method set
+holds an unexported method, an exported interface of the same shape, and an
+unexported interface an exported sealed interface embeds, each with a method no
+call site invokes through it.
+
+-- fixture.json --
+{
+  "symbols": {
+    "ExportedInterface": { "file": "target/main.go", "line": 13 },
+    "UnexportedInterfaceUncalled": { "file": "target/main.go", "line": 9 },
+    "UnexportedImplementation": { "file": "target/main.go", "line": 33 },
+    "ExportedInterfaceUncalled": { "file": "target/main.go", "line": 15 },
+    "ExportedImplementation": { "file": "target/main.go", "line": 37 },
+    "EmbeddedInSealed": { "file": "target/main.go", "line": 20 },
+    "EmbeddedImplementation": { "file": "target/main.go", "line": 39 },
+    "SealedEmbedder": { "file": "target/main.go", "line": 24 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target names its shapes through three interfaces.
+package main
+
+import "fmt"
+
+// shape is a shape of this command.
+type shape interface {
+	name() string
+	sides() int
+}
+
+// Shape is a fixed set of shapes.
+type Shape interface {
+	Name() string
+	sealed() string
+}
+
+// coded carries a code.
+type coded interface {
+	Code() string
+}
+
+// Failure is a fixed set of failures.
+type Failure interface {
+	coded
+	failure() string
+}
+
+type square struct{ n int }
+
+func (s square) name() string { return fmt.Sprint("square", s.n) }
+
+func (s square) sides() int { return s.n }
+
+func (s square) Name() string { return fmt.Sprint("Square", s.n) }
+
+func (s square) sealed() string { return fmt.Sprint(s.n) }
+
+func (s square) Code() string { return fmt.Sprint("code", s.n) }
+
+func (s square) failure() string { return fmt.Sprint("failure", s.n) }
+
+func main() {
+	var s shape = square{n: 4}
+	var t Shape = square{n: 4}
+	var f Failure = square{n: 4}
+	fmt.Println(s.name(), t.Name(), f != nil)
+}

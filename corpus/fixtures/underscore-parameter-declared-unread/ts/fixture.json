@@ -1,0 +1,20 @@
+{
+  "symbols": {
+    "Plain": {
+      "file": "target/main.ts",
+      "line": 3
+    },
+    "Trailing": {
+      "file": "target/main.ts",
+      "line": 7
+    },
+    "Bound": {
+      "file": "target/main.ts",
+      "line": 11
+    },
+    "Callback": {
+      "file": "target/main.ts",
+      "line": 19
+    }
+  }
+}

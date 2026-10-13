@@ -1,0 +1,65 @@
+The Go rendering: a command and its test, a package only that test imports that
+imports no testing package, and a helper package that imports the testing package
+and calls a function of the first package. Nothing imports anything outside the
+standard library, so the rendering loads with no network access.
+
+-- fixture.json --
+{
+  "symbols": {
+    "run": { "file": "target/main.go", "line": 5 },
+    "Sample": { "file": "target/samples/samples.go", "line": 4 },
+    "Spare": { "file": "target/samples/samples.go", "line": 7 },
+    "Seeded": { "file": "target/samples/samples.go", "line": 10 },
+    "Start": { "file": "target/testkit/testkit.go", "line": 10 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+package main
+
+func main() { println(run()) }
+
+func run() int { return 1 }
+-- target/main_test.go --
+package main
+
+import (
+	"testing"
+
+	"example.com/target/samples"
+	"example.com/target/testkit"
+)
+
+func TestRun(t *testing.T) {
+	if run()+testkit.Start(t) != samples.Sample()+2 {
+		t.Fail()
+	}
+}
+-- target/samples/samples.go --
+package samples
+
+// Sample is called by a test alone.
+func Sample() int { return 1 }
+
+// Spare is called by nothing.
+func Spare() int { return 2 }
+
+// Seeded is called by the test helper alone.
+func Seeded() int { return 3 }
+-- target/testkit/testkit.go --
+package testkit
+
+import (
+	"testing"
+
+	"example.com/target/samples"
+)
+
+// Start is what the test calls.
+func Start(t testing.TB) int {
+	t.Helper()
+	return samples.Seeded() - 1
+}

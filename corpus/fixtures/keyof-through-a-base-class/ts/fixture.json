@@ -1,0 +1,12 @@
+{
+  "symbols": {
+    "Open": {
+      "file": "target/main.ts",
+      "line": 4
+    },
+    "Close": {
+      "file": "target/main.ts",
+      "line": 5
+    }
+  }
+}

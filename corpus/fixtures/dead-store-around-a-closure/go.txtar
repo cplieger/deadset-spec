@@ -1,0 +1,86 @@
+The Go rendering: a command that overwrites a variable before a closure naming it
+is written, stores to a variable after a closure naming it is written, and does
+both inside a loop, where the closure of one iteration precedes the stores of the
+next, and stores after a closure it calls where it writes it and after one it starts
+in a goroutine.
+
+-- fixture.json --
+{
+  "symbols": {
+    "OverwrittenBeforeClosure": { "file": "target/main.go", "line": 13 },
+    "ReadByClosure": { "file": "target/main.go", "line": 26 },
+    "StoredAfterClosure": { "file": "target/main.go", "line": 28 },
+    "BeforeLoop": { "file": "target/main.go", "line": 34 },
+    "LoopBeforeClosure": { "file": "target/main.go", "line": 37 },
+    "LoopAfterClosure": { "file": "target/main.go", "line": 39 },
+    "StoredAfterACall": { "file": "target/main.go", "line": 48 },
+    "StoredAfterAGoroutine": { "file": "target/main.go", "line": 56 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target runs closures over its locals.
+package main
+
+import "fmt"
+
+// get returns its argument and no error.
+func get(n int) (int, error) { return n, nil }
+
+func run(f func() error) error { return f() }
+
+// handle overwrites err before the closure, which reads and stores it.
+func handle() error {
+	id, err := get(1)
+	user, err := get(2)
+	if err != nil {
+		return err
+	}
+	return run(func() error {
+		_, err = get(id + user)
+		return err
+	})
+}
+
+// later stores to x after the closure that reads it is written.
+func later() int {
+	x := 1
+	f := func() int { return x }
+	x = 2
+	return f()
+}
+
+// looped keeps the closure of its last iteration.
+func looped(xs []int) func() int {
+	total := 0
+	var f func() int
+	for _, x := range xs {
+		total = x
+		f = func() int { return total }
+		total = 0
+	}
+	return f
+}
+
+// called calls its closure where it writes it, so the store after the call reaches no read.
+func called() int {
+	y := 1
+	func() { fmt.Println(y) }()
+	y = 2
+	return 0
+}
+
+// spawned starts its closure in a goroutine, which may read y after the store.
+func spawned() {
+	y := 1
+	go func() { fmt.Println(y) }()
+	y = 2
+}
+
+func main() {
+	spawned()
+	fmt.Println(handle(), later(), looped(nil) == nil, called())
+}

@@ -1,0 +1,12 @@
+{
+  "symbols": {
+    "NestedCharts": {
+      "file": "target/charts-app/package.json",
+      "line": 7
+    },
+    "RootCharts": {
+      "file": "target/package.json",
+      "line": 8
+    }
+  }
+}

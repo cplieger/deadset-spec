@@ -1,0 +1,65 @@
+The Go rendering: a command, its test, and a package only that test imports,
+whose constructor, which takes the test's testing.TB, and interface the test
+uses and whose exported function nothing calls.
+
+-- fixture.json --
+{
+  "symbols": {
+    "run": { "file": "target/main.go", "line": 5 },
+    "New": { "file": "target/testkit/testkit.go", "line": 6 },
+    "Fake": { "file": "target/testkit/testkit.go", "line": 12 },
+    "Store": { "file": "target/testkit/testkit.go", "line": 18 },
+    "Orphan": { "file": "target/testkit/testkit.go", "line": 21 },
+    "stranded": { "file": "target/testkit/testkit.go", "line": 24 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+package main
+
+func main() { println(run()) }
+
+func run() int { return 1 }
+-- target/main_test.go --
+package main
+
+import (
+	"testing"
+
+	"example.com/target/testkit"
+)
+
+func TestRun(t *testing.T) {
+	var store testkit.Store = testkit.New(t)
+	if run() != store.Get() {
+		t.Fail()
+	}
+}
+-- target/testkit/testkit.go --
+package testkit
+
+import "testing"
+
+// New is what the test calls.
+func New(t testing.TB) *Fake {
+	t.Helper()
+	return &Fake{}
+}
+
+// Fake is what New returns.
+type Fake struct{}
+
+// Get answers the test.
+func (*Fake) Get() int { return 1 }
+
+// Store is the interface the test holds the fake as.
+type Store interface{ Get() int }
+
+// Orphan is called by nothing.
+func Orphan() int { return stranded() }
+
+// stranded is called by Orphan alone.
+func stranded() int { return 2 }

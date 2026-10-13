@@ -1,0 +1,26 @@
+{
+  "name": "configuration-base-url-paths",
+  "description": "A configuration that sets baseUrl, here through the configuration it extends, resolves each paths target against it, and looks up below it a specifier no other pattern maps, as the compilers before version 7 resolve them, so the imports it makes reach their files.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "mapped",
+      "report": "none"
+    },
+    {
+      "symbol": "spare",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "variable",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "bare",
+      "report": "none"
+    }
+  ]
+}

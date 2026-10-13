@@ -1,0 +1,16 @@
+{
+  "symbols": {
+    "Unread": {
+      "file": "target/main.ts",
+      "line": 12
+    },
+    "Hidden": {
+      "file": "target/main.ts",
+      "line": 20
+    },
+    "TypeError": {
+      "file": "target/main.ts",
+      "line": 18
+    }
+  }
+}

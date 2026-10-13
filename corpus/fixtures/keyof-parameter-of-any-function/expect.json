@@ -1,0 +1,34 @@
+{
+  "name": "keyof-parameter-of-any-function",
+  "description": "A literal argument at a parameter whose declared type holds keyof of a type references the member of that type the literal names, in a function that declares no type parameter as in a generic one, and at an optional parameter as at a required one.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Closed",
+      "report": "none"
+    },
+    {
+      "symbol": "Opened",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "A",
+      "report": "none"
+    },
+    {
+      "symbol": "B",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

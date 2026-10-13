@@ -1,0 +1,21 @@
+{
+  "name": "worker-bare-relative-address",
+  "description": "A worker address written as a relative URL reference with no leading dot segment names the file beside the calling one, as its ./ spelling does; one with a scheme or a leading solidus names no file of the target.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "BareFile",
+      "report": "none"
+    },
+    {
+      "symbol": "RemoteFile",
+      "report": "DS1502",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "symbols": {
+    "Imported": {
+      "file": "target/hooks.ts",
+      "line": 3
+    },
+    "Unimported": {
+      "file": "target/hooks.ts",
+      "line": 4
+    }
+  }
+}

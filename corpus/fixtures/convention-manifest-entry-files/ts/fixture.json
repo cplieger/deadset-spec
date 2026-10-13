@@ -1,0 +1,20 @@
+{
+  "symbols": {
+    "entry": {
+      "file": "target/src/entry.ts",
+      "line": 1
+    },
+    "web": {
+      "file": "target/src/web.ts",
+      "line": 1
+    },
+    "Unused": {
+      "file": "target/src/unused.ts",
+      "line": 1
+    },
+    "unused": {
+      "file": "target/src/unused.ts",
+      "line": 2
+    }
+  }
+}

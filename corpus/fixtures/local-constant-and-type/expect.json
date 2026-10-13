@@ -1,0 +1,66 @@
+{
+  "name": "local-constant-and-type",
+  "description": "In Go a constant or a type a function body declares, a function literal's body included, that nothing in that body references outside its own specification is reported under DS1002, under the reference of the enclosing declaration, at the local declaration's own position, with the liveness relation reference-counting. A constant only another unreferenced constant references is referenced.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "InitializerConstant",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "constant",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "InitializerUsedConstant",
+      "report": "none"
+    },
+    {
+      "symbol": "UnusedConstant",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "constant",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "UnusedType",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "UsedConstant",
+      "report": "none"
+    },
+    {
+      "symbol": "UsedType",
+      "report": "none"
+    },
+    {
+      "symbol": "SelfReferencedType",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "BaseConstant",
+      "report": "none"
+    },
+    {
+      "symbol": "DerivedConstant",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "constant",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "name": "encoding-reflection-interface-method-result",
+  "description": "A call of a method of an interface type holds, at an interface-typed result, what each method of a defined type of the program that implements that interface method returns there, a return statement whose one operand is a call of several results putting each result of the call at the same position, so a value an implementation returns as any reaches the destination the call's result reaches and keeps its exported fields. A value the program builds and no implementation returns keeps nothing.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "deployment.Replicas",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "pod.Phase",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "unreturned.Count",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    }
+  ]
+}

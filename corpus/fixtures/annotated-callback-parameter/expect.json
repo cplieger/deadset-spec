@@ -1,0 +1,27 @@
+{
+  "name": "annotated-callback-parameter",
+  "description": "A callback's unread trailing parameter that carries a type annotation is reported for deletion at probable where the callee reads its type through no type parameter, because nothing in the program shows the annotation unread, and under no code where the callee is generic over it, because the call's inference may read the annotation.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Free",
+      "report": "DS1801",
+      "confidence": "probable",
+      "reachability_class": "probable",
+      "symbol_kind": "parameter",
+      "details": {
+        "overlap": [
+          "tsc --noUnusedParameters",
+          "@typescript-eslint/no-unused-vars"
+        ]
+      }
+    },
+    {
+      "symbol": "Steered",
+      "report": "none"
+    }
+  ]
+}

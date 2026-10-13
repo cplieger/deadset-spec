@@ -1,0 +1,29 @@
+{
+  "name": "computed-import-directory",
+  "description": "A load whose path is computed, an import() or require() whose template or concatenation starts with a relative literal naming a directory other than the calling file's own, roots every source file below that directory with its exports, as a bundler's context module loads them; a computed path whose literal start is the calling file's own directory roots nothing.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "up",
+      "report": "none"
+    },
+    {
+      "symbol": "SiblingFile",
+      "report": "DS1502",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "sibling",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "variable",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

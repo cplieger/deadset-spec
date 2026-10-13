@@ -1,0 +1,16 @@
+{
+  "symbols": {
+    "Response": {
+      "file": "target/main.ts",
+      "line": 11
+    },
+    "RestSibling": {
+      "file": "target/main.ts",
+      "line": 14
+    },
+    "Defaulted": {
+      "file": "target/main.ts",
+      "line": 18
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "name": "method-shaped-like-an-outside-interface-never-converted",
+  "description": "A method whose name and signature are those of a method of an exported interface declared by a package outside the target has a signature that interface fixes, and it is still dead where no call site invokes it and no conversion of its type to an interface reaches it: the fixed signature keeps it out of DS1801 and the narrowing kinds, never out of the unused kinds.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "ShapedMethod",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

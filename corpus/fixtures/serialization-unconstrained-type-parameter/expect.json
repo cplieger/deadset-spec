@@ -1,0 +1,28 @@
+{
+  "name": "serialization-unconstrained-type-parameter",
+  "description": "A value passed for a parameter that a type parameter nothing constrains types, of a function the analyzed program declares only ambiently and whose result does not name that type parameter, has left the analysis as one passed to an unknown parameter has, so the data members of its type are retained, while one passed for a type parameter a type constrains keeps only what the program reads.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Title",
+      "report": "none"
+    },
+    {
+      "symbol": "Id",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member"
+    },
+    {
+      "symbol": "Note",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member"
+    }
+  ]
+}

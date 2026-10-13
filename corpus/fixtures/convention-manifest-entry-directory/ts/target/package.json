@@ -1,0 +1,15 @@
+{
+  "name": "@example/target",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "@oclif/core": "4.999.0"
+  },
+  "oclif": {
+    "commands": "./dist/cli",
+    "hooks": {
+      "init": "./dist/lifecycle/init"
+    }
+  }
+}

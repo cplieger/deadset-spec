@@ -1,0 +1,11 @@
+{
+  "name": "setup-failure-position-in-a-member-module",
+  "description": "A module the target names, here a member its workspace lists below its root, that fails to load ends the run with the setup failure, and the position the line names is relative to the target root, as every position of a run is, rather than to the member's own directory.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "setup_failure": {
+    "class": "missing-module",
+    "names": ["sub/main.go:3:8"]
+  },
+  "expect": []
+}

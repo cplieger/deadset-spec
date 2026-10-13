@@ -1,0 +1,40 @@
+The Go rendering: a library whose examples directory is a module of its own that
+requires the library through a replace directive naming the library's directory
+and calls one of its two functions.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Used": { "file": "target/lib.go", "line": 4 },
+    "helper": { "file": "target/lib.go", "line": 6 },
+    "Spare": { "file": "target/lib.go", "line": 9 }
+  }
+}
+-- target/go.mod --
+module example.com/lib
+
+go 1.27.0
+-- target/lib.go --
+package lib
+
+// Used is what the example calls.
+func Used() int { return helper() }
+
+func helper() int { return 1 }
+
+// Spare is called by nothing.
+func Spare() {}
+-- target/examples/go.mod --
+module example.com/lib/examples
+
+go 1.27.0
+
+require example.com/lib v0.0.0
+
+replace example.com/lib => ../
+-- target/examples/demo/main.go --
+package main
+
+import "example.com/lib"
+
+func main() { println(lib.Used()) }

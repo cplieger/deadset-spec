@@ -1,0 +1,16 @@
+{
+  "symbols": {
+    "add": {
+      "file": "target/src/add.ts",
+      "line": 1
+    },
+    "spare": {
+      "file": "target/src/add.ts",
+      "line": 5
+    },
+    "IndexFile": {
+      "file": "target/src/index.ts",
+      "line": 1
+    }
+  }
+}

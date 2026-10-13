@@ -1,0 +1,16 @@
+{
+  "symbols": {
+    "FakeRequest": {
+      "file": "target/support/setup.ts",
+      "line": 4
+    },
+    "FakeNow": {
+      "file": "target/support/setup.ts",
+      "line": 9
+    },
+    "FakeNever": {
+      "file": "target/support/setup.ts",
+      "line": 12
+    }
+  }
+}

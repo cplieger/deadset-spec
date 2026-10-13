@@ -1,0 +1,20 @@
+{
+  "symbols": {
+    "init": {
+      "file": "target/src/lifecycle/init.ts",
+      "line": 1
+    },
+    "Unused": {
+      "file": "target/src/unused.ts",
+      "line": 1
+    },
+    "unused": {
+      "file": "target/src/unused.ts",
+      "line": 2
+    },
+    "Run": {
+      "file": "target/src/cli/run.ts",
+      "line": 3
+    }
+  }
+}

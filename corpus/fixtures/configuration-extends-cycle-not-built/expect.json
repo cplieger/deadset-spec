@@ -1,0 +1,26 @@
+{
+  "name": "configuration-extends-cycle-not-built",
+  "description": "A derived configuration whose extends chain returns to a configuration it already passed is dropped before any program is built and listed in configurations_not_built with the compiler's circularity code, and so is a configuration that references it; the run analyzes the configurations left.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "orphan",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "made",
+      "report": "none"
+    },
+    {
+      "symbol": "used",
+      "report": "none"
+    }
+  ]
+}

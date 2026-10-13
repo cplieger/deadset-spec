@@ -1,0 +1,31 @@
+{
+  "name": "dead-store-object-pattern",
+  "description": "A name an object binding pattern of a local declaration binds is a local the declaration writes, so one nothing reads is a dead store at the name, except a name beside a rest element of the pattern and a name with a default, whose removal would change what the rest holds or skip the default's evaluation.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Response",
+      "report": "DS1807",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "store",
+      "details": {
+        "overlap": [
+          "eslint no-useless-assignment",
+          "@typescript-eslint/no-unused-vars"
+        ]
+      }
+    },
+    {
+      "symbol": "RestSibling",
+      "report": "none"
+    },
+    {
+      "symbol": "Defaulted",
+      "report": "none"
+    }
+  ]
+}

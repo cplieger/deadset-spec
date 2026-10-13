@@ -1,0 +1,9 @@
+{
+  "name": "@example/charts-app",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "charts": "1.0.0"
+  }
+}

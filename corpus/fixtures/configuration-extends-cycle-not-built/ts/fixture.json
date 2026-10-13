@@ -1,0 +1,20 @@
+{
+  "configurations_not_built": [
+    "cycle/tsconfig.json",
+    "user/tsconfig.json"
+  ],
+  "symbols": {
+    "orphan": {
+      "file": "target/src/main.ts",
+      "line": 1
+    },
+    "made": {
+      "file": "target/cycle/gen.ts",
+      "line": 1
+    },
+    "used": {
+      "file": "target/user/use.ts",
+      "line": 1
+    }
+  }
+}

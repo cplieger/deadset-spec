@@ -1,0 +1,57 @@
+The Go rendering: a command calling one function of a package whose directives run
+stringer over a type, once after a boolean flag, and mockgen over one interface in
+package mode and over the interfaces of a second file and of a file whose quoted
+name holds a space in source mode, beside an interface no directive names.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Run": { "file": "target/app/app.go", "line": 6 },
+    "Color": { "file": "target/app/app.go", "line": 8 },
+    "Store": { "file": "target/app/app.go", "line": 10 },
+    "Spare": { "file": "target/app/app.go", "line": 12 },
+    "Port": { "file": "target/app/ports.go", "line": 5 },
+    "Kind": { "file": "target/app/flags.go", "line": 6 },
+    "Walker": { "file": "target/app/spaced file.go", "line": 3 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+package main
+
+import "example.com/target/app"
+
+func main() { app.Run() }
+-- target/app/app.go --
+package app
+
+//go:generate stringer -type=Color
+//go:generate mockgen -destination=mock_store.go -package=app . Store
+
+func Run() {}
+
+type Color int
+
+type Store interface{ Get() int }
+
+type Spare interface{ Drop() }
+-- target/app/ports.go --
+package app
+
+//go:generate go run go.uber.org/mock/mockgen -source=$GOFILE -destination=mock_ports.go -package=app
+
+type Port interface{ Open() error }
+-- target/app/flags.go --
+package app
+
+//go:generate stringer -linecomment -type=Kind
+//go:generate mockgen -source "spaced file.go" -destination=mock_spaced.go -package=app
+
+type Kind int
+-- target/app/spaced file.go --
+package app
+
+type Walker interface{ Walk() }

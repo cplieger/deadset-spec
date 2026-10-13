@@ -1,0 +1,13 @@
+{
+  "name": "@example/target",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./main.ts",
+  "dependencies": {
+    "dead-only": "1.0.0",
+    "file-level": "1.0.0",
+    "live": "1.0.0",
+    "reached": "1.0.0"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "symbols": {
+    "up": {
+      "file": "target/src/migrations/0001.ts",
+      "line": 1
+    },
+    "SiblingFile": {
+      "file": "target/src/sibling.ts",
+      "line": 1
+    },
+    "sibling": {
+      "file": "target/src/sibling.ts",
+      "line": 2
+    }
+  }
+}

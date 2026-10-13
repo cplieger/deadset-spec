@@ -1,0 +1,30 @@
+{
+  "name": "indexed-access-new-and-property-callees",
+  "description": "A new expression fixes the type parameters of a class's constructor and of a construct signature as a call fixes a function's, and a call fixes those of a generic function an object literal's property holds, so the members the fixed indexes name are read.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "A",
+      "report": "none"
+    },
+    {
+      "symbol": "B",
+      "report": "none"
+    },
+    {
+      "symbol": "C",
+      "report": "none"
+    },
+    {
+      "symbol": "D",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

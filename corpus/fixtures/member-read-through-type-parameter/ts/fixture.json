@@ -1,0 +1,12 @@
+{
+  "symbols": {
+    "Kind": {
+      "file": "target/main.ts",
+      "line": 6
+    },
+    "Spare": {
+      "file": "target/main.ts",
+      "line": 7
+    }
+  }
+}

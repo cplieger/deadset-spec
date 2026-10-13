@@ -1,0 +1,75 @@
+{
+  "name": "interface-named-only-from-a-dead-declaration",
+  "description": "An interface that only dead declarations name as a type is reported under DS1201 with the liveness relation reachability, and it is a member of the dead component of the declaration that names it rather than the root of a component of its own: a struct field's type, and a result type of an uncalled interface method, both join it.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "DialerInterface",
+      "report": "DS1201",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "interface",
+      "liveness_relation": "reachability",
+      "component": {
+        "root": false
+      }
+    },
+    {
+      "symbol": "OptionsType",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type",
+      "liveness_relation": "reachability",
+      "component": {
+        "root": false
+      }
+    },
+    {
+      "symbol": "ConnectFunction",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting",
+      "component": {
+        "root": true
+      }
+    },
+    {
+      "symbol": "ReturnInterface",
+      "report": "DS1201",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "interface",
+      "liveness_relation": "reachability",
+      "component": {
+        "root": false
+      }
+    },
+    {
+      "symbol": "UncalledMethod",
+      "report": "DS1203",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "interface-method",
+      "component": {
+        "root": true
+      }
+    },
+    {
+      "symbol": "UncalledImplementation",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method",
+      "liveness_relation": "reachability",
+      "component": {
+        "root": false
+      }
+    }
+  ]
+}

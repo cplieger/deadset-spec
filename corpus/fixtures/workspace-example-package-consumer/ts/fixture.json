@@ -1,0 +1,16 @@
+{
+  "symbols": {
+    "used": {
+      "file": "target/packages/kit/src/index.ts",
+      "line": 4
+    },
+    "spare": {
+      "file": "target/packages/kit/src/index.ts",
+      "line": 9
+    },
+    "unusedInternal": {
+      "file": "target/packages/kit/src/internal.ts",
+      "line": 7
+    }
+  }
+}

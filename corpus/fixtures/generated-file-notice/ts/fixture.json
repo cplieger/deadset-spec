@@ -1,0 +1,20 @@
+{
+  "symbols": {
+    "routeTree": {
+      "file": "target/src/route-tree.ts",
+      "line": 4
+    },
+    "bundled": {
+      "file": "target/src/bundle.d.ts",
+      "line": 2
+    },
+    "RoutesFile": {
+      "file": "target/src/route-tree.ts",
+      "line": 1
+    },
+    "BundleFile": {
+      "file": "target/src/bundle.d.ts",
+      "line": 1
+    }
+  }
+}

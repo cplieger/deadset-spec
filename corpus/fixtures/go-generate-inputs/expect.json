@@ -1,0 +1,15 @@
+{
+  "name": "go-generate-inputs",
+  "description": "A go:generate directive whose command is a generator the analysis knows names that generator's inputs, and each declaration it names is a root, because deleting it breaks go generate: the types a stringer directive lists, after a boolean flag too, the interfaces a mockgen directive lists after the package it reads them from, and every interface of the file a mockgen directive reads as its source, a double-quoted file name being one word as go generate splits it. An interface no directive names is reported.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "expect": [
+    { "symbol": "Run", "report": "none" },
+    { "symbol": "Color", "report": "none" },
+    { "symbol": "Store", "report": "none" },
+    { "symbol": "Port", "report": "none" },
+    { "symbol": "Kind", "report": "none" },
+    { "symbol": "Walker", "report": "none" },
+    { "symbol": "Spare", "report": "DS1201", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "interface", "liveness_relation": "reference-counting" }
+  ]
+}

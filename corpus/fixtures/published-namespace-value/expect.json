@@ -1,0 +1,18 @@
+{
+  "name": "published-namespace-value",
+  "description": "A published value whose type is a module namespace publishes every export of that module, as a re-export of the namespace would, and not the module's file itself.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "library",
+  "expect": [
+    {
+      "symbol": "format",
+      "report": "none"
+    },
+    {
+      "symbol": "api",
+      "report": "none"
+    }
+  ]
+}

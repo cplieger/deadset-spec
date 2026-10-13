@@ -1,0 +1,36 @@
+{
+  "symbols": {
+    "DeadOnly": {
+      "file": "target/package.json",
+      "line": 8
+    },
+    "FileLevel": {
+      "file": "target/package.json",
+      "line": 9
+    },
+    "Live": {
+      "file": "target/package.json",
+      "line": 10
+    },
+    "Reached": {
+      "file": "target/package.json",
+      "line": 11
+    },
+    "DeadFile": {
+      "file": "target/dead.ts",
+      "line": 1
+    },
+    "first": {
+      "file": "target/dead.ts",
+      "line": 8
+    },
+    "second": {
+      "file": "target/dead.ts",
+      "line": 12
+    },
+    "inner": {
+      "file": "target/dead.ts",
+      "line": 16
+    }
+  }
+}

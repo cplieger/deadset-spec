@@ -1,0 +1,150 @@
+{
+  "schema_version": "9.0.0",
+  "contract_version": "8.0.0",
+  "analyzer": {
+    "name": "deadset-ts",
+    "version": "3.12.0",
+    "languages": [
+      "ts"
+    ],
+    "schema_versions_accepted": [
+      "9.0.0"
+    ],
+    "conformance": {
+      "corpus_version": "1.0.0",
+      "result": "pass",
+      "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000001"
+    }
+  },
+  "target": {
+    "kind": "application",
+    "root": ".",
+    "identity": "@example/app"
+  },
+  "configurations": [
+    {
+      "id": "linux-amd64",
+      "os": "linux",
+      "arch": "amd64",
+      "tags": []
+    }
+  ],
+  "configurations_not_built": [],
+  "consumers": {
+    "declared": 0,
+    "loaded": [],
+    "unavailable": []
+  },
+  "findings": [
+    {
+      "code": "DS1801",
+      "kind": "unused-parameter",
+      "language": "ts",
+      "position": {
+        "path": "src/main.ts",
+        "line": 3,
+        "column": 30,
+        "end_line": 3
+      },
+      "symbol": {
+        "ref": "ts://@example/app/src/main.ts#total(first)",
+        "kind": "parameter",
+        "name": "first",
+        "size_lines": 1
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "test_only": false,
+      "generated": false,
+      "component": {
+        "id": "deadset-ts/c-1",
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 0
+      },
+      "retained_by": [],
+      "configurations": [
+        "linux-amd64"
+      ],
+      "consumers_loaded": [],
+      "fixability": "manual",
+      "severity": "warn",
+      "message": "parameter first is never read in the body; also reported by tsc --noUnusedParameters and @typescript-eslint/no-unused-vars",
+      "details": {
+        "overlap": [
+          "tsc --noUnusedParameters",
+          "@typescript-eslint/no-unused-vars"
+        ]
+      }
+    },
+    {
+      "code": "DS1801",
+      "kind": "unused-parameter",
+      "language": "ts",
+      "position": {
+        "path": "src/main.ts",
+        "line": 3,
+        "column": 37,
+        "end_line": 3
+      },
+      "symbol": {
+        "ref": "ts://@example/app/src/main.ts#total(second)",
+        "kind": "parameter",
+        "name": "second",
+        "size_lines": 1
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "test_only": false,
+      "generated": false,
+      "component": {
+        "id": "deadset-ts/c-2",
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 0
+      },
+      "retained_by": [],
+      "configurations": [
+        "linux-amd64"
+      ],
+      "consumers_loaded": [],
+      "fixability": "manual",
+      "severity": "warn",
+      "message": "parameter second is never read in the body; also reported by tsc --noUnusedParameters and @typescript-eslint/no-unused-vars",
+      "details": {
+        "overlap": [
+          "tsc --noUnusedParameters",
+          "@typescript-eslint/no-unused-vars"
+        ]
+      }
+    }
+  ],
+  "edge_evaluations": [],
+  "stale_suppressions": [],
+  "declared_gaps": [],
+  "excluded_by_cgo": [],
+  "test_file_rules": [],
+  "type_error_skips": [],
+  "notes": [],
+  "unanswered_questions": [],
+  "conventions_applied": [],
+  "totals": {
+    "findings": 2,
+    "by_severity": {
+      "allow": 0,
+      "warn": 2,
+      "deny": 0
+    },
+    "deletable_lines": 0,
+    "suppressions_in_effect": 0,
+    "reasons_recorded": 0,
+    "stale_suppressions": 0,
+    "pending": 0,
+    "omitted": 0,
+    "withheld": {
+      "certain": 0,
+      "probable": 0,
+      "possible": 0
+    }
+  }
+}

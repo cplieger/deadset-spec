@@ -17,7 +17,7 @@ import (
 	"testing"
 	"testing/fstest"
 
-	"github.com/cplieger/deadset-spec/v7"
+	"github.com/cplieger/deadset-spec/v8"
 )
 
 const (
@@ -2242,12 +2242,12 @@ func TestFixturesOnDiskResolveThroughEveryRendering(t *testing.T) {
 	}
 }
 
-// TestExpectSchemaClosedWorldNamesItsTwoFacts pins both directions of the
+// TestExpectSchemaClosedWorldNamesItsThreeFacts pins both directions of the
 // fixture-level declaration a narrowing or a never-built fixture rests on: a
-// fixture may name either fact or both, and a value outside the two, a repeated
+// fixture may name any of the facts, and a value outside the three, a repeated
 // value or an empty array is refused, so the member cannot declare a world the
 // runner has no configuration key for.
-func TestExpectSchemaClosedWorldNamesItsTwoFacts(t *testing.T) {
+func TestExpectSchemaClosedWorldNamesItsThreeFacts(t *testing.T) {
 	cases := []struct {
 		name  string
 		value string
@@ -2255,8 +2255,9 @@ func TestExpectSchemaClosedWorldNamesItsTwoFacts(t *testing.T) {
 	}{
 		{name: "the_consumer_set_alone", value: `["consumers"]`},
 		{name: "the_matrix_alone", value: `["matrix"]`},
-		{name: "both_facts", value: `["consumers","matrix"]`},
-		{name: "a_fact_the_runner_cannot_declare", value: `["roots"]`, want: "/closed_world/0"},
+		{name: "the_roots_alone", value: `["roots"]`},
+		{name: "every_fact", value: `["consumers","matrix","roots"]`},
+		{name: "a_fact_the_runner_cannot_declare", value: `["entries"]`, want: "/closed_world/0"},
 		{name: "one_fact_named_twice", value: `["matrix","matrix"]`, want: "/closed_world"},
 		{name: "no_fact_at_all", value: `[]`, want: "/closed_world"},
 	}

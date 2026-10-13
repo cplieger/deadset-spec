@@ -1,0 +1,29 @@
+{
+  "name": "computed-import-meta-glob",
+  "description": "An import.meta.glob call whose argument is a relative literal glob, or an array of them, roots every source file the glob matches against the calling file's directory, with its exports.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "home",
+      "report": "none"
+    },
+    {
+      "symbol": "HelperFile",
+      "report": "DS1502",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "helper",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "variable",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

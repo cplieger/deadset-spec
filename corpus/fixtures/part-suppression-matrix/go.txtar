@@ -152,11 +152,11 @@ func caseEntry(v any) string {
 
 //deadset:ignore DS1809 -- The case is kept on purpose.
 func caseLive(v any) string {
-	switch v.(type) {
+	switch x := v.(type) {
 	case node:
 		return "node"
 	case stringer:
-		return "stringer"
+		return x.str()
 	}
 	return "other"
 }

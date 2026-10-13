@@ -6,6 +6,7 @@ type, and an internal package asserting an exported interface nothing names.
   "symbols": {
     "PublishedInterface": { "file": "target/lib.go", "line": 5 },
     "PublishedInterfaceMethod": { "file": "target/lib.go", "line": 6 },
+    "UnexportedInterfaceMethod": { "file": "target/lib.go", "line": 14 },
     "PublishedAssertion": { "file": "target/lib.go", "line": 27 },
     "NamedAssertion": { "file": "target/lib.go", "line": 29 },
     "UnexportedAssertion": { "file": "target/lib.go", "line": 31 },

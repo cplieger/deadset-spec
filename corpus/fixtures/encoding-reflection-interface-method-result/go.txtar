@@ -1,0 +1,66 @@
+The Go rendering: a command that encodes what a call through an interface method
+returns as any, and two implementations of that method in the program, one of which
+returns a call of two results.
+
+-- fixture.json --
+{
+  "symbols": {
+    "deployment.Replicas": { "file": "target/main.go", "line": 16 },
+    "unreturned.Count": { "file": "target/main.go", "line": 21 },
+    "pod.Phase": { "file": "target/main.go", "line": 30 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target encodes what a source returns.
+package main
+
+import (
+	"encoding/json"
+	"os"
+)
+
+// source returns a resource as any.
+type source interface {
+	resource() (any, error)
+}
+
+// deployment is what cluster's implementation of source returns.
+type deployment struct {
+	Replicas int
+}
+
+// unreturned is built by main and returned by nothing.
+type unreturned struct {
+	Count int
+}
+
+type cluster struct{}
+
+func (cluster) resource() (any, error) { return &deployment{Replicas: 1}, nil }
+
+// pod is what pods' implementation of source returns through a call of two results.
+type pod struct {
+	Phase string
+}
+
+type pods struct{}
+
+func findPod() (*pod, error) { return &pod{Phase: "running"}, nil }
+
+func (pods) resource() (any, error) { return findPod() }
+
+func main() {
+	for _, s := range []source{cluster{}, pods{}} {
+		r, err := s.resource()
+		if err != nil {
+			os.Exit(1)
+		}
+		_ = json.NewEncoder(os.Stdout).Encode(r)
+	}
+	u := unreturned{Count: 1}
+	_ = u
+}
