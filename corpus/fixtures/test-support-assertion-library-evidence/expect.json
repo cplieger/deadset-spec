@@ -1,0 +1,31 @@
+{
+  "name": "test-support-assertion-library-evidence",
+  "description": "An import of an assertion, mock or runner library, chai, sinon or @jest/globals among them, is test evidence, so a file only tests reach that imports one is test-support code and its declarations a test calls are not reported. A file only tests reach that imports none is production code only tests use.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "expect": [
+    {
+      "symbol": "expectOk",
+      "report": "none"
+    },
+    {
+      "symbol": "stubbed",
+      "report": "none"
+    },
+    {
+      "symbol": "timed",
+      "report": "none"
+    },
+    {
+      "symbol": "plain",
+      "report": "DS1004",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

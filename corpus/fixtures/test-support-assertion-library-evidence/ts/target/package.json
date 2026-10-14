@@ -1,0 +1,12 @@
+{
+  "name": "@example/target",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./main.ts",
+  "devDependencies": {
+    "chai": "1.0.0",
+    "sinon": "1.0.0",
+    "@jest/globals": "1.0.0"
+  }
+}

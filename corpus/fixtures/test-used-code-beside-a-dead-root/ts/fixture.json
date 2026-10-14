@@ -1,0 +1,28 @@
+{
+  "symbols": {
+    "Live": {
+      "file": "target/core.ts",
+      "line": 1
+    },
+    "Legacy": {
+      "file": "target/core.ts",
+      "line": 5
+    },
+    "Shared": {
+      "file": "target/core.ts",
+      "line": 9
+    },
+    "shared": {
+      "file": "target/core.ts",
+      "line": 13
+    },
+    "Make": {
+      "file": "target/helpers.ts",
+      "line": 3
+    },
+    "TestMake": {
+      "file": "target/make.test.ts",
+      "line": 3
+    }
+  }
+}

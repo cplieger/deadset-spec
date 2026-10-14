@@ -1,0 +1,20 @@
+{
+  "symbols": {
+    "fixedNow": {
+      "file": "target/clock.ts",
+      "line": 5
+    },
+    "deadOnly": {
+      "file": "target/clock.ts",
+      "line": 7
+    },
+    "stale": {
+      "file": "target/clock.ts",
+      "line": 9
+    },
+    "testClock": {
+      "file": "target/clock.test.ts",
+      "line": 4
+    }
+  }
+}

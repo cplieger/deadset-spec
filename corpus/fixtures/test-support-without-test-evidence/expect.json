@@ -1,10 +1,11 @@
 {
   "name": "test-support-without-test-evidence",
-  "description": "Code only tests reach is test-support code only where it carries test evidence of its own language, so a Go package only a test imports whose files import no testing package is production code a test uses. A function of it a test calls and one only a test helper calls are reported as test-only use, a function of it nothing calls is reported as unused, and the helper, which imports the testing package and calls only a function reported dead, is a test of dead code.",
+  "description": "Code only tests reach is test-support code only where it carries test evidence of its own language, so a Go package only a test imports whose files import no testing package is production code a test uses. A function of it a test calls and one only a test helper calls are reported as test-only use at the reachability class possible, a function of it nothing calls is reported as unused at certain, and the helper, which imports the testing package and calls only a function reported dead, is a test of dead code whose confidence its component lowers to possible.",
   "languages": [
     "go"
   ],
   "target_kind": "application",
+  "min_confidence": "possible",
   "expect": [
     {
       "symbol": "run",
@@ -13,8 +14,8 @@
     {
       "symbol": "Sample",
       "report": "DS1004",
-      "confidence": "certain",
-      "reachability_class": "certain",
+      "confidence": "possible",
+      "reachability_class": "possible",
       "symbol_kind": "function",
       "liveness_relation": "reference-counting"
     },
@@ -29,15 +30,15 @@
     {
       "symbol": "Seeded",
       "report": "DS1004",
-      "confidence": "certain",
-      "reachability_class": "certain",
+      "confidence": "possible",
+      "reachability_class": "possible",
       "symbol_kind": "function",
       "liveness_relation": "reference-counting"
     },
     {
       "symbol": "Start",
       "report": "DS1005",
-      "confidence": "certain",
+      "confidence": "possible",
       "reachability_class": "certain",
       "symbol_kind": "function",
       "liveness_relation": "reference-counting"

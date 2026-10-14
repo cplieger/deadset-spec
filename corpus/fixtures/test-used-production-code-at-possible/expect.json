@@ -1,0 +1,59 @@
+{
+  "name": "test-used-production-code-at-possible",
+  "description": "A TypeScript file only tests reach that carries no test evidence is production code only tests use: each declaration of it the tests reach, a declaration only such a one references and a test of dead code referencing it are reported at possible, and one nothing references stays certain. A file only tests reach that imports a test library is test-support code, and none of its declarations is reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "expect": [
+    {
+      "symbol": "load",
+      "report": "DS1004",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting",
+      "component": {
+        "root": true
+      }
+    },
+    {
+      "symbol": "inner",
+      "report": "DS1002",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "function",
+      "liveness_relation": "reachability",
+      "component": {
+        "root": false
+      }
+    },
+    {
+      "symbol": "spare",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "variable",
+      "liveness_relation": "reference-counting",
+      "component": {
+        "root": true
+      }
+    },
+    {
+      "symbol": "testLoad",
+      "report": "DS1005",
+      "confidence": "possible",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting",
+      "component": {
+        "root": true
+      }
+    },
+    {
+      "symbol": "rendered",
+      "report": "none"
+    }
+  ]
+}

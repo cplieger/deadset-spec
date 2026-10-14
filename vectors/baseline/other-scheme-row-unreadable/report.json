@@ -208,7 +208,7 @@
         "end_line": 15
       },
       "symbol": {
-        "ref": "go://example.com/app#scanner.feed",
+        "ref": "go://example.com/app#scanner.feed(chunk)",
         "kind": "parameter",
         "name": "chunk",
         "exported": false,
@@ -251,7 +251,7 @@
         "end_line": 15
       },
       "symbol": {
-        "ref": "go://example.com/app#scanner.feed",
+        "ref": "go://example.com/app#scanner.feed(flush)",
         "kind": "parameter",
         "name": "flush",
         "exported": false,

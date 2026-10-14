@@ -208,7 +208,7 @@
         "end_line": 15
       },
       "symbol": {
-        "ref": "go://example.com/app#scanner.feed",
+        "ref": "go://example.com/app#scanner.feed(chunk)",
         "kind": "parameter",
         "name": "chunk",
         "exported": false,
@@ -251,7 +251,7 @@
         "end_line": 15
       },
       "symbol": {
-        "ref": "go://example.com/app#scanner.feed",
+        "ref": "go://example.com/app#scanner.feed(flush)",
         "kind": "parameter",
         "name": "flush",
         "exported": false,
@@ -282,6 +282,108 @@
           "unparam"
         ]
       }
+    },
+    {
+      "code": "DS1807",
+      "kind": "dead-store",
+      "language": "go",
+      "position": {
+        "path": "catalog.go",
+        "line": 21,
+        "column": 2,
+        "end_line": 21
+      },
+      "symbol": {
+        "ref": "go://example.com/app#scanner.reset",
+        "kind": "store",
+        "name": "count",
+        "exported": false,
+        "size_lines": 1
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "test_only": false,
+      "generated": false,
+      "component": {
+        "id": "deadset-go/c-7",
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 0
+      },
+      "retained_by": [],
+      "configurations": [
+        "linux-amd64"
+      ],
+      "consumers_loaded": [],
+      "fixability": "deletable",
+      "severity": "deny",
+      "message": "store to count is never read",
+      "details": {
+        "write_positions": [
+          {
+            "path": "catalog.go",
+            "line": 21,
+            "column": 2,
+            "end_line": 21
+          }
+        ],
+        "overlap": [
+          "ineffassign",
+          "wastedassign",
+          "staticcheck SA4006"
+        ]
+      }
+    },
+    {
+      "code": "DS1807",
+      "kind": "dead-store",
+      "language": "go",
+      "position": {
+        "path": "catalog.go",
+        "line": 22,
+        "column": 2,
+        "end_line": 22
+      },
+      "symbol": {
+        "ref": "go://example.com/app#scanner.reset",
+        "kind": "store",
+        "name": "count",
+        "exported": false,
+        "size_lines": 1
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "test_only": false,
+      "generated": false,
+      "component": {
+        "id": "deadset-go/c-8",
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 0
+      },
+      "retained_by": [],
+      "configurations": [
+        "linux-amd64"
+      ],
+      "consumers_loaded": [],
+      "fixability": "deletable",
+      "severity": "deny",
+      "message": "store to count is never read",
+      "details": {
+        "write_positions": [
+          {
+            "path": "catalog.go",
+            "line": 22,
+            "column": 2,
+            "end_line": 22
+          }
+        ],
+        "overlap": [
+          "ineffassign",
+          "wastedassign",
+          "staticcheck SA4006"
+        ]
+      }
     }
   ],
   "edge_evaluations": [],
@@ -294,11 +396,11 @@
   "unanswered_questions": [],
   "conventions_applied": [],
   "totals": {
-    "findings": 6,
+    "findings": 8,
     "by_severity": {
       "allow": 0,
       "warn": 4,
-      "deny": 2
+      "deny": 4
     },
     "deletable_lines": 4,
     "suppressions_in_effect": 0,

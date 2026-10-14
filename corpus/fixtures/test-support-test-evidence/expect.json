@@ -1,6 +1,6 @@
 {
   "name": "test-support-test-evidence",
-  "description": "A TypeScript file only tests reach is test-support code only where it carries test evidence of its own: an import of a test library, or imports of packages that are all development dependencies only test code imports. A file only tests reach that carries no such evidence, one that imports nothing and one that imports a development dependency production code imports too, is production code, so its function a test calls is reported as test-only use.",
+  "description": "A TypeScript file only tests reach is test-support code only where it carries test evidence of its own: an import of a test library, or imports of packages that are all development dependencies only test code imports. A file only tests reach that carries no such evidence, one that imports nothing and one that imports a development dependency production code imports too, is production code only tests use, so its function a test calls is reported as test-only use at possible.",
   "languages": [
     "ts"
   ],
@@ -18,16 +18,16 @@
     {
       "symbol": "Bare",
       "report": "DS1004",
-      "confidence": "certain",
-      "reachability_class": "certain",
+      "confidence": "possible",
+      "reachability_class": "possible",
       "symbol_kind": "function",
       "liveness_relation": "reference-counting"
     },
     {
       "symbol": "Shared",
       "report": "DS1004",
-      "confidence": "certain",
-      "reachability_class": "certain",
+      "confidence": "possible",
+      "reachability_class": "possible",
       "symbol_kind": "function",
       "liveness_relation": "reference-counting"
     }

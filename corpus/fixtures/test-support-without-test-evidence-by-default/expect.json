@@ -1,0 +1,34 @@
+{
+  "name": "test-support-without-test-evidence-by-default",
+  "description": "The rendering of test-support-without-test-evidence run under the default minimum confidence: the findings about production code only tests use, and the test of dead code that calls it, are possible and withheld, and the function nothing calls is reported at certain.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "run",
+      "report": "none"
+    },
+    {
+      "symbol": "Sample",
+      "report": "none"
+    },
+    {
+      "symbol": "Spare",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Seeded",
+      "report": "none"
+    },
+    {
+      "symbol": "Start",
+      "report": "none"
+    }
+  ]
+}

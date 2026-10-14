@@ -1,0 +1,20 @@
+{
+  "symbols": {
+    "expectOk": {
+      "file": "target/support/assert.ts",
+      "line": 3
+    },
+    "stubbed": {
+      "file": "target/support/stub.ts",
+      "line": 3
+    },
+    "timed": {
+      "file": "target/support/timers.ts",
+      "line": 3
+    },
+    "plain": {
+      "file": "target/support/plain.ts",
+      "line": 1
+    }
+  }
+}

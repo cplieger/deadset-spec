@@ -1,0 +1,61 @@
+The Go rendering: a command calling one function of a package, a function of that
+package nothing calls and one a helper package calls, both calling one unexported
+function, and a test of the helper alone; the helper package imports no testing
+package. Nothing imports anything outside the standard library, so the rendering
+loads with no network access.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Live": { "file": "target/core/core.go", "line": 4 },
+    "Legacy": { "file": "target/core/core.go", "line": 7 },
+    "Shared": { "file": "target/core/core.go", "line": 10 },
+    "shared": { "file": "target/core/core.go", "line": 12 },
+    "Make": { "file": "target/helpers/helpers.go", "line": 6 },
+    "TestMake": { "file": "target/main_test.go", "line": 9 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+package main
+
+import "example.com/target/core"
+
+func main() { println(core.Live()) }
+-- target/main_test.go --
+package main
+
+import (
+	"testing"
+
+	"example.com/target/helpers"
+)
+
+func TestMake(t *testing.T) {
+	if helpers.Make() != 1 {
+		t.Fail()
+	}
+}
+-- target/core/core.go --
+package core
+
+// Live is what the command calls.
+func Live() int { return 0 }
+
+// Legacy is called by nothing.
+func Legacy() int { return shared() }
+
+// Shared is called by the helper alone.
+func Shared() int { return shared() }
+
+func shared() int { return 1 }
+-- target/helpers/helpers.go --
+package helpers
+
+import "example.com/target/core"
+
+// Make is called by the test alone.
+func Make() int { return core.Shared() }
