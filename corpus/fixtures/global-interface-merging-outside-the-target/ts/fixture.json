@@ -1,0 +1,9 @@
+{
+  "symbols": {
+    "global": { "file": "target/main.ts", "line": 1 },
+    "Window": { "file": "target/main.ts", "line": 2 },
+    "chrome": { "file": "target/main.ts", "line": 3 },
+    "ToolOptions": { "file": "target/env.d.ts", "line": 3 },
+    "strictOption": { "file": "target/env.d.ts", "line": 4 }
+  }
+}

@@ -20,7 +20,7 @@ const run = mutate(
   ) => 1,
 );
 
-// The pattern reads the property it names from the argument.
+// The pattern names a property the body never reads.
 const signalled = withSignal(
   (
     { signal },

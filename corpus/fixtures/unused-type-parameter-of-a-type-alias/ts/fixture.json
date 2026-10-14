@@ -1,0 +1,7 @@
+{
+  "symbols": {
+    "Unread": { "file": "target/src/main.ts", "line": 1 },
+    "Value": { "file": "target/src/main.ts", "line": 3 },
+    "Tag": { "file": "target/src/main.ts", "line": 5 }
+  }
+}

@@ -1,0 +1,68 @@
+The Go rendering: a command that reads a field by name through reflection in one
+function, finds a method by name in a second, and holds a reflect.Value in a
+variable in a third.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Named.Describe": {
+      "file": "target/main.go",
+      "line": 7
+    },
+    "Runner.Run": {
+      "file": "target/main.go",
+      "line": 11
+    },
+    "Held.Grow": {
+      "file": "target/main.go",
+      "line": 15
+    },
+    "Named": {
+      "file": "target/main.go",
+      "line": 5
+    },
+    "Runner": {
+      "file": "target/main.go",
+      "line": 9
+    },
+    "Held": {
+      "file": "target/main.go",
+      "line": 13
+    }
+  }
+}
+-- target/go.mod --
+module example.com/finder
+
+go 1.27.0
+-- target/main.go --
+package main
+
+import "reflect"
+
+type Named struct{ Name string }
+
+func (Named) Describe() string { return "" }
+
+type Runner struct{ Speed int }
+
+func (Runner) Run() {}
+
+type Held struct{ Size int }
+
+func (Held) Grow() {}
+
+func name(v any) string { return reflect.ValueOf(v).FieldByName("Name").String() }
+
+func run(v any) { reflect.ValueOf(v).MethodByName("Run").Call(nil) }
+
+func hold(v any) reflect.Value {
+	held := reflect.ValueOf(v)
+	return held
+}
+
+func main() {
+	println(name(Named{}))
+	run(Runner{})
+	println(hold(Held{}).IsValid())
+}

@@ -1,0 +1,80 @@
+The Go rendering: a command executing a constant html/template text over a view
+whose template names one method, one method whose result's field it reads, and a
+field whose type prints itself.
+
+-- fixture.json --
+{
+  "symbols": {
+    "User.Name": {
+      "file": "target/main.go",
+      "line": 10
+    },
+    "User.Email": {
+      "file": "target/main.go",
+      "line": 11
+    },
+    "Status.String": {
+      "file": "target/main.go",
+      "line": 16
+    },
+    "Status.Code": {
+      "file": "target/main.go",
+      "line": 18
+    },
+    "View.Shown": {
+      "file": "target/main.go",
+      "line": 22
+    },
+    "View.WithSuccess": {
+      "file": "target/main.go",
+      "line": 26
+    },
+    "User": {
+      "file": "target/main.go",
+      "line": 9
+    },
+    "Status": {
+      "file": "target/main.go",
+      "line": 14
+    },
+    "View": {
+      "file": "target/main.go",
+      "line": 20
+    }
+  }
+}
+-- target/go.mod --
+module example.com/view
+
+go 1.27.0
+-- target/main.go --
+package main
+
+import (
+	"html/template"
+	"os"
+)
+
+// User is what the view's User method returns.
+type User struct {
+	Name  string
+	Email string
+}
+
+type Status int
+
+func (Status) String() string { return "ok" }
+
+func (Status) Code() int { return 1 }
+
+type View struct{ State Status }
+
+func (View) Shown() string { return "s" }
+
+func (View) User() *User { return &User{} }
+
+func (View) WithSuccess() View { return View{} }
+
+var page = template.Must(template.New("v").Parse("{{.Shown}} {{.User.Name}} {{.State}}"))
+
+func main() { _ = page.Execute(os.Stdout, View{}) }

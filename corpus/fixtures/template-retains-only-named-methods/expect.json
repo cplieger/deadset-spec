@@ -1,0 +1,67 @@
+{
+  "name": "template-retains-only-named-methods",
+  "description": "A template set the analysis reads whole reads the methods its templates name, the methods the engine prints a value through, and the members a template names of what a named method returns; a method no template names is reported, and so is a field of a method's result no template names.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "View.Shown",
+      "report": "none"
+    },
+    {
+      "symbol": "View.WithSuccess",
+      "report": "DS1103",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    },
+    {
+      "symbol": "Status.String",
+      "report": "none"
+    },
+    {
+      "symbol": "Status.Code",
+      "report": "DS1103",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    },
+    {
+      "symbol": "User.Name",
+      "report": "none"
+    },
+    {
+      "symbol": "User.Email",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    },
+    {
+      "symbol": "User",
+      "report": "DS1101",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "details": {
+        "narrower_visibility": "file"
+      }
+    },
+    {
+      "symbol": "Status",
+      "report": "DS1101",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "details": {
+        "narrower_visibility": "file"
+      }
+    },
+    {
+      "symbol": "View",
+      "report": "DS1101",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "details": {
+        "narrower_visibility": "file"
+      }
+    }
+  ]
+}

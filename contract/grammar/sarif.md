@@ -71,7 +71,7 @@ Not emitted on a rule: `helpUri` and `help.markdown` (GitHub shows `help.text` w
 | `locations[]` | Exactly one location, the finding's `position`, [below](#the-location). GitHub reads only the first location of a result; SARIF allows more, and this format never has a second. |
 | `relatedLocations[]` | The positions the finding names beyond its own, [below](#related-locations). Absent when the finding names none. |
 | `partialFingerprints` | The two keys [below](#partial-fingerprints). |
-| `properties` | Every field of the finding this page has not mapped above, under its schema name and with its value unchanged; a merged finding's `analyzer` is mapped by the run that holds the result. At schema version 9.0.0 that is `language`, `symbol`, `reachability_class`, `confidence`, `liveness_relation`, `test_only`, `generated`, `component`, `retained_by`, `configurations`, `consumers_loaded`, `fixability` and `details`. A field the finding omits is absent from the bag, never written as a null or as an empty value. GitHub does not read the bag; it serves other SARIF consumers, a codemod and a reader of the file, and it changes nothing about the alert GitHub shows. |
+| `properties` | Every field of the finding this page has not mapped above, under its schema name and with its value unchanged; a merged finding's `analyzer` is mapped by the run that holds the result. At schema version 9.0.0 that is `language`, `symbol`, `reachability_class`, `confidence`, `liveness_relation`, `test_only`, `generated`, `component`, `retained_by`, `configurations`, `consumers_loaded`, `fixability` and `details`. A field the finding omits is absent from the bag, never written as a null or as an empty value. Where the report lists the finding's component under `components`, the bag's `component` carries that entry's `members` as well, under that name, so a result names the members as the finding read with the listing does. GitHub does not read the bag; it serves other SARIF consumers, a codemod and a reader of the file, and it changes nothing about the alert GitHub shows. |
 
 Not emitted on a result: `kind` (the default `fail` is right for every result), `rule` (a `ruleId` with a `ruleIndex` locates the descriptor), `fixes` (the report is the interface for an edit, and no product edits source in this version), `codeFlows`, `stacks`, `taxa`, `baselineState`, `rank`, `occurrenceCount`, and `suppressions`, whose omission has [its own section](#the-omitted-suppression).
 
@@ -105,7 +105,7 @@ A result carries a related location for every position the finding names beyond 
 1. Each entry of `details.implementations`, in report order, with `message.text` `implementation` (the `DS12xx` kinds).
 2. Each entry of `details.write_positions`, in report order, with `message.text` `write` (`DS1301` and `DS1807`).
 3. `details.name_literal`, with `message.text` `name` (the codes the name-literal rule of [`analysis.md`](analysis.md) lists).
-4. Each member of the finding's component other than the finding's own declaration, the member whose reference and path are both the finding's own, in the order the report lists them, with `message.text` `member`, when the finding carries the member list; it does so when the cascade output is set to full, under the field `finding.schema.json` names for it, and a finding without the list contributes no related location here.
+4. Each member of the finding's component other than the finding's own declaration, the member whose reference and path are both the finding's own, in the order the report lists them, with `message.text` `member`, when the report lists the finding's component; it does so when the cascade output is set to full, in the `components` entry `report.schema.json` names for the component's identifier, and a finding whose component the report does not list contributes no related location here.
 
 Each related location is a `location` object with `id` (the 1-based number), `physicalLocation` in the shape above, and `message.text` as listed. At most 100 related locations are emitted, the first 100 in that order; GitHub rejects a result with more than 1,000 locations and includes 100 of them, and the JSON report stays complete whatever the cap removes.
 
@@ -250,8 +250,8 @@ One row per property this mapping emits, with the row of GitHub's supported-prop
 
 ## What other documents fix
 
-- [`finding.schema.json`](../finding.schema.json): the finding fields this page maps, the unit of `position.column` that decides `columnKind`, and the field carrying a component's member list.
-- [`report.schema.json`](../report.schema.json): the envelope, `analyzer`, `totals`, the stale-suppression record and the analyzer name kept on each merged record.
+- [`finding.schema.json`](../finding.schema.json): the finding fields this page maps and the unit of `position.column` that decides `columnKind`.
+- [`report.schema.json`](../report.schema.json): the envelope, `analyzer`, `totals`, the stale-suppression record, the analyzer name kept on each merged record and the `components` listing that carries a component's members.
 - [`kinds.json`](../kinds.json): every rule's `code`, `name`, `rule`, `precondition`, `default_severity` and `max_class`.
 - `symbol-ref.md`: the reference `deadsetSymbolRef/v1` digests.
 - [`merge.md`](merge.md): the order of results and the `DS1705` finding the merge run carries.

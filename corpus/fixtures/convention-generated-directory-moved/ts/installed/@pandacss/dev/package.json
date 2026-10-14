@@ -1,0 +1,6 @@
+{
+  "name": "@pandacss/dev",
+  "private": true,
+  "version": "1.999.0",
+  "types": "./index.d.ts"
+}

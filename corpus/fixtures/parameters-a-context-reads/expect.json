@@ -1,6 +1,6 @@
 {
   "name": "parameters-a-context-reads",
-  "description": "A parameter of a function expression the compiler gives a contextual type is not reported when it carries a type annotation, which the call's inference may read, or when it is an object binding pattern, which reads the properties it names from the argument; neither is any name such a pattern binds. A declared function's unread annotated parameter, and one of a function expression no context types where it is written, are reported. A name an array binding pattern of a local binds and nothing reads is a dead store, whatever element follows it, because the element can be left as a hole.",
+  "description": "A parameter of a function expression the compiler gives a contextual type is not reported when it carries a type annotation, which the call's inference may read. A name an object binding pattern of such a parameter binds that the body never reads is reported at probable, because the code handing the argument may act on the pattern's read of the property. A declared function's unread annotated parameter, and one of a function expression no context types where it is written, are reported. A name an array binding pattern of a local binds and nothing reads is a dead store, whatever element follows it, because the element can be left as a hole.",
   "languages": [
     "ts"
   ],
@@ -12,7 +12,16 @@
     },
     {
       "symbol": "DestructuredContextual",
-      "report": "none"
+      "report": "DS1801",
+      "confidence": "probable",
+      "reachability_class": "probable",
+      "symbol_kind": "parameter",
+      "details": {
+        "overlap": [
+          "tsc --noUnusedParameters",
+          "@typescript-eslint/no-unused-vars"
+        ]
+      }
     },
     {
       "symbol": "DeclaredAnnotated",

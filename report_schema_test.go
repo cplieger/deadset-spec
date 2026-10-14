@@ -12,10 +12,13 @@ import (
 const (
 	reportSchemaPath = "contract/report.schema.json"
 
-	// reportFindingRef is the one cross-file reference this contract allows:
-	// the finding object is declared once and referenced from the two places a
-	// finding appears in a report.
+	// reportFindingRef and reportMemberRef are the cross-file references this
+	// contract allows: the finding object is declared once and referenced from the
+	// two places a finding appears in a report, and the positioned symbol a
+	// component's listing holds is the one the finding schema declares.
 	reportFindingRef        = "finding.schema.json"
+	reportMemberRef         = reportFindingRef + "#/$defs/positioned_symbol"
+	reportMemberItemsPath   = "properties/components/items/properties/members/items"
 	reportFindingRefPath    = "contract/" + reportFindingRef
 	reportEdgeItemPath      = "properties/edge_evaluations/items"
 	reportStaleItemPath     = "properties/stale_suppressions/items"
@@ -35,10 +38,11 @@ const (
 	reportNotBuiltProjectPath       = reportNotBuiltItemsPath + "/oneOf/1"
 )
 
-// reportFindingRefPaths are the two places a report carries a finding, as
-// paths into the schema tree: the reported findings and the pending finding an
-// edge evaluation carries.
+// reportFindingRefPaths are the references a report makes into the finding
+// schema, as paths into the schema tree: the members a component's listing holds,
+// the reported findings and the pending finding an edge evaluation carries.
 var reportFindingRefPaths = []string{
+	"/" + reportMemberItemsPath + "/$ref",
 	"/properties/edge_evaluations/items/properties/finding/$ref",
 	"/properties/findings/items/$ref",
 }
@@ -82,10 +86,10 @@ func TestReportSchemaIsClosedAndDescribed(t *testing.T) {
 	}
 }
 
-// TestReportSchemaReferencesOnlyTheFindingSchema pins the one reference the
-// envelope makes outside its own file, and that the file it names is in the
-// tree: a report carries findings in two places and the finding object has one
-// owner, so neither place restates it.
+// TestReportSchemaReferencesOnlyTheFindingSchema pins the references the envelope
+// makes outside its own file, and that the file they name is in the tree: a report
+// carries findings in two places and component members in one, and the finding
+// object and the positioned symbol each have one owner, so no place restates them.
 func TestReportSchemaReferencesOnlyTheFindingSchema(t *testing.T) {
 	schema := loadReportSchema(t)
 	if got := references(schema, ""); !slices.Equal(got, reportFindingRefPaths) {
@@ -99,6 +103,9 @@ func TestReportSchemaReferencesOnlyTheFindingSchema(t *testing.T) {
 		if desc, _ := node["description"].(string); desc == "" {
 			t.Errorf("schema[%s].description = %v, want a description beside the reference", at, node["description"])
 		}
+	}
+	if got, _ := objectAt(schema, reportMemberItemsPath)[reportFindingRefKeyword].(string); got != reportMemberRef {
+		t.Errorf("schema[%s].$ref = %q, want %q", reportMemberItemsPath, got, reportMemberRef)
 	}
 	if _, err := fs.Stat(spec.Contract, reportFindingRefPath); err != nil {
 		t.Errorf("fs.Stat(Contract, %q) = %v, want the referenced schema present in the tree", reportFindingRefPath, err)
@@ -116,7 +123,7 @@ func TestReportSchemaProperties(t *testing.T) {
 			name: "envelope",
 			at:   "",
 			want: []string{
-				"analyzer", "configurations", "configurations_not_built", "consumers",
+				"analyzer", "components", "configurations", "configurations_not_built", "consumers",
 				"contract_version", "conventions_applied", "declared_gaps", "edge_evaluations", "excluded_by_cgo",
 				"findings", "merged_from", "notes", "schema_version", "stale_suppressions", "target",
 				"test_file_rules", "totals", "type_error_skips", "unanswered_questions",
@@ -140,6 +147,7 @@ func TestReportSchemaProperties(t *testing.T) {
 		{name: "declared_gap", at: "properties/declared_gaps/items", want: []string{"analyzer", "capability", "fixture", "reason", "symbol"}},
 		{name: "test_file_rule", at: "properties/test_file_rules/items", want: []string{"matched", "rule"}},
 		{name: "type_error_skip", at: "properties/type_error_skips/items", want: []string{"line", "message", "path"}},
+		{name: "component", at: "properties/components/items", want: []string{"id", "members"}},
 		{name: "note", at: "properties/notes/items", want: []string{"key", "kind", "message", "path"}},
 		{name: "unanswered_question", at: "properties/unanswered_questions/items", want: []string{"configuration", "declarations", "questions"}},
 		{name: "convention_applied", at: "properties/conventions_applied/items", want: []string{"manifest", "name", "package", "version"}},
@@ -198,6 +206,7 @@ func TestReportSchemaRequiredMembers(t *testing.T) {
 		{name: "declared_gap", at: "properties/declared_gaps/items", want: []string{"fixture", "capability", "reason"}},
 		{name: "test_file_rule", at: "properties/test_file_rules/items", want: []string{"rule", "matched"}},
 		{name: "type_error_skip", at: "properties/type_error_skips/items", want: []string{"path", "line", "message"}},
+		{name: "component", at: "properties/components/items", want: []string{"id", "members"}},
 		{name: "note", at: "properties/notes/items", want: []string{"kind", "path", "message"}},
 		{name: "unanswered_question", at: "properties/unanswered_questions/items", want: []string{"configuration", "questions", "declarations"}},
 		{name: "convention_applied", at: "properties/conventions_applied/items", want: []string{"name", "package", "version", "manifest"}},

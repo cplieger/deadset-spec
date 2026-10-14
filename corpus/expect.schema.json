@@ -245,7 +245,7 @@
           "kind": {
             "description": "The note's kind, drawn from the kind enumeration of a notes entry in contract/report.schema.json.",
             "type": "string",
-            "enum": ["module-not-loaded", "published-package", "unmapped-entry"]
+            "enum": ["computed-load", "module-not-loaded", "published-package", "unmapped-entry"]
           },
           "path": {
             "description": "The directory the note names, relative to the target root, as contract/report.schema.json spells a note's path: segments joined by /, none of them empty, . or .., so never absolute, with no leading ./ and no trailing /; no control character, U+0000 to U+001F or U+007F; every other character, a space, a backslash, which is no separator, a +, a $, a bracket, a parenthesis or one outside ASCII, written as it is; the target root itself is a single dot.",

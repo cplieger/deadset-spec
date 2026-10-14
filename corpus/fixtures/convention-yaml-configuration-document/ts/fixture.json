@@ -1,0 +1,8 @@
+{
+  "symbols": {
+    "Parser": { "file": "target/package.json", "line": 11 },
+    "Eslint": { "file": "target/package.json", "line": 12 },
+    "Plugin": { "file": "target/package.json", "line": 13 },
+    "NeverNamed": { "file": "target/package.json", "line": 14 }
+  }
+}

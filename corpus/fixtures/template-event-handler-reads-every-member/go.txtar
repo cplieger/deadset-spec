@@ -1,0 +1,42 @@
+The Go rendering: a command executing a constant html/template text whose button
+carries an onclick attribute holding an action.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Gadget.Label": {
+      "file": "target/main.go",
+      "line": 10
+    },
+    "Gadget.Spare": {
+      "file": "target/main.go",
+      "line": 13
+    },
+    "Gadget": {
+      "file": "target/main.go",
+      "line": 8
+    }
+  }
+}
+-- target/go.mod --
+module example.com/handler
+
+go 1.27.0
+-- target/main.go --
+package main
+
+import (
+	"html/template"
+	"os"
+)
+
+type Gadget struct {
+	ID    int
+	Label string
+}
+
+func (Gadget) Spare() int { return 0 }
+
+var page = template.Must(template.New("g").Parse(`<button onclick="pick({{.ID}})">x</button>`))
+
+func main() { _ = page.Execute(os.Stdout, Gadget{ID: 1, Label: "x"}) }

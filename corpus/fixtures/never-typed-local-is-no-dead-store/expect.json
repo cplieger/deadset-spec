@@ -1,0 +1,31 @@
+{
+  "name": "never-typed-local-is-no-dead-store",
+  "description": "A TypeScript local declared with the type never is the compiler's exhaustiveness check: a write to it fails to compile once a case goes unhandled, so none of its writes is a dead store, while an unread local of another type beside it is.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "check",
+      "report": "none"
+    },
+    {
+      "symbol": "unreached",
+      "report": "none"
+    },
+    {
+      "symbol": "other",
+      "report": "DS1807",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "store",
+      "details": {
+        "overlap": [
+          "eslint no-useless-assignment",
+          "@typescript-eslint/no-unused-vars"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "name": "dependency-preloaded-by-a-runtime-flag",
+  "description": "A script token after a runtime flag that preloads a module, --loader, --experimental-loader, --import, --require or -r, or the value such a flag writes after =, that is a bare module specifier is a use of the dependency the specifier names, while a declared dependency nothing names is reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    { "symbol": "TsNode", "report": "none" },
+    {
+      "symbol": "NeverLoaded",
+      "report": "DS1601",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "dependency",
+      "details": {
+        "dependency_class": "dev-dependency"
+      }
+    }
+  ]
+}

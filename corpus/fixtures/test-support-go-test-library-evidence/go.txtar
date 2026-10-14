@@ -1,0 +1,69 @@
+The Go rendering: a command and its test, which calls the command's function, a
+package only that test imports that imports a stand-in of an assertion library the target's module file replaces with
+a directory of the rendering, and a package only that test imports that imports
+no test library. Nothing is fetched, so the rendering loads with no network access.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Positive": {
+      "file": "target/checks/checks.go",
+      "line": 6
+    },
+    "One": {
+      "file": "target/plain/plain.go",
+      "line": 4
+    }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+
+require github.com/stretchr/testify v0.0.0
+
+replace github.com/stretchr/testify v0.0.0 => ../testify
+-- target/main.go --
+package main
+
+func main() { println(run()) }
+
+func run() int { return 1 }
+-- target/main_test.go --
+package main
+
+import (
+	"testing"
+
+	"example.com/target/checks"
+	"example.com/target/plain"
+)
+
+func TestChecks(t *testing.T) {
+	if !checks.Positive(plain.One() + run()) {
+		t.Fail()
+	}
+}
+-- target/checks/checks.go --
+package checks
+
+import "github.com/stretchr/testify/assert"
+
+// Positive is what the test calls.
+func Positive(n int) bool { return assert.True(n > 0) }
+-- target/plain/plain.go --
+package plain
+
+// One is called by a test alone.
+func One() int { return 1 }
+-- testify/go.mod --
+module github.com/stretchr/testify
+
+go 1.27.0
+-- testify/assert/assert.go --
+// Package assert stands in for the assertion library.
+package assert
+
+// True reports whether ok holds.
+func True(ok bool) bool { return ok }

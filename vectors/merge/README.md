@@ -32,6 +32,7 @@ Step 6 of [`merge.md`](../../contract/grammar/merge.md) states every member. `an
 
 | Case | What it establishes | Exit |
 | --- | --- | --- |
+| `components-listed-and-joined` | The `pending-pair-dead` reports, each listing its components in full. The merged report lists the joined component once, under the identifier the union keeps, with the members of every component it joined in canonical order. | 1 |
 | `configuration-built-and-not-built` | One report built a configuration that another report derived and could not build. Admission refuses the pair, because one identifier names one configuration of a run, built or dropped. | 3 |
 | `configuration-entries-differ` | Two reports carry one configuration identifier with two different build-tag lists. Admission refuses the pair, because one identifier names one configuration of a run. | 3 |
 | `configuration-not-built-errors-merged` | Two reports derive one configuration, fail to build it, and word the error two ways. The entries agree on every identity member, so the merge carries one entry under the identifier, with the error of the report `merged_from` names first. That report is the second input file, so a merge that keeps the first entry it reads carries the other error. | 1 |
@@ -55,6 +56,7 @@ Step 6 of [`merge.md`](../../contract/grammar/merge.md) states every member. `an
 | `pending-pair-live` | One side is `dead`, its report carries a finding that falls with the pending one, and the paired side is `live`. Both findings are dropped, and the merged report holds the live evaluation, no finding and no pending count. | 0 |
 | `pending-pair-unevaluated` | A `dead` evaluation whose edge no other report evaluates. The merge ends the run on the unresolved edge. | 3 |
 | `schema-version-out-of-range` | A report whose schema version is outside the accepted range. Admission refuses it before any other step. | 3 |
+| `stale-edge-component-listed` | The `edge-absent-on-every-side` reports, each listing its components in full. The merged report lists the stale-edge finding's one-member component with the edge's subject, which no input lists. | 1 |
 | `stale-suppression-carried` | A report holding one stale suppression and no finding. The merge carries the record, and the run fails on it. | 1 |
 | `target-kind-claims-differ` | Two analyzers claim one language and give it two kinds, one an application and the other a library. Admission refuses the pair, because reports of one target agree on each language's kind. | 3 |
 | `target-kinds-in-one-report` | One report of an analyzer that claims both languages, whose Go code is an application and whose TypeScript code a library, so its kind is `mixed` with each language's kind. The merged report carries the same target. | 1 |

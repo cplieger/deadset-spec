@@ -1,0 +1,22 @@
+{
+  "name": "swag-route-annotation",
+  "description": "A function or a method whose doc comment holds a line that opens with the swag annotation @Router followed by a space or a tab is a root, because swag reads the API operation the comment documents from the declaration whatever calls it. A method whose comment holds only another annotation is reported.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "postAlias",
+      "report": "none"
+    },
+    {
+      "symbol": "summarized",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

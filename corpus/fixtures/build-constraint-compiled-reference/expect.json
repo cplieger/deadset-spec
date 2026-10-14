@@ -1,0 +1,10 @@
+{
+  "name": "build-constraint-compiled-reference",
+  "description": "A declaration dead in every configuration it exists in is not reported while a configuration compiles a reference to it from a declaration another configuration keeps live: an unconstrained function live on linux alone calls a function a non-linux file declares, so that declaration stays; a function only that file declares and nothing calls is reported.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "expect": [
+    { "symbol": "platform", "report": "none" },
+    { "symbol": "spare", "report": "DS1002", "confidence": "certain", "reachability_class": "certain", "configurations": ["windows-amd64"] }
+  ]
+}

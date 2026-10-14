@@ -1,0 +1,57 @@
+The Go rendering: a command and a package of the target, and below it a module that
+replaces the target's module with its directory and holds two scripts in one
+directory, so its package does not build. One script calls a method of the target.
+
+-- fixture.json --
+{
+  "symbols": {
+    "All": {
+      "file": "target/repo/repo.go",
+      "line": 8
+    },
+    "Spare": {
+      "file": "target/repo/repo.go",
+      "line": 11
+    }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+package main
+
+import "example.com/target/repo"
+
+func main() { _ = repo.New() }
+-- target/repo/repo.go --
+package repo
+
+type Repo struct{}
+
+func New() *Repo { return &Repo{} }
+
+// All is called by a script alone.
+func (*Repo) All() int { return 1 }
+
+// Spare is called by nothing.
+func (*Repo) Spare() int { return 2 }
+-- target/scripts/go.mod --
+module example.com/target/scripts
+
+go 1.27.0
+
+require example.com/target v0.0.0
+
+replace example.com/target v0.0.0 => ../
+-- target/scripts/migrate.go --
+package main
+
+import "example.com/target/repo"
+
+func main() { println(repo.New().All()) }
+-- target/scripts/check.go --
+package main
+
+func main() { println("check") }

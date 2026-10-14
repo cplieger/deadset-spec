@@ -1,0 +1,20 @@
+{
+  "symbols": {
+    "runtime": {
+      "file": "target/src/index.ts",
+      "line": 2
+    },
+    "getMeta": {
+      "file": "target/src/index.ts",
+      "line": 21
+    },
+    "version": {
+      "file": "target/src/index.ts",
+      "line": 6
+    },
+    "date": {
+      "file": "target/src/index.ts",
+      "line": 10
+    }
+  }
+}

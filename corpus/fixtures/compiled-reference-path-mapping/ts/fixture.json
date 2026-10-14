@@ -1,0 +1,6 @@
+{
+  "symbols": {
+    "g": { "file": "target/src/impl-b.ts", "line": 1 },
+    "spare": { "file": "target/src/impl-b.ts", "line": 5 }
+  }
+}

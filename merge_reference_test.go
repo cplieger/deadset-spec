@@ -461,7 +461,7 @@ func referenceMerge(inputs []mergeInput, accepted []string, caller mergeCaller, 
 	for _, p := range promoted {
 		findings = append(findings, p.finding)
 	}
-	unionComponents(findings, promoted)
+	joined := unionComponents(findings, promoted)
 	findings = append(findings, staleEdges(evaluations, caller.Analyzer.Name, kinds)...)
 
 	sortByKey(findings, findingKey)
@@ -471,6 +471,9 @@ func referenceMerge(inputs []mergeInput, accepted []string, caller mergeCaller, 
 	report := mergedEnvelope(inputs, accepted, caller)
 	report.set("findings", jsonArrayOf(findings...), "")
 	report.set("edge_evaluations", keptEvaluations(evaluations), "")
+	if listed := listedComponents(inputs, findings, joined); listed != nil {
+		report.set("components", listed, "edge_evaluations")
+	}
 	report.set("stale_suppressions", jsonArrayOf(stale...), "")
 	report.set("declared_gaps", jsonArrayOf(gaps...), "")
 	report.set("excluded_by_cgo", unionStrings(inputs, "excluded_by_cgo"), "")
@@ -701,8 +704,9 @@ func strongestOther(e referenceEvaluation, evaluations []referenceEvaluation, dr
 
 // unionComponents joins the components of promoted findings on the other sides of one edge, in
 // canonical order, the identifier the loop reaches first surviving however many edges a join
-// spans, and rewrites every finding whose component the union named.
-func unionComponents(findings []*jsonValue, promoted []promotion) {
+// spans, and rewrites every finding whose component the union named. It returns the surviving
+// identifier of every component the union reached.
+func unionComponents(findings []*jsonValue, promoted []promotion) map[string]string {
 	parent := map[string]string{}
 	reached := map[string]int{}
 	var find func(id string) string
@@ -759,6 +763,62 @@ func unionComponents(findings []*jsonValue, promoted []promotion) {
 		component.set("symbol_count", jsonNumberOf(sums[root][0]), "")
 		component.set("deletable_lines", jsonNumberOf(sums[root][1]), "")
 	}
+	joined := make(map[string]string, len(parent))
+	for id := range parent {
+		joined[id] = find(id)
+	}
+	return joined
+}
+
+// listedComponents is step 6's components listing, nil where no input lists components: one
+// entry per component the ordered findings name, in the order of the first finding naming it,
+// holding every member an input lists under it or under a component the union joined into it,
+// once each, ordered by path, line, column and reference.
+func listedComponents(inputs []mergeInput, findings []*jsonValue, joined map[string]string) *jsonValue {
+	lists := false
+	members := map[string][]*jsonValue{}
+	for _, in := range inputs {
+		listing := in.report.get("components")
+		if listing == nil {
+			continue
+		}
+		lists = true
+		for _, entry := range listing.items {
+			id := entry.get("id").str()
+			if root, ok := joined[id]; ok {
+				id = root
+			}
+			members[id] = append(members[id], entry.get("members").items...)
+		}
+	}
+	if !lists {
+		return nil
+	}
+	out := jsonArrayOf()
+	seen := map[string]bool{}
+	for _, f := range findings {
+		id := f.at("component", "id").str()
+		held, ok := members[id]
+		if !ok && f.get("code").str() == "DS1705" {
+			held, ok = []*jsonValue{jsonObjectOf("ref", f.at("symbol", "ref"), "name", f.at("symbol", "name"), "position", f.get("position"))}, true
+		}
+		if !ok || seen[id] {
+			continue
+		}
+		seen[id] = true
+		slices.SortStableFunc(held, func(a, b *jsonValue) int {
+			return cmp.Or(
+				strings.Compare(a.at("position", "path").str(), b.at("position", "path").str()),
+				cmp.Compare(a.at("position", "line").num(), b.at("position", "line").num()),
+				cmp.Compare(a.at("position", "column").num(), b.at("position", "column").num()),
+				strings.Compare(a.get("ref").str(), b.get("ref").str()),
+				bytes.Compare(a.compactBytes(), b.compactBytes()),
+			)
+		})
+		held = slices.CompactFunc(held, func(a, b *jsonValue) bool { return bytes.Equal(a.compactBytes(), b.compactBytes()) })
+		out.items = append(out.items, jsonObjectOf("id", jsonText(id), "members", jsonArrayOf(held...)))
+	}
+	return out
 }
 
 // staleEdges runs step 5: one DS1705 per edge with a side whose every evaluation is absent.

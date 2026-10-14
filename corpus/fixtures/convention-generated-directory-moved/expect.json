@@ -1,0 +1,40 @@
+{
+  "name": "convention-generated-directory-moved",
+  "description": "A generated directory an applied row writes with a directory a configuration property moves is read where the property's literal value sets it, so every file below the directory the configuration names is a generated file, while a file the project writes is judged. The fixture assumes the analyzer carries a row named panda for the package @pandacss/dev, holding the installed version in its range, whose generated directory is the one the outdir property of panda.config.ts moves.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "conventions_applied": [
+    {
+      "name": "panda",
+      "package": "@pandacss/dev",
+      "version": "1.999.0",
+      "manifest": "package.json"
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "Props",
+      "report": "none",
+      "retained_by": [
+        "generated-file"
+      ]
+    },
+    {
+      "symbol": "UnusedGenerated",
+      "report": "none",
+      "retained_by": [
+        "generated-file"
+      ]
+    },
+    {
+      "symbol": "UnusedWritten",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "variable",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

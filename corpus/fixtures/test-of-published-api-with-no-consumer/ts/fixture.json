@@ -1,0 +1,6 @@
+{
+  "symbols": {
+    "unmarshal": { "file": "target/src/index.ts", "line": 1 },
+    "testUnmarshal": { "file": "target/src/index.test.ts", "line": 3 }
+  }
+}

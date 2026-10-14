@@ -1,0 +1,62 @@
+The Go rendering: a command importing a package whose go:generate directive runs
+ent's generator through go run over a schema directory, and the schema package, which
+the command imports for its effects alone, with an exported schema type, its exported methods and field, and
+an unexported helper.
+
+-- fixture.json --
+{
+  "symbols": {
+    "User": {
+      "file": "target/store/schema/user.go",
+      "line": 4
+    },
+    "Name": {
+      "file": "target/store/schema/user.go",
+      "line": 5
+    },
+    "Fields": {
+      "file": "target/store/schema/user.go",
+      "line": 8
+    },
+    "Edges": {
+      "file": "target/store/schema/user.go",
+      "line": 10
+    },
+    "helper": {
+      "file": "target/store/schema/user.go",
+      "line": 12
+    }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+package main
+
+import (
+	"example.com/target/store"
+	_ "example.com/target/store/schema"
+)
+
+func main() { store.Open() }
+-- target/store/store.go --
+package store
+
+//go:generate go run -mod=mod entgo.io/ent/cmd/ent generate --feature sql/upsert ./schema
+
+func Open() {}
+-- target/store/schema/user.go --
+package schema
+
+// User is a schema the generator reads.
+type User struct {
+	Name string
+}
+
+func (User) Fields() []string { return nil }
+
+func (User) Edges() []string { return nil }
+
+func helper() {}

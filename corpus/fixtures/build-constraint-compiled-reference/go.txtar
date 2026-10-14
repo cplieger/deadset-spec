@@ -1,0 +1,44 @@
+The Go rendering: an unconstrained function a linux file alone calls, which calls a
+function a linux file and a non-linux file each declare, beside a windows file that
+gives the matrix its second configuration.
+
+-- fixture.json --
+{
+  "configurations": ["linux-amd64", "windows-amd64"],
+  "symbols": {
+    "platform": { "file": "target/platform_other.go", "line": 5 },
+    "spare": { "file": "target/platform_other.go", "line": 7 }
+  }
+}
+-- target/go.mod --
+module example.com/compiled
+
+go 1.27.0
+-- target/main.go --
+package main
+
+func main() {}
+-- target/shared.go --
+package main
+
+func shared() { platform() }
+-- target/use_linux.go --
+package main
+
+func init() { shared() }
+-- target/platform_linux.go --
+package main
+
+func platform() {}
+-- target/platform_other.go --
+//go:build !linux
+
+package main
+
+func platform() {}
+
+func spare() {}
+-- target/boot_windows.go --
+package main
+
+func init() {}

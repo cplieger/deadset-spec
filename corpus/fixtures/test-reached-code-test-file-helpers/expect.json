@@ -1,0 +1,43 @@
+{
+  "name": "test-reached-code-test-file-helpers",
+  "description": "A declaration of a test file that only a test of dead code reaches, a helper and the variable it reads, follows that test: where every target of the test is production code only tests use, at possible, each is reported at possible too, so the default level reports none of them.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "expect": [
+    {
+      "symbol": "Sample",
+      "report": "DS1004",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "base",
+      "report": "DS1002",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "variable",
+      "liveness_relation": "reachability"
+    },
+    {
+      "symbol": "helper",
+      "report": "DS1002",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "function",
+      "liveness_relation": "reachability"
+    },
+    {
+      "symbol": "TestSample",
+      "report": "DS1005",
+      "confidence": "possible",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

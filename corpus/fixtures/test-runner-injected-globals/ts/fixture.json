@@ -1,0 +1,6 @@
+{
+  "symbols": {
+    "Spy": { "file": "target/tests/helper.ts", "line": 1 },
+    "Unread": { "file": "target/tests/a.test.ts", "line": 4 }
+  }
+}

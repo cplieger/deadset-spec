@@ -1,0 +1,17 @@
+{
+  "name": "compiled-reference-path-mapping",
+  "description": "A declaration dead in every configuration that holds it is not reported while a configuration compiles a reference to it from a declaration the run keeps: two compiler configurations map one specifier to two files, a function the entry calls in one configuration calls the other file's function in the configuration where nothing calls it, so that function stays; a function only that file declares and nothing calls is reported.",
+  "languages": ["ts"],
+  "target_kind": "application",
+  "expect": [
+    { "symbol": "g", "report": "none" },
+    {
+      "symbol": "spare",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

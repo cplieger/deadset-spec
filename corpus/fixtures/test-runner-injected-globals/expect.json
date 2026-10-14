@@ -1,0 +1,36 @@
+{
+  "name": "test-runner-injected-globals",
+  "description": "A test runner configuration that injects the runner's globals declares them to each compiler configuration of its manifest's directory that can resolve their declarations, so a test that calls them carries no type error and its dead store is judged, and a file only tests reach that calls one carries test evidence, as an import of the runner does, so the helper a test uses is test code. The fixture's run is answered at min_confidence possible, where a helper that is production code only tests use would be reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "conventions_applied": [
+    {
+      "name": "vitest",
+      "package": "vitest",
+      "version": "5.999.0",
+      "manifest": "package.json"
+    }
+  ],
+  "min_confidence": "possible",
+  "expect": [
+    {
+      "symbol": "Spy",
+      "report": "none"
+    },
+    {
+      "symbol": "Unread",
+      "report": "DS1807",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "store",
+      "details": {
+        "overlap": [
+          "eslint no-useless-assignment",
+          "@typescript-eslint/no-unused-vars"
+        ]
+      }
+    }
+  ]
+}

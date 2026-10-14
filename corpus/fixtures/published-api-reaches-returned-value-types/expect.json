@@ -1,0 +1,39 @@
+{
+  "name": "published-api-reaches-returned-value-types",
+  "description": "The published API of a TypeScript library reaches the type of each value a published function returns, through the type assertions around it, so a property only the returned value's type carries, one an intersection a library call builds included, is published API whatever the declared result names, and a run with no consumer reports it at possible.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "library",
+  "min_confidence": "possible",
+  "expect": [
+    {
+      "symbol": "runtime",
+      "report": "DS1301",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "type-member"
+    },
+    {
+      "symbol": "getMeta",
+      "report": "DS1001",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "version",
+      "report": "DS1301",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "type-member"
+    },
+    {
+      "symbol": "date",
+      "report": "DS1003",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "type-member"
+    }
+  ]
+}

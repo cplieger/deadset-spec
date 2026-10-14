@@ -84,7 +84,30 @@ type sarifReport struct {
 	} `json:"analyzer"`
 	MergedFrom        []sarifMergedEntry `json:"merged_from"`
 	Findings          []sarifRecord      `json:"findings"`
+	Components        []sarifComponent   `json:"components"`
 	StaleSuppressions []sarifRecord      `json:"stale_suppressions"`
+}
+
+// sarifComponent is one entry of a report's components listing.
+type sarifComponent struct {
+	ID      string `json:"id"`
+	Members []any  `json:"members"`
+}
+
+// withListedMembers gives each finding's component the members the report lists under
+// its identifier, the shape the result's related locations and property bag read.
+func (rep *sarifReport) withListedMembers() {
+	listed := map[string][]any{}
+	for _, entry := range rep.Components {
+		listed[entry.ID] = entry.Members
+	}
+	for _, found := range rep.Findings {
+		component, _ := found["component"].(map[string]any)
+		id, _ := component["id"].(string)
+		if members, ok := listed[id]; ok {
+			component["members"] = members
+		}
+	}
 }
 
 // sarifRenderer renders reports with one kinds vocabulary.
@@ -109,6 +132,7 @@ func (r *sarifRenderer) renderSARIF(document []byte, inputs [][]byte) (map[strin
 	if err := json.Unmarshal(document, &rep); err != nil {
 		return nil, err
 	}
+	rep.withListedMembers()
 	log := map[string]any{"$schema": sarifSchemaURI, "version": "2.1.0"}
 	if len(rep.MergedFrom) == 0 {
 		run, err := r.run(rep.Analyzer.Name, rep.Analyzer.Version, rep.Analyzer.Languages, rep.Totals, rep.Findings, rep.StaleSuppressions)
