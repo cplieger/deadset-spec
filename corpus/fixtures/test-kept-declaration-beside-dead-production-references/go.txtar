@@ -1,0 +1,49 @@
+The Go rendering: a command calling one function of a package, a constant and a
+variable of that package that only a function nothing calls references in
+production, and a test of the package that calls the live function and reads the
+constant. Nothing imports anything outside the standard library, so the rendering
+loads with no network access.
+
+-- fixture.json --
+{
+  "symbols": {
+    "FixedNow": { "file": "target/clock/clock.go", "line": 7 },
+    "deadOnly": { "file": "target/clock/clock.go", "line": 9 },
+    "Stale": { "file": "target/clock/clock.go", "line": 12 },
+    "TestClock": { "file": "target/clock/clock_test.go", "line": 6 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+package main
+
+import "example.com/target/clock"
+
+func main() { println(clock.Now()) }
+-- target/clock/clock.go --
+package clock
+
+// Now is what the command calls.
+func Now() int64 { return 1 }
+
+// FixedNow is read by the test and by Stale.
+var FixedNow int64 = 1664379699000
+
+var deadOnly int64 = 2
+
+// Stale is called by nothing.
+func Stale() int64 { return FixedNow + deadOnly }
+-- target/clock/clock_test.go --
+package clock
+
+import "testing"
+
+// The test reaches live code, so it is no test of dead code.
+func TestClock(t *testing.T) {
+	if Now() > FixedNow {
+		t.Fail()
+	}
+}

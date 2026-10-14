@@ -1,0 +1,42 @@
+{
+  "name": "test-used-code-beside-a-dead-root-by-default",
+  "description": "The rendering of test-used-code-beside-a-dead-root run under the default minimum confidence: the dead root is reported, and the findings production code only tests use lowers to possible are withheld one by one rather than taking the dead root's component with them.",
+  "languages": [
+    "go",
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Live",
+      "report": "none"
+    },
+    {
+      "symbol": "Legacy",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting",
+      "component": {
+        "root": true
+      }
+    },
+    {
+      "symbol": "Shared",
+      "report": "none"
+    },
+    {
+      "symbol": "shared",
+      "report": "none"
+    },
+    {
+      "symbol": "Make",
+      "report": "none"
+    },
+    {
+      "symbol": "TestMake",
+      "report": "none"
+    }
+  ]
+}

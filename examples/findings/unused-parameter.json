@@ -4,7 +4,7 @@
   "language": "go",
   "position": { "path": "resolve.go", "line": 42, "column": 18, "end_line": 42 },
   "symbol": {
-    "ref": "go://example.com/app#Resolve",
+    "ref": "go://example.com/app#Resolve(opts)",
     "kind": "parameter",
     "name": "opts",
     "size_lines": 1,

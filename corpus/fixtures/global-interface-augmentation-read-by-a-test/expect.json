@@ -1,0 +1,37 @@
+{
+  "name": "global-interface-augmentation-read-by-a-test",
+  "description": "An ambient interface of the global scope that merges into one the compiler's library declarations declare, ImportMeta here, types the value the runtime provides, so a test file's read of a member it declares uses it as production code does and it is not reported. An ambient global interface that merges into no outside declaration is judged by who uses it: a test's use alone leaves it production code only tests use, reported at possible.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "expect": [
+    {
+      "symbol": "ImportMeta",
+      "report": "none"
+    },
+    {
+      "symbol": "OwnGlobal",
+      "report": "DS1201",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "interface",
+      "liveness_relation": "reachability",
+      "component": {
+        "root": false
+      }
+    },
+    {
+      "symbol": "ownGlobal",
+      "report": "DS1004",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "variable",
+      "liveness_relation": "reference-counting",
+      "component": {
+        "root": true
+      }
+    }
+  ]
+}

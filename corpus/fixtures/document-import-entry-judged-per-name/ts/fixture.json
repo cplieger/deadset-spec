@@ -1,0 +1,12 @@
+{
+  "symbols": {
+    "Demo": {
+      "file": "target/src/demo.ts",
+      "line": 5
+    },
+    "DemoProps": {
+      "file": "target/src/demo.ts",
+      "line": 1
+    }
+  }
+}

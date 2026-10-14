@@ -1,0 +1,25 @@
+{
+  "name": "document-import-entry-judged-per-name",
+  "description": "A file a Markdown or MDX document imports is an entry file only for the exports the import reads, so another export of it that only its own file references is a redundant export keyword, and the export the document imports is not.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "expect": [
+    {
+      "symbol": "Demo",
+      "report": "none"
+    },
+    {
+      "symbol": "DemoProps",
+      "report": "DS1104",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type",
+      "details": {
+        "narrower_visibility": "file"
+      }
+    }
+  ]
+}

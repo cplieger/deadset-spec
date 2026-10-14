@@ -78,12 +78,16 @@ A source file is its base name followed by the `:file` selector, scoped by the i
 
 A `require` directive is the required module path followed by `:require`, scoped by the module whose `go.mod` carries it, which is the module path itself: `go://example.com/app#github.com/example/left:require`. The required version is the directive's value, not its identity, so it never appears: a bump leaves the reference unchanged. A `replace` directive is the replaced module path, then `@` and the version when the directive names one, then `:replace`: `go://example.com/app#github.com/old/mod@v1.2.3:replace`, or `#github.com/old/mod:replace` for a directive with no version. The version stays on a `replace` because two `replace` lines for one module at two versions are two directives. A nested module inside the target is its own scope. No other directive has a form, because no other directive is a finding subject (`DS1605`'s precondition in `kinds.json`).
 
+### Go parameters
+
+A parameter a `DS1801` finding names is the reference of the declaration whose part it is, followed by the parameter's name in parentheses, the language's own parameter-list syntax: `Resolve(limit)` for `func Resolve(name string, limit int)`, and `Catalog.ResolveAlias(name)` for a method, which names no receiver. The type parameters of a function do not appear, so a parameter of `func Best[T Tag](want T, have []T)` is `Best(have)`. A function literal no declaration declares has its parameters spelled under the declaration that holds it, the function or method whose body holds it or the package-level variable whose initializer holds it, or under the package's empty fragment where a blank declaration holds it: `run(line)` for a literal inside `run`, and `go://example.com/app#(line)` for one that `var _ = …` holds. One parameter list declares a name once, so two parameters of one function are two references. A declaration and the literals it holds may each declare a name, and their parameters of that name share one reference, as two parts of one declaration share its reference: an ignore entry or a baseline row naming that reference matches the finding of each. No spelling tells two such functions apart without a position or an ordinal, either of which an edit elsewhere in the holder would change. A parameter has no type and no position in its spelling, so adding a parameter changes no other parameter's reference. A receiver is no parameter: a `DS1802` finding carries its method's reference.
+
 ### Deliberately not representable in Go
 
 Each of the following has no reference of its own. A finding whose subject is one of them carries the reference of the nearest enclosing symbol that has one, and its `position` and `symbol.name` say which part of that symbol it concerns.
 
 - **A declaration inside a function body**: a local type, constant, variable or closure. A local name has no container chain from the package scope, and an ordinal within the body would change when a declaration is added above it. The enclosing function's reference stands for it. `DS1002` reports an unreferenced local constant or type this way, at its own position, under the `symbol.kind` its declaration's kind gives it.
-- **A parameter, a named result, an unnamed result, a receiver, a statement, a case clause and a store** (`DS1801` to `DS1809`). These are parts of a declaration, not declarations the analysis enumerates as symbols, and a statement has no name at all. The enclosing function or method is the reference; the finding's position locates the site. Two `DS1801` findings on one function share a reference and differ in position and `symbol.name`.
+- **A named result, an unnamed result, a receiver, a statement, a case clause and a store** (`DS1802` to `DS1809`). These are parts of a declaration, not declarations the analysis enumerates as symbols, and a statement has no name at all. The enclosing function or method is the reference; the finding's position locates the site. Two `DS1807` findings on one function share a reference and differ in position and `symbol.name`. A parameter is a part too, and the exception, spelled as [Go parameters](#go-parameters) states.
 - **A blank-identifier declaration**, `var _ Iface = (*T)(nil)`. A package may hold any number of them, all named `_`, so the name cannot identify one, and an ordinal would not survive an insertion. Such a declaration is a root and is never itself reported dead; the one kind that reports at one, `DS1204`, carries the reference of the interface the assertion names, at the assertion's position. A satisfaction assertion of a type only dead code builds is no root and falls with that type, as the `interface-satisfaction` class of [`exemptions.json`](../exemptions.json) states.
 - **`init` functions.** A package may declare several, all named `init`, and all are roots. A reference `#init` denotes every one of them in its package; a finding inside one is told apart by position.
 - **A field of an anonymous struct that is a map key, a function parameter or result type, or an element of an interface method's signature.** The chain steps into an anonymous struct only through the wrappers named above, because a map's key struct and value struct could otherwise produce one reference for two fields. The carrying field or declaration is the reference.
@@ -231,6 +235,7 @@ Each row is anchored, `^` to `$`, and is the whole reference. The corpus names t
 | go | `package-level` | `^go://GO_PATH#GO_IDENT$` |
 | go | `method`, `interface-method`, `field` | `^go://GO_PATH#GO_IDENT(?:\.GO_IDENT)+$` |
 | go | `type-parameter` | `^go://GO_PATH#GO_IDENT(?:\.GO_IDENT)?\[GO_IDENT\]$` |
+| go | `parameter` | `^go://GO_PATH#(?:GO_IDENT(?:\.GO_IDENT)?)?\(GO_IDENT\)$` |
 | go | `file` | `^go://GO_PATH#GO_FILE:file$` |
 | go | `require` | `^go://GO_PATH#GO_PATH(?:@GO_VERSION)?:require$` |
 | go | `replace` | `^go://GO_PATH#GO_PATH(?:@GO_VERSION)?:replace$` |
@@ -246,7 +251,7 @@ Each row is anchored, `^` to `$`, and is the whole reference. The corpus names t
 
 ### Expanded
 
-The same sixteen expressions with every block substituted, one per line under its language and form, for copying into a test. Every line compiles under Go's `regexp` and under an ECMAScript `RegExp` with no flags.
+The same seventeen expressions with every block substituted, one per line under its language and form, for copying into a test. Every line compiles under Go's `regexp` and under an ECMAScript `RegExp` with no flags.
 
 ```text
 go package
@@ -260,6 +265,9 @@ go method, interface-method, field
 
 go type-parameter
 ^go://[A-Za-z0-9._~-]+(?:/[A-Za-z0-9._~-]+)*#(?:[A-Za-z_]|[^\x00-\x7F])(?:[A-Za-z0-9_]|[^\x00-\x7F])*(?:\.(?:[A-Za-z_]|[^\x00-\x7F])(?:[A-Za-z0-9_]|[^\x00-\x7F])*)?\[(?:[A-Za-z_]|[^\x00-\x7F])(?:[A-Za-z0-9_]|[^\x00-\x7F])*\]$
+
+go parameter
+^go://[A-Za-z0-9._~-]+(?:/[A-Za-z0-9._~-]+)*#(?:(?:[A-Za-z_]|[^\x00-\x7F])(?:[A-Za-z0-9_]|[^\x00-\x7F])*(?:\.(?:[A-Za-z_]|[^\x00-\x7F])(?:[A-Za-z0-9_]|[^\x00-\x7F])*)?)?\((?:[A-Za-z_]|[^\x00-\x7F])(?:[A-Za-z0-9_]|[^\x00-\x7F])*\)$
 
 go file
 ^go://[A-Za-z0-9._~-]+(?:/[A-Za-z0-9._~-]+)*#[^/\\:#\r\n]+\.go:file$
@@ -302,7 +310,7 @@ A reference is valid when it matches one of its language's expressions. A refuse
 
 ## The corpus
 
-[`symbol-ref-corpus.json`](symbol-ref-corpus.json) is an array of cases. Each case carries the `input` string, its `language`, the `form` it takes or nearly takes, whether it is `accepted`, a `reason`, and for an accepted case an `example` of one or two source lines the reference denotes. Every form above has at least one accepted case, and every rule has a refused near-miss: the display name with its receiver star, a parameter in parentheses, a field written with a slash, a trailing dot, a parenthesized selector, a `#` or a `!` as a member separator, a double-quoted string, a Go bracket on a TypeScript type parameter, a percent-encoded identifier, a stray CR or LF, and a spelling in which the selector precedes its operand.
+[`symbol-ref-corpus.json`](symbol-ref-corpus.json) is an array of cases. Each case carries the `input` string, its `language`, the `form` it takes or nearly takes, whether it is `accepted`, a `reason`, and for an accepted case an `example` of one or two source lines the reference denotes. Every form above has at least one accepted case, and every rule has a refused near-miss: the display name with its receiver star, a parameter carrying its type, a field written with a slash, a trailing dot, a parenthesized selector, a `#` or a `!` as a member separator, a double-quoted string, a Go bracket on a TypeScript type parameter, a percent-encoded identifier, a stray CR or LF, and a spelling in which the selector precedes its operand.
 
 ## What other documents fix
 

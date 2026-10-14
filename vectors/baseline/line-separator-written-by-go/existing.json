@@ -33,7 +33,13 @@
     },
     {
       "code": "DS1801",
-      "symbol": "go://example.com/app#scanner.feed",
+      "symbol": "go://example.com/app#scanner.feed(chunk)",
+      "path": "catalog.go",
+      "reason": "recorded by deadset-go 1.20.2"
+    },
+    {
+      "code": "DS1801",
+      "symbol": "go://example.com/app#scanner.feed(flush)",
       "path": "catalog.go",
       "reason": "recorded by deadset-go 1.20.2"
     }

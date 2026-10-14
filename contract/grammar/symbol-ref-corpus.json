@@ -249,9 +249,61 @@
   {
     "input": "go://example.com/app#Catalog.ResolveAlias(name)",
     "language": "go",
-    "form": "method",
+    "form": "parameter",
+    "accepted": true,
+    "reason": "A parameter of a method is the method's reference followed by the parameter's name in parentheses, with no receiver.",
+    "example": "func (c *Catalog) ResolveAlias(name string) (string, error) {"
+  },
+  {
+    "input": "go://example.com/app#Resolve(limit)",
+    "language": "go",
+    "form": "parameter",
+    "accepted": true,
+    "reason": "A parameter is its function's reference followed by its name in parentheses, so two parameters of one function are two references.",
+    "example": "func Resolve(name string, limit int) string {"
+  },
+  {
+    "input": "go://example.com/app#(line)",
+    "language": "go",
+    "form": "parameter",
+    "accepted": true,
+    "reason": "A parameter of a function literal a blank declaration holds is spelled under the package's empty fragment.",
+    "example": "var _ = func(line string) bool { return true }(\"\")"
+  },
+  {
+    "input": "go://example.com/app#Resolve(limit int)",
+    "language": "go",
+    "form": "parameter",
     "accepted": false,
-    "reason": "A parameter has no reference of its own; a finding about one carries the enclosing method's reference and names the parameter in its position and its symbol.name."
+    "reason": "A parameter carries no type in its spelling; only its name is."
+  },
+  {
+    "input": "go://example.com/app#Resolve()",
+    "language": "go",
+    "form": "parameter",
+    "accepted": false,
+    "reason": "Empty parentheses name no parameter."
+  },
+  {
+    "input": "go://example.com/app#Best[T](want)",
+    "language": "go",
+    "form": "parameter",
+    "accepted": false,
+    "reason": "The type parameters of a function do not appear in a parameter's reference; the function's own reference stands before the parentheses."
+  },
+  {
+    "input": "go://example.com/app#Manifest.Tools.Version(raw)",
+    "language": "go",
+    "form": "parameter",
+    "accepted": false,
+    "reason": "A parameter follows a function or a method, so no chain deeper than a type and its method carries one."
+  },
+  {
+    "input": "go://example.com/app#Resolve(limit).x",
+    "language": "go",
+    "form": "parameter",
+    "accepted": false,
+    "reason": "A parameter ends the reference; no component follows it."
   },
   {
     "input": "go://example.com/app#Catalog.ResolveAlias.",

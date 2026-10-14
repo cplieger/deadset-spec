@@ -1,0 +1,45 @@
+{
+  "name": "test-only-use-beside-dead-production-references",
+  "description": "A declaration whose production references are all made by dead code, and that a test which tests live code references, is kept by that test, so it is reported as test-only use rather than as code only dead declarations reference; one only dead code references is reported as such.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "expect": [
+    {
+      "symbol": "fixedNow",
+      "report": "DS1004",
+      "confidence": "probable",
+      "reachability_class": "certain",
+      "symbol_kind": "variable",
+      "liveness_relation": "reachability",
+      "component": {
+        "root": false
+      }
+    },
+    {
+      "symbol": "deadOnly",
+      "report": "DS1002",
+      "confidence": "probable",
+      "reachability_class": "certain",
+      "symbol_kind": "variable",
+      "liveness_relation": "reachability",
+      "component": {
+        "root": false
+      }
+    },
+    {
+      "symbol": "stale",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "testClock",
+      "report": "none"
+    }
+  ]
+}

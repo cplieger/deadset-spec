@@ -1,0 +1,24 @@
+{
+  "symbols": {
+    "load": {
+      "file": "target/support/loader.ts",
+      "line": 5
+    },
+    "inner": {
+      "file": "target/support/loader.ts",
+      "line": 1
+    },
+    "spare": {
+      "file": "target/support/loader.ts",
+      "line": 9
+    },
+    "testLoad": {
+      "file": "target/loader.test.ts",
+      "line": 3
+    },
+    "rendered": {
+      "file": "target/support/render.ts",
+      "line": 3
+    }
+  }
+}

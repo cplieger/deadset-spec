@@ -1,0 +1,16 @@
+{
+  "symbols": {
+    "ImportMeta": {
+      "file": "target/env.d.ts",
+      "line": 3
+    },
+    "OwnGlobal": {
+      "file": "target/env.d.ts",
+      "line": 8
+    },
+    "ownGlobal": {
+      "file": "target/env.d.ts",
+      "line": 12
+    }
+  }
+}

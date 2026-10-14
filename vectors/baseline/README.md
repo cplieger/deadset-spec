@@ -24,7 +24,7 @@ Two cases whose `existing.json` holds the same bytes, and whose reports come fro
 | Case | What it establishes |
 | --- | --- |
 | `backslash-in-a-file-name` | A TypeScript round whose finding sits in a file whose name holds a backslash: the row carries that path as the report spells it, the backslash a character of the name. |
-| `declarations-and-parts` | One row per finding in report order, each with the finding's code, its symbol reference and its path, and the reason naming the analyzer and its version: a declaration, a member, a narrowing finding, a write-only member and a part, the two parts of one declaration under one code recorded as one row. |
+| `declarations-and-parts` | One row per finding in report order, each with the finding's code, its symbol reference and its path, and the reason naming the analyzer and its version: a declaration, a member, a narrowing finding, a write-only member and parts: the two unused parameters of one function recorded as two rows, each under its own reference, and the two dead stores of one function, which share its reference, recorded as one row. |
 | `document-rows-left-out` | No row for a finding about a file, a suppression record or a configured root, and a row for the declaration beside them and for each dependency row, a requirement and a replace directive. |
 | `nothing-to-record` | A round whose every finding is about a document row records an empty baseline. |
 | `typescript-parameters` | A TypeScript round with two unused parameters of one function on one line: each finding carries its parameter's own reference, so the round records two rows. |
