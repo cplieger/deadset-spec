@@ -1,0 +1,91 @@
+The Go rendering: a command and its test file, which declares a suite type that
+embeds another suite type and passes a value of it to the stand-in suite runner
+the target's module file replaces with a directory of the rendering. Nothing is
+fetched, so the rendering loads with no network access.
+
+-- fixture.json --
+{
+  "symbols": {
+    "TestInherited": {
+      "file": "target/main_test.go",
+      "line": 11
+    },
+    "TestState": {
+      "file": "target/main_test.go",
+      "line": 18
+    },
+    "read": {
+      "file": "target/main_test.go",
+      "line": 20
+    },
+    "Spare": {
+      "file": "target/main_test.go",
+      "line": 22
+    }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+
+require github.com/stretchr/testify v0.0.0
+
+replace github.com/stretchr/testify v0.0.0 => ../testify
+-- target/main.go --
+package main
+
+func main() {}
+-- target/main_test.go --
+package main
+
+import (
+	"testing"
+
+	"github.com/stretchr/testify/suite"
+)
+
+type base struct{ suite.Suite }
+
+func (*base) TestInherited() {}
+
+type Checks struct {
+	base
+	state int
+}
+
+func (c *Checks) TestState() { c.state = c.read() }
+
+func (*Checks) read() int { return 1 }
+
+func (*Checks) Spare() {}
+
+func TestChecks(t *testing.T) { suite.Run(t, new(Checks)) }
+-- testify/go.mod --
+module github.com/stretchr/testify
+
+go 1.27.0
+-- testify/suite/suite.go --
+// Package suite stands in for the suite runner: Run calls the suite's Test
+// methods by reflection.
+package suite
+
+import "testing"
+
+// Suite is embedded by a suite type.
+type Suite struct{ t *testing.T }
+
+// T is the running test.
+func (s *Suite) T() *testing.T { return s.t }
+
+// SetT is called by Run.
+func (s *Suite) SetT(t *testing.T) { s.t = t }
+
+// TestingSuite is what Run takes.
+type TestingSuite interface {
+	T() *testing.T
+	SetT(*testing.T)
+}
+
+// Run runs the suite.
+func Run(t *testing.T, s TestingSuite) { s.SetT(t) }

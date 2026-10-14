@@ -1,0 +1,58 @@
+The Go rendering: a command logging with a context of its own type, whose map holds
+a payload, and logging one value as an attribute.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Payload": {
+      "file": "target/main.go",
+      "line": 8
+    },
+    "Payload.Hidden": {
+      "file": "target/main.go",
+      "line": 9
+    },
+    "Logged": {
+      "file": "target/main.go",
+      "line": 12
+    },
+    "Logged.Shown": {
+      "file": "target/main.go",
+      "line": 13
+    },
+    "Context": {
+      "file": "target/main.go",
+      "line": 16
+    }
+  }
+}
+-- target/go.mod --
+module example.com/logctx
+
+go 1.27.0
+-- target/main.go --
+package main
+
+import (
+	"context"
+	"log/slog"
+)
+
+type Payload struct {
+	Hidden string
+}
+
+type Logged struct {
+	Shown string
+}
+
+type Context struct {
+	context.Context
+	Outputs map[string]any
+}
+
+func main() {
+	ctx := Context{Context: context.Background(), Outputs: map[string]any{"p": Payload{}}}
+	slog.InfoContext(ctx, "step", slog.Any("value", Logged{Shown: "s"}))
+	_ = ctx.Outputs
+}

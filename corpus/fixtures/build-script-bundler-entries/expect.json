@@ -1,0 +1,33 @@
+{
+  "name": "build-script-bundler-entries",
+  "description": "A module a script entry runs that calls a bundler's build function names its entries in the entries option of the call's options object, each string read against the directory of the script's manifest, where the script runs, so the file it names is rooted with what it exports and is an entry file, whose export only its own file references keeps its export keyword, while a file no entry names is reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Format",
+      "report": "none"
+    },
+    {
+      "symbol": "Value",
+      "report": "none"
+    },
+    {
+      "symbol": "OrphanFile",
+      "report": "DS1502",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "Unbuilt",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

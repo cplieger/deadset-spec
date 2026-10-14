@@ -1,0 +1,29 @@
+{
+  "name": "dropped-module-scripts",
+  "description": "A module dropped because it does not load keeps its module-not-loaded note, and each of its scripts is a program run by naming the file: a file other than a test file declaring package main and a function main in a directory where another such file declares main too, which no build of its package compiles. Each declaration of the target a script names is a root, its names resolving as they do when the toolchain builds that file alone.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "notes": [
+    {
+      "kind": "module-not-loaded",
+      "path": "scripts"
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "All",
+      "report": "none"
+    },
+    {
+      "symbol": "Spare",
+      "report": "DS1001",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "method",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

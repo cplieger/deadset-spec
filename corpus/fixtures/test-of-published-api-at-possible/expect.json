@@ -1,0 +1,33 @@
+{
+  "name": "test-of-published-api-at-possible",
+  "description": "A library's exported function that only its test calls is reported at possible, because outside programs may call it, so its test is no test of dead code; an unexported function only its own test calls is reported with that test.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "library",
+  "min_confidence": "possible",
+  "expect": [
+    {
+      "symbol": "Unmarshal",
+      "report": "DS1004",
+      "confidence": "possible",
+      "reachability_class": "possible"
+    },
+    {
+      "symbol": "TestUnmarshal",
+      "report": "none"
+    },
+    {
+      "symbol": "spare",
+      "report": "DS1004",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    },
+    {
+      "symbol": "TestSpare",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    }
+  ]
+}

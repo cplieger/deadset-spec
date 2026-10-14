@@ -1,0 +1,22 @@
+{
+  "name": "go-fuzz-entry-without-a-tag",
+  "description": "A go-fuzz entry point is a root in a file whose build constraint does not name the gofuzz tag under a negation, a file with no build constraint included, because a fuzzer that builds the entry point from its package by name, oss-fuzz's among them, sets no tag. A function of another signature in that file is reported.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "FuzzParse",
+      "report": "none"
+    },
+    {
+      "symbol": "FuzzText",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

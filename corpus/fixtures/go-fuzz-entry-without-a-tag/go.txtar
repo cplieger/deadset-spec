@@ -1,0 +1,33 @@
+The Go rendering: a command and a package it imports for its effects alone that
+declares a go-fuzz entry point and a function of another signature, in a file with no
+build constraint.
+
+-- fixture.json --
+{
+  "symbols": {
+    "FuzzParse": {
+      "file": "target/fuzzing/fuzz.go",
+      "line": 3
+    },
+    "FuzzText": {
+      "file": "target/fuzzing/fuzz.go",
+      "line": 5
+    }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+package main
+
+import _ "example.com/target/fuzzing"
+
+func main() {}
+-- target/fuzzing/fuzz.go --
+package fuzzing
+
+func FuzzParse(data []byte) int { return len(data) }
+
+func FuzzText(data string) int { return len(data) }

@@ -1,0 +1,21 @@
+{
+  "name": "embedded-field-supplies-a-published-interface",
+  "description": "In a library, an embedded field through which an exported type supplies a method of the interface a published parameter takes is read through promotion by the conversion an outside program writes, so it is not reported.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "library",
+  "min_confidence": "possible",
+  "expect": [
+    {
+      "symbol": "Decoder.Base",
+      "report": "none"
+    },
+    {
+      "symbol": "AddAddon",
+      "report": "DS1001",
+      "confidence": "possible",
+      "reachability_class": "possible"
+    }
+  ]
+}

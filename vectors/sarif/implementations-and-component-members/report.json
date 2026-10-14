@@ -122,39 +122,7 @@
         "id": "deadset-ts/c-2",
         "root": true,
         "symbol_count": 3,
-        "deletable_lines": 7,
-        "members": [
-          {
-            "ref": "ts://@example/app/src/shapes.ts#describe",
-            "name": "describe",
-            "position": {
-              "path": "src/shapes.ts",
-              "line": 17,
-              "column": 17,
-              "end_line": 19
-            }
-          },
-          {
-            "ref": "ts://@example/app/src/shapes.ts#helper",
-            "name": "helper",
-            "position": {
-              "path": "src/shapes.ts",
-              "line": 21,
-              "column": 10,
-              "end_line": 23
-            }
-          },
-          {
-            "ref": "ts://@example/app/src/shapes.ts#suffix",
-            "name": "suffix",
-            "position": {
-              "path": "src/shapes.ts",
-              "line": 25,
-              "column": 7,
-              "end_line": 25
-            }
-          }
-        ]
+        "deletable_lines": 7
       },
       "retained_by": [],
       "configurations": [
@@ -166,6 +134,58 @@
       "message": "exported function has no reference in the target",
       "details": {},
       "liveness_relation": "reference-counting"
+    }
+  ],
+  "components": [
+    {
+      "id": "deadset-ts/c-1",
+      "members": [
+        {
+          "ref": "ts://@example/app/src/shapes.ts#Shape",
+          "name": "Shape",
+          "position": {
+            "path": "src/shapes.ts",
+            "line": 1,
+            "column": 18,
+            "end_line": 3
+          }
+        }
+      ]
+    },
+    {
+      "id": "deadset-ts/c-2",
+      "members": [
+        {
+          "ref": "ts://@example/app/src/shapes.ts#describe",
+          "name": "describe",
+          "position": {
+            "path": "src/shapes.ts",
+            "line": 17,
+            "column": 17,
+            "end_line": 19
+          }
+        },
+        {
+          "ref": "ts://@example/app/src/shapes.ts#helper",
+          "name": "helper",
+          "position": {
+            "path": "src/shapes.ts",
+            "line": 21,
+            "column": 10,
+            "end_line": 23
+          }
+        },
+        {
+          "ref": "ts://@example/app/src/shapes.ts#suffix",
+          "name": "suffix",
+          "position": {
+            "path": "src/shapes.ts",
+            "line": 25,
+            "column": 7,
+            "end_line": 25
+          }
+        }
+      ]
     }
   ],
   "edge_evaluations": [],

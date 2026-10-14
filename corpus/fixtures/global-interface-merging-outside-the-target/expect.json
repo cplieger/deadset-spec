@@ -1,0 +1,22 @@
+{
+  "name": "global-interface-merging-outside-the-target",
+  "description": "A TypeScript global interface that merges into one declared outside the target is named by that declaration, so it and the declare global block holding it are used; a member it declares is judged by its own references, except where every outside declaration is a package's that declares no member, which reads the interface by type.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "expect": [
+    { "symbol": "global", "report": "none" },
+    { "symbol": "Window", "report": "none" },
+    {
+      "symbol": "chrome",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member"
+    },
+    { "symbol": "ToolOptions", "report": "none" },
+    { "symbol": "strictOption", "report": "none" }
+  ]
+}

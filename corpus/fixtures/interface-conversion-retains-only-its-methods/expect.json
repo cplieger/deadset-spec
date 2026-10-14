@@ -1,0 +1,62 @@
+{
+  "name": "interface-conversion-retains-only-its-methods",
+  "description": "A conversion to an interface declared outside the program retains the methods that interface requires and no other, and a conversion written in a method nothing calls retains nothing, so the methods it would retain fall with that method.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Items.Len",
+      "report": "none"
+    },
+    {
+      "symbol": "Items.Unrelated",
+      "report": "DS1103",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    },
+    {
+      "symbol": "Beats.Len",
+      "report": "DS1103",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    },
+    {
+      "symbol": "Beats.Sorted",
+      "report": "DS1103",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    },
+    {
+      "symbol": "Items",
+      "report": "DS1101",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "details": {
+        "narrower_visibility": "file"
+      }
+    },
+    {
+      "symbol": "Beats",
+      "report": "DS1101",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "details": {
+        "narrower_visibility": "file"
+      }
+    },
+    {
+      "symbol": "Beats.Less",
+      "report": "DS1103",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    },
+    {
+      "symbol": "Beats.Swap",
+      "report": "DS1103",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    }
+  ]
+}

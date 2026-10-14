@@ -1,0 +1,23 @@
+{
+  "name": "test-support-go-test-library-evidence",
+  "description": "A Go package carries test evidence where one of its files other than its test files imports the testing package or a package of github.com/google/go-cmp, github.com/onsi/ginkgo, github.com/onsi/gomega, github.com/stretchr/testify or gotest.tools, a package below one of those module paths included, so a package only tests reach that imports an assertion library is test-support code and its declarations a test calls are not reported. One that imports none is production code only tests use.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "expect": [
+    {
+      "symbol": "Positive",
+      "report": "none"
+    },
+    {
+      "symbol": "One",
+      "report": "DS1004",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

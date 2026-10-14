@@ -1,6 +1,6 @@
 {
   "name": "go-fuzz-entry",
-  "description": "A function named Fuzz, or Fuzz followed by a name that does not open with a lower-case letter, of type func([]byte) int, in a file whose build constraint names the gofuzz tag outside a negation, is a root, because go-fuzz calls it by name. A function of another type in that file, and one of that type in a file the tag does not select, are reported. go-fuzz fixes an entry point's signature, so a parameter it does not read is not reported.",
+  "description": "A function named Fuzz, or Fuzz followed by a name that does not open with a lower-case letter, of type func([]byte) int, in a file whose build constraint holds with the gofuzz tag set, is a root, because go-fuzz calls it by name. A function of another type in that file, and one of that type in a file whose constraint holds only without the tag, are reported. go-fuzz fixes an entry point's signature, so a parameter it does not read is not reported.",
   "languages": [
     "go"
   ],

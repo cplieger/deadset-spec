@@ -1,0 +1,27 @@
+{
+  "name": "template-event-handler-reads-every-member",
+  "description": "An html/template text holding an event-handler attribute, a JavaScript context the engine encodes a value inside whole, is a set the analysis does not read whole, so every field and every exported method of what it renders is read.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Gadget.Label",
+      "report": "none"
+    },
+    {
+      "symbol": "Gadget.Spare",
+      "report": "none"
+    },
+    {
+      "symbol": "Gadget",
+      "report": "DS1101",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "details": {
+        "narrower_visibility": "file"
+      }
+    }
+  ]
+}

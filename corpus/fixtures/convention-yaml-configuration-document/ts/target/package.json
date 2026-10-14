@@ -1,0 +1,16 @@
+{
+  "name": "@example/target",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./main.ts",
+  "scripts": {
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "@typescript-eslint/parser": "8.0.0",
+    "eslint": "8.999.0",
+    "eslint-plugin-react": "7.0.0",
+    "never-named": "1.0.0"
+  }
+}

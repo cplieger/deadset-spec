@@ -1,0 +1,47 @@
+The Go rendering: a library package declaring one exported and one unexported
+function, each called only by its own test.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Unmarshal": {
+      "file": "target/lib.go",
+      "line": 4
+    },
+    "spare": {
+      "file": "target/lib.go",
+      "line": 6
+    },
+    "TestUnmarshal": {
+      "file": "target/lib_test.go",
+      "line": 5
+    },
+    "TestSpare": {
+      "file": "target/lib_test.go",
+      "line": 7
+    }
+  }
+}
+-- target/go.mod --
+module example.com/lib
+
+go 1.27.0
+-- target/lib.go --
+package lib
+
+// Unmarshal is published API nothing in the module calls.
+func Unmarshal() int { return 1 }
+
+func spare() int { return 2 }
+-- target/lib_test.go --
+package lib
+
+import "testing"
+
+func TestUnmarshal(t *testing.T) { _ = Unmarshal() }
+
+func TestSpare(t *testing.T) {
+	if spare() != 2 {
+		t.Fail()
+	}
+}

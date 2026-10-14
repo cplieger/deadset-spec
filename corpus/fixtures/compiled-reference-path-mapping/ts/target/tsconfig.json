@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "target": "es2023",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "strict": true,
+    "noEmit": true,
+    "paths": { "#impl": ["./src/impl-a.ts"] }
+  },
+  "include": ["src/main.ts"]
+}

@@ -1,0 +1,37 @@
+The Go rendering: a command whose handler type carries a method documented by a
+route annotation and nothing calls, and one documented by a summary alone.
+
+-- fixture.json --
+{
+  "symbols": {
+    "postAlias": {
+      "file": "target/main.go",
+      "line": 9
+    },
+    "summarized": {
+      "file": "target/main.go",
+      "line": 14
+    }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+package main
+
+type handler struct{}
+
+// postAlias documents an alias route.
+//
+// @Summary Post an alias
+// @Router /alias [post]
+func (*handler) postAlias() {}
+
+// summarized carries no route.
+//
+// @Summary Only a summary
+func (*handler) summarized() {}
+
+func main() { _ = handler{} }

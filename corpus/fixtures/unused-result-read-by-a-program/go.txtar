@@ -1,0 +1,44 @@
+The Go rendering: a command discarding the results of two functions of a package,
+and a file run on its own under the ignore tag that calls one of them and reads its
+result.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Count": {
+      "file": "target/tally/tally.go",
+      "line": 3
+    },
+    "Spare": {
+      "file": "target/tally/tally.go",
+      "line": 5
+    }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+package main
+
+import "example.com/target/tally"
+
+func main() {
+	tally.Count()
+	tally.Spare()
+}
+-- target/tally/tally.go --
+package tally
+
+func Count() int { return 1 }
+
+func Spare() int { return 2 }
+-- target/tool.go --
+//go:build ignore
+
+package main
+
+import "example.com/target/tally"
+
+func main() { println(tally.Count()) }

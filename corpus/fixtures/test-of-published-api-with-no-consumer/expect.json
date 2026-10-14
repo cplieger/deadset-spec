@@ -1,0 +1,19 @@
+{
+  "name": "test-of-published-api-with-no-consumer",
+  "description": "A TypeScript test whose every target is published API of a library run that declares no consumer exercises code outside programs may use, so it is no test of dead code: the published declaration only it references is reported at possible, and the test is not reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "library",
+  "min_confidence": "possible",
+  "expect": [
+    {
+      "symbol": "unmarshal",
+      "report": "DS1004",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "function"
+    },
+    { "symbol": "testUnmarshal", "report": "none" }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "name": "vitest",
+  "private": true,
+  "version": "5.999.0",
+  "types": "./index.d.ts"
+}

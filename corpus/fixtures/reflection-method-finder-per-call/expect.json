@@ -1,0 +1,51 @@
+{
+  "name": "reflection-method-finder-per-call",
+  "description": "In a program that finds a method by reflection, a value reaches a method-reaching reflect call only where what the reflect call returns may reach a finder: a call heading a chain of reflect method calls that finds no method and ends outside reflection reads fields alone.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Named.Describe",
+      "report": "DS1103",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    },
+    {
+      "symbol": "Runner.Run",
+      "report": "none"
+    },
+    {
+      "symbol": "Held.Grow",
+      "report": "none"
+    },
+    {
+      "symbol": "Named",
+      "report": "DS1101",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "details": {
+        "narrower_visibility": "file"
+      }
+    },
+    {
+      "symbol": "Runner",
+      "report": "DS1101",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "details": {
+        "narrower_visibility": "file"
+      }
+    },
+    {
+      "symbol": "Held",
+      "report": "DS1101",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "details": {
+        "narrower_visibility": "file"
+      }
+    }
+  ]
+}

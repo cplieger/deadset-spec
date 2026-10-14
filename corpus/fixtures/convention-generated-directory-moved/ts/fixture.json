@@ -1,0 +1,7 @@
+{
+  "symbols": {
+    "Props": { "file": "target/out/types/props.ts", "line": 1 },
+    "UnusedGenerated": { "file": "target/out/types/props.ts", "line": 2 },
+    "UnusedWritten": { "file": "target/src/util.ts", "line": 3 }
+  }
+}

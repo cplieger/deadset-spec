@@ -1,0 +1,20 @@
+{
+  "symbols": {
+    "OrphanFile": {
+      "file": "target/src/orphan.ts",
+      "line": 1
+    },
+    "Unbuilt": {
+      "file": "target/src/orphan.ts",
+      "line": 3
+    },
+    "Format": {
+      "file": "target/src/browser.ts",
+      "line": 1
+    },
+    "Value": {
+      "file": "target/src/browser.ts",
+      "line": 5
+    }
+  }
+}

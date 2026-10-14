@@ -1,0 +1,13 @@
+{
+  "name": "serialization-contract-enumerated-parameter",
+  "description": "A TypeScript function whose parameter keeps no member name, typed unknown, any or as a string index signature with no property, and which enumerates it by Object.keys, entries, values, getOwnPropertyNames, the sources of Object.assign or for...in, reads every property of each value passed to it, and so does a function handing such a parameter on; a parameter read only by a literal key holds back nothing.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    { "symbol": "port", "report": "none" },
+    { "symbol": "seed", "report": "none" },
+    { "symbol": "unread", "report": "DS1301", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "type-member" }
+  ]
+}

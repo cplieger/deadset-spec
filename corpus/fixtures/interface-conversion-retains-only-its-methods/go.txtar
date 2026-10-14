@@ -1,0 +1,72 @@
+The Go rendering: a command sorting one slice type through sort.Interface, that type
+declaring one more method, and a second slice type whose only sort sits in a method
+nothing calls.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Items.Len": {
+      "file": "target/main.go",
+      "line": 7
+    },
+    "Items.Unrelated": {
+      "file": "target/main.go",
+      "line": 10
+    },
+    "Beats.Less": {
+      "file": "target/main.go",
+      "line": 15
+    },
+    "Beats.Swap": {
+      "file": "target/main.go",
+      "line": 16
+    },
+    "Beats.Len": {
+      "file": "target/main.go",
+      "line": 14
+    },
+    "Beats.Sorted": {
+      "file": "target/main.go",
+      "line": 18
+    },
+    "Items": {
+      "file": "target/main.go",
+      "line": 5
+    },
+    "Beats": {
+      "file": "target/main.go",
+      "line": 12
+    }
+  }
+}
+-- target/go.mod --
+module example.com/app
+
+go 1.27.0
+-- target/main.go --
+package main
+
+import "sort"
+
+type Items []int
+
+func (i Items) Len() int           { return len(i) }
+func (i Items) Less(a, b int) bool { return i[a] < i[b] }
+func (i Items) Swap(a, b int)      { i[a], i[b] = i[b], i[a] }
+func (i Items) Unrelated() int     { return len(i) }
+
+type Beats []int
+
+func (b Beats) Len() int           { return len(b) }
+func (b Beats) Less(i, j int) bool { return b[i] < b[j] }
+func (b Beats) Swap(i, j int)      { b[i], b[j] = b[j], b[i] }
+
+func (b Beats) Sorted() Beats {
+	sort.Sort(b)
+	return b
+}
+
+func main() {
+	sort.Sort(Items{3, 1})
+	println(len(Beats{1}))
+}

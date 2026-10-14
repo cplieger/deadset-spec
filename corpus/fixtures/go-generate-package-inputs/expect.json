@@ -1,0 +1,34 @@
+{
+  "name": "go-generate-package-inputs",
+  "description": "A go:generate directive that passes a package directory by a relative path, other than the directive's own directory, to the generate subcommand of ent, which loads the package, has every exported declaration of that package outside its test files, whose every container is exported, as a generator input, so each is a root: the generator loads the package and reads its declarations. An unexported declaration of it is judged as any other.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "User",
+      "report": "none"
+    },
+    {
+      "symbol": "Name",
+      "report": "none"
+    },
+    {
+      "symbol": "Fields",
+      "report": "none"
+    },
+    {
+      "symbol": "Edges",
+      "report": "none"
+    },
+    {
+      "symbol": "helper",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "name": "convention-yaml-configuration-document",
+  "description": "A configuration file an applied row reads whose name ends with .yml or .yaml is read as the document its YAML text denotes, so a package its prefixed-name property or its package key names there is used, while a declared dependency it names nowhere is reported. The fixture assumes the analyzer carries a row named eslint for the package eslint, holding the installed version in its range, that reads .eslintrc.yml, whose plugins property names packages by the eslint-plugin prefix and whose parser member is a package key.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "conventions_applied": [
+    {
+      "name": "eslint",
+      "package": "eslint",
+      "version": "8.999.0",
+      "manifest": "package.json"
+    }
+  ],
+  "expect": [
+    { "symbol": "Parser", "report": "none" },
+    { "symbol": "Eslint", "report": "none" },
+    { "symbol": "Plugin", "report": "none" },
+    {
+      "symbol": "NeverNamed",
+      "report": "DS1601",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "dependency",
+      "details": {
+        "dependency_class": "dev-dependency"
+      }
+    }
+  ]
+}

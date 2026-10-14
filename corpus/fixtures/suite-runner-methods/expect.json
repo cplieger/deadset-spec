@@ -1,0 +1,30 @@
+{
+  "name": "suite-runner-methods",
+  "description": "A suite runner calls by reflection the methods its rule names on the value a call passes it as the suite: testify's suite.Run every exported method whose name opens with Test, and gocheck's check.Suite every exported method whose name opens with Test or Benchmark and SetUpSuite, SetUpTest, TearDownTest and TearDownSuite. Each such method of a value whose static type is no interface, a method its method set holds through an embedded field included, is a test the runner calls, so it is a root. Another method of the suite is judged as any declaration of a test file is.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "TestInherited",
+      "report": "none"
+    },
+    {
+      "symbol": "TestState",
+      "report": "none"
+    },
+    {
+      "symbol": "read",
+      "report": "none"
+    },
+    {
+      "symbol": "Spare",
+      "report": "DS1103",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

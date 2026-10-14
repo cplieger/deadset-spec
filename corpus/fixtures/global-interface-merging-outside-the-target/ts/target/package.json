@@ -1,0 +1,10 @@
+{
+  "name": "@example/target",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./main.ts",
+  "devDependencies": {
+    "tool": "1.0.0"
+  }
+}

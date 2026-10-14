@@ -1,0 +1,45 @@
+The Go rendering: a library whose addon package's exported type embeds the proxy
+package's base type, which supplies one of the two methods the published parameter's
+interface requires.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Decoder.Base": {
+      "file": "target/addon/addon.go",
+      "line": 6
+    },
+    "AddAddon": {
+      "file": "target/proxy/proxy.go",
+      "line": 13
+    }
+  }
+}
+-- target/go.mod --
+module example.com/lib
+
+go 1.27.0
+-- target/proxy/proxy.go --
+package proxy
+
+type Addon interface {
+	Request()
+	Response()
+}
+
+type Base struct{}
+
+func (*Base) Request()  {}
+func (*Base) Response() {}
+
+func AddAddon(a Addon) { a.Request(); a.Response() }
+-- target/addon/addon.go --
+package addon
+
+import "example.com/lib/proxy"
+
+type Decoder struct {
+	proxy.Base
+}
+
+func (*Decoder) Response() {}

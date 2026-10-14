@@ -1,0 +1,35 @@
+{
+  "name": "computed-load-lowers-roots-complete",
+  "description": "A TypeScript load by a computed path the analysis cannot resolve may run a root it does not see, so where the configuration declares the roots complete a declaration only dead declarations reference stays probable in the configuration that compiles the load, a declaration nothing references stays certain, and the report notes the site.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "closed_world": [
+    "roots"
+  ],
+  "expect": [
+    {
+      "symbol": "deadCaller",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "calledOnlyByDead",
+      "report": "DS1002",
+      "confidence": "probable",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reachability"
+    }
+  ],
+  "notes": [
+    {
+      "kind": "computed-load",
+      "path": "src"
+    }
+  ]
+}

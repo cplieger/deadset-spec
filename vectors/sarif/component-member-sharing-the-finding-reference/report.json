@@ -61,39 +61,7 @@
         "id": "deadset-ts/c-1",
         "root": true,
         "symbol_count": 3,
-        "deletable_lines": 7,
-        "members": [
-          {
-            "ref": "ts://@example/plugin/src/hooks.ts#setup",
-            "name": "setup",
-            "position": {
-              "path": "examples/a/src/hooks.ts",
-              "line": 1,
-              "column": 17,
-              "end_line": 3
-            }
-          },
-          {
-            "ref": "ts://@example/plugin/src/hooks.ts#suffix",
-            "name": "suffix",
-            "position": {
-              "path": "examples/a/src/hooks.ts",
-              "line": 5,
-              "column": 7,
-              "end_line": 5
-            }
-          },
-          {
-            "ref": "ts://@example/plugin/src/hooks.ts#setup",
-            "name": "setup",
-            "position": {
-              "path": "examples/b/src/hooks.ts",
-              "line": 1,
-              "column": 17,
-              "end_line": 3
-            }
-          }
-        ]
+        "deletable_lines": 7
       },
       "retained_by": [],
       "configurations": [
@@ -105,6 +73,43 @@
       "message": "exported function has no reference in the target",
       "details": {},
       "liveness_relation": "reference-counting"
+    }
+  ],
+  "components": [
+    {
+      "id": "deadset-ts/c-1",
+      "members": [
+        {
+          "ref": "ts://@example/plugin/src/hooks.ts#setup",
+          "name": "setup",
+          "position": {
+            "path": "examples/a/src/hooks.ts",
+            "line": 1,
+            "column": 17,
+            "end_line": 3
+          }
+        },
+        {
+          "ref": "ts://@example/plugin/src/hooks.ts#suffix",
+          "name": "suffix",
+          "position": {
+            "path": "examples/a/src/hooks.ts",
+            "line": 5,
+            "column": 7,
+            "end_line": 5
+          }
+        },
+        {
+          "ref": "ts://@example/plugin/src/hooks.ts#setup",
+          "name": "setup",
+          "position": {
+            "path": "examples/b/src/hooks.ts",
+            "line": 1,
+            "column": 17,
+            "end_line": 3
+          }
+        }
+      ]
     }
   ],
   "edge_evaluations": [],

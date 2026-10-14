@@ -1,0 +1,8 @@
+{
+  "name": "eslint",
+  "private": true,
+  "version": "8.999.0",
+  "bin": {
+    "eslint": "./bin/eslint.js"
+  }
+}

@@ -1,10 +1,16 @@
 {
   "name": "computed-import-directory",
-  "description": "A load whose path is computed, an import() or require() whose template or concatenation starts with a relative literal naming a directory other than the calling file's own, roots every source file below that directory with its exports, as a bundler's context module loads them; a computed path whose literal start is the calling file's own directory roots nothing.",
+  "description": "A load whose path is computed, an import() or require() whose template or concatenation starts with a relative literal naming a directory other than the calling file's own, roots every source file below that directory with its exports, as a bundler's context module loads them; a computed path whose literal start is the calling file's own directory roots nothing. The computed import of its own directory loads a file the analysis cannot resolve, so the report notes it.",
   "languages": [
     "ts"
   ],
   "target_kind": "application",
+  "notes": [
+    {
+      "kind": "computed-load",
+      "path": "src"
+    }
+  ],
   "expect": [
     {
       "symbol": "up",

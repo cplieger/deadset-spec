@@ -70,7 +70,7 @@ From `contract/kinds.json`, row `DS1004`.
 
 ### DS1005 test-of-dead-code
 
-A test symbol whose set of referenced target symbols is non-empty and every member of that set is reported dead. In TypeScript an ambient declaration, one a declaration file holds or one a `declare` modifier carries or a declaration carrying one holds, describes code the target does not implement, so it is no target symbol of that set. A test that references at least one live target symbol is never reported, no notion of a test's subject and no name matching enters the rule, and the message states the rule. The test joins the dead component of the symbols it references, and it and each of them count as referencing each other, so the test is a member of their cycle and never a dead symbol outside it.
+A test symbol whose set of referenced target symbols is non-empty and every member of that set is reported dead. In TypeScript an ambient declaration, one a declaration file holds or one a `declare` modifier carries or a declaration carrying one holds, describes code the target does not implement, so it is no target symbol of that set. A test that references at least one live target symbol is never reported, no notion of a test's subject and no name matching enters the rule, and the message states the rule. A production declaration whose reachability class is `possible` because programs outside the analysis may use it, being published API of a library whose run declares no consumer, and in Go a declaration of a package no build links or an export of a unit a dropped module requires, counts as a live target symbol of every test that references it, so such a test is no test of dead code. The declaration is still reported at `possible`. The test joins the dead component of the symbols it references, and it and each of them count as referencing each other, so the test is a member of their cycle and never a dead symbol outside it.
 
 A finding of this kind may carry `manual` instead, as the fixability bullet above states.
 
@@ -135,7 +135,7 @@ From `contract/kinds.json`, row `DS1103`.
 
 An exported declaration used only inside its own file, reported as a candidate for removing the export keyword. The finding names the narrower visibility the references support.
 
-Precondition: Closed world only. Reported in a file that is not an entry file, a file only a configuration string or a script token names being none, because each runs the file and reads no name it exports, and a test file being one only for the exports its test runner calls, as grammar/analysis.md "Test code" states, and a file a Markdown or MDX document imports one only for the exports the import reads, as grammar/analysis.md "Markdown and MDX documents" states, and that either belongs to a project whose consumer set the configuration declares complete or is reached by no manifest export. A declared cross-language edge counts as a reference from outside the file. Where the edge's other side is unknown to the analyzer, the finding is emitted pending. A symbol the rule of DS1301 holds for is not reported under this code, whatever severity the configuration gives DS1301, because the write-only finding names the defect to fix first.
+Precondition: Closed world only. Reported in a file that is not an entry file, a file only a configuration string or a script token names being none, because each runs the file and reads no name it exports, while a file a build script's bundler call names is one, because the bundle exposes what it exports, and a test file being one only for the exports its test runner calls, as grammar/analysis.md "Test code" states, and a file a Markdown or MDX document imports one only for the exports the import reads, as grammar/analysis.md "Markdown and MDX documents" states, and that either belongs to a project whose consumer set the configuration declares complete or is reached by no manifest export. A declared cross-language edge counts as a reference from outside the file. Where the edge's other side is unknown to the analyzer, the finding is emitted pending. A symbol the rule of DS1301 holds for is not reported under this code, whatever severity the configuration gives DS1301, because the write-only finding names the defect to fix first.
 
 From `contract/kinds.json`, row `DS1104`.
 
@@ -211,9 +211,9 @@ From `contract/kinds.json`, row `DS1302`.
 
 ### DS1303 unused-type-parameter
 
-A type parameter of a function or method that no part of the declaration's signature and no part of the declaration's body names, at the certain class. The deletion is local to the declaration and the explicit instantiations the reference set already lists. A type parameter of a function or method that is itself dead falls with it and is reported under no code of its own.
+A type parameter of a function, a method or a TypeScript type alias that no part of the declaration's signature, body or aliased type names, at the certain class. The deletion is local to the declaration and the explicit instantiations the reference set already lists. A type parameter of a declaration that is itself dead falls with it and is reported under no code of its own.
 
-Precondition: Function and method type parameters only. A type parameter of a type declaration is never reported. A phantom type parameter such as `type ID[T any] int` makes two instantiations distinct types while naming the parameter nowhere, so deleting it changes the program. A method signature an interface or an object type declares belongs to that type declaration, so its type parameters are never reported either.
+Precondition: Function and method type parameters, and in TypeScript those of a type alias, which names no type of its own. A Go type declaration's type parameter is never reported, and neither is one of a TypeScript class or interface, which merges only with declarations of the same type parameters. A Go phantom type parameter such as `type ID[T any] int` makes two instantiations distinct types while naming the parameter nowhere, so deleting it changes the program. A method signature an interface or an object type declares belongs to that type declaration, so its type parameters are never reported either.
 
 From `contract/kinds.json`, row `DS1303`.
 
@@ -385,7 +385,7 @@ From `contract/kinds.json`, row `DS1802`.
 
 A result value that no call site of the function uses, on a function whose signature is free to change.
 
-Precondition: The same free-signature rule as unused-parameter, plus a closed-world condition. Every call site of the function must be in the loaded graph, because an unknown caller may consume the result. The kind therefore reports only for a function whose callers are all visible. A call awaited as a statement of its own uses a result that has a `then` member, a promise or another thenable, because the caller sequences on it, and discards any other result. A call written as a statement of its own, or as the operand of `void`, discards its result whatever its type.
+Precondition: The same free-signature rule as unused-parameter, plus a closed-world condition. Every call site of the function must be in the loaded graph, because an unknown caller may consume the result. The kind therefore reports only for a function whose callers are all visible. A function a program run by naming the file names, a file under the `ignore` tag or a script of a dropped module, has call sites outside the loaded graph. A call awaited as a statement of its own uses a result that has a `then` member, a promise or another thenable, because the caller sequences on it, and discards any other result. A call written as a statement of its own, or as the operand of `void`, discards its result whatever its type.
 
 Overlap in Go: `unparam`. Overlap in TypeScript: `none known`.
 
@@ -403,7 +403,7 @@ From `contract/kinds.json`, row `DS1805`.
 
 A write to a local variable with no read before the next write to it or the end of its scope, computed on the same read-and-write classification the write-only-symbol kind uses. The finding names the write position.
 
-Precondition: In TypeScript the binding of a catch clause is a local variable the clause writes when it catches. A binding the clause's block never reads is a dead store, positioned at the binding, because the clause behaves the same with no binding.
+Precondition: In TypeScript the binding of a catch clause is a local variable the clause writes when it catches. A binding the clause's block never reads is a dead store, positioned at the binding, because the clause behaves the same with no binding. A function declaration of a block of a function is a local too, so one nothing outside its own body reads is a dead store, and so is a `let` or `var` declaration with no initializer that nothing reads or writes. A local annotated `never` is no subject, because a write to it is the compiler's exhaustiveness check.
 
 A TypeScript local is a name a `let` or `const` of a block, or a `var` of a block of a function, binds, a name of a binding pattern included, except one with a default or beside a rest element. A `var` of a nested block is judged in that block, its last write kept, and is no subject where a nested function names it. A local a nested function reads is no subject. A `for…of` or `for…in` variable the body never reads is a dead store, unless its name starts with `_`.
 

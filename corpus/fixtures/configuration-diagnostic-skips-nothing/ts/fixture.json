@@ -1,0 +1,6 @@
+{
+  "symbols": {
+    "spareImport": { "file": "target/lib/run.ts", "line": 1 },
+    "spare": { "file": "target/lib/values.ts", "line": 2 }
+  }
+}

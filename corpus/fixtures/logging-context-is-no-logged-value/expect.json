@@ -1,0 +1,47 @@
+{
+  "name": "logging-context-is-no-logged-value",
+  "description": "The context a log/slog call is given is handed to the handler, which reads it by key, so no field of what the context holds is read; the value an attribute logs is.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Payload.Hidden",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    },
+    {
+      "symbol": "Logged.Shown",
+      "report": "none"
+    },
+    {
+      "symbol": "Payload",
+      "report": "DS1101",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "details": {
+        "narrower_visibility": "file"
+      }
+    },
+    {
+      "symbol": "Logged",
+      "report": "DS1101",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "details": {
+        "narrower_visibility": "file"
+      }
+    },
+    {
+      "symbol": "Context",
+      "report": "DS1101",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "details": {
+        "narrower_visibility": "file"
+      }
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "unused-type-parameter-of-a-type-alias",
+  "description": "A TypeScript type alias names no type of its own, so a type parameter its type never names makes no two instantiations distinct and is reported; one the type names is not, and neither is one of an interface, which merges only with declarations of the same parameters.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Unread",
+      "report": "DS1303",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-parameter"
+    },
+    { "symbol": "Value", "report": "none" },
+    { "symbol": "Tag", "report": "none" }
+  ]
+}

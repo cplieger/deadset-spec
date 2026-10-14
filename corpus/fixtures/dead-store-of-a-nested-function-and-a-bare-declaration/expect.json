@@ -1,0 +1,53 @@
+{
+  "name": "dead-store-of-a-nested-function-and-a-bare-declaration",
+  "description": "A TypeScript function declaration of a function's body writes its name when the body starts, so one nothing outside its own body reads is a dead store at its name, and one read before or after it is not; a let or var declaration with no initializer that nothing reads or writes is a dead store at its name.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "unused",
+      "report": "DS1807",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "store",
+      "details": {
+        "overlap": [
+          "eslint no-useless-assignment",
+          "@typescript-eslint/no-unused-vars"
+        ]
+      }
+    },
+    {
+      "symbol": "recursive",
+      "report": "DS1807",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "store",
+      "details": {
+        "overlap": [
+          "eslint no-useless-assignment",
+          "@typescript-eslint/no-unused-vars"
+        ]
+      }
+    },
+    {
+      "symbol": "never",
+      "report": "DS1807",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "store",
+      "details": {
+        "overlap": [
+          "eslint no-useless-assignment",
+          "@typescript-eslint/no-unused-vars"
+        ]
+      }
+    },
+    {
+      "symbol": "later",
+      "report": "none"
+    }
+  ]
+}

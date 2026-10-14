@@ -1,0 +1,5 @@
+# The legacy configuration, as YAML.
+extends:
+  - 'eslint:recommended'
+parser: '@typescript-eslint/parser'
+plugins: [react]

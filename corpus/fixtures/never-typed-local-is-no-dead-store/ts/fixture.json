@@ -1,0 +1,7 @@
+{
+  "symbols": {
+    "check": { "file": "target/src/main.ts", "line": 11 },
+    "unreached": { "file": "target/src/main.ts", "line": 20 },
+    "other": { "file": "target/src/main.ts", "line": 21 }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "name": "configuration-diagnostic-skips-nothing",
+  "description": "A TypeScript diagnostic about where the configuration places a file, here a file outside rootDir that an import pulls in, is no type error: it skips no statement and is listed in no type_error_skips entry, so the unread import binding of that file is reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "entry_files": [
+    "app/main.ts"
+  ],
+  "expect": [
+    {
+      "symbol": "spareImport",
+      "report": "DS1002",
+      "confidence": "certain"
+    },
+    {
+      "symbol": "spare",
+      "report": "DS1001",
+      "confidence": "certain"
+    }
+  ]
+}

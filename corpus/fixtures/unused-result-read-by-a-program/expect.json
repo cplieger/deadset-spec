@@ -1,0 +1,26 @@
+{
+  "name": "unused-result-read-by-a-program",
+  "description": "A program run by naming the file calls the declarations it names from outside the reference set, so a function such a program names has callers outside the loaded graph and no result of it is reported under DS1803. A function no program names whose every call discards its result is reported.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Count",
+      "report": "none"
+    },
+    {
+      "symbol": "Spare",
+      "report": "DS1803",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "result",
+      "details": {
+        "overlap": [
+          "unparam"
+        ]
+      }
+    }
+  ]
+}

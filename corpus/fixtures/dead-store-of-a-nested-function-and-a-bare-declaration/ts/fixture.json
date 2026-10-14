@@ -1,0 +1,8 @@
+{
+  "symbols": {
+    "unused": { "file": "target/src/main.ts", "line": 2 },
+    "recursive": { "file": "target/src/main.ts", "line": 5 },
+    "never": { "file": "target/src/main.ts", "line": 8 },
+    "later": { "file": "target/src/main.ts", "line": 10 }
+  }
+}
