@@ -11,9 +11,9 @@ import (
 	"strings"
 )
 
-const vocabPath = "vocab/vocab.gen.go"
+const vocabPath = "vocab/vocab_gen.go"
 
-// The documents vocab.gen.go is written from beside kinds.json, decoded only as
+// The documents vocab_gen.go is written from beside kinds.json, decoded only as
 // far as the package carries them.
 type (
 	exemptionsDoc struct {
@@ -60,7 +60,7 @@ type (
 	}
 )
 
-// vocabDocs is every document vocab.gen.go is written from.
+// vocabDocs is every document vocab_gen.go is written from.
 type vocabDocs struct {
 	corpus     corpusDoc
 	kinds      kindsDoc

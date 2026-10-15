@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	reportTypesPath   = "report/report.gen.go"
+	reportTypesPath   = "report/report_gen.go"
 	reportSchemaPath  = "contract/report.schema.json"
 	findingSchemaPath = "contract/finding.schema.json"
 )

@@ -78,7 +78,7 @@ func TestAPlantedKindsEditMovesTheGeneratedFiles(t *testing.T) {
 	if err != nil {
 		t.Fatalf("gen.Generate(planted) = %v", err)
 	}
-	for _, name := range []string{"docs/kinds/unused.md", "contract/finding.schema.json", "vocab/vocab.gen.go"} {
+	for _, name := range []string{"docs/kinds/unused.md", "contract/finding.schema.json", "vocab/vocab_gen.go"} {
 		if bytes.Equal(before[name], after[name]) {
 			t.Errorf("%s is unchanged by a planted contract/kinds.json edit, want it regenerated from the row", name)
 		}

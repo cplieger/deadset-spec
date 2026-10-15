@@ -2,7 +2,7 @@
 // kinds and their families, the symbol kinds and the subject each names, the
 // exemption classes, the evidence that lowers a finding's class, the exit codes,
 // the setup-failure classes and the versions. A product compiles them in rather
-// than reading the documents at run time. vocab.gen.go is written by deadset-gen
+// than reading the documents at run time. vocab_gen.go is written by deadset-gen
 // from contract/*.json and corpus/corpus.json, and a freshness test fails when
 // a document moves and nobody regenerated.
 package vocab
