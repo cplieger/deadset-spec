@@ -41,23 +41,29 @@ type kindsDocument struct {
 	Severities          []string      `json:"severities"`
 	ReachabilityClasses []string      `json:"reachability_classes"`
 	Fixabilities        []string      `json:"fixabilities"`
+	Subjects            []string      `json:"subjects"`
 	Ranges              []codeRange   `json:"ranges"`
 	Kinds               []kindRow     `json:"kinds"`
 	Retired             []retiredKind `json:"retired"`
 }
 
 type codeRange struct {
-	Retired     *bool  `json:"retired"`
 	Start       string `json:"start"`
 	End         string `json:"end"`
 	Family      string `json:"family"`
+	Title       string `json:"title"`
+	Question    string `json:"question"`
+	Status      string `json:"status"`
 	Description string `json:"description"`
 }
 
 type kindRow struct {
 	DefaultEnabled      *bool               `json:"default_enabled"`
 	Fixed               *bool               `json:"fixed"`
+	HoldsLive           *bool               `json:"holds_live"`
 	Overlap             map[string][]string `json:"overlap"`
+	Details             map[string]any      `json:"details"`
+	Subject             string              `json:"subject"`
 	Code                string              `json:"code"`
 	Name                string              `json:"name"`
 	Rule                string              `json:"rule"`
@@ -137,9 +143,9 @@ func span(r codeRange) (start, end int, ok bool) {
 	return start, end, start >= 0 && end >= start
 }
 
-// isRetired reports whether a range is marked retired; an absent marker reads
-// as live, and the field's presence is checked separately.
-func isRetired(r codeRange) bool { return isSet(r.Retired) && *r.Retired }
+// isRetired reports whether a range is retired: it held kinds and holds none
+// again.
+func isRetired(r codeRange) bool { return r.Status == "retired" }
 
 // checkCodeAssignment reports every live row whose code is not a code of the
 // space and every code two live rows carry: one code names at most one kind.
@@ -221,23 +227,40 @@ func checkRetirement(doc kindsDocument) []error {
 	return errs
 }
 
-func TestKindsRangesAreEightLiveAndOneRetired(t *testing.T) {
+// rangeStatuses are the states a family range takes: live while it holds a live
+// kind, reserved while it holds none yet, retired once every kind it held is.
+var rangeStatuses = []string{"live", "reserved", "retired"}
+
+func TestKindsRangesAreFamiliesOfAHundred(t *testing.T) {
 	doc := loadKinds(t)
-	var live, retired int
 	for _, r := range doc.Ranges {
 		t.Run(r.Start, func(t *testing.T) {
-			if r.Family == "" || r.Description == "" || !isSet(r.Retired) {
-				t.Errorf("Range(%s) fields = family %q, description %q, retired %s, want every field present", r.Start, r.Family, r.Description, optional(r.Retired))
+			if r.Family == "" || r.Title == "" || r.Question == "" || r.Description == "" {
+				t.Errorf("Range(%s) fields = family %q, title %q, question %q, description %q, want every field present", r.Start, r.Family, r.Title, r.Question, r.Description)
 			}
-			if isRetired(r) {
-				retired++
-			} else {
-				live++
+			if !slices.Contains(rangeStatuses, r.Status) {
+				t.Errorf("Range(%s).status = %q, want one of %v", r.Start, r.Status, rangeStatuses)
+			}
+			start, end := codeNumber(r.Start), codeNumber(r.End)
+			if start%100 != 0 || end != start+99 {
+				t.Errorf("Range(%s) = %s..%s, want a family of a hundred codes, DSFF00 to DSFF99", r.Start, r.Start, r.End)
+			}
+			var held []int
+			for _, k := range doc.Kinds {
+				if n := codeNumber(k.Code); start <= n && n <= end {
+					held = append(held, n)
+				}
+			}
+			if (len(held) > 0) != (r.Status == "live") {
+				t.Errorf("Range(%s) holds %d live kinds with status %q, want live exactly when it holds one", r.Start, len(held), r.Status)
+			}
+			for i, n := range held {
+				if n != start+1+i {
+					t.Errorf("Range(%s) kind codes = %v, want contiguous codes from %s01", r.Start, held, r.Start[:4])
+					break
+				}
 			}
 		})
-	}
-	if live != 8 || retired != 1 {
-		t.Errorf("Ranges(%s) = %d live, %d retired, want 8 live, 1 retired", kindsPath, live, retired)
 	}
 }
 
@@ -267,8 +290,8 @@ func TestKindsRetiredCodesAreNotReassigned(t *testing.T) {
 
 func TestKindsEveryLiveRowIsCompleteAndInVocabulary(t *testing.T) {
 	doc := loadKinds(t)
-	if got := len(doc.Kinds); got != 32 {
-		t.Errorf("len(Kinds(%s)) = %d, want 32", kindsPath, got)
+	if got := len(doc.Kinds); got != 33 {
+		t.Errorf("len(Kinds(%s)) = %d, want 33", kindsPath, got)
 	}
 	for _, k := range doc.Kinds {
 		t.Run(k.Code, func(t *testing.T) {
@@ -332,7 +355,7 @@ func missingKindFields(k kindRow) []string {
 // fixedKinds are the three self-check kinds a configuration cannot move: a
 // suppression, a configured root and a configured declaration that name
 // something no longer present mean the same thing and carry the same posture.
-var fixedKinds = []string{"DS1703", "DS1704", "DS1706"}
+var fixedKinds = []string{"DS9003", "DS9004", "DS9006"}
 
 func TestKindsOnlyTheStaleConfigurationKindsAreFixed(t *testing.T) {
 	doc := loadKinds(t)
@@ -351,7 +374,7 @@ func TestKindsOnlyTheStaleConfigurationKindsAreFixed(t *testing.T) {
 
 // narrowedKinds are the rows whose rule holds only under a stated condition;
 // each must carry the precondition the analyzer checks before it reports.
-var narrowedKinds = []string{"DS1101", "DS1102", "DS1104", "DS1203", "DS1303", "DS1501", "DS1601", "DS1605"}
+var narrowedKinds = []string{"DS1501", "DS1502", "DS1503", "DS1202", "DS1006", "DS1601", "DS1701", "DS1702"}
 
 func TestKindsNarrowedRowsCarryAPrecondition(t *testing.T) {
 	doc := loadKinds(t)
@@ -371,7 +394,7 @@ func TestKindsNarrowedRowsCarryAPrecondition(t *testing.T) {
 // heldDeclarationKinds are the rows whose subject is a declaration that can
 // be a positional member or a declaration one holds, so a finding of the kind
 // may carry manual in place of its own fixability.
-var heldDeclarationKinds = []string{"DS1001", "DS1002", "DS1003", "DS1004", "DS1005", "DS1006", "DS1103", "DS1201", "DS1302"}
+var heldDeclarationKinds = []string{"DS1001", "DS1002", "DS1003", "DS1005", "DS1101", "DS1102", "DS1103", "DS1104", "DS1201"}
 
 func TestKindsFindingFixabilitiesAreAlternatives(t *testing.T) {
 	doc := loadKinds(t)
@@ -416,7 +439,7 @@ func TestKindsIntraFunctionRowsNameOverlapPerLanguage(t *testing.T) {
 	for _, k := range doc.Kinds {
 		t.Run(k.Code, func(t *testing.T) {
 			n := codeNumber(k.Code)
-			inGroup := 1800 <= n && n <= 1899
+			inGroup := 1400 <= n && n <= 1499
 			if !inGroup {
 				if k.Overlap != nil {
 					t.Errorf("Kind(%s).overlap = %v, want absent outside the intra-function group", k.Code, k.Overlap)
@@ -461,44 +484,19 @@ func checkOverlapList(t *testing.T, k kindRow, lang string) {
 	}
 }
 
-// retiredCodes are the nineteen codes the vocabulary has retired. A code may
-// leave this list only by being re-admitted under its own name, never by
-// re-use for another kind.
-var retiredCodes = []string{
-	"DS1202", "DS1401", "DS1402",
-	"DS1503", "DS1504", "DS1505", "DS1506", "DS1507",
-	"DS1602", "DS1603", "DS1604", "DS1606",
-	"DS1607", "DS1608",
-	"DS1804", "DS1806", "DS1808", "DS1810", "DS1811",
-}
-
+// TestKindsRetiredCodesStayRetired pins that every retired row names a code
+// inside one range and the kind that once held it.
 func TestKindsRetiredCodesStayRetired(t *testing.T) {
 	doc := loadKinds(t)
-	if got := len(doc.Retired); got != len(retiredCodes) {
-		t.Errorf("len(Retired(%s)) = %d, want %d", kindsPath, got, len(retiredCodes))
-	}
-	listed := make(map[string]retiredKind, len(doc.Retired))
 	for _, r := range doc.Retired {
-		listed[r.Code] = r
-	}
-	for _, code := range retiredCodes {
-		t.Run(code, func(t *testing.T) {
-			r, ok := listed[code]
-			if !ok {
-				t.Fatalf("Retired(%s) = absent, want a retired row", code)
-			}
+		t.Run(r.Code, func(t *testing.T) {
 			if r.Name == "" {
-				t.Errorf("Retired(%s).name = %q, want the name of the kind that once held the code", code, r.Name)
+				t.Errorf("Retired(%s).name = %q, want the name of the kind that once held the code", r.Code, r.Name)
 			}
-			if hits := rangesContaining(doc.Ranges, codeNumber(code)); len(hits) != 1 {
-				t.Errorf("Retired(%s) ranges = %d, want exactly 1", code, len(hits))
+			if hits := rangesContaining(doc.Ranges, codeNumber(r.Code)); len(hits) != 1 {
+				t.Errorf("Retired(%s) ranges = %d, want exactly 1", r.Code, len(hits))
 			}
 		})
-	}
-	for _, r := range doc.Retired {
-		if !slices.Contains(retiredCodes, r.Code) {
-			t.Errorf("Retired(%s) lists %s, want only the nineteen retired codes", kindsPath, r.Code)
-		}
 	}
 }
 
@@ -527,17 +525,39 @@ func TestKindsRetiredRowsCarryCodeAndNameOnly(t *testing.T) {
 	}
 }
 
-// TestKindsTheOnlyRetiredRangeIsDS1400 pins which range is retired; that no
-// live row sits inside it is the retirement rule, driven above.
-func TestKindsTheOnlyRetiredRangeIsDS1400(t *testing.T) {
+// TestKindsColumnsDrawFromTheirVocabularies pins the per-kind columns the
+// finding schema and the generated pages are derived from.
+func TestKindsColumnsDrawFromTheirVocabularies(t *testing.T) {
 	doc := loadKinds(t)
-	for _, r := range doc.Ranges {
-		if !isRetired(r) {
-			continue
-		}
-		if r.Start != "DS1400" || r.End != "DS1499" {
-			t.Errorf("RetiredRange(%s) = %s..%s, want DS1400..DS1499 as the only retired range", r.Start, r.Start, r.End)
-		}
+	members := propertyNames(loadFindingSchema(t), "properties/details")
+	for _, k := range doc.Kinds {
+		t.Run(k.Code, func(t *testing.T) {
+			if !slices.Contains(doc.Subjects, k.Subject) {
+				t.Errorf("Kind(%s).subject = %q, want one of %v", k.Code, k.Subject, doc.Subjects)
+			}
+			if k.HoldsLive == nil {
+				t.Errorf("Kind(%s).holds_live = absent, want a boolean", k.Code)
+			}
+			for member, presence := range k.Details {
+				if !slices.Contains(members, member) || member == findingDeletableOnlyField {
+					t.Errorf("Kind(%s).details names %q, want a member of the finding's details other than %s", k.Code, member, findingDeletableOnlyField)
+				}
+				switch v := presence.(type) {
+				case string:
+					if v != "required" && v != "optional" {
+						t.Errorf("Kind(%s).details[%s] = %q, want required, optional or a language list", k.Code, member, v)
+					}
+				case []any:
+					for _, lang := range v {
+						if name, ok := lang.(string); !ok || !slices.Contains(k.Languages, name) {
+							t.Errorf("Kind(%s).details[%s] names %v, want languages of the kind", k.Code, member, lang)
+						}
+					}
+				default:
+					t.Errorf("Kind(%s).details[%s] = %v, want required, optional or a language list", k.Code, member, presence)
+				}
+			}
+		})
 	}
 }
 

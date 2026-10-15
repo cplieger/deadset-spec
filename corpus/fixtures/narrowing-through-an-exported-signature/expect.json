@@ -30,7 +30,7 @@
     },
     {
       "symbol": "Helper",
-      "report": "DS1101",
+      "report": "DS1501",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "type",
@@ -48,7 +48,7 @@
     },
     {
       "symbol": "Shared",
-      "report": "DS1102",
+      "report": "DS1502",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "type",

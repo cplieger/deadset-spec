@@ -26,7 +26,7 @@
     },
     {
       "symbol": "UnusedReplace",
-      "report": "DS1605",
+      "report": "DS1702",
       "symbol_kind": "module-directive",
       "confidence": "certain",
       "reachability_class": "certain",

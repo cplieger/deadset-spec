@@ -1,0 +1,101 @@
+{
+  "description": "The evidence that lowers a finding's reachability class, one row per kind of evidence: the class it lowers the finding to, the languages and the codes it applies to, and the rule of grammar/analysis/confidence.md, or of another page of the analysis, that states when it holds. A finding takes the lowest class the rows that hold for it give; a row never raises a class. A kind's max_class and the component cap of grammar/analysis/confidence.md apply after these rows.",
+  "evidence": [
+    {
+      "evidence": "consumers-not-loaded",
+      "rule": "confidence.2",
+      "class": "probable",
+      "languages": ["go", "ts"],
+      "codes": ["DS1001", "DS1002", "DS1003", "DS1004", "DS1005", "DS1006", "DS1101", "DS1102", "DS1103", "DS1104", "DS1201", "DS1202", "DS1203", "DS1301", "DS1501", "DS1502", "DS1503"],
+      "description": "A subject of a library's published API, while a declared consumer did not load."
+    },
+    {
+      "evidence": "no-consumer-information",
+      "rule": "confidence.2",
+      "class": "possible",
+      "languages": ["go", "ts"],
+      "codes": ["DS1001", "DS1002", "DS1003", "DS1004", "DS1005", "DS1006", "DS1101", "DS1102", "DS1103", "DS1104", "DS1201", "DS1202", "DS1203", "DS1301", "DS1501", "DS1502", "DS1503"],
+      "description": "A subject of a library's published API, in a run that holds no consumer information."
+    },
+    {
+      "evidence": "unlinked-go-package",
+      "rule": "roots.25",
+      "class": "possible",
+      "languages": ["go"],
+      "codes": ["DS1001", "DS1002", "DS1003", "DS1004", "DS1005", "DS1006", "DS1101", "DS1102", "DS1103", "DS1104", "DS1201", "DS1202", "DS1203", "DS1301", "DS1501", "DS1502", "DS1503"],
+      "description": "A declaration outside an internal tree of a Go package of an application that no build links, in a run that declares no consumer."
+    },
+    {
+      "evidence": "name-literal",
+      "rule": "confidence.8",
+      "class": "possible",
+      "languages": ["go"],
+      "codes": ["DS1001", "DS1002", "DS1101", "DS1102", "DS1104", "DS1501", "DS1502"],
+      "description": "A package-level Go declaration whose identifier a string literal of a production file spells."
+    },
+    {
+      "evidence": "in-operand",
+      "rule": "confidence.13",
+      "class": "possible",
+      "languages": ["ts"],
+      "codes": ["DS1001", "DS1002", "DS1003", "DS1004", "DS1005", "DS1006", "DS1101", "DS1102", "DS1103", "DS1104", "DS1201", "DS1202", "DS1203", "DS1301", "DS1501", "DS1502", "DS1503"],
+      "description": "A TypeScript member whose name the left operand of an in expression of a production file spells."
+    },
+    {
+      "evidence": "outside-filler",
+      "rule": "confidence.14",
+      "class": "possible",
+      "languages": ["go"],
+      "codes": ["DS1001", "DS1002", "DS1003", "DS1004", "DS1005", "DS1006", "DS1101", "DS1102", "DS1103", "DS1104", "DS1201", "DS1202", "DS1203", "DS1301", "DS1501", "DS1502", "DS1503"],
+      "description": "A field the encoding-reflection class records only as filled by a callee outside the analyzed program."
+    },
+    {
+      "evidence": "decoded-outside",
+      "rule": "confidence.19",
+      "class": "possible",
+      "languages": ["go", "ts"],
+      "codes": ["DS1001", "DS1002", "DS1003", "DS1004", "DS1005", "DS1006", "DS1101", "DS1102", "DS1103", "DS1104", "DS1201", "DS1202", "DS1203", "DS1301", "DS1501", "DS1502", "DS1503"],
+      "description": "A member of a type the program only decodes into, where a callee outside the analysis, or an any or unknown value, fills it."
+    },
+    {
+      "evidence": "test-reached",
+      "rule": "confidence.20",
+      "class": "possible",
+      "languages": ["ts"],
+      "codes": ["DS1001", "DS1002", "DS1003", "DS1004", "DS1005", "DS1006", "DS1101", "DS1102", "DS1103", "DS1104", "DS1201", "DS1202", "DS1203", "DS1301", "DS1501", "DS1502", "DS1503", "DS1602"],
+      "description": "A declaration of a TypeScript file only tests reach that is no test-support file, and each dead declaration it reaches through dead declarations."
+    },
+    {
+      "evidence": "test-reached",
+      "rule": "confidence.21",
+      "class": "possible",
+      "languages": ["go"],
+      "codes": ["DS1001", "DS1002", "DS1003", "DS1102", "DS1103", "DS1104", "DS1201", "DS1301"],
+      "description": "A declaration of a Go package only tests reach that is no test-support package and that test code references, and each dead declaration it reaches or holds."
+    },
+    {
+      "evidence": "possible-class",
+      "rule": "confidence.23",
+      "class": "possible",
+      "languages": ["go", "ts"],
+      "codes": ["DS1001", "DS1002", "DS1003", "DS1004", "DS1005", "DS1006", "DS1101", "DS1102", "DS1103", "DS1104", "DS1201", "DS1202", "DS1203", "DS1301", "DS1501", "DS1502", "DS1503"],
+      "description": "A member that only records of exemption classes whose confidence is possible hold."
+    },
+    {
+      "evidence": "roots-incomplete",
+      "rule": "confidence.25",
+      "class": "probable",
+      "languages": ["ts"],
+      "codes": ["DS1001", "DS1002", "DS1003", "DS1004", "DS1005", "DS1006", "DS1101", "DS1102", "DS1103", "DS1104", "DS1201", "DS1202", "DS1203", "DS1301", "DS1501", "DS1502", "DS1503", "DS1602"],
+      "description": "A TypeScript declaration found dead under reachability alone, or a file only dead code imports, while ts.roots_complete is not true."
+    },
+    {
+      "evidence": "computed-load",
+      "rule": "confidence.26",
+      "class": "probable",
+      "languages": ["ts"],
+      "codes": ["DS1001", "DS1002", "DS1003", "DS1004", "DS1005", "DS1006", "DS1101", "DS1102", "DS1103", "DS1104", "DS1201", "DS1202", "DS1203", "DS1301", "DS1501", "DS1502", "DS1503", "DS1602"],
+      "description": "A finding the roots cap applies to, in a configuration that compiles a load by a computed path."
+    }
+  ]
+}

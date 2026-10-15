@@ -24,7 +24,7 @@ func main() {}
 // firstLine is called by nothing, and its body never reads chunk; the directive
 // above it names the parameter's code alone.
 //
-//deadset:ignore DS1801 -- Kept to match the decoder signature the next release adds.
+//deadset:ignore DS1401 -- Kept to match the decoder signature the next release adds.
 func firstLine(chunk []byte) int {
 	return 1
 }
@@ -32,7 +32,7 @@ func firstLine(chunk []byte) int {
 // wrapped is called by nothing, and its body never reads chunk; the directive
 // inside the parameter list names the parameter's code alone.
 func wrapped(
-	//deadset:ignore DS1801 -- Kept to match the decoder signature the next release adds.
+	//deadset:ignore DS1401 -- Kept to match the decoder signature the next release adds.
 	chunk []byte,
 ) int {
 	return 2

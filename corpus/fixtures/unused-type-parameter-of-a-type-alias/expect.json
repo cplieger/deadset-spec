@@ -8,7 +8,7 @@
   "expect": [
     {
       "symbol": "Unread",
-      "report": "DS1303",
+      "report": "DS1006",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "type-parameter"

@@ -1,0 +1,3 @@
+{"ignore": [
+  {"code": "DS1001", "symbol": "js://example/app/a.js#A", "path": "a.js", "reason": "Adjudicated by the analyzer of its own language."}
+]}

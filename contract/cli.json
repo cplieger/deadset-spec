@@ -1,0 +1,271 @@
+{
+  "description": "The command-line surface of every product: the verbs each answers, the closed list of options each verb takes, which option supplies a setting of contract/config.schema.json, what each verb writes on standard output, and the exit codes of contract/exit-codes.json each verb can end with. An option is spelled --name=value; a verb refuses with the usage code an option its list does not name, a request to edit source among them, an option given without a value, and an argument that is no option. An analyzer verb lists its options per language, the languages whose analyzers answer it. A setting option outranks every configuration document, and its provenance names the option. Diagnostics go to standard error; a report goes to the file the invocation names, never to standard output.",
+  "options": [
+    {
+      "option": "target",
+      "value": "path",
+      "repeatable": false,
+      "summary": "The target root; the working directory where absent."
+    },
+    {
+      "option": "scope",
+      "value": "path",
+      "repeatable": false,
+      "summary": "The scope document naming the target and its consumers, read before the configuration."
+    },
+    {
+      "option": "config",
+      "value": "path",
+      "repeatable": false,
+      "summary": "The configuration document an orchestrator writes for this analyzer, read in place of the repository configuration."
+    },
+    {
+      "option": "central",
+      "value": "path",
+      "repeatable": false,
+      "summary": "The central configuration, resolved below the repository configuration."
+    },
+    {
+      "option": "report",
+      "value": "path",
+      "repeatable": false,
+      "summary": "The path the JSON report is written to."
+    },
+    {
+      "option": "run-dir",
+      "value": "path",
+      "repeatable": false,
+      "summary": "The directory the orchestrator writes each analyzer's configuration, scope and report into; a fresh directory where absent."
+    },
+    {
+      "option": "format",
+      "value": "name",
+      "repeatable": true,
+      "summary": "One rendering written beside the report, named by its format."
+    },
+    {
+      "option": "formats",
+      "value": "list",
+      "setting": "reporters.formats",
+      "repeatable": false,
+      "summary": "The renderings the run writes, comma-separated."
+    },
+    {
+      "option": "template",
+      "value": "path",
+      "repeatable": false,
+      "summary": "The template the template format renders, read and parsed before any analysis."
+    },
+    {
+      "option": "baseline-write",
+      "value": "path",
+      "repeatable": false,
+      "summary": "The baseline the run writes from its own findings."
+    },
+    {
+      "option": "exit-code",
+      "value": "switch",
+      "repeatable": false,
+      "summary": "on, the default, puts the verdict in the exit code; off exits 0 after any complete run."
+    },
+    {
+      "option": "languages",
+      "value": "list",
+      "setting": "analysis.languages",
+      "repeatable": false,
+      "summary": "The languages to analyze, comma-separated, in place of detection."
+    },
+    {
+      "option": "min-confidence",
+      "value": "name",
+      "setting": "analysis.min_confidence",
+      "repeatable": false,
+      "summary": "The minimum confidence a reported finding carries."
+    },
+    {
+      "option": "sort",
+      "value": "name",
+      "setting": "reporters.sort",
+      "repeatable": false,
+      "summary": "The order the renderings list findings in."
+    },
+    {
+      "option": "cascade",
+      "value": "name",
+      "setting": "reporters.cascade",
+      "repeatable": false,
+      "summary": "How much of a dead component the renderings list."
+    },
+    {
+      "option": "max-findings",
+      "value": "integer",
+      "setting": "reporters.max_findings",
+      "repeatable": false,
+      "summary": "The most findings the report lists, 0 for every finding."
+    },
+    {
+      "option": "fail-on",
+      "value": "name",
+      "setting": "reporters.fail_on",
+      "repeatable": false,
+      "summary": "The lowest severity that fails the run."
+    },
+    {
+      "option": "why",
+      "value": "symbol",
+      "repeatable": false,
+      "summary": "The symbol to explain."
+    },
+    {
+      "option": "why-live",
+      "value": "symbol",
+      "repeatable": false,
+      "summary": "The symbol to explain, asked why it is live."
+    },
+    {
+      "option": "why-not",
+      "value": "symbol",
+      "repeatable": false,
+      "summary": "The symbol to explain, asked why it is not reported."
+    },
+    {
+      "option": "mode",
+      "value": "name",
+      "repeatable": false,
+      "summary": "The reference mode whose exemption records are listed: the analysis mode where absent, plain for every record."
+    }
+  ],
+  "analyzer_verbs": [
+    {
+      "verb": "analyze",
+      "summary": "Analyze the target and write the report.",
+      "arguments": [],
+      "options": {
+        "go": ["target", "config", "central", "scope", "report", "format", "template", "baseline-write", "exit-code", "min-confidence", "sort", "cascade", "max-findings", "fail-on"],
+        "ts": ["target", "config", "central", "scope", "report", "format", "template", "baseline-write", "exit-code", "min-confidence", "sort", "cascade", "max-findings", "fail-on"]
+      },
+      "stdout": "nothing",
+      "exit_codes": [0, 1, 2, 3, 4]
+    },
+    {
+      "verb": "explain",
+      "summary": "Say why one symbol is or is not reported, from the analysis a report would be built from.",
+      "arguments": [],
+      "options": {
+        "go": ["target", "scope", "config", "central", "min-confidence", "cascade", "why", "why-live", "why-not"],
+        "ts": ["target", "config", "central", "scope", "why", "why-live", "why-not", "min-confidence", "sort", "cascade", "max-findings", "fail-on"]
+      },
+      "stdout": "explanation",
+      "exit_codes": [0, 2, 3]
+    },
+    {
+      "verb": "print-config",
+      "summary": "Print the resolved configuration with the provenance of every setting.",
+      "arguments": [],
+      "options": {
+        "go": ["target", "config", "central", "min-confidence"],
+        "ts": ["target", "config", "central", "scope", "min-confidence", "sort", "cascade", "max-findings", "fail-on"]
+      },
+      "stdout": "configuration",
+      "exit_codes": [0, 2, 3]
+    },
+    {
+      "verb": "print-roots",
+      "summary": "Print the root set, each root with its kind.",
+      "arguments": [],
+      "options": {
+        "go": ["target", "config", "central", "min-confidence"],
+        "ts": ["target", "config", "central", "scope", "min-confidence", "sort", "cascade", "max-findings", "fail-on"]
+      },
+      "stdout": "roots",
+      "exit_codes": [0, 2, 3]
+    },
+    {
+      "verb": "print-retained",
+      "summary": "Print every symbol an exemption held back, with its position and the classes that held it.",
+      "arguments": [],
+      "options": {
+        "go": ["target", "config", "central", "scope", "min-confidence", "mode"],
+        "ts": ["target", "config", "central", "scope", "min-confidence", "sort", "cascade", "max-findings", "fail-on"]
+      },
+      "stdout": "retained",
+      "exit_codes": [0, 2, 3]
+    },
+    {
+      "verb": "describe",
+      "summary": "Print the build's capabilities as one JSON object, an instance of contract/describe.schema.json.",
+      "arguments": [],
+      "options": {
+        "go": [],
+        "ts": []
+      },
+      "stdout": "description",
+      "exit_codes": [0, 2]
+    },
+    {
+      "verb": "version",
+      "summary": "Print the product's version and the Contract version it implements.",
+      "arguments": [],
+      "options": {
+        "go": [],
+        "ts": []
+      },
+      "stdout": "version",
+      "exit_codes": [0, 2]
+    },
+    {
+      "verb": "print-projects",
+      "summary": "Print the compiler configurations the run would analyze, each with its origin.",
+      "arguments": [],
+      "options": {
+        "ts": ["target", "config", "central", "scope", "min-confidence", "sort", "cascade", "max-findings", "fail-on"]
+      },
+      "stdout": "projects",
+      "exit_codes": [0, 2, 3]
+    }
+  ],
+  "products": [
+    {
+      "product": "deadset",
+      "role": "orchestrator",
+      "verbs": [
+        {
+          "verb": "analyze",
+          "summary": "Analyze every language in scope and write the merged report.",
+          "arguments": [],
+          "options": ["target", "scope", "central", "run-dir", "template", "exit-code", "languages", "min-confidence", "formats", "fail-on"],
+          "stdout": "renderings",
+          "exit_codes": [0, 1, 2, 3, 4]
+        },
+        {
+          "verb": "print-config",
+          "summary": "Print the resolved configuration with the provenance of every setting.",
+          "arguments": [],
+          "options": ["target", "central", "languages", "min-confidence", "formats", "fail-on"],
+          "stdout": "configuration",
+          "exit_codes": [0, 2, 3]
+        },
+        {
+          "verb": "version",
+          "summary": "Print the product's version and the Contract version it implements.",
+          "arguments": [],
+          "options": [],
+          "stdout": "version",
+          "exit_codes": [0, 2]
+        }
+      ]
+    },
+    {
+      "product": "deadset-go",
+      "role": "analyzer",
+      "languages": ["go"],
+      "verbs": ["analyze", "explain", "print-config", "print-roots", "print-retained", "describe", "version"]
+    },
+    {
+      "product": "deadset-ts",
+      "role": "analyzer",
+      "languages": ["ts"],
+      "verbs": ["analyze", "explain", "print-config", "print-projects", "print-roots", "print-retained", "describe", "version"]
+    }
+  ]
+}

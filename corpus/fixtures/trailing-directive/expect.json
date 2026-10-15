@@ -10,7 +10,7 @@
   "expect": [
     {
       "symbol": "CallTrailingDirective",
-      "report": "DS1703",
+      "report": "DS9003",
       "confidence": "certain",
       "symbol_kind": "suppression",
       "details": {

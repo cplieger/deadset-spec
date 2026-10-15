@@ -1,0 +1,42 @@
+The Go rendering: one module whose two architecture files give a run a matrix of
+two configurations, and a directive in the arm64 file alone.
+
+-- fixture.json --
+{
+  "configurations": [
+    "linux-amd64",
+    "linux-arm64"
+  ],
+  "symbols": {
+    "probeArm64": {
+      "file": "target/boot_arm64.go",
+      "line": 6
+    },
+    "unusedEverywhere": {
+      "file": "target/main.go",
+      "line": 6
+    }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target is built for two architectures.
+package main
+
+func main() {}
+
+func unusedEverywhere() {}
+-- target/boot_amd64.go --
+package main
+
+func init() {}
+-- target/boot_arm64.go --
+package main
+
+func init() {}
+
+//deadset:ignore DS1002 -- the arm64 firmware loader calls it by name
+func probeArm64() {}

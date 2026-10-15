@@ -22,7 +22,7 @@
     },
     {
       "symbol": "ParameterStale",
-      "report": "DS1703",
+      "report": "DS9003",
       "confidence": "certain",
       "symbol_kind": "suppression",
       "details": {
@@ -43,7 +43,7 @@
     },
     {
       "symbol": "ResultStale",
-      "report": "DS1703",
+      "report": "DS9003",
       "confidence": "certain",
       "symbol_kind": "suppression",
       "details": {
@@ -64,7 +64,7 @@
     },
     {
       "symbol": "StatementStale",
-      "report": "DS1703",
+      "report": "DS9003",
       "confidence": "certain",
       "symbol_kind": "suppression",
       "details": {
@@ -85,7 +85,7 @@
     },
     {
       "symbol": "StoreStale",
-      "report": "DS1703",
+      "report": "DS9003",
       "confidence": "certain",
       "symbol_kind": "suppression",
       "details": {
@@ -106,7 +106,7 @@
     },
     {
       "symbol": "CaseStale",
-      "report": "DS1703",
+      "report": "DS9003",
       "confidence": "certain",
       "symbol_kind": "suppression",
       "details": {

@@ -30,7 +30,7 @@
   "expect": [
     {
       "symbol": "AbsentComputed",
-      "report": "DS1706",
+      "report": "DS9006",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "configured-declaration"

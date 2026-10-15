@@ -9,7 +9,7 @@
     { "symbol": "Box.width", "report": "none" },
     { "symbol": "Box.height", "report": "none" },
     { "symbol": "Box.depth", "report": "none" },
-    { "symbol": "Box.count", "report": "DS1801", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "parameter", "details": { "overlap": ["tsc --noUnusedParameters", "@typescript-eslint/no-unused-vars"] } },
+    { "symbol": "Box.count", "report": "DS1401", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "parameter", "details": { "overlap": ["tsc --noUnusedParameters", "@typescript-eslint/no-unused-vars"] } },
     { "symbol": "Shelf.size", "report": "none" }
   ]
 }

@@ -6,7 +6,7 @@
   "expect": [
     {
       "symbol": "UnreadParameter",
-      "report": "DS1801",
+      "report": "DS1401",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "parameter"
@@ -17,7 +17,7 @@
     },
     {
       "symbol": "DroppedResult",
-      "report": "DS1803",
+      "report": "DS1403",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "result"
@@ -28,14 +28,14 @@
     },
     {
       "symbol": "UnreachableStatement",
-      "report": "DS1805",
+      "report": "DS1405",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "statement"
     },
     {
       "symbol": "DeadStore",
-      "report": "DS1807",
+      "report": "DS1404",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "store"
@@ -50,7 +50,7 @@
     },
     {
       "symbol": "UnreachableCase",
-      "report": "DS1809",
+      "report": "DS1406",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "case"

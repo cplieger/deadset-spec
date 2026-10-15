@@ -13,21 +13,21 @@
   "expect": [
     {
       "symbol": "AbsentGlobal",
-      "report": "DS1706",
+      "report": "DS9006",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "configured-declaration"
     },
     {
       "symbol": "AbsentModule",
-      "report": "DS1706",
+      "report": "DS9006",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "configured-declaration"
     },
     {
       "symbol": "AbsentSymbol",
-      "report": "DS1706",
+      "report": "DS9006",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "configured-declaration"

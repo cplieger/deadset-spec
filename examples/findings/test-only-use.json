@@ -1,0 +1,33 @@
+{
+  "code": "DS1102",
+  "kind": "test-only-use",
+  "language": "go",
+  "position": { "path": "catalog.go", "line": 214, "column": 6, "end_line": 231 },
+  "symbol": {
+    "ref": "go://example.com/app#Catalog.ResolveAlias",
+    "kind": "method",
+    "name": "(*Catalog).ResolveAlias",
+    "parent": "go://example.com/app#Catalog",
+    "exported": true,
+    "size_lines": 18,
+    "objectpath": "Catalog.M0"
+  },
+  "reachability_class": "certain",
+  "confidence": "certain",
+  "liveness_relation": "reference-counting",
+  "test_only": true,
+  "generated": false,
+  "component": {
+    "id": "deadset-go/c-0007",
+    "root": true,
+    "symbol_count": 1,
+    "deletable_lines": 18
+  },
+  "retained_by": [],
+  "configurations": ["linux-amd64", "linux-arm64"],
+  "consumers_loaded": ["example.com/consumer"],
+  "fixability": "deletable",
+  "severity": "deny",
+  "message": "exported method is referenced only by tests",
+  "details": {}
+}

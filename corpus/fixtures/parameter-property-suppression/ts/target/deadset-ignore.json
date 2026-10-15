@@ -8,7 +8,7 @@
       "reason": "Kept for the next release of the meter."
     },
     {
-      "code": "DS1801",
+      "code": "DS1401",
       "symbol": "ts://@example/target/meters.ts#Meter",
       "path": "meters.ts",
       "reason": "Kept for the next release of the meter."

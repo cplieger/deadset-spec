@@ -1,0 +1,10 @@
+{
+  "target": {
+    "kind": "application"
+  },
+  "exemptions": {
+    "disabled": [
+      "no-such-class"
+    ]
+  }
+}

@@ -1,7 +1,7 @@
 // A directive on a parameter property binds its member and the constructor's parameters.
 export class Gauge {
   constructor(
-    // deadset:ignore DS1301,DS1801 -- Kept for the next release of the gauge.
+    // deadset:ignore DS1301,DS1401 -- Kept for the next release of the gauge.
     private readonly unit: string,
     scale: number,
   ) {
@@ -22,7 +22,7 @@ export class Meter {
 // A parameter property is never an unused parameter, so this directive matches nothing.
 export class Dial {
   constructor(
-    // deadset:ignore DS1801 -- Kept for the next release of the dial.
+    // deadset:ignore DS1401 -- Kept for the next release of the dial.
     private readonly unit: string,
   ) {
     console.log("dial");

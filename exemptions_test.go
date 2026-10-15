@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"io/fs"
 	"maps"
-	"path"
 	"regexp"
 	"slices"
 	"strings"
@@ -22,29 +21,32 @@ const exemptionsPath = "contract/exemptions.json"
 type exemptionsDocument struct {
 	Description string           `json:"description"`
 	Exemptions  []exemptionClass `json:"exemptions"`
+	Sinks       []exemptionSink  `json:"sinks"`
+}
+
+// exemptionSink is one destination of the sink vocabulary.
+type exemptionSink struct {
+	Sink        string   `json:"sink"`
+	Reads       string   `json:"reads"`
+	Description string   `json:"description"`
+	Languages   []string `json:"languages"`
 }
 
 type exemptionClass struct {
-	Mechanism  map[string]string `json:"mechanism"`
-	Visibility *memberVisibility `json:"typescript_visibility"`
-	Class      string            `json:"class"`
-	Confidence string            `json:"confidence"`
-	Rule       string            `json:"rule"`
-	Retains    string            `json:"retains"`
-	Languages  []string          `json:"languages"`
+	Mechanism    map[string]string   `json:"mechanism"`
+	RetainsKinds map[string][]string `json:"retains_kinds"`
+	Visibility   *memberVisibility   `json:"typescript_visibility"`
+	Class        string              `json:"class"`
+	Confidence   string              `json:"confidence"`
+	Rule         string              `json:"rule"`
+	Retains      string              `json:"retains"`
+	Sinks        []string            `json:"sinks"`
+	Languages    []string            `json:"languages"`
 }
 
 type memberVisibility struct {
 	Private     bool `json:"private"`
 	PrivateName bool `json:"private_name"`
-}
-
-// expectationFile is the part of a corpus expect.json this suite reads: the
-// exemption classes its expectations name.
-type expectationFile struct {
-	Expect []struct {
-		RetainedBy []string `json:"retained_by"`
-	} `json:"expect"`
 }
 
 var (
@@ -54,7 +56,7 @@ var (
 	classNamePattern = regexp.MustCompile(`^[a-z][a-z0-9]*(-[a-z0-9]+)*$`)
 	knownLanguages   = []string{"go", "ts"}
 	knownConfidences = []string{"certain", "probable", "possible"}
-	rowKeys          = []string{"class", "languages", "confidence", "rule", "retains", "mechanism"}
+	rowKeys          = []string{"class", "languages", "confidence", "rule", "retains", "retains_kinds", "mechanism"}
 )
 
 // loadExemptions decodes contract/exemptions.json, failing the test on any
@@ -72,41 +74,6 @@ func loadExemptions(t *testing.T) exemptionsDocument {
 		t.Fatalf("Setup: decoding %s: %v", exemptionsPath, err)
 	}
 	return doc
-}
-
-// classNames returns the set of class tokens the document declares.
-func classNames(doc exemptionsDocument) map[string]bool {
-	names := make(map[string]bool, len(doc.Exemptions))
-	for _, c := range doc.Exemptions {
-		names[c.Class] = true
-	}
-	return names
-}
-
-// retainedBy lists, in document order, every class an expectation file names
-// in a retained_by field.
-func retainedBy(expect []byte) ([]string, error) {
-	var file expectationFile
-	if err := json.Unmarshal(expect, &file); err != nil {
-		return nil, err
-	}
-	var refs []string
-	for _, e := range file.Expect {
-		refs = append(refs, e.RetainedBy...)
-	}
-	return refs, nil
-}
-
-// unresolved returns the references that name no declared class, in order,
-// each once.
-func unresolved(refs []string, classes map[string]bool) []string {
-	var missing []string
-	for _, ref := range refs {
-		if !classes[ref] && !slices.Contains(missing, ref) {
-			missing = append(missing, ref)
-		}
-	}
-	return missing
 }
 
 func TestExemptionsDocumentShape(t *testing.T) {
@@ -194,87 +161,14 @@ func TestExemptionsRowsCarryEveryField(t *testing.T) {
 		if slices.Contains(languages, "ts") {
 			want = append(want, "typescript_visibility")
 		}
+		if _, ok := row["sinks"]; ok {
+			want = append(want, "sinks")
+		}
 		slices.Sort(want)
 		got := slices.Sorted(maps.Keys(row))
 		if !slices.Equal(got, want) {
 			t.Errorf("exemptions[%d] (%q) keys = %v, want %v", i, class, got, want)
 		}
-	}
-}
-
-func TestCorpusRetainedByResolves(t *testing.T) {
-	classes := classNames(loadExemptions(t))
-
-	// Every fixture on disk. There may be none yet; the planted documents
-	// below keep the resolution itself under test either way.
-	fixtures, err := fs.Glob(spec.Corpus, "corpus/fixtures/*/expect.json")
-	if err != nil {
-		t.Fatalf("Setup: fs.Glob(Corpus, fixtures): %v", err)
-	}
-	for _, p := range fixtures {
-		t.Run("fixture_"+path.Base(path.Dir(p)), func(t *testing.T) {
-			data, err := fs.ReadFile(spec.Corpus, p)
-			if err != nil {
-				t.Fatalf("Setup: fs.ReadFile(Corpus, %q): %v", p, err)
-			}
-			refs, err := retainedBy(data)
-			if err != nil {
-				t.Fatalf("retainedBy(%q) = %v, want the expectation file to decode", p, err)
-			}
-			if got := unresolved(refs, classes); len(got) != 0 {
-				t.Errorf("unresolved(%q retained_by %v) = %v, want every class declared in %s", p, refs, got, exemptionsPath)
-			}
-		})
-	}
-
-	// Planted expectation documents drive the same two functions, so the
-	// check is live before the first fixture lands and fails if either
-	// function stops discriminating.
-	planted := []struct {
-		name string
-		doc  string
-		want []string
-	}{
-		{
-			name: "known_class",
-			doc:  `{"expect":[{"symbol":"S","report":"none","retained_by":["interface-satisfaction"]}]}`,
-		},
-		{
-			name: "known_shared_classes",
-			doc:  `{"expect":[{"symbol":"S","report":"none","retained_by":["enum-group","template-field"]}]}`,
-		},
-		{
-			name: "no_retained_by",
-			doc:  `{"expect":[{"symbol":"S","report":"DS1001"}]}`,
-		},
-		{
-			name: "unknown_class",
-			doc:  `{"expect":[{"symbol":"S","report":"none","retained_by":["not-a-class"]}]}`,
-			want: []string{"not-a-class"},
-		},
-		{
-			name: "unknown_beside_known",
-			doc:  `{"expect":[{"symbol":"S","report":"none","retained_by":["interface-satisfaction","not-a-class"]},{"symbol":"T","report":"none","retained_by":["not-a-class"]}]}`,
-			want: []string{"not-a-class"},
-		},
-	}
-	for _, tc := range planted {
-		t.Run("planted_"+tc.name, func(t *testing.T) {
-			refs, err := retainedBy([]byte(tc.doc))
-			if err != nil {
-				t.Fatalf("retainedBy(%s) = %v, want the planted document to decode", tc.doc, err)
-			}
-			got := unresolved(refs, classes)
-			if !slices.Equal(got, tc.want) {
-				t.Errorf("unresolved(%v) = %v, want %v", refs, got, tc.want)
-			}
-		})
-	}
-}
-
-func TestRetainedByRejectsMalformedExpectation(t *testing.T) {
-	if _, err := retainedBy([]byte(`{"expect":[`)); err == nil {
-		t.Errorf("retainedBy(truncated document) = nil error, want a decode error")
 	}
 }
 

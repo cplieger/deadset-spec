@@ -6,7 +6,7 @@
   "expect": [
     {
       "symbol": "UnusedRequirement",
-      "report": "DS1601",
+      "report": "DS1701",
       "symbol_kind": "dependency",
       "confidence": "certain",
       "reachability_class": "certain",
@@ -16,7 +16,7 @@
     },
     {
       "symbol": "NoopReplace",
-      "report": "DS1605",
+      "report": "DS1702",
       "symbol_kind": "module-directive",
       "confidence": "certain",
       "reachability_class": "certain",

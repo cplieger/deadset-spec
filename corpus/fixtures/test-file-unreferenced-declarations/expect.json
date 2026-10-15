@@ -16,7 +16,7 @@
     },
     {
       "symbol": "Spare",
-      "report": "DS1004",
+      "report": "DS1102",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "function",

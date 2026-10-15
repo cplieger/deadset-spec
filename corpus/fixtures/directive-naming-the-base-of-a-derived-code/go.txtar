@@ -1,0 +1,32 @@
+The Go rendering: an internal package whose exported function nothing calls.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Helper": {
+      "file": "target/internal/util/util.go",
+      "line": 5
+    },
+    "WrongCode": {
+      "file": "target/internal/util/util.go",
+      "line": 4
+    }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target imports an internal package for its side effects.
+package main
+
+import _ "example.com/target/internal/util"
+
+func main() {}
+-- target/internal/util/util.go --
+// Package util holds a helper nothing calls.
+package util
+
+//deadset:ignore DS1001 -- kept for the next release
+func Helper() {}

@@ -24,23 +24,23 @@ func main() {
 
 type counter struct{ n int }
 
-//deadset:ignore DS1802 -- The receiver is kept for the method set.
+//deadset:ignore DS1402 -- The receiver is kept for the method set.
 func (c counter) above() int { return 1 }
 
-func (c counter) trailing() int { //deadset:ignore DS1802 -- The receiver is kept for the method set.
+func (c counter) trailing() int { //deadset:ignore DS1402 -- The receiver is kept for the method set.
 	return 2
 }
 
 func (c counter) entry() int { return 3 }
 
-//deadset:ignore DS1802 -- The receiver is kept for the method set.
+//deadset:ignore DS1402 -- The receiver is kept for the method set.
 func (c counter) live() int { return c.n }
 -- target/deadset-ignore.json --
 {
   "description": "One entry holding the receiver of entry.",
   "ignore": [
     {
-      "code": "DS1802",
+      "code": "DS1402",
       "symbol": "go://example.com/app#counter.entry",
       "path": "main.go",
       "reason": "The receiver is kept for the method set."

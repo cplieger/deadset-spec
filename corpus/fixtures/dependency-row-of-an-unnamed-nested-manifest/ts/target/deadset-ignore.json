@@ -2,7 +2,7 @@
   "description": "The reported reference of a dependency of a nested manifest that carries no name.",
   "ignore": [
     {
-      "code": "DS1601",
+      "code": "DS1701",
       "symbol": "ts://./sub/package.json#html-validate:dev-dependency",
       "path": "sub/package.json",
       "reason": "Run by a workflow outside the repository."

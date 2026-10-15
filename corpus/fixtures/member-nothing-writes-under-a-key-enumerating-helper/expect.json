@@ -1,0 +1,21 @@
+{
+  "name": "member-nothing-writes-under-a-key-enumerating-helper",
+  "description": "A helper that enumerates a value's keys reads only the members the value carries: a member nothing writes is still dead when a key-enumerating helper reads the value, while a member production code writes and the helper reads is live.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "HttpTarget.uri",
+      "report": "none"
+    },
+    {
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member",
+      "symbol": "HttpTarget.body"
+    }
+  ]
+}

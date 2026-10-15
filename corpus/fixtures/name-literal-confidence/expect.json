@@ -60,7 +60,7 @@
     },
     {
       "symbol": "TestOnly",
-      "report": "DS1004",
+      "report": "DS1102",
       "confidence": "possible",
       "reachability_class": "possible",
       "symbol_kind": "constant",
@@ -70,21 +70,21 @@
     },
     {
       "symbol": "TestOnlyTestLiteral",
-      "report": "DS1004",
+      "report": "DS1102",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "constant"
     },
     {
       "symbol": "TestOnlySelfLiteral",
-      "report": "DS1004",
+      "report": "DS1102",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "constant"
     },
     {
       "symbol": "Deprecated",
-      "report": "DS1006",
+      "report": "DS1104",
       "confidence": "possible",
       "reachability_class": "possible",
       "symbol_kind": "function",
@@ -94,21 +94,21 @@
     },
     {
       "symbol": "DeprecatedTestLiteral",
-      "report": "DS1006",
+      "report": "DS1104",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "function"
     },
     {
       "symbol": "DeprecatedSelfLiteral",
-      "report": "DS1006",
+      "report": "DS1104",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "function"
     },
     {
       "symbol": "LocalOnly",
-      "report": "DS1101",
+      "report": "DS1501",
       "confidence": "possible",
       "reachability_class": "possible",
       "symbol_kind": "type",
@@ -119,7 +119,7 @@
     },
     {
       "symbol": "LocalOnlyTestLiteral",
-      "report": "DS1101",
+      "report": "DS1501",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "type",
@@ -129,7 +129,7 @@
     },
     {
       "symbol": "LocalOnlySelfLiteral",
-      "report": "DS1101",
+      "report": "DS1501",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "type",
@@ -139,7 +139,7 @@
     },
     {
       "symbol": "LocalOnlyMethodLiteral",
-      "report": "DS1101",
+      "report": "DS1501",
       "confidence": "possible",
       "reachability_class": "possible",
       "symbol_kind": "type",
@@ -150,7 +150,7 @@
     },
     {
       "symbol": "ModuleOnly",
-      "report": "DS1102",
+      "report": "DS1502",
       "confidence": "possible",
       "reachability_class": "possible",
       "symbol_kind": "type",
@@ -161,7 +161,7 @@
     },
     {
       "symbol": "ModuleOnlyTestLiteral",
-      "report": "DS1102",
+      "report": "DS1502",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "type",
@@ -171,7 +171,7 @@
     },
     {
       "symbol": "ModuleOnlySelfLiteral",
-      "report": "DS1102",
+      "report": "DS1502",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "type",
@@ -181,7 +181,7 @@
     },
     {
       "symbol": "Unreachable",
-      "report": "DS1103",
+      "report": "DS1101",
       "confidence": "possible",
       "reachability_class": "possible",
       "symbol_kind": "function",
@@ -191,14 +191,14 @@
     },
     {
       "symbol": "UnreachableTestLiteral",
-      "report": "DS1103",
+      "report": "DS1101",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "function"
     },
     {
       "symbol": "UnreachableSelfLiteral",
-      "report": "DS1103",
+      "report": "DS1101",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "function"

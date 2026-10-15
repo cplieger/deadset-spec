@@ -1,0 +1,21 @@
+{
+  "name": "type-error-skip-before-the-minimum",
+  "description": "A type error's skip removes the findings it withholds before the minimum is read: a function a type error skips is neither reported nor counted as withheld, while a dead function below the minimum is counted.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "type_error_skips": [
+    "Broken"
+  ],
+  "expect": [
+    {
+      "symbol": "broken",
+      "report": "none"
+    },
+    {
+      "symbol": "spelled",
+      "report": "none"
+    }
+  ]
+}

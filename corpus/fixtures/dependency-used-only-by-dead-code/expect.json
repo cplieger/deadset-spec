@@ -8,7 +8,7 @@
   "expect": [
     {
       "symbol": "DeadFile",
-      "report": "DS1502",
+      "report": "DS1602",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "file",
@@ -19,7 +19,7 @@
     },
     {
       "symbol": "DeadOnly",
-      "report": "DS1601",
+      "report": "DS1701",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "dependency",
@@ -33,7 +33,7 @@
     },
     {
       "symbol": "FileLevel",
-      "report": "DS1601",
+      "report": "DS1701",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "dependency",
@@ -51,7 +51,7 @@
     },
     {
       "symbol": "Reached",
-      "report": "DS1601",
+      "report": "DS1701",
       "confidence": "probable",
       "reachability_class": "certain",
       "symbol_kind": "dependency",

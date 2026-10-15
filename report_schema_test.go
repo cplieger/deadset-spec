@@ -4,6 +4,7 @@ import (
 	"io/fs"
 	"regexp"
 	"slices"
+	"strings"
 	"testing"
 
 	"github.com/cplieger/deadset-spec/v8"
@@ -24,7 +25,7 @@ const (
 	reportStaleItemPath     = "properties/stale_suppressions/items"
 	reportConformancePath   = "properties/analyzer/properties/conformance"
 	reportDigestPattern     = "^sha256:[0-9a-f]{64}$"
-	reportStaleCode         = "DS1703"
+	reportStaleCode         = "DS9003"
 	reportSchemaDialect     = "https://json-schema.org/draft/2020-12/schema"
 	reportFindingRefKeyword = "$ref"
 
@@ -92,7 +93,13 @@ func TestReportSchemaIsClosedAndDescribed(t *testing.T) {
 // object and the positioned symbol each have one owner, so no place restates them.
 func TestReportSchemaReferencesOnlyTheFindingSchema(t *testing.T) {
 	schema := loadReportSchema(t)
-	if got := references(schema, ""); !slices.Equal(got, reportFindingRefPaths) {
+	var got []string
+	for _, at := range references(schema, "") {
+		if ref, _ := objectAt(schema, strings.TrimSuffix(strings.TrimPrefix(at, "/"), "/$ref"))[reportFindingRefKeyword].(string); !strings.HasPrefix(ref, "#") {
+			got = append(got, at)
+		}
+	}
+	if !slices.Equal(got, reportFindingRefPaths) {
 		t.Errorf("references(%s) = %v, want %v", reportSchemaPath, got, reportFindingRefPaths)
 	}
 	for _, at := range []string{"properties/findings/items", reportEdgeItemPath + "/properties/finding"} {
@@ -131,7 +138,7 @@ func TestReportSchemaProperties(t *testing.T) {
 		},
 		{name: "analyzer", at: "properties/analyzer", want: []string{"conformance", "languages", "name", "schema_versions_accepted", "version"}},
 		{name: "conformance", at: reportConformancePath, want: []string{"corpus_version", "digest", "result"}},
-		{name: "merged_from_entry", at: "properties/merged_from/items", want: []string{"digest", "name", "version"}},
+		{name: "merged_from_entry", at: "properties/merged_from/items", want: []string{"digest", "languages", "name", "totals", "version"}},
 		{name: "target", at: "properties/target", want: []string{"identity", "kind", "language_kinds", "root"}},
 		{name: "configuration_platform", at: reportConfigurationPlatformPath, want: []string{"arch", "id", "os", "tags"}},
 		{name: "configuration_project", at: reportConfigurationProjectPath, want: []string{"id", "project"}},
@@ -343,7 +350,7 @@ func TestReportSchemaEdgeEvaluationCarriesAFindingExactlyWhenDead(t *testing.T) 
 }
 
 // TestReportSchemaStaleSuppressionCodeIsFixed pins that a stale-suppression
-// record can carry no code but DS1703, the kind that is fixed on at deny, and
+// record can carry no code but DS9003, the kind that is fixed on at deny, and
 // that the conformance digest is the one form a reader can recompute.
 func TestReportSchemaStaleSuppressionCodeIsFixed(t *testing.T) {
 	schema := loadReportSchema(t)

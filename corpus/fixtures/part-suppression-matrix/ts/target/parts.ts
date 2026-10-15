@@ -2,12 +2,12 @@ function touch(value: number): void {
   console.log(value);
 }
 
-// deadset:ignore DS1801 -- The parameter is kept on purpose.
+// deadset:ignore DS1401 -- The parameter is kept on purpose.
 function parameterAbove(value: number, label: string): number {
   return value * 2;
 }
 
-function parameterTrailing(value: number, label: string): number { // deadset:ignore DS1801 -- The parameter is kept on purpose.
+function parameterTrailing(value: number, label: string): number { // deadset:ignore DS1401 -- The parameter is kept on purpose.
   return value * 2;
 }
 
@@ -15,17 +15,17 @@ function parameterEntry(value: number, label: string): number {
   return value * 2;
 }
 
-// deadset:ignore DS1801 -- The parameter is kept on purpose.
+// deadset:ignore DS1401 -- The parameter is kept on purpose.
 function parameterLive(value: number, label: string): number {
   return value + label.length;
 }
 
-// deadset:ignore DS1803 -- The result is kept on purpose.
+// deadset:ignore DS1403 -- The result is kept on purpose.
 function resultAbove(): number {
   return 1;
 }
 
-function resultTrailing(): number { // deadset:ignore DS1803 -- The result is kept on purpose.
+function resultTrailing(): number { // deadset:ignore DS1403 -- The result is kept on purpose.
   return 1;
 }
 
@@ -33,19 +33,19 @@ function resultEntry(): number {
   return 1;
 }
 
-// deadset:ignore DS1803 -- The result is kept on purpose.
+// deadset:ignore DS1403 -- The result is kept on purpose.
 function resultLive(): number {
   return 2;
 }
 
-// deadset:ignore DS1805 -- The statement is kept on purpose.
+// deadset:ignore DS1405 -- The statement is kept on purpose.
 function statementAbove(): void {
   touch(0);
   return;
   touch(1);
 }
 
-function statementTrailing(): void { // deadset:ignore DS1805 -- The statement is kept on purpose.
+function statementTrailing(): void { // deadset:ignore DS1405 -- The statement is kept on purpose.
   touch(0);
   return;
   touch(1);
@@ -57,19 +57,19 @@ function statementEntry(): void {
   touch(1);
 }
 
-// deadset:ignore DS1805 -- The statement is kept on purpose.
+// deadset:ignore DS1405 -- The statement is kept on purpose.
 function statementLive(): void {
   touch(0);
 }
 
-// deadset:ignore DS1807 -- The store is kept on purpose.
+// deadset:ignore DS1404 -- The store is kept on purpose.
 function storeAbove(): number {
   let count = 1;
   count = 2;
   return count;
 }
 
-function storeTrailing(): number { // deadset:ignore DS1807 -- The store is kept on purpose.
+function storeTrailing(): number { // deadset:ignore DS1404 -- The store is kept on purpose.
   let count = 1;
   count = 2;
   return count;
@@ -81,14 +81,14 @@ function storeEntry(): number {
   return count;
 }
 
-// deadset:ignore DS1807 -- The store is kept on purpose.
+// deadset:ignore DS1404 -- The store is kept on purpose.
 function storeLive(): number {
   let count = 1;
   count += 2;
   return count;
 }
 
-// deadset:ignore DS1809 -- The case is kept on purpose.
+// deadset:ignore DS1406 -- The case is kept on purpose.
 function caseAbove(v: string): string {
   switch (v) {
     case "node":
@@ -99,7 +99,7 @@ function caseAbove(v: string): string {
   return "other";
 }
 
-function caseTrailing(v: string): string { // deadset:ignore DS1809 -- The case is kept on purpose.
+function caseTrailing(v: string): string { // deadset:ignore DS1406 -- The case is kept on purpose.
   switch (v) {
     case "node":
       return "first";
@@ -119,7 +119,7 @@ function caseEntry(v: string): string {
   return "other";
 }
 
-// deadset:ignore DS1809 -- The case is kept on purpose.
+// deadset:ignore DS1406 -- The case is kept on purpose.
 function caseLive(v: string): string {
   switch (v) {
     case "node":

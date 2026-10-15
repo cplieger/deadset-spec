@@ -9,7 +9,7 @@
   "expect": [
     {
       "symbol": "fixedNow",
-      "report": "DS1004",
+      "report": "DS1102",
       "confidence": "probable",
       "reachability_class": "certain",
       "symbol_kind": "variable",

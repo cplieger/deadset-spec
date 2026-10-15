@@ -9,11 +9,11 @@
   ],
   "expect": [
     { "symbol": "Serve", "report": "none" },
-    { "symbol": "TemplateFile", "report": "DS1502", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "file" },
+    { "symbol": "TemplateFile", "report": "DS1602", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "file" },
     { "symbol": "templateInit", "report": "DS1002", "confidence": "possible", "reachability_class": "possible", "symbol_kind": "function", "liveness_relation": "reference-counting" },
     { "symbol": "New", "report": "DS1001", "confidence": "possible", "reachability_class": "possible", "symbol_kind": "function", "liveness_relation": "reachability" },
     { "symbol": "Driver", "report": "DS1001", "confidence": "possible", "reachability_class": "possible", "symbol_kind": "type", "liveness_relation": "reachability" },
-    { "symbol": "PluginFile", "report": "DS1502", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "file" },
+    { "symbol": "PluginFile", "report": "DS1602", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "file" },
     { "symbol": "pluginInit", "report": "DS1002", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "function", "liveness_relation": "reference-counting" },
     { "symbol": "load", "report": "DS1002", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "function", "liveness_relation": "reachability" },
     { "symbol": "dialectInit", "report": "none" },

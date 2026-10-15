@@ -1,0 +1,21 @@
+{
+  "description": "An ignore entry of a scheme no analyzer of the run implements is checked by none, as suppression.md states: it binds nothing, is reported under no code and the run ends as it would without it.",
+  "products": [
+    "deadset-go"
+  ],
+  "rename": {
+    "deadset-ignore.json.txt": "deadset-ignore.json",
+    "go.mod.txt": "go.mod",
+    "main.go.txt": "main.go"
+  },
+  "argv": [
+    "analyze",
+    "--target=@TARGET@",
+    "--report=@OUT@/report.json"
+  ],
+  "expect": {
+    "exit": 0,
+    "report": "valid",
+    "finding_paths": []
+  }
+}

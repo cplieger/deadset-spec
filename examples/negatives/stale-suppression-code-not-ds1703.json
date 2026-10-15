@@ -39,7 +39,7 @@
   "edge_evaluations": [],
   "stale_suppressions": [
     {
-      "code": "DS1701",
+      "code": "DS9001",
       "mechanism": "inline",
       "entry": {
         "code": "DS1002",

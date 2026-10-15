@@ -30,7 +30,7 @@ func main() {}
   "description": "One entry in effect on a requirement, one under the wrong code, one naming no row.",
   "ignore": [
     {
-      "code": "DS1601",
+      "code": "DS1701",
       "symbol": "go://example.com/app#golang.org/x/sync:require",
       "path": "go.mod",
       "reason": "Pinned for a tool a workflow outside the module runs."
@@ -42,7 +42,7 @@ func main() {}
       "reason": "Names the requirement under a code it is not reported under."
     },
     {
-      "code": "DS1601",
+      "code": "DS1701",
       "symbol": "go://example.com/app#golang.org/x/absent:require",
       "path": "go.mod",
       "reason": "Names a requirement the module file does not declare."

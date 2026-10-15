@@ -21,14 +21,14 @@
     "reason": "The whitespace between // and the token may be a tab; the grammar admits spaces and tabs in any number."
   },
   {
-    "input": { "comment": "//deadset:ignore DS1001,DS1101 -- Public by the v3 API promise; narrowing it is a major bump.", "line_offset": -1 },
+    "input": { "comment": "//deadset:ignore DS1001,DS1501 -- Public by the v3 API promise; narrowing it is a major bump.", "line_offset": -1 },
     "kind": "inline",
     "accepted": true,
     "rule": "code-list",
     "reason": "Two codes separated by a comma and no whitespace; the directive yields one suppression record per code."
   },
   {
-    "input": { "comment": "//deadset:ignore DS1801 -- kept -- the upstream callback signature fixes the arity.", "line_offset": -1 },
+    "input": { "comment": "//deadset:ignore DS1401 -- kept -- the upstream callback signature fixes the arity.", "line_offset": -1 },
     "kind": "inline",
     "accepted": true,
     "rule": "reason-text",
@@ -67,43 +67,43 @@
     "kind": "inline",
     "accepted": false,
     "rule": "reason-required",
-    "reason": "No separator and no reason: refused and reported as DS1701 (suppression-without-reason); the directive binds nothing."
+    "reason": "No separator and no reason: refused and reported as DS9001 (suppression-without-reason); the directive binds nothing."
   },
   {
     "input": { "comment": "//deadset:ignore DS1001 --", "line_offset": -1 },
     "kind": "inline",
     "accepted": false,
     "rule": "reason-required",
-    "reason": "A separator with nothing after it: refused and reported as DS1701."
+    "reason": "A separator with nothing after it: refused and reported as DS9001."
   },
   {
     "input": { "comment": "//deadset:ignore DS1001 --    ", "line_offset": -1 },
     "kind": "inline",
     "accepted": false,
     "rule": "reason-required",
-    "reason": "A separator followed by whitespace only: an empty reason is no reason, DS1701."
+    "reason": "A separator followed by whitespace only: an empty reason is no reason, DS9001."
   },
   {
-    "input": { "comment": "//deadset:ignore DS1001,DS1101", "line_offset": -1 },
+    "input": { "comment": "//deadset:ignore DS1001,DS1501", "line_offset": -1 },
     "kind": "inline",
     "accepted": false,
     "rule": "reason-required",
-    "reason": "Two codes and no reason: one record per code, each refused and each reported as DS1701, so the directive is two findings at one line.",
-    "reports": ["DS1701", "DS1701"]
+    "reason": "Two codes and no reason: one record per code, each refused and each reported as DS9001, so the directive is two findings at one line.",
+    "reports": ["DS9001", "DS9001"]
   },
   {
     "input": { "comment": "//deadset:ignore DS1001 -- Reached only through the generated client.", "line_offset": -2 },
     "kind": "inline",
     "accepted": false,
     "rule": "line-above",
-    "reason": "Two lines above the declaration, with a blank line or a doc-comment line between: it binds nothing and is reported as DS1703."
+    "reason": "Two lines above the declaration, with a blank line or a doc-comment line between: it binds nothing and is reported as DS9003."
   },
   {
     "input": { "comment": "//deadset:ignore DS1001 -- Reached only through the generated client.", "line_offset": 1 },
     "kind": "inline",
     "accepted": false,
     "rule": "line-above",
-    "reason": "On the line below the declaration: it binds nothing and is reported as DS1703."
+    "reason": "On the line below the declaration: it binds nothing and is reported as DS9003."
   },
   {
     "input": { "comment": "//nolint:unused // legacy hook kept for the plugin loader", "line_offset": -1 },
@@ -264,43 +264,43 @@
     "kind": "ignore-entry",
     "accepted": false,
     "rule": "reason-required",
-    "reason": "No reason key: the entry is refused and reported as DS1701 (suppression-without-reason); it binds nothing."
+    "reason": "No reason key: the entry is refused and reported as DS9001 (suppression-without-reason); it binds nothing."
   },
   {
     "input": { "code": "DS1001", "symbol": "go://example.com/app#Catalog.ResolveAlias", "path": "catalog.go", "reason": "" },
     "kind": "ignore-entry",
     "accepted": false,
     "rule": "reason-required",
-    "reason": "An empty reason is no reason: DS1701."
+    "reason": "An empty reason is no reason: DS9001."
   },
   {
     "input": { "code": "DS1001", "symbol": "go://example.com/app#Catalog.ResolveAlias", "path": "catalog.go", "reason": "   " },
     "kind": "ignore-entry",
     "accepted": false,
     "rule": "reason-required",
-    "reason": "A whitespace-only reason is no reason: DS1701."
+    "reason": "A whitespace-only reason is no reason: DS9001."
   },
   {
     "input": { "code": "DS1001", "symbol": "go://example.com/app#Catalog.ResolveAlias", "reason": "Kept for the v3 API promise." },
     "kind": "ignore-entry",
     "accepted": false,
     "rule": "path-required",
-    "reason": "A symbol and no path: the entry is refused and reported as DS1702 (unscoped-ignore-entry) rather than matched, so a bare name cannot mask a match in another file."
+    "reason": "A symbol and no path: the entry is refused and reported as DS9002 (unscoped-ignore-entry) rather than matched, so a bare name cannot mask a match in another file."
   },
   {
     "input": { "code": "DS1001", "symbol": "go://example.com/app#Catalog.ResolveAlias", "path": "", "reason": "Kept for the v3 API promise." },
     "kind": "ignore-entry",
     "accepted": false,
     "rule": "path-required",
-    "reason": "An empty path is no path: DS1702."
+    "reason": "An empty path is no path: DS9002."
   },
   {
     "input": { "code": "DS1001", "symbol": "go://example.com/app#Catalog.ResolveAlias" },
     "kind": "ignore-entry",
     "accepted": false,
     "rule": "reason-required",
-    "reason": "Neither a reason nor a path: the two rules are separate checks and both report, so the entry is DS1701 and DS1702 at one position and a maintainer who supplies the reason still sees the missing path.",
-    "reports": ["DS1701", "DS1702"]
+    "reason": "Neither a reason nor a path: the two rules are separate checks and both report, so the entry is DS9001 and DS9002 at one position and a maintainer who supplies the reason still sees the missing path.",
+    "reports": ["DS9001", "DS9002"]
   },
   {
     "input": { "code": "DS1001", "symbol": "go://example.com/app#Catalog.ResolveAlias", "path": "/src/app/catalog.go", "reason": "Kept for the v3 API promise." },
@@ -321,7 +321,7 @@
     "kind": "ignore-entry",
     "accepted": true,
     "rule": "path-form",
-    "reason": "A backslash is a character of a file name, never a separator, so the entry is well-formed; it names the file internal\\legacy\\catalog.go, and where the tree holds the symbol in internal/legacy/catalog.go instead it binds nothing and is stale, DS1703."
+    "reason": "A backslash is a character of a file name, never a separator, so the entry is well-formed; it names the file internal\\legacy\\catalog.go, and where the tree holds the symbol in internal/legacy/catalog.go instead it binds nothing and is stale, DS9003."
   },
   {
     "input": { "code": "DS1001", "symbol": "ts://@example/app/src/routes/(app)/+layout.ts#load", "path": "src/routes/(app)/+layout.ts", "reason": "Kept for the v3 API promise." },
@@ -482,14 +482,14 @@
     "kind": "baseline-row",
     "accepted": false,
     "rule": "reason-required",
-    "reason": "A row with no reason: refused and reported as DS1701, the same as an ignore entry; a hand-edited baseline does not get to drop the field."
+    "reason": "A row with no reason: refused and reported as DS9001, the same as an ignore entry; a hand-edited baseline does not get to drop the field."
   },
   {
     "input": { "code": "DS1001", "symbol": "go://example.com/app#Catalog.ResolveAlias", "reason": "recorded by deadset-go 1.0.0" },
     "kind": "baseline-row",
     "accepted": false,
     "rule": "path-required",
-    "reason": "A row with no path: refused and reported as DS1702, the same as an ignore entry."
+    "reason": "A row with no path: refused and reported as DS9002, the same as an ignore entry."
   },
   {
     "input": { "code": "DS1001", "symbol": "go://example.com/app#Catalog.ResolveAlias", "path": "catalog.go", "line": 214, "reason": "recorded by deadset-go 1.0.0" },

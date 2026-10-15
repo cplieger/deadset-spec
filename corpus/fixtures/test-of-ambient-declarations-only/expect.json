@@ -13,7 +13,7 @@
     },
     {
       "symbol": "TestDead",
-      "report": "DS1005",
+      "report": "DS1103",
       "symbol_kind": "function",
       "confidence": "certain",
       "reachability_class": "certain",
@@ -24,7 +24,7 @@
     },
     {
       "symbol": "TestBoth",
-      "report": "DS1005",
+      "report": "DS1103",
       "symbol_kind": "function",
       "confidence": "certain",
       "reachability_class": "certain",
@@ -35,7 +35,7 @@
     },
     {
       "symbol": "Unused",
-      "report": "DS1004",
+      "report": "DS1102",
       "symbol_kind": "function",
       "confidence": "certain",
       "reachability_class": "certain",
@@ -43,7 +43,7 @@
     },
     {
       "symbol": "UnusedToo",
-      "report": "DS1004",
+      "report": "DS1102",
       "symbol_kind": "function",
       "confidence": "certain",
       "reachability_class": "certain",

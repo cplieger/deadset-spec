@@ -1,6 +1,6 @@
 {
   "name": "interface-method-only-tests-call",
-  "description": "In Go an interface method whose only calls through the interface are in test code, and that the DS1203 precondition does not exempt, is reported under DS1004, as a declaration only test code references is, and not under DS1203. The method implementing it is not reported with it while a test reaches it through the interface.",
+  "description": "In Go an interface method whose only calls through the interface are in test code, and that the DS1202 precondition does not exempt, is reported under DS1102, as a declaration only test code references is, and not under DS1202. The method implementing it is not reported with it while a test reaches it through the interface.",
   "languages": [
     "go"
   ],
@@ -8,7 +8,7 @@
   "expect": [
     {
       "symbol": "TestCalledMethod",
-      "report": "DS1004",
+      "report": "DS1102",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "interface-method",

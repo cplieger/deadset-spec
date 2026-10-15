@@ -1,0 +1,29 @@
+The Go rendering: a method a reflective lookup names by a string literal.
+
+-- fixture.json --
+{
+  "symbols": {
+    "handler.Ping": {
+      "file": "target/main.go",
+      "line": 8
+    }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target looks a method up by name.
+package main
+
+import "reflect"
+
+type handler struct{}
+
+func (handler) Ping() {}
+
+func main() {
+	m := reflect.ValueOf(handler{}).MethodByName("Ping")
+	println(m.IsValid())
+}

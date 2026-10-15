@@ -1,0 +1,9 @@
+# Confidence evidence
+
+The evidence that lowers a finding's reachability class, generated from `contract/confidence.json`. Each row names the rule of [the analysis](../contract/grammar/analysis.md) that states when it holds; a finding takes the lowest class any row that holds for it gives, then its kind's `max_class` and the component cap apply.
+
+| Evidence | Lowers to | Languages | Rule | When |
+| --- | --- | --- | --- | --- |
+{{- range .Confidence.Evidence}}
+| `{{.Evidence}}` | `{{.Class}}` | {{ticks .Languages}} | [`{{.Rule}}`](../{{rulepage .Rule}}) | {{.Description}} |
+{{- end}}

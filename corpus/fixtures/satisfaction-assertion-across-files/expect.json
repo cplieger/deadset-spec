@@ -6,7 +6,7 @@
   "expect": [
     {
       "symbol": "AssertedInterfaceMethod",
-      "report": "DS1203",
+      "report": "DS1202",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "interface-method",
@@ -17,14 +17,14 @@
     },
     {
       "symbol": "Assertion",
-      "report": "DS1204",
+      "report": "DS1203",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "satisfaction-assertion"
     },
     {
       "symbol": "AssertedMethod",
-      "report": "DS1103",
+      "report": "DS1101",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "method",

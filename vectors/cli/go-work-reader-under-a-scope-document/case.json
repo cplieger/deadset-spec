@@ -1,0 +1,27 @@
+{
+  "description": "A module of the target's workspace is a reader of the target whatever source names the target: a function the workspace's other module calls is live with or without a scope document, and a function nothing calls is reported.",
+  "pending": "the topology rule of the Go modules of a target: the Go analyzer counts a go.work reader only when no scope document names the target.",
+  "products": [
+    "deadset-go"
+  ],
+  "rename": {
+    "lib/go.mod.txt": "lib/go.mod",
+    "lib/lib.go.txt": "lib/lib.go",
+    "reader/go.mod.txt": "reader/go.mod",
+    "reader/main.go.txt": "reader/main.go"
+  },
+  "argv": [
+    "analyze",
+    "--target=@TARGET@/lib",
+    "--scope=@TARGET@/scope.json",
+    "--report=@OUT@/report.json",
+    "--exit-code=off"
+  ],
+  "expect": {
+    "exit": 0,
+    "report": "valid",
+    "finding_symbols": [
+      "Unused"
+    ]
+  }
+}

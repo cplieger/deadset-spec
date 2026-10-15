@@ -20,12 +20,56 @@
     {
       "name": "deadset-go",
       "version": "1.1.0",
-      "digest": "sha256:03895c82aa9579871f341474e29fc02f0cff6e1d355426a32d888ea9a21eb0f1"
+      "digest": "sha256:03895c82aa9579871f341474e29fc02f0cff6e1d355426a32d888ea9a21eb0f1",
+      "languages": [
+        "go"
+      ],
+      "totals": {
+        "findings": 1,
+        "by_severity": {
+          "allow": 0,
+          "warn": 0,
+          "deny": 1
+        },
+        "deletable_lines": 8,
+        "suppressions_in_effect": 0,
+        "reasons_recorded": 0,
+        "stale_suppressions": 0,
+        "pending": 0,
+        "omitted": 0,
+        "withheld": {
+          "certain": 0,
+          "probable": 0,
+          "possible": 0
+        }
+      }
     },
     {
       "name": "example-go",
       "version": "1.0.0",
-      "digest": "sha256:4a07627b5dcea7cefa1cd8aea210f3f3f727409068a3e0454cfbd72794711086"
+      "digest": "sha256:4a07627b5dcea7cefa1cd8aea210f3f3f727409068a3e0454cfbd72794711086",
+      "languages": [
+        "go"
+      ],
+      "totals": {
+        "findings": 1,
+        "by_severity": {
+          "allow": 0,
+          "warn": 0,
+          "deny": 1
+        },
+        "deletable_lines": 5,
+        "suppressions_in_effect": 0,
+        "reasons_recorded": 0,
+        "stale_suppressions": 0,
+        "pending": 0,
+        "omitted": 0,
+        "withheld": {
+          "certain": 0,
+          "probable": 0,
+          "possible": 0
+        }
+      }
     }
   ],
   "target": {

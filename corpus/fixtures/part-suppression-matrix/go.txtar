@@ -33,12 +33,12 @@ go 1.27.0
 -- target/parts.go --
 package main
 
-//deadset:ignore DS1801 -- The parameter is kept on purpose.
+//deadset:ignore DS1401 -- The parameter is kept on purpose.
 func parameterAbove(value int, label string) int {
 	return value * 2
 }
 
-func parameterTrailing(value int, label string) int { //deadset:ignore DS1801 -- The parameter is kept on purpose.
+func parameterTrailing(value int, label string) int { //deadset:ignore DS1401 -- The parameter is kept on purpose.
 	return value * 2
 }
 
@@ -46,17 +46,17 @@ func parameterEntry(value int, label string) int {
 	return value * 2
 }
 
-//deadset:ignore DS1801 -- The parameter is kept on purpose.
+//deadset:ignore DS1401 -- The parameter is kept on purpose.
 func parameterLive(value int, label string) int {
 	return value + len(label)
 }
 
-//deadset:ignore DS1803 -- The result is kept on purpose.
+//deadset:ignore DS1403 -- The result is kept on purpose.
 func resultAbove() int {
 	return 1
 }
 
-func resultTrailing() int { //deadset:ignore DS1803 -- The result is kept on purpose.
+func resultTrailing() int { //deadset:ignore DS1403 -- The result is kept on purpose.
 	return 1
 }
 
@@ -64,19 +64,19 @@ func resultEntry() int {
 	return 1
 }
 
-//deadset:ignore DS1803 -- The result is kept on purpose.
+//deadset:ignore DS1403 -- The result is kept on purpose.
 func resultLive() int {
 	return 2
 }
 
-//deadset:ignore DS1805 -- The statement is kept on purpose.
+//deadset:ignore DS1405 -- The statement is kept on purpose.
 func statementAbove() {
 	println("before the return")
 	return
 	println("after the return")
 }
 
-func statementTrailing() { //deadset:ignore DS1805 -- The statement is kept on purpose.
+func statementTrailing() { //deadset:ignore DS1405 -- The statement is kept on purpose.
 	println("before the return")
 	return
 	println("after the return")
@@ -88,19 +88,19 @@ func statementEntry() {
 	println("after the return")
 }
 
-//deadset:ignore DS1805 -- The statement is kept on purpose.
+//deadset:ignore DS1405 -- The statement is kept on purpose.
 func statementLive() {
 	println("only")
 }
 
-//deadset:ignore DS1807 -- The store is kept on purpose.
+//deadset:ignore DS1404 -- The store is kept on purpose.
 func storeAbove() int {
 	count := 1
 	count = 2
 	return count
 }
 
-func storeTrailing() int { //deadset:ignore DS1807 -- The store is kept on purpose.
+func storeTrailing() int { //deadset:ignore DS1404 -- The store is kept on purpose.
 	count := 1
 	count = 2
 	return count
@@ -112,14 +112,14 @@ func storeEntry() int {
 	return count
 }
 
-//deadset:ignore DS1807 -- The store is kept on purpose.
+//deadset:ignore DS1404 -- The store is kept on purpose.
 func storeLive() int {
 	count := 1
 	count += 2
 	return count
 }
 
-//deadset:ignore DS1809 -- The case is kept on purpose.
+//deadset:ignore DS1406 -- The case is kept on purpose.
 func caseAbove(v any) string {
 	switch v.(type) {
 	case stringer:
@@ -130,7 +130,7 @@ func caseAbove(v any) string {
 	return "other"
 }
 
-func caseTrailing(v any) string { //deadset:ignore DS1809 -- The case is kept on purpose.
+func caseTrailing(v any) string { //deadset:ignore DS1406 -- The case is kept on purpose.
 	switch v.(type) {
 	case stringer:
 		return "stringer"
@@ -150,7 +150,7 @@ func caseEntry(v any) string {
 	return "other"
 }
 
-//deadset:ignore DS1809 -- The case is kept on purpose.
+//deadset:ignore DS1406 -- The case is kept on purpose.
 func caseLive(v any) string {
 	switch x := v.(type) {
 	case node:
@@ -198,31 +198,31 @@ func main() {
   "description": "One entry per part kind, each holding the part of one function.",
   "ignore": [
     {
-      "code": "DS1801",
+      "code": "DS1401",
       "symbol": "go://example.com/app#parameterEntry",
       "path": "parts.go",
       "reason": "The parameter is kept on purpose."
     },
     {
-      "code": "DS1803",
+      "code": "DS1403",
       "symbol": "go://example.com/app#resultEntry",
       "path": "parts.go",
       "reason": "The result is kept on purpose."
     },
     {
-      "code": "DS1805",
+      "code": "DS1405",
       "symbol": "go://example.com/app#statementEntry",
       "path": "parts.go",
       "reason": "The statement is kept on purpose."
     },
     {
-      "code": "DS1807",
+      "code": "DS1404",
       "symbol": "go://example.com/app#storeEntry",
       "path": "parts.go",
       "reason": "The store is kept on purpose."
     },
     {
-      "code": "DS1809",
+      "code": "DS1406",
       "symbol": "go://example.com/app#caseEntry",
       "path": "parts.go",
       "reason": "The case is kept on purpose."

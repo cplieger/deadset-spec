@@ -84,11 +84,11 @@ Exit code: 3 under rule 1; otherwise none.
 
 ### Step 5: Stale edges
 
-For each edge in the index, in bytewise order of the edge identifier: if at least one side of the edge holds at least one evaluation and every evaluation of that side is `absent`, emit one `DS1705` finding for the edge. The edge names a symbol that no analyzer claiming its language enumerates. One finding per edge, however many sides are absent.
+For each edge in the index, in bytewise order of the edge identifier: if at least one side of the edge holds at least one evaluation and every evaluation of that side is `absent`, emit one `DS9005` finding for the edge. The edge names a symbol that no analyzer claiming its language enumerates. One finding per edge, however many sides are absent.
 
 The finding is built from the edge's evaluations alone: the edge identifier, and each side's symbol and state. The merge reads no edges document. The **stale side** is the side whose every evaluation is `absent`, and `provides` where both sides are. The finding's members, in `finding.schema.json`'s order:
 
-- `code` `DS1705`, and `kind`, `fixability` and `severity` the name, fixability and default severity [`kinds.json`](../kinds.json) gives that code;
+- `code` `DS9005`, and `kind`, `fixability` and `severity` the name, fixability and default severity [`kinds.json`](../kinds.json) gives that code;
 - `language` the language the stale side's symbol reference names by its prefix ([`symbol-ref.md`](symbol-ref.md));
 - `position` the target-relative path `deadset-edges.json`, line 1, column 1 and end line 1, the position `report.schema.json` fixes for a document-level finding;
 - `symbol` with `ref` the stale side's symbol, `kind` `edge`, `name` the edge identifier and `size_lines` 1, and no other member;
@@ -98,9 +98,9 @@ The finding is built from the edge's evaluations alone: the edge identifier, and
 - `message` `no analyzer enumerates the symbol either side of the edge names` where both sides are stale, and otherwise `no analyzer enumerates the symbol the provides side of the edge names` or `no analyzer enumerates the symbol the used_by side of the edge names`, naming the one stale side;
 - `details` with `edge` the edge identifier and `sides` one entry per side that holds an evaluation, `provides` before `used_by`, each naming the side, its symbol and its strongest state in the order step 4 reads, `live`, then `dead`, then `absent`.
 
-An `absent` evaluation carries no finding and only the merge emits `DS1705`, so no input report holds one for an edge and the merge never doubles one.
+An `absent` evaluation carries no finding and only the merge emits `DS9005`, so no input report holds one for an edge and the merge never doubles one.
 
-Three shapes reach this step: every side `absent`; a `dead` side whose paired side is `absent`, where step 4 dropped the pending finding; and a `live` side whose paired side is `absent`. Exit code: none. `DS1705` carries the `deny` severity, so step 7 returns 1 whenever this step emits.
+Three shapes reach this step: every side `absent`; a `dead` side whose paired side is `absent`, where step 4 dropped the pending finding; and a `live` side whose paired side is `absent`. Exit code: none. `DS9005` carries the `deny` severity, so step 7 returns 1 whenever this step emits.
 
 ### Step 6: Order
 
@@ -110,7 +110,7 @@ The rest of the envelope, member by member:
 
 - `schema_version` and `contract_version` are the caller's.
 - `analyzer` names the merging product: its `name`, `version` and `conformance` are the caller's, its `languages` is every language an input report's `analyzer.languages` names, each once and ordered bytewise, and its `schema_versions_accepted` is the accepted range as the caller gave it.
-- `merged_from` holds one entry per input report, ordered by name compared bytewise: the report's `analyzer.name` and `analyzer.version`, and the digest the caller gave for that report. No two entries share a name, because step 1 admitted one report per name.
+- `merged_from` holds one entry per input report, ordered by name compared bytewise: the report's `analyzer.name` and `analyzer.version`, the digest the caller gave for that report, the report's `analyzer.languages`, and the report's `totals` as it wrote them. No two entries share a name, because step 1 admitted one report per name.
 - `components` is present where an input report carries it, with one entry per distinct `component.id` the merged `findings` name, in the order of the first merged finding naming it. An entry holds every member an input report lists under that identifier, and the entry of a component the component union joined holds the members of every component it joined; each member appears once, and the members are ordered by the canonical key below, read from each member's `position` and `ref`. The one-member component of a stale-edge finding the merger makes, which no input lists, holds that finding's `symbol.ref`, `symbol.name` and `position` as its member. A component no merged finding names, a dropped one among them, has no entry.
 - `target` names the `root` and the `identity` every input report names, which step 1 made one target. Its `kind` is the kind the input reports claim for every language the merged `analyzer.languages` names where they claim one kind for all of them, and `mixed` otherwise, with `language_kinds` then naming the kind claimed for each of those languages, in the order `report.schema.json` lists them. A merge of reports whose languages share one kind therefore writes that kind, as each input report does.
 - `configurations`, `configurations_not_built`, `excluded_by_cgo`, `test_file_rules`, `type_error_skips`, `notes`, `unanswered_questions` and `conventions_applied` are the union of the input reports' entries, an entry two reports carry appearing once, each in the order `report.schema.json` states for it. `test_file_rules` holds one entry per distinct entry, ordered by `rule` compared bytewise, then by the bytewise comparison of the entries' compact JSON encodings in the schema's field order, so two analyzers that count one rule differently contribute two entries under it. The last four arrays hold one entry per distinct entry in the same way: `type_error_skips` ordered by `path` compared bytewise, then by `line`; `notes` by `kind`, then by `path`; `unanswered_questions` by `configuration`, so two analyzers that count one configuration differently contribute two entries under it; and `conventions_applied` by `name`, then by `manifest`; each then by the bytewise comparison of the entries' compact JSON encodings. `configurations` and `configurations_not_built` hold one entry per `id`. Step 1 refused an `id` held in both arrays and two entries under one `id` whose identity members differ, so an `id` appears at most once across the two merged arrays, and the entries the inputs carry under it agree on every identity member. The merged entry is the entry of the input report that comes first in `merged_from`, its `error` included.
@@ -168,7 +168,7 @@ merge(reports, accepted_schema_range, caller) -> (report, exit_code)
                 union the components of promoted paired findings,
                 in canonical order
 5. Stale edges. for each edge with a side whose every evaluation is absent:
-                  emit one DS1705
+                  emit one DS9005
 6. Order.       sort findings, stale_suppressions and declared_gaps by the
                 canonical key; carry live and absent evaluations only;
                 build the envelope from the inputs and the caller's facts,
@@ -212,8 +212,8 @@ The same key orders `stale_suppressions` and `declared_gaps`. Each component is 
 ## What other documents fix
 
 - [`report.schema.json`](../report.schema.json): the envelope, the edge-evaluation record, the field each record type supplies to the key, and the position of a document-level finding.
-- [`finding.schema.json`](../finding.schema.json): the finding object the page orders, its `details` branches, and the shape of the emitted `DS1705` finding.
-- [`kinds.json`](../kinds.json): the `DS1705` row and its severity.
+- [`finding.schema.json`](../finding.schema.json): the finding object the page orders, its `details` branches, and the shape of the emitted `DS9005` finding.
+- [`kinds.json`](../kinds.json): the `DS9005` row and its severity.
 - [`exit-codes.json`](../exit-codes.json): the meaning of each code step 7 returns.
 - `symbol-ref.md`: the grammar of the references the key compares bytewise.
 - `vectors/merge/`: one directory per case, each with its input reports, its accepted schema range, its caller's facts, its byte-exact expected report and its expected exit code.

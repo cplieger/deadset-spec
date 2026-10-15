@@ -40,27 +40,6 @@ var findingFields = []string{
 // findingNoRelationKinds and findingLiveSubjectCodes below.
 var findingOptionalFields = []string{"analyzer", "liveness_relation"}
 
-// findingNoRelationKinds are the symbol kinds that are not declarations, so a
-// finding about one carries no liveness relation. Seven are artifacts the run
-// read rather than symbols it swept: a source file, a dependency, a module
-// directive, a suppression record, a configured root, a configured declaration
-// and a declared cross-language edge. Six are parts of the declaration the
-// finding's symbol.ref names: a parameter, a receiver, a result, a statement, a
-// case and a store, each decided inside its declaration rather than by a
-// relation over the reference graph, and an import binding is a part of its file.
-var findingNoRelationKinds = []string{
-	"case", "configured-declaration", "dependency", "edge", "file", "import", "module-directive",
-	"parameter", "receiver", "result", "root", "statement", "store", "suppression",
-}
-
-// findingLiveSubjectCodes are the codes whose subject the analysis holds live,
-// so their findings carry no liveness relation: the three narrowing kinds
-// report a symbol its own package references, the write-only kind reports a
-// symbol production code writes, and the unused-assertion kind reports an
-// assertion the program declares. A kind added to the vocabulary whose subject
-// is live fails the test below until it is named here.
-var findingLiveSubjectCodes = []string{"DS1101", "DS1102", "DS1104", "DS1204", "DS1301"}
-
 // findingCodeInText finds a code inside a line of a published page, where the
 // anchored shape of a code cannot be used.
 var findingCodeInText = regexp.MustCompile(`DS[0-9]{4}`)
@@ -82,35 +61,9 @@ type findingDetailsBranch struct {
 	fields []string
 }
 
-// findingDetailsBranches are the branches the schema declares, in order. Each
-// set of codes carries its fields and no other code may.
-var findingDetailsBranches = []findingDetailsBranch{
-	{codes: []string{"DS1101", "DS1102", "DS1104"}, fields: []string{"narrower_visibility"}},
-	{codes: []string{"DS1201", "DS1203", "DS1204"}, fields: []string{"implementations"}},
-	{codes: []string{"DS1301", "DS1807"}, fields: []string{"write_positions"}},
-	{codes: []string{"DS1501"}, fields: []string{"excluded_by"}},
-	{codes: []string{"DS1601"}, fields: []string{"dependency_class"}},
-	{codes: []string{"DS1605"}, fields: []string{"replacement"}},
-	{codes: []string{"DS1701", "DS1702", "DS1703"}, fields: []string{"mechanism", "entry"}},
-	{codes: []string{"DS1705"}, fields: []string{"edge", "sides"}},
-	{codes: []string{"DS1801", "DS1802", "DS1803", "DS1805", "DS1807", "DS1809"}, fields: []string{"overlap"}},
-	{codes: nameLiteralCodes, fields: []string{"name_literal"}},
-}
-
-// nameLiteralCodes are the codes grammar/analysis.md lets a string literal spelling
-// the subject's name lower to possible, and so the codes whose finding may carry
-// details.name_literal.
-var nameLiteralCodes = []string{"DS1001", "DS1002", "DS1004", "DS1006", "DS1101", "DS1102", "DS1103"}
-
 // findingDeletableOnlyField is the one details field no code discriminates: it
 // rides on any deletable finding whose fix drops a dependency's last use.
 const findingDeletableOnlyField = "removes_last_use_of"
-
-// findingEmptyDetailsCodes are the live codes no branch names, so their details
-// object is empty.
-var findingEmptyDetailsCodes = []string{
-	"DS1003", "DS1005", "DS1302", "DS1303", "DS1502", "DS1704", "DS1706",
-}
 
 // findingFieldsForCode lists the details fields a code carries, sorted.
 func findingFieldsForCode(code string) []string {
@@ -814,7 +767,7 @@ func TestFindingSchemaDetailsBranchesFollowTheKinds(t *testing.T) {
 		got = append(got, findingBranchCarrying("dependency_class")...)
 		got = append(got, findingBranchCarrying("replacement")...)
 		slices.Sort(got)
-		want := findingCodesMatching(kinds, func(k kindRow) bool { return findingInRange(k.Code, 1600, 1699) })
+		want := findingCodesMatching(kinds, func(k kindRow) bool { return findingInRange(k.Code, 1700, 1799) })
 		if !slices.Equal(got, want) {
 			t.Errorf("the branches carrying a dependency or a directive = %v, want the dependency family %v", got, want)
 		}
@@ -889,15 +842,15 @@ func findingBranchCarrying(field string) []string {
 }
 
 // findingNameLiteralCodes returns the codes the name-literal sentence of
-// grammar/analysis.md lists: the one sentence that gives a declaration a string
+// grammar/analysis/confidence.md lists: the one sentence that gives a declaration a string
 // literal spells the class possible names every code it applies under.
 func findingNameLiteralCodes(t *testing.T) []string {
 	t.Helper()
 	const marker = "whose identifier a string literal spells exactly"
-	page := grammarPage(t, analysisPagePath)
+	page := grammarPage(t, confidencePagePath)
 	at := strings.Index(page, marker)
 	if at < 0 {
-		t.Fatalf("Setup: %s states no sentence holding %q, want the name-literal rule", analysisPagePath, marker)
+		t.Fatalf("Setup: %s states no sentence holding %q, want the name-literal rule", confidencePagePath, marker)
 	}
 	sentence := page[at:]
 	if end := strings.Index(sentence, ". "); end >= 0 {

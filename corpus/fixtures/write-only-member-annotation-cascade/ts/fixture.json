@@ -1,0 +1,16 @@
+{
+  "symbols": {
+    "clock.last": {
+      "file": "target/main.ts",
+      "line": 6
+    },
+    "stamp": {
+      "file": "target/main.ts",
+      "line": 1
+    },
+    "stamp.at": {
+      "file": "target/main.ts",
+      "line": 2
+    }
+  }
+}

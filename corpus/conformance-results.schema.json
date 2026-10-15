@@ -40,10 +40,10 @@
       "enum": ["pass", "fail"]
     },
     "totals": {
-      "description": "The fixture counts the runner prints, so a reader compares them without counting rows: fixtures equals the length of the fixtures array and equals pass plus gap plus fail.",
+      "description": "The fixture counts the runner prints, so a reader compares them without counting rows: fixtures equals the length of the fixtures array and equals pass plus gap plus fail plus pending.",
       "type": "object",
       "additionalProperties": false,
-      "required": ["fixtures", "pass", "gap", "fail"],
+      "required": ["fixtures", "pass", "gap", "fail", "pending"],
       "properties": {
         "fixtures": {
           "description": "The number of fixtures the runner answered: every fixture whose expectation file lists the product's language.",
@@ -64,6 +64,11 @@
           "description": "The number of fixtures whose result is fail.",
           "type": "integer",
           "minimum": 0
+        },
+        "pending": {
+          "description": "The number of fixtures whose result is pending: fixtures expect.json marks pending, whatever their expectations' results.",
+          "type": "integer",
+          "minimum": 0
         }
       }
     },
@@ -82,12 +87,12 @@
             "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$"
           },
           "result": {
-            "description": "The fixture's result: fail when any expectation failed, when any finding sits at a position no expectation resolves to, or when the runner could not complete the fixture; otherwise gap when any expectation is a gap; otherwise pass.",
+            "description": "The fixture's result: pending when expect.json marks the fixture pending, whatever its expectations' results; otherwise fail when any expectation failed, when any finding sits at a position no expectation resolves to, or when the runner could not complete the fixture; otherwise gap when any expectation is a gap; otherwise pass.",
             "type": "string",
-            "enum": ["pass", "gap", "fail"]
+            "enum": ["pass", "gap", "fail", "pending"]
           },
           "expectations": {
-            "description": "One row per expectation in the fixture's expect.json, ordered by symbol, each naming what the product reported at the expectation's resolved position. Empty only when the runner could not run the fixture at all, in which case the result is fail and message says why.",
+            "description": "One row per expectation in the fixture's expect.json, ordered by symbol, each naming what the product reported at the expectation's resolved position. Empty when expect.json lists no expectation (a setup-failure fixture) or when the runner could not run the fixture at all; in the second case the result is fail and message says why.",
             "type": "array",
             "uniqueItems": true,
             "items": {
@@ -142,7 +147,7 @@
                       "enum": ["reference-counting", "reachability"]
                     },
                     "fixability": {
-                      "description": "The fixability the reported finding carried, drawn from the fixabilities field of contract/kinds.json. A runner writes it where the expectation names one and omits it otherwise, because the row pins what it names, so it is forbidden when report is none and when report is DS1703, where no expectation names one.",
+                      "description": "The fixability the reported finding carried, drawn from the fixabilities field of contract/kinds.json. A runner writes it where the expectation names one and omits it otherwise, because the row pins what it names, so it is forbidden when report is none and when report is DS9003, where no expectation names one.",
                       "type": "string",
                       "enum": ["deletable", "narrowable", "manual", "none"]
                     },
@@ -269,7 +274,7 @@
                       "if": {
                         "required": ["report"],
                         "properties": {
-                          "report": { "const": "DS1703" }
+                          "report": { "const": "DS9003" }
                         }
                       },
                       "then": {
@@ -359,21 +364,19 @@
             },
             "then": {
               "properties": {
-                "result": { "const": "fail" }
+                "result": { "enum": ["fail", "pending"] }
               }
             }
           },
           {
             "if": {
               "properties": {
-                "expectations": { "maxItems": 0 }
-              },
-              "required": ["expectations"]
-            },
-            "then": {
-              "properties": {
+                "expectations": { "maxItems": 0 },
                 "result": { "const": "fail" }
               },
+              "required": ["expectations", "result"]
+            },
+            "then": {
               "required": ["message"]
             }
           }

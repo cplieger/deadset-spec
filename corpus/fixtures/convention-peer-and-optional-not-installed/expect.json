@@ -8,28 +8,28 @@
   "expect": [
     {
       "symbol": "Page",
-      "report": "DS1502",
+      "report": "DS1602",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "file"
     },
     {
       "symbol": "Story",
-      "report": "DS1502",
+      "report": "DS1602",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "file"
     },
     {
       "symbol": "Orphan",
-      "report": "DS1502",
+      "report": "DS1602",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "file"
     },
     {
       "symbol": "NextPeer",
-      "report": "DS1601",
+      "report": "DS1701",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "dependency",

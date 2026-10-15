@@ -1,0 +1,12 @@
+{
+  "symbols": {
+    "Initial": {
+      "file": "target/main.ts",
+      "line": 2
+    },
+    "OneBranch": {
+      "file": "target/main.ts",
+      "line": 8
+    }
+  }
+}

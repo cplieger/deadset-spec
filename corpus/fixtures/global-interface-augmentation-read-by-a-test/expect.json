@@ -24,7 +24,7 @@
     },
     {
       "symbol": "ownGlobal",
-      "report": "DS1004",
+      "report": "DS1102",
       "confidence": "possible",
       "reachability_class": "possible",
       "symbol_kind": "variable",

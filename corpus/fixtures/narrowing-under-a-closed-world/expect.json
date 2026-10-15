@@ -16,7 +16,7 @@
     },
     {
       "symbol": "InFile",
-      "report": "DS1101",
+      "report": "DS1501",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "function",
@@ -26,7 +26,7 @@
     },
     {
       "symbol": "InPackage",
-      "report": "DS1101",
+      "report": "DS1501",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "function",
@@ -36,7 +36,7 @@
     },
     {
       "symbol": "InModule",
-      "report": "DS1102",
+      "report": "DS1502",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "function",

@@ -37,7 +37,7 @@
   },
   "findings": [
     {
-      "code": "DS1501",
+      "code": "DS1601",
       "kind": "file-never-built",
       "language": "go",
       "position": {
@@ -111,7 +111,7 @@
       "liveness_relation": "reference-counting"
     },
     {
-      "code": "DS1601",
+      "code": "DS1701",
       "kind": "unused-dependency",
       "language": "go",
       "position": {
@@ -147,7 +147,7 @@
       }
     },
     {
-      "code": "DS1605",
+      "code": "DS1702",
       "kind": "unused-module-directive",
       "language": "go",
       "position": {
@@ -183,7 +183,7 @@
       }
     },
     {
-      "code": "DS1701",
+      "code": "DS9001",
       "kind": "suppression-without-reason",
       "language": "go",
       "position": {
@@ -224,7 +224,7 @@
       }
     },
     {
-      "code": "DS1704",
+      "code": "DS9004",
       "kind": "unmatched-root",
       "language": "go",
       "position": {

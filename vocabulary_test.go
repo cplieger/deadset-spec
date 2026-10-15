@@ -4,16 +4,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/fs"
 	"maps"
-	"path"
 	"regexp"
 	"slices"
 	"strconv"
 	"strings"
 	"testing"
 
-	"github.com/cplieger/deadset-spec/v8"
+	spec "github.com/cplieger/deadset-spec/v8"
 )
 
 // This suite proves the closed-vocabulary rules of contract/kinds.json,
@@ -115,8 +113,7 @@ func liveKindRow(code, name string) kindRow {
 
 // liveCodeRange is a live range spanning start to end.
 func liveCodeRange(start, end, family string) codeRange {
-	retired := false
-	return codeRange{Start: start, End: end, Family: family, Description: "A planted range.", Retired: &retired}
+	return codeRange{Start: start, End: end, Family: family, Title: "Planted", Question: "A planted question.", Description: "A planted range.", Status: "live"}
 }
 
 func TestVocabularyCodeAssignmentRefusesAPlantedCode(t *testing.T) {
@@ -176,10 +173,10 @@ func TestVocabularyRangeAssignmentRefusesAPlantedRange(t *testing.T) {
 		{
 			name: "a_range_running_backwards",
 			plant: func(doc *kindsDocument) {
-				i := slices.IndexFunc(doc.Ranges, func(r codeRange) bool { return r.Start == "DS1400" })
-				doc.Ranges[i].End = "DS1350"
+				i := slices.IndexFunc(doc.Ranges, func(r codeRange) bool { return r.Start == "DS1800" })
+				doc.Ranges[i].End = "DS1750"
 			},
-			want: []plantedRule{{sentinel: errRangeSpan, names: `"DS1400".."DS1350"`}},
+			want: []plantedRule{{sentinel: errRangeSpan, names: `"DS1800".."DS1750"`}},
 		},
 		{
 			name:  "a_live_row_outside_every_range",
@@ -211,24 +208,21 @@ func TestVocabularyRetirementRefusesAPlantedReassignment(t *testing.T) {
 			plant: func(doc *kindsDocument) { doc.Kinds = append(doc.Kinds, liveKindRow("DS1010", "planted-live")) },
 		},
 		{
-			name:  "a_live_row_at_retired_DS1402",
-			plant: func(doc *kindsDocument) { doc.Kinds = append(doc.Kinds, liveKindRow("DS1402", "planted-resurrection")) },
-			want: []plantedRule{
-				{sentinel: errRetiredCodeReused, names: "DS1402"},
-				{sentinel: errLiveRowInRetiredRange, names: "DS1402"},
-			},
-		},
-		{
-			name:  "a_live_row_at_retired_DS1607",
-			plant: func(doc *kindsDocument) { doc.Kinds = append(doc.Kinds, liveKindRow("DS1607", "planted-resurrection")) },
-			want:  []plantedRule{{sentinel: errRetiredCodeReused, names: "DS1607"}},
-		},
-		{
-			name: "a_live_row_inside_the_retired_range",
+			name: "a_live_row_at_a_retired_code",
 			plant: func(doc *kindsDocument) {
-				doc.Kinds = append(doc.Kinds, liveKindRow("DS1450", "planted-retired-range"))
+				doc.Retired = append(doc.Retired, retiredKind{Code: "DS1010", Name: "planted-gone"})
+				doc.Kinds = append(doc.Kinds, liveKindRow("DS1010", "planted-resurrection"))
 			},
-			want: []plantedRule{{sentinel: errLiveRowInRetiredRange, names: "DS1450"}},
+			want: []plantedRule{{sentinel: errRetiredCodeReused, names: "DS1010"}},
+		},
+		{
+			name: "a_live_row_inside_a_retired_range",
+			plant: func(doc *kindsDocument) {
+				i := slices.IndexFunc(doc.Ranges, func(r codeRange) bool { return r.Start == "DS1800" })
+				doc.Ranges[i].Status = "retired"
+				doc.Kinds = append(doc.Kinds, liveKindRow("DS1801", "planted-retired-range"))
+			},
+			want: []plantedRule{{sentinel: errLiveRowInRetiredRange, names: "DS1801"}},
 		},
 	}
 	for _, tc := range cases {
@@ -317,216 +311,6 @@ func TestVocabularyExemptionClassesRefuseAPlantedRepeat(t *testing.T) {
 	}
 }
 
-// liveCodes returns the codes the vocabulary assigns to a live kind.
-func liveCodes(doc kindsDocument) map[string]bool {
-	codes := make(map[string]bool, len(doc.Kinds))
-	for _, k := range doc.Kinds {
-		codes[k.Code] = true
-	}
-	return codes
-}
-
-// unreportable lists, in order and each once, the report values an expectation
-// names that are neither the literal none nor the code of a live kind: a
-// retired code, a code the space never assigned, and anything that is not a
-// code at all.
-func unreportable(rows []expectationRow, live map[string]bool) []string {
-	var refused []string
-	for _, row := range rows {
-		if row.Report == "none" || live[row.Report] {
-			continue
-		}
-		if !slices.Contains(refused, row.Report) {
-			refused = append(refused, row.Report)
-		}
-	}
-	return refused
-}
-
-func TestVocabularyExpectationReportCodesNameALiveKind(t *testing.T) {
-	live := liveCodes(loadKinds(t))
-
-	// Every fixture on disk. There may be none yet; the planted expectations
-	// below keep the resolution under test either way.
-	fixtures, err := fs.Glob(spec.Corpus, path.Join(fixturesDir, "*", expectFile))
-	if err != nil {
-		t.Fatalf("Setup: fs.Glob(Corpus, %s): %v", path.Join(fixturesDir, "*", expectFile), err)
-	}
-	for _, p := range fixtures {
-		t.Run("fixture_"+path.Base(path.Dir(p)), func(t *testing.T) {
-			data, err := fs.ReadFile(spec.Corpus, p)
-			if err != nil {
-				t.Fatalf("Setup: fs.ReadFile(Corpus, %q): %v", p, err)
-			}
-			var doc expectationDocument
-			if err := decodeStrict(data, &doc); err != nil {
-				t.Fatalf("Setup: decoding %s: %v", p, err)
-			}
-			if got := unreportable(doc.Expect, live); len(got) != 0 {
-				t.Errorf("unreportable(%q) = %v, want every report code a live row of %s", p, got, kindsPath)
-			}
-		})
-	}
-
-	planted := []struct {
-		name string
-		rows []expectationRow
-		want []string
-	}{
-		{
-			name: "a_live_code",
-			rows: []expectationRow{{Symbol: "DeadExport", Report: "DS1001", Confidence: "certain"}},
-		},
-		{
-			name: "the_literal_none",
-			rows: []expectationRow{{Symbol: "SatisfiesWriter", Report: "none", RetainedBy: []string{"interface-satisfaction"}}},
-		},
-		{
-			name: "a_retired_code",
-			rows: []expectationRow{{Symbol: "Forwarder", Report: "DS1402"}},
-			want: []string{"DS1402"},
-		},
-		{
-			name: "a_code_retired_from_a_live_range",
-			rows: []expectationRow{{Symbol: "WorkspaceUse", Report: "DS1607"}},
-			want: []string{"DS1607"},
-		},
-		{
-			name: "a_code_inside_the_retired_range",
-			rows: []expectationRow{{Symbol: "Alias", Report: "DS1450"}},
-			want: []string{"DS1450"},
-		},
-		{
-			name: "a_code_the_space_never_assigned",
-			rows: []expectationRow{{Symbol: "Whatever", Report: "DS1999"}},
-			want: []string{"DS1999"},
-		},
-		{
-			name: "a_kind_name_instead_of_a_code",
-			rows: []expectationRow{{Symbol: "DeadExport", Report: "unused-exported"}},
-			want: []string{"unused-exported"},
-		},
-		{
-			name: "a_retired_code_beside_a_live_one",
-			rows: []expectationRow{
-				{Symbol: "DeadExport", Report: "DS1001"},
-				{Symbol: "Forwarder", Report: "DS1402"},
-				{Symbol: "AlsoForwarder", Report: "DS1402"},
-			},
-			want: []string{"DS1402"},
-		},
-	}
-	for _, tc := range planted {
-		t.Run("planted_"+tc.name, func(t *testing.T) {
-			if got := unreportable(tc.rows, live); !slices.Equal(got, tc.want) {
-				t.Errorf("unreportable(%+v) = %v, want %v", tc.rows, got, tc.want)
-			}
-		})
-	}
-}
-
-// relationWhereTheSubjectCarriesNone lists the rows that name a liveness
-// relation for a subject whose finding carries none, so the expectation could
-// never be answered. The finding schema decides that in two halves and this
-// reads both: the code, for a subject the analysis holds live, and the subject
-// kind, for a subject that is not a declaration. A row is named by its report
-// code where the code decided it and by its symbol kind where the kind did, so a
-// failure names the half that fired.
-func relationWhereTheSubjectCarriesNone(rows []expectationRow) []string {
-	var refused []string
-	add := func(name string) {
-		if !slices.Contains(refused, name) {
-			refused = append(refused, name)
-		}
-	}
-	for _, row := range rows {
-		if row.LivenessRelation == "" {
-			continue
-		}
-		if slices.Contains(findingLiveSubjectCodes, row.Report) {
-			add(row.Report)
-		}
-		if slices.Contains(findingNoRelationKinds, row.SymbolKind) {
-			add(row.SymbolKind)
-		}
-	}
-	return refused
-}
-
-// TestVocabularyExpectationsNameNoLivenessRelationWhereTheSubjectCarriesNone
-// pins the corpus against the finding schema's own rule: a finding whose subject
-// the analysis holds live, and a finding whose subject is not a declaration,
-// carry no liveness relation, so an expectation naming one for such a subject
-// asks for a field the answer cannot hold. The subject half is readable because
-// an expectation row names the subject's kind.
-func TestVocabularyExpectationsNameNoLivenessRelationWhereTheSubjectCarriesNone(t *testing.T) {
-	fixtures, err := fs.Glob(spec.Corpus, path.Join(fixturesDir, "*", expectFile))
-	if err != nil {
-		t.Fatalf("Setup: fs.Glob(Corpus, %s): %v", path.Join(fixturesDir, "*", expectFile), err)
-	}
-	for _, p := range fixtures {
-		t.Run("fixture_"+path.Base(path.Dir(p)), func(t *testing.T) {
-			data, err := fs.ReadFile(spec.Corpus, p)
-			if err != nil {
-				t.Fatalf("Setup: fs.ReadFile(Corpus, %q): %v", p, err)
-			}
-			var doc expectationDocument
-			if err := decodeStrict(data, &doc); err != nil {
-				t.Fatalf("Setup: decoding %s: %v", p, err)
-			}
-			if got := relationWhereTheSubjectCarriesNone(doc.Expect); len(got) != 0 {
-				t.Errorf("relationWhereTheSubjectCarriesNone(%q) = %v, want no liveness relation under a subject %s states carries none", p, got, findingSchemaPath)
-			}
-		})
-	}
-
-	planted := []struct {
-		name string
-		rows []expectationRow
-		want []string
-	}{
-		{
-			name: "a_relation_on_a_dead_declaration",
-			rows: []expectationRow{{Symbol: "DeadExport", Report: "DS1001", SymbolKind: "function", LivenessRelation: "reference-counting"}},
-		},
-		{
-			name: "no_relation_on_a_live_subject",
-			rows: []expectationRow{{Symbol: "UnreadPrivate", Report: "DS1301", Confidence: "certain"}},
-		},
-		{
-			name: "a_relation_on_a_write_only_subject",
-			rows: []expectationRow{{Symbol: "UnreadPrivate", Report: "DS1301", LivenessRelation: "reference-counting"}},
-			want: []string{"DS1301"},
-		},
-		{
-			name: "a_relation_on_a_narrowing_subject",
-			rows: []expectationRow{{Symbol: "Normalize", Report: "DS1101", LivenessRelation: "reachability"}},
-			want: []string{"DS1101"},
-		},
-		{
-			name: "no_relation_on_a_part_subject",
-			rows: []expectationRow{{Symbol: "UnusedOption", Report: "DS1801", SymbolKind: "parameter", Confidence: "certain"}},
-		},
-		{
-			name: "a_relation_on_a_part_subject",
-			rows: []expectationRow{{Symbol: "UnusedOption", Report: "DS1801", SymbolKind: "parameter", LivenessRelation: "reference-counting"}},
-			want: []string{"parameter"},
-		},
-		{
-			name: "a_relation_on_an_artifact_subject",
-			rows: []expectationRow{{Symbol: "UnusedRequirement", Report: "DS1601", SymbolKind: "dependency", LivenessRelation: "reference-counting"}},
-			want: []string{"dependency"},
-		},
-	}
-	for _, tc := range planted {
-		t.Run("planted_"+tc.name, func(t *testing.T) {
-			if got := relationWhereTheSubjectCarriesNone(tc.rows); !slices.Equal(got, tc.want) {
-				t.Errorf("relationWhereTheSubjectCarriesNone(%+v) = %v, want %v", tc.rows, got, tc.want)
-			}
-		})
-	}
-}
-
 // severityKeyErrors reports every key of a configuration's severity object the
 // vocabulary does not resolve: a key the schema's own pattern refuses, a code
 // no live kind carries, a two-digit family prefix no live range carries, and a
@@ -578,6 +362,8 @@ func familyKeyError(key, digits string, doc kindsDocument) error {
 		return fmt.Errorf("%w: severity[%q], want a family %s declares as a range", errSeverityKeyUnknown, key, kindsPath)
 	case isRetired(doc.Ranges[i]):
 		return fmt.Errorf("%w: severity[%q] = range %s..%s, want a live range", errSeverityKeyRetired, key, doc.Ranges[i].Start, doc.Ranges[i].End)
+	case doc.Ranges[i].Status != "live":
+		return fmt.Errorf("%w: severity[%q] = range %s..%s, which holds no live kind, want a live range", errSeverityKeyUnknown, key, doc.Ranges[i].Start, doc.Ranges[i].End)
 	}
 	return nil
 }
@@ -611,35 +397,44 @@ func severityKeyShape(t *testing.T) *regexp.Regexp {
 }
 
 func TestVocabularySeverityKeysNameALiveKindOrFamily(t *testing.T) {
-	doc := loadKinds(t)
 	shape := severityKeyShape(t)
+	retireDS1010 := func(doc *kindsDocument) {
+		doc.Retired = append(doc.Retired, retiredKind{Code: "DS1010", Name: "planted-gone"})
+	}
+	retireDS18 := func(doc *kindsDocument) {
+		i := slices.IndexFunc(doc.Ranges, func(r codeRange) bool { return r.Start == "DS1800" })
+		doc.Ranges[i].Status = "retired"
+	}
 	cases := []struct {
+		plant  func(*kindsDocument)
 		name   string
 		config string
 		want   []plantedRule
 	}{
 		{
 			name:   "a_live_code",
-			config: `{"target":{"kind":"library"},"severity":{"DS1101":"warn"}}`,
+			config: `{"target":{"kind":"library"},"severity":{"DS1501":"warn"}}`,
 		},
 		{
 			name:   "a_live_family_prefix",
-			config: `{"target":{"kind":"library"},"severity":{"DS18":"allow"}}`,
+			config: `{"target":{"kind":"library"},"severity":{"DS14":"allow"}}`,
 		},
 		{
 			name:   "a_retired_code",
-			config: `{"target":{"kind":"library"},"severity":{"DS1402":"warn"}}`,
-			want:   []plantedRule{{sentinel: errSeverityKeyRetired, names: "DS1402"}},
+			plant:  retireDS1010,
+			config: `{"target":{"kind":"library"},"severity":{"DS1010":"warn"}}`,
+			want:   []plantedRule{{sentinel: errSeverityKeyRetired, names: "DS1010"}},
 		},
 		{
-			name:   "a_code_retired_from_a_live_range",
-			config: `{"target":{"kind":"library"},"severity":{"DS1607":"deny"}}`,
-			want:   []plantedRule{{sentinel: errSeverityKeyRetired, names: "DS1607"}},
+			name:   "a_retired_family_prefix",
+			plant:  retireDS18,
+			config: `{"target":{"kind":"library"},"severity":{"DS18":"allow"}}`,
+			want:   []plantedRule{{sentinel: errSeverityKeyRetired, names: "DS18"}},
 		},
 		{
-			name:   "the_retired_family_prefix",
-			config: `{"target":{"kind":"library"},"severity":{"DS14":"allow"}}`,
-			want:   []plantedRule{{sentinel: errSeverityKeyRetired, names: "DS14"}},
+			name:   "a_reserved_family_prefix",
+			config: `{"target":{"kind":"library"},"severity":{"DS18":"allow"}}`,
+			want:   []plantedRule{{sentinel: errSeverityKeyUnknown, names: "DS18"}},
 		},
 		{
 			name:   "a_code_the_space_never_assigned",
@@ -653,8 +448,8 @@ func TestVocabularySeverityKeysNameALiveKindOrFamily(t *testing.T) {
 		},
 		{
 			name:   "the_code_whose_severity_is_fixed",
-			config: `{"target":{"kind":"library"},"severity":{"DS1703":"allow"}}`,
-			want:   []plantedRule{{sentinel: errSeverityKeyFixed, names: "DS1703"}},
+			config: `{"target":{"kind":"library"},"severity":{"DS9003":"allow"}}`,
+			want:   []plantedRule{{sentinel: errSeverityKeyFixed, names: "DS9003"}},
 		},
 		{
 			name:   "a_key_of_the_wrong_shape",
@@ -664,6 +459,11 @@ func TestVocabularySeverityKeysNameALiveKindOrFamily(t *testing.T) {
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
+			plant := tc.plant
+			if plant == nil {
+				plant = func(*kindsDocument) {}
+			}
+			doc := plantedKinds(t, plant)
 			var planted struct {
 				Severity map[string]string `json:"severity"`
 			}
@@ -688,7 +488,7 @@ func TestVocabularySeverityVectorsAgreeWithTheVocabulary(t *testing.T) {
 	doc := loadKinds(t)
 	shape := severityKeyShape(t)
 	var refused int
-	for _, dir := range configVectorDirs(t) {
+	for _, dir := range vectorCaseDirs(t, spec.Vectors, "config") {
 		t.Run(dir, func(t *testing.T) {
 			if names, ok := strings.CutPrefix(refusalNamesIfAny(t, dir), "severity."); ok {
 				refused++

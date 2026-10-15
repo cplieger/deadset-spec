@@ -9,7 +9,7 @@
   "expect": [
     {
       "symbol": "CalledName",
-      "report": "DS1801",
+      "report": "DS1401",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "parameter"

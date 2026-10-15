@@ -20,7 +20,7 @@
     },
     {
       "symbol": "Normalize",
-      "report": "DS1101",
+      "report": "DS1501",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "function",
@@ -30,7 +30,7 @@
     },
     {
       "symbol": "Run",
-      "report": "DS1101",
+      "report": "DS1501",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "function",

@@ -12,7 +12,7 @@
     },
     {
       "symbol": "Store.Reset",
-      "report": "DS1203",
+      "report": "DS1202",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "interface-method",

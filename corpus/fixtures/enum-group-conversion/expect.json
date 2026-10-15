@@ -8,7 +8,7 @@
     { "symbol": "TierHigh", "report": "none", "retained_by": ["enum-group"] },
     {
       "symbol": "ModeWrite",
-      "report": "DS1302",
+      "report": "DS1005",
       "confidence": "certain",
       "reachability_class": "certain",
       "liveness_relation": "reference-counting"

@@ -1,5 +1,5 @@
 {
-  "code": "DS1501",
+  "code": "DS1601",
   "kind": "file-never-built",
   "language": "go",
   "position": { "path": "internal/legacy/render_windows.go", "line": 1, "column": 1, "end_line": 84 },

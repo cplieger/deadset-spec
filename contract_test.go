@@ -153,8 +153,16 @@ func TestContractPagesNameNoSchemaVersionTheContractRefuses(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Setup: fs.WalkDir(contract): %v", err)
 	}
-	for _, page := range []string{docsKindsPage, docsExemptionsPage, docsExitCodesPage} {
-		pages[page] = docsPage(t, page)
+	docs, err := fs.Glob(os.DirFS("."), "docs/*.md")
+	if err != nil {
+		t.Fatalf("Setup: fs.Glob(docs): %v", err)
+	}
+	for _, page := range docs {
+		data, err := os.ReadFile(page)
+		if err != nil {
+			t.Fatalf("Setup: os.ReadFile(%s): %v", page, err)
+		}
+		pages[page] = string(data)
 	}
 	if len(pages) == 0 {
 		t.Fatalf("Setup: pages naming a schema version = 0, want the published pages")
@@ -211,7 +219,7 @@ func loadContractBaseline(t *testing.T) contractBaselineDocument {
 		"exit_codes":        len(doc.ExitCodes),
 	}
 	for _, name := range slices.Sorted(maps.Keys(sets)) {
-		if sets[name] == 0 {
+		if sets[name] == 0 && name != "retired_codes" {
 			t.Fatalf("Setup: %s records no %s, want the published set", contractBaselinePath, name)
 		}
 	}

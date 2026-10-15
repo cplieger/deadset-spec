@@ -12,7 +12,7 @@
     },
     {
       "symbol": "First",
-      "report": "DS1801",
+      "report": "DS1401",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "parameter",
@@ -29,7 +29,7 @@
     },
     {
       "symbol": "Third",
-      "report": "DS1801",
+      "report": "DS1401",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "parameter",
@@ -42,7 +42,7 @@
     },
     {
       "symbol": "Value",
-      "report": "DS1801",
+      "report": "DS1401",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "parameter",
@@ -63,7 +63,7 @@
     },
     {
       "symbol": "PatternNameUnread",
-      "report": "DS1801",
+      "report": "DS1401",
       "confidence": "probable",
       "reachability_class": "probable",
       "symbol_kind": "parameter",
@@ -76,7 +76,7 @@
     },
     {
       "symbol": "BeforeReadPattern",
-      "report": "DS1801",
+      "report": "DS1401",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "parameter",
@@ -93,7 +93,7 @@
     },
     {
       "symbol": "RestUnreadInPattern",
-      "report": "DS1801",
+      "report": "DS1401",
       "confidence": "probable",
       "reachability_class": "probable",
       "symbol_kind": "parameter",
@@ -106,7 +106,7 @@
     },
     {
       "symbol": "RestUnread",
-      "report": "DS1801",
+      "report": "DS1401",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "parameter",
@@ -119,7 +119,7 @@
     },
     {
       "symbol": "BeforeReadRest",
-      "report": "DS1801",
+      "report": "DS1401",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "parameter",
@@ -136,7 +136,7 @@
     },
     {
       "symbol": "DeclaredPatternUnread",
-      "report": "DS1801",
+      "report": "DS1401",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "parameter",

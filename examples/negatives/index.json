@@ -62,14 +62,14 @@
       "schema": "contract/report.schema.json",
       "constraint": "required",
       "instance_path": "/findings/0/details",
-      "violates": "DS1101 carries an empty details and states no narrower visibility"
+      "violates": "DS1501 carries an empty details and states no narrower visibility"
     },
     {
       "file": "finding-details-under-wrong-code.json",
       "schema": "contract/report.schema.json",
       "constraint": "not",
       "instance_path": "/findings/0/details",
-      "violates": "DS1001 carries narrower_visibility, which only the visibility-narrowing codes carry"
+      "violates": "DS1001 carries narrower_visibility, which only the too-visible codes carry"
     },
     {
       "file": "finding-retained-by-populated.json",

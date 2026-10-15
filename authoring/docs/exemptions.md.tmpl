@@ -1,0 +1,30 @@
+# Exemption classes
+
+An exemption is a named class of reason for which an analyzer keeps a symbol the reference graph alone would report. The analyzer names the class in the retained symbol's `retained_by` field, lists the held-back symbols with `print-retained`, and lets `exemptions.disabled` switch a class off by name. This page is generated from `contract/exemptions.json`, which states each class's rule.
+
+| Class | Languages | Confidence | Retains |
+| --- | --- | --- | --- |
+{{- range .Exemptions.Exemptions}}
+| [`{{.class}}`](#{{.class}}) | {{range $i, $l := .languages}}{{if $i}}, {{end}}`{{$l}}`{{end}} | `{{.confidence}}` | {{range $lang, $ks := .retains_kinds}}`{{$lang}}`: {{range $i, $k := $ks}}{{if $i}}, {{end}}`{{$k}}`{{end}}. {{end}}|
+{{- end}}
+
+## The destinations
+
+The value-flow classes name the destinations a value reaches, each with what it reads of the value.
+
+| Destination | Languages | Reads | What it is |
+| --- | --- | --- | --- |
+{{- range .Exemptions.Sinks}}
+| `{{.sink}}` | {{range $i, $l := .languages}}{{if $i}}, {{end}}`{{$l}}`{{end}} | `{{.reads}}` | {{.description}} |
+{{- end}}
+{{range .Exemptions.Exemptions}}
+## {{.class}}
+
+{{.rule}}
+
+Retains: {{.retains}}
+{{if .sinks}}
+Destinations: {{range $i, $s := .sinks}}{{if $i}}, {{end}}`{{$s}}`{{end}}.
+{{end}}{{range $lang, $m := .mechanism}}
+In `{{$lang}}`: {{$m}}
+{{end}}{{end}}

@@ -1,0 +1,23 @@
+# Exit codes
+
+{{.Exits.description}} Generated from `contract/exit-codes.json`.
+
+| Code | Name | Meaning |
+| --- | --- | --- |
+{{- range .Exits.exit_codes}}
+| `{{.code}}` | `{{.name}}` | {{.meaning}} |
+{{- end}}
+
+## Setup failures
+
+A run that ends with code 3 because the project does not provide something prints one line per failure on standard error that starts with `setup failure:`, a space, the class, a colon and a space, then names what is missing and the fix.
+
+| Class | Languages | Meaning | Fix |
+| --- | --- | --- | --- |
+{{- range .Exits.setup_failures}}
+| `{{.class}}` | {{range $i, $l := .languages}}{{if $i}}, {{end}}`{{$l}}`{{end}} | {{.meaning}} | {{.fix}} |
+{{- end}}
+
+## Memory
+
+{{.Exits.memory_exhaustion}}

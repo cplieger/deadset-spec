@@ -1,0 +1,23 @@
+{
+  "name": "dead-store-overwritten-on-every-branch",
+  "description": "A store every path overwrites before any read is dead: a variable both branches of a condition assign after its initializer was written makes the initializer a dead store, while a store one branch alone overwrites is read on the other path.",
+  "pending": "DS1404 by a reaching-definition transfer: the block scan of both analyzers misses a store both branches overwrite.",
+  "languages": [
+    "go",
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "report": "DS1404",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "store",
+      "symbol": "Initial"
+    },
+    {
+      "symbol": "OneBranch",
+      "report": "none"
+    }
+  ]
+}

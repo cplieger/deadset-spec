@@ -1,0 +1,33 @@
+{
+  "name": "require-the-target-declares",
+  "description": "A call of a function named require that the target declares is the target's own function: it loads nothing and is no load by a computed path, so the run states no computed-load note and, with the roots declared complete, a declaration only dead declarations reference is certain.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "closed_world": [
+    "roots"
+  ],
+  "expect": [
+    {
+      "symbol": "require",
+      "report": "none"
+    },
+    {
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "symbol": "deadCaller",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "symbol": "calledOnlyByDead",
+      "liveness_relation": "reachability"
+    }
+  ]
+}

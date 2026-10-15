@@ -11,7 +11,7 @@
     { "symbol": "Gauge.level", "report": "none" },
     { "symbol": "Gauge.spent", "report": "DS1003", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "class-member", "liveness_relation": "reference-counting" },
     { "symbol": "Shape.side", "report": "none" },
-    { "symbol": "Shape.area", "report": "DS1203", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "interface-method", "liveness_relation": "reference-counting" },
+    { "symbol": "Shape.area", "report": "DS1202", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "interface-method", "liveness_relation": "reference-counting" },
     { "symbol": "Sized.size", "report": "none" }
   ]
 }

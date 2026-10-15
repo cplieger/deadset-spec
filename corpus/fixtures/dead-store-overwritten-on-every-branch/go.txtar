@@ -1,0 +1,40 @@
+The Go rendering: an initializer both branches overwrite, and one only one branch does.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Initial": {
+      "file": "target/main.go",
+      "line": 7
+    },
+    "OneBranch": {
+      "file": "target/main.go",
+      "line": 15
+    }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target picks a label.
+package main
+
+import "os"
+
+func main() {
+	label := "none"
+	if len(os.Args) > 1 {
+		label = "some"
+	} else {
+		label = "empty"
+	}
+	println(label)
+
+	kept := "kept"
+	if len(os.Args) > 2 {
+		kept = "many"
+	}
+	println(kept)
+}

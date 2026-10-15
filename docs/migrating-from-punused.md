@@ -15,15 +15,15 @@ A line reading `is unused (EU1002)` maps by the kind of symbol it names:
 | An exported function, method, type, constant or variable | `DS1001` | `unused-exported` |
 | An exported struct field or type member | `DS1003` | `unused-member` |
 | An interface no symbol uses as a type | `DS1201` | `unused-interface` |
-| A method of an interface that no call site invokes or selects through the interface | `DS1203` | `uncalled-interface-method` |
+| A method of an interface that no call site invokes or selects through the interface | `DS1202` | `uncalled-interface-method` |
 
-A line reading `is used in test only (EU1001)` maps to `DS1004`, `test-only-use`, a symbol with zero production references and at least one test reference. In this contract it is a finding of its own, not an adjudication, so a project sets its severity instead of writing an entry for it. The sources are `contract/kinds.json`, row `DS1004`, and `contract/config.schema.json`, `severity`.
+A line reading `is used in test only (EU1001)` maps to `DS1102`, `test-only-use`, a symbol with zero production references and at least one test reference. In this contract it is a finding of its own, not an adjudication, so a project sets its severity instead of writing an entry for it. The sources are `contract/kinds.json`, row `DS1102`, and `contract/config.schema.json`, `severity`.
 
 Three codes take precedence over `DS1001` where they apply, and a finding is reported once, under the most specific code. The source is `contract/kinds.json`, `derived_from`. The three codes are these:
 
-- `DS1103`, `unreachable-export`, when nothing outside can import the enclosing package or file.
-- `DS1006`, `deprecated-unused`, when the symbol carries a deprecation marker.
-- `DS1004`, `test-only-use`, when every reference is a test reference.
+- `DS1101`, `unreachable-export`, when nothing outside can import the enclosing package or file.
+- `DS1104`, `deprecated-unused`, when the symbol carries a deprecation marker.
+- `DS1102`, `test-only-use`, when every reference is a test reference.
 
 Expect findings the old file has no line for, because two families have no `EU` counterpart and both are on by default. `DS1002`, `unused-unexported`, reports an unexported symbol nothing references. The kinds in the `DS1800` to `DS1899` range report inside a function body. The source is `contract/kinds.json`, row `DS1002` and the `intra-function` range.
 
@@ -39,7 +39,7 @@ A symbol whose callers live in another module is referenced once that module is 
 
 ### 3. Run with the codes you are triaging at `warn`
 
-Name each code, or a two-digit family prefix, under `severity` at `warn`, so a finding does not fail the run before it is adjudicated. `DS1703` is fixed at `deny`. A key naming it, or the family prefix `DS17`, names a key the product does not implement, and the run ends with the usage code. The source is `contract/config.schema.json`, `severity`.
+Name each code, or a two-digit family prefix, under `severity` at `warn`, so a finding does not fail the run before it is adjudicated. `DS9003` is fixed at `deny`. A key naming it, or the family prefix `DS90`, names a key the product does not implement, and the run ends with the usage code. The source is `contract/config.schema.json`, `severity`.
 
 ### 4. Delete every line whose symbol an exemption class retains
 
@@ -61,7 +61,7 @@ Carry the reason text from the line's `#` comment into the entry's `reason` fiel
 
 ### 6. Read the run again
 
-An entry that is stale, as `contract/grammar/suppression.md` defines it, is reported as `DS1703`, so a file that falls out of date is visible rather than silently inert. The source is `contract/kinds.json`, row `DS1703`.
+An entry that is stale, as `contract/grammar/suppression.md` defines it, is reported as `DS9003`, so a file that falls out of date is visible rather than silently inert. The source is `contract/kinds.json`, row `DS9003`.
 
 ## The entry
 
@@ -92,7 +92,7 @@ An entry has four keys and no others. The source is `contract/grammar/suppressio
 
 The `symbol` value follows the grammar `contract/grammar/symbol-ref.md` states, and it admits no glob, no regular expression and no bare name.
 
-Every entry names a path, and every entry carries a reason. An entry with no `path` is reported as `DS1702` rather than matched, so a bare name cannot mask a match anywhere else in the project. An entry whose `reason` is absent, empty or whitespace only is reported as `DS1701`. Both are findings at the entry's own position, which is the line and column of the `{` that opens it. The source is `contract/grammar/suppression.md`, the entry.
+Every entry names a path, and every entry carries a reason. An entry with no `path` is reported as `DS9002` rather than matched, so a bare name cannot mask a match anywhere else in the project. An entry whose `reason` is absent, empty or whitespace only is reported as `DS9001`. Both are findings at the entry's own position, which is the line and column of the `{` that opens it. The source is `contract/grammar/suppression.md`, the entry.
 
 An entry matches only the code, the symbol and the path it names, all three, so an adjudication written for one symbol in one file masks nothing else.
 
@@ -114,4 +114,4 @@ func (c *Catalog) ResolveAlias(name string) string {
 
 A declaration begins on the line of its first token, so a TypeScript declaration with a decorator begins on the decorator's line. A directive anywhere else binds nothing and is reported as a stale suppression. That covers a directive two lines up, one below the declaration, one beside code where no declaration begins, and one above another comment.
 
-The inline directive is scoped by its position, so it needs no path, and it carries the same reason rule. A directive with no reason is reported as `DS1701`. The source is `contract/grammar/suppression.md`, the inline directive. Put an adjudication inline when the reason belongs beside the declaration, and in the file when a reader wants every adjudication of the target in one place.
+The inline directive is scoped by its position, so it needs no path, and it carries the same reason rule. A directive with no reason is reported as `DS9001`. The source is `contract/grammar/suppression.md`, the inline directive. Put an adjudication inline when the reason belongs beside the declaration, and in the file when a reader wants every adjudication of the target in one place.

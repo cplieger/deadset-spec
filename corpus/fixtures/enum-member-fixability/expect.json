@@ -11,7 +11,7 @@
   "expect": [
     {
       "symbol": "Phase.Idle",
-      "report": "DS1302",
+      "report": "DS1005",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "enum-member",
@@ -29,7 +29,7 @@
     },
     {
       "symbol": "Phase.Stopped",
-      "report": "DS1302",
+      "report": "DS1005",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "enum-member",
@@ -47,7 +47,7 @@
     },
     {
       "symbol": "Phase.Paused",
-      "report": "DS1302",
+      "report": "DS1005",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "enum-member",
@@ -61,7 +61,7 @@
     },
     {
       "symbol": "Phase.Closed",
-      "report": "DS1302",
+      "report": "DS1005",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "enum-member",
@@ -89,7 +89,7 @@
     },
     {
       "symbol": "Tier.Base",
-      "report": "DS1302",
+      "report": "DS1005",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "enum-member",
@@ -117,7 +117,7 @@
     },
     {
       "symbol": "Tier.Alias",
-      "report": "DS1302",
+      "report": "DS1005",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "enum-member",

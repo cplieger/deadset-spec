@@ -8,21 +8,21 @@
   "expect": [
     {
       "symbol": "inSpec",
-      "report": "DS1004",
+      "report": "DS1102",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "function"
     },
     {
       "symbol": "inTests",
-      "report": "DS1004",
+      "report": "DS1102",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "function"
     },
     {
       "symbol": "inMocks",
-      "report": "DS1004",
+      "report": "DS1102",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "function"

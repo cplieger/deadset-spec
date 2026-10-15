@@ -7,7 +7,7 @@
     { "symbol": "Live", "report": "none" },
     {
       "symbol": "Encode",
-      "report": "DS1004",
+      "report": "DS1102",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "function",
@@ -18,7 +18,7 @@
     },
     {
       "symbol": "encodeAll",
-      "report": "DS1005",
+      "report": "DS1103",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "function",
@@ -29,7 +29,7 @@
     },
     {
       "symbol": "Decode",
-      "report": "DS1004",
+      "report": "DS1102",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "function",
@@ -40,7 +40,7 @@
     },
     {
       "symbol": "TestDecode",
-      "report": "DS1005",
+      "report": "DS1103",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "function",
@@ -51,7 +51,7 @@
     },
     {
       "symbol": "Parse",
-      "report": "DS1004",
+      "report": "DS1102",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "function",
@@ -62,7 +62,7 @@
     },
     {
       "symbol": "mustParse",
-      "report": "DS1005",
+      "report": "DS1103",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "function",
@@ -74,7 +74,7 @@
     { "symbol": "TestRoundTrip", "report": "none" },
     {
       "symbol": "Format",
-      "report": "DS1004",
+      "report": "DS1102",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "function",

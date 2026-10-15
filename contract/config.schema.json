@@ -1,15 +1,17 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "deadset configuration",
-  "description": "The closed key list every deadset product reads. A repository configuration (deadset.json at the target root) and a central configuration (the file the invocation names) are both instances of this schema; a command-line flag outranks the repository configuration, which outranks the central configuration, which outranks the default each key declares here. Each source is optional and neither has to be complete on its own, so no key is required at the root; the resolved configuration is what must name a target kind, and a run whose sources all omit it exits with the usage code. A key this list does not declare fails the decode and exits with the usage code, so no product implements a parser or a validator for it. Every key carries its JSON type, its default where it has one, the product that reads it under x-owner (product: every product; analyzer: every analyzer; orchestrator, go-analyzer, ts-analyzer: that one), and whether it is required through the enclosing object's required array. No key admits arbitrary nesting: every object closes with additionalProperties false. An object marked x-setting is one setting: a higher-ranked source replaces it whole, it carries the default a run uses when no source names it, it carries one provenance entry under its own dotted path, and every member it declares is required and carries no default of its own. A key whose value takes one of several shapes, the branches of its oneOf, is one setting too, whichever shape a source writes: a higher-ranked source replaces its whole value, and it carries one provenance entry under its own dotted path. An object one of those shapes declares is neither a section nor a setting of its own, so its members carry no default and no provenance entry. An object without the mark is a section, whose keys a higher-ranked source replaces one by one and which carries one provenance entry per key; a section of declared keys carries no default, because each of its keys carries its own, and a section keyed by a pattern carries the default a run uses when no source names a key. The one key resolution ignores is provenance, marked x-ignored-by-resolution. A key of type integer takes a number written as an optional minus sign and digits alone, with no fraction and no exponent: 100.0 and 1e2 are refused naming the key with the usage code, although each denotes an integer and JSON Schema's integer type admits both. A value of a type its key does not admit is refused naming the key with the usage code, null included: no key admits null, so a source writing a key as null is refused rather than read as a source that omits the key. A refusal of one entry of an array names the entry rather than the key alone: the key, the entry's index in square brackets counted from zero, and the path within the entry where the entry is an object, so the refusal of the second analyzer's name reads providers.analyzers[1].name.",
+  "description": "The closed key list every deadset product reads. A repository configuration (deadset.json at the target root) and a central configuration (the file the invocation names) are both instances of this schema; a command-line flag outranks the repository configuration, which outranks the central configuration, which outranks the default each key declares here. Each source is optional and neither has to be complete on its own, so no key is required at the root; the resolved configuration is what must name a target kind, and a run whose sources all omit it exits with the usage code. A key this list does not declare fails the decode and exits with the usage code, so no product implements a parser or a validator for it. Every key carries its JSON type, its default where it has one, the product that reads it under x-owner (product: every product; analyzer: every analyzer; orchestrator, go-analyzer, ts-analyzer: that one), and whether it is required through the enclosing object's required array. No key admits arbitrary nesting: every object closes with additionalProperties false. An object marked x-setting is one setting: a higher-ranked source replaces it whole, it carries the default a run uses when no source names it, it carries one provenance entry under its own dotted path, and every member it declares is required and carries no default of its own. A key whose value takes one of several shapes, the branches of its oneOf, is one setting too, whichever shape a source writes: a higher-ranked source replaces its whole value, and it carries one provenance entry under its own dotted path. An object one of those shapes declares is neither a section nor a setting of its own, so its members carry no default and no provenance entry. An object without the mark is a section, whose keys a higher-ranked source replaces one by one and which carries one provenance entry per key; a section of declared keys carries no default, because each of its keys carries its own, and a section keyed by a pattern carries the default a run uses when no source names a key. The one key resolution ignores is provenance, marked x-ignored-by-resolution. A key of type integer takes a number written as an optional minus sign and digits alone, with no fraction and no exponent: 100.0 and 1e2 are refused naming the key with the usage code, although each denotes an integer and JSON Schema's integer type admits both. A value of a type its key does not admit is refused naming the key with the usage code, null included: no key admits null, so a source writing a key as null is refused rather than read as a source that omits the key. A refusal of one entry of an array names the entry rather than the key alone: the key, the entry's index in square brackets counted from zero, and the path within the entry where the entry is an object, so the refusal of the second analyzer's name reads providers.analyzers[1].name. x-delivered on a key names the languages whose analyzers receive it in the document an orchestrator writes for each: an analyzer receives the keys every analyzer or every product reads and the section of its own language, and an orchestrator keeps the keys it alone reads and the reporter settings it applies to the merged report. x-max-bytes bounds a configuration document: one larger is refused without being read whole.",
   "type": "object",
   "additionalProperties": false,
+  "x-max-bytes": 1048576,
   "properties": {
     "contract_version": {
       "description": "The Contract version this configuration is written against, as a semantic version. A resolved configuration names the Contract version the product that printed it implements, and a product treats an absent key as its own version, so the key has no literal default.",
       "type": "string",
       "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
-      "x-owner": "product"
+      "x-owner": "product",
+      "x-delivered": ["go", "ts"]
     },
     "target": {
       "description": "What is being analyzed. Required, because its one key is.",
@@ -17,9 +19,10 @@
       "additionalProperties": false,
       "required": ["kind"],
       "x-owner": "product",
+      "x-delivered": ["go", "ts"],
       "properties": {
         "kind": {
-          "description": "Whether the target is an application, whose every caller is in the analyzed graph, or a library, whose published API has callers outside it, written as one kind for the whole target or as one kind per language. Required with no default, and never inferred from the presence of an executable entry point: a library that also ships a command would be misclassified. A string is the kind of every language of the target. The object names the kind of each language contract/kinds.json declares, every member required, because a kind is never defaulted or inferred: a language analysis.languages leaves out is named too, and a run that wants one kind writes the string. Every rule that reads the target kind reads, for a declaration, the kind of the declaration's language, as grammar/analysis.md states. Either shape is one setting: a higher-ranked source replaces the whole value whatever shape each source writes, no member is taken from a lower-ranked source, and the resolved configuration holds the value the winning source wrote, in its shape, under one provenance entry, target.kind. A string and an object whose members are equal are both accepted, and neither is rewritten as the other. A run whose sources both omit it exits with the usage code naming this key. An object is refused with the usage code, before any analysis, where it names a member this key does not declare, leaves a language out, or gives a language a value other than application or library. The refusal names the first fault in that order: the first undeclared member in the order the document writes it, then the first language left out, then the first language whose value is refused, the languages taken in the order contract/kinds.json lists them, each named by its dotted path, as target.kind.ts names the TypeScript member. A member named twice is refused as every key named twice is, before any of these. The message names the source, the path and the values the path admits.",
+          "description": "Whether the target is an application, whose every caller is in the analyzed graph, or a library, whose published API has callers outside it, written as one kind for the whole target or as one kind per language. Required with no default, and never inferred from the presence of an executable entry point: a library that also ships a command would be misclassified. A string is the kind of every language of the target. The object names the kind of each language contract/kinds.json declares, every member required, because a kind is never defaulted or inferred: a language analysis.languages leaves out is named too, and a run that wants one kind writes the string. Every rule that reads the target kind reads, for a declaration, the kind of the declaration's language, as grammar/analysis/program.md states. Either shape is one setting: a higher-ranked source replaces the whole value whatever shape each source writes, no member is taken from a lower-ranked source, and the resolved configuration holds the value the winning source wrote, in its shape, under one provenance entry, target.kind. A string and an object whose members are equal are both accepted, and neither is rewritten as the other. A run whose sources both omit it exits with the usage code naming this key. An object is refused with the usage code, before any analysis, where it names a member this key does not declare, leaves a language out, or gives a language a value other than application or library. The refusal names the first fault in that order: the first undeclared member in the order the document writes it, then the first language left out, then the first language whose value is refused, the languages taken in the order contract/kinds.json lists them, each named by its dotted path, as target.kind.ts names the TypeScript member. A member named twice is refused as every key named twice is, before any of these. The message names the source, the path and the values the path admits.",
           "oneOf": [
             {
               "description": "One kind for every language of the target.",
@@ -47,7 +50,8 @@
               }
             }
           ],
-          "x-owner": "product"
+          "x-owner": "product",
+          "x-delivered": ["go", "ts"]
         }
       }
     },
@@ -56,6 +60,7 @@
       "type": "object",
       "additionalProperties": false,
       "x-owner": "product",
+      "x-delivered": ["go", "ts"],
       "properties": {
         "languages": {
           "description": "The languages in scope. An empty array, the default, means the orchestrator detects them from the target tree; a non-empty array replaces detection.",
@@ -66,31 +71,35 @@
             "enum": ["go", "ts"]
           },
           "default": [],
-          "x-owner": "orchestrator"
+          "x-owner": "orchestrator",
+          "x-delivered": []
         },
         "min_confidence": {
-          "description": "The lowest reachability class a finding must reach to be reported. probable, the default, omits the findings about a library's published API, a member of a type the published API names included, when the run holds no consumer information, and the other findings grammar/analysis.md places at possible, and reports every other finding; possible reports every finding; certain reports only findings whose every caller is in the analyzed graph. The dial is the one place a library's published API is withheld: no kind carries a default that depends on the target kind. When the minimum withholds a root finding, it withholds with it every finding whose component.id names the root's component, whatever confidence those findings carry: every other root member of the component, the other root members of the root's own cycle among them, and every symbol that falls with a root, which is dead only through it. A root finding withheld only because production code only tests use lowers it, as grammar/analysis.md \"Confidence\" states, withholds itself alone.",
+          "description": "The lowest reachability class a finding must reach to be reported. probable, the default, omits the findings about a library's published API, a member of a type the published API names included, when the run holds no consumer information, and the other findings grammar/analysis/confidence.md places at possible, and reports every other finding; possible reports every finding; certain reports only findings whose every caller is in the analyzed graph. The dial is the one place a library's published API is withheld: no kind carries a default that depends on the target kind. When the minimum withholds a root finding, it withholds with it every finding whose component.id names the root's component, whatever confidence those findings carry: every other root member of the component, the other root members of the root's own cycle among them, and every symbol that falls with a root, which is dead only through it. A root finding withheld only because production code only tests use lowers it, as grammar/analysis/confidence.md \"Confidence\" states, withholds itself alone.",
           "type": "string",
           "enum": ["certain", "probable", "possible"],
           "default": "probable",
-          "x-owner": "analyzer"
+          "x-owner": "analyzer",
+          "x-delivered": ["go", "ts"]
         },
         "generated_files": {
           "description": "Whether declarations in generated files are analyzed. exclude, the default, retains every declaration in a generated file under the generated-file exemption; include reports them, with every such finding marked as one no mechanical edit may act on.",
           "type": "string",
           "enum": ["exclude", "include"],
           "default": "exclude",
-          "x-owner": "analyzer"
+          "x-owner": "analyzer",
+          "x-delivered": ["go", "ts"]
         },
         "consumer_tests": {
           "description": "How a reference from a consumer's test file counts. test, the default, counts it as a test reference, so a symbol only consumer tests reach is reported as test-only use; production counts it as a production reference.",
           "type": "string",
           "enum": ["test", "production"],
           "default": "test",
-          "x-owner": "analyzer"
+          "x-owner": "analyzer",
+          "x-delivered": ["go", "ts"]
         },
         "configurations": {
-          "description": "The build matrix. Each entry names one configuration the target builds under; a symbol is reported only when it is dead in every entry. An entry takes one of two shapes, the shape of the thing that decides what a language builds: a platform, which is an operating system and an architecture with the build tags in effect, or a project, which is one compiler configuration file. An entry carries one shape or the other and never a member of both, because a platform configuration has no configuration file and a compiler configuration has no operating system to name. An analysis reads the entries of the shape its language is built from and leaves the entries of the other shape to the analysis that reads them, so on a target holding both kinds of language the array holds one matrix per language. The entries of one shape are the matrix that language's analysis runs: they replace its derivation, so a configuration the target holds and the array does not name is not analyzed and a configuration the array names and the analysis cannot build ends the run. A language the array holds no entry for derives its matrix from the target tree, which for a language built under build constraints is the constraints present in the tree, a test file's as much as any other file's, plus the host platform, no derived configuration setting the ignore tag or derived from a file whose constraint holds only when that tag is set, as grammar/analysis.md states, and for a language built from compiler configuration files is the configuration files under the target root; an empty array, the default, derives every language's matrix, and a derived matrix is never complete.",
+          "description": "The build matrix. Each entry names one configuration the target builds under; a symbol is reported only when it is dead in every entry. An entry takes one of two shapes, the shape of the thing that decides what a language builds: a platform, which is an operating system and an architecture with the build tags in effect, or a project, which is one compiler configuration file. An entry carries one shape or the other and never a member of both, because a platform configuration has no configuration file and a compiler configuration has no operating system to name. An analysis reads the entries of the shape its language is built from and leaves the entries of the other shape to the analysis that reads them, so on a target holding both kinds of language the array holds one matrix per language. The entries of one shape are the matrix that language's analysis runs: they replace its derivation, so a configuration the target holds and the array does not name is not analyzed and a configuration the array names and the analysis cannot build ends the run. A language the array holds no entry for derives its matrix from the target tree, which for a language built under build constraints is the constraints present in the tree, a test file's as much as any other file's, plus the host platform, no derived configuration setting the ignore tag or derived from a file whose constraint holds only when that tag is set, as grammar/analysis/matrix.md states, and for a language built from compiler configuration files is the configuration files under the target root; an empty array, the default, derives every language's matrix, and a derived matrix is never complete.",
           "type": "array",
           "items": {
             "description": "One configuration of the matrix, in exactly one of the two shapes the array admits.",
@@ -156,19 +165,22 @@
             ]
           },
           "default": [],
-          "x-owner": "analyzer"
+          "x-owner": "analyzer",
+          "x-delivered": ["go", "ts"]
         },
         "matrix": {
           "description": "Declarations about the build matrix.",
           "type": "object",
           "additionalProperties": false,
           "x-owner": "analyzer",
+          "x-delivered": ["go", "ts"],
           "properties": {
             "complete": {
-              "description": "Declares that configurations lists every configuration the target builds. Only under a complete matrix is a source file no configuration builds reported (DS1501). The default is false, because a matrix the analysis derived cannot see every configuration a target has: a Boolean build constraint, and a platform no file of the tree names, are invisible to a derivation over build constraints, and a compiler configuration file outside the target root is invisible to a derivation over the files under it.",
+              "description": "Declares that configurations lists every configuration the target builds. Only under a complete matrix is a source file no configuration builds reported (DS1601). The default is false, because a matrix the analysis derived cannot see every configuration a target has: a Boolean build constraint, and a platform no file of the tree names, are invisible to a derivation over build constraints, and a compiler configuration file outside the target root is invisible to a derivation over the files under it.",
               "type": "boolean",
               "default": false,
-              "x-owner": "analyzer"
+              "x-owner": "analyzer",
+              "x-delivered": ["go", "ts"]
             }
           }
         },
@@ -181,7 +193,8 @@
             "minLength": 1
           },
           "default": [],
-          "x-owner": "analyzer"
+          "x-owner": "analyzer",
+          "x-delivered": ["go", "ts"]
         },
         "template_delimiters": {
           "description": "The action delimiters the template-field exemption parses a template with: left opens an action and right closes it. Both members are required when the object is present, because a pair with one member set names no delimiters at all. The default is the template grammar's own pair. The pair is one value: a higher-ranked source replaces both members together, and a resolved configuration carries one provenance entry for it, analysis.template_delimiters.",
@@ -189,22 +202,28 @@
           "additionalProperties": false,
           "required": ["left", "right"],
           "x-owner": "analyzer",
+          "x-delivered": ["go", "ts"],
           "x-setting": true,
           "properties": {
             "left": {
               "description": "The text that opens an action.",
               "type": "string",
               "minLength": 1,
-              "x-owner": "analyzer"
+              "x-owner": "analyzer",
+              "x-delivered": ["go", "ts"]
             },
             "right": {
               "description": "The text that closes an action.",
               "type": "string",
               "minLength": 1,
-              "x-owner": "analyzer"
+              "x-owner": "analyzer",
+              "x-delivered": ["go", "ts"]
             }
           },
-          "default": { "left": "{{", "right": "}}" }
+          "default": {
+            "left": "{{",
+            "right": "}}"
+          }
         }
       }
     },
@@ -213,12 +232,14 @@
       "type": "object",
       "additionalProperties": false,
       "x-owner": "analyzer",
+      "x-delivered": ["go", "ts"],
       "properties": {
         "complete": {
-          "description": "Declares that every consumer of the target's published API is declared. While this holds and every declared consumer loads, the published packages are closed world and the visibility-narrowing kinds report on them. The default is false.",
+          "description": "Declares that every consumer of the target's published API is declared. While this holds and every declared consumer loads, the published packages are closed world and the too-visible kinds report on them. The default is false.",
           "type": "boolean",
           "default": false,
-          "x-owner": "analyzer"
+          "x-owner": "analyzer",
+          "x-delivered": ["go", "ts"]
         }
       }
     },
@@ -227,9 +248,10 @@
       "type": "object",
       "additionalProperties": false,
       "x-owner": "analyzer",
+      "x-delivered": ["go", "ts"],
       "properties": {
         "patterns": {
-          "description": "Symbol references, or patterns over them, in the grammar contract/grammar/symbol-ref.md states. Each entry is matched against the reference of every symbol the analysis enumerates: `*` matches any run of characters including the solidus, `?` matches exactly one character counted as a Unicode code point, no other character is special, and an entry holding neither wildcard matches only the symbol whose reference it spells exactly. `?` counts a code point, so an implementation on UTF-16 strings matches with a code-point-aware engine (the ECMAScript `u` flag) and never a unit-wise one. Every symbol an entry matches is a root, and an entry matching no symbol is reported as a finding (DS1704) rather than silently ignored.",
+          "description": "Symbol references, or patterns over them, in the grammar contract/grammar/symbol-ref.md states. Each entry is matched against the reference of every symbol the analysis enumerates: `*` matches any run of characters including the solidus, `?` matches exactly one character counted as a Unicode code point, no other character is special, and an entry holding neither wildcard matches only the symbol whose reference it spells exactly. `?` counts a code point, so an implementation on UTF-16 strings matches with a code-point-aware engine (the ECMAScript `u` flag) and never a unit-wise one. Every symbol an entry matches is a root, and an entry matching no symbol is reported as a finding (DS9004) rather than silently ignored.",
           "type": "array",
           "uniqueItems": true,
           "items": {
@@ -237,12 +259,13 @@
             "minLength": 1
           },
           "default": [],
-          "x-owner": "analyzer"
+          "x-owner": "analyzer",
+          "x-delivered": ["go", "ts"]
         }
       }
     },
     "severity": {
-      "description": "Per-issue-kind severity. A key is a code (DS1101) or a two-digit range prefix naming a whole family (DS18, the intra-function kinds); a value is allow, warn or deny, and a finding at or above the failing severity, reporters.fail_on, exits with the findings code. A finding whose resolved severity is allow is withheld, and a withheld root finding withholds with it every finding whose component.id names the root's component, whatever severity those findings carry: every other root member of the component, the other root members of the root's own cycle among them, and every symbol that falls with a root, which is dead only through it. A kind this object does not name takes the default severity contract/kinds.json declares for it. A key naming a kind whose severity the Contract fixes is an unimplemented key, and so is a family prefix whose range holds such a kind: DS17 is refused because DS1703 is fixed on at deny. A key naming no live kind of contract/kinds.json is refused the same way, a retired code, an unassigned code and a prefix whose range holds no live kind alike: DS2999 and DS29 are refused, so every key names something an analyzer reports. Only a code's severity changes here; its reachability class is derived by the analysis.",
+      "description": "Per-issue-kind severity. A key is a code (DS1501) or a two-digit range prefix naming a whole family (DS14, the kinds inside functions); a value is allow, warn or deny, and a finding at or above the failing severity, reporters.fail_on, exits with the findings code. A finding whose resolved severity is allow is withheld, and a withheld root finding withholds with it every finding whose component.id names the root's component, whatever severity those findings carry: every other root member of the component, the other root members of the root's own cycle among them, and every symbol that falls with a root, which is dead only through it. A kind this object does not name takes the default severity contract/kinds.json declares for it. A key naming a kind whose severity the Contract fixes is an unimplemented key, and so is a family prefix whose range holds such a kind: DS90 is refused because DS9003 is fixed on at deny. A key naming no live kind of contract/kinds.json is refused the same way, a retired code, an unassigned code and a prefix whose range holds no live kind alike: DS2999 and DS29 are refused, so every key names something an analyzer reports. Only a code's severity changes here; its reachability class is derived by the analysis.",
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
@@ -252,13 +275,15 @@
         }
       },
       "default": {},
-      "x-owner": "analyzer"
+      "x-owner": "analyzer",
+      "x-delivered": ["go", "ts"]
     },
     "exemptions": {
       "description": "Switches over the computed exemption classes.",
       "type": "object",
       "additionalProperties": false,
       "x-owner": "analyzer",
+      "x-delivered": ["go", "ts"],
       "properties": {
         "disabled": {
           "description": "Exemption classes switched off, by the class names contract/exemptions.json declares, so that an exemption suspected of hiding a defect can be tested. A disabled class retains nothing.",
@@ -269,7 +294,8 @@
             "pattern": "^[a-z][a-z0-9-]*$"
           },
           "default": [],
-          "x-owner": "analyzer"
+          "x-owner": "analyzer",
+          "x-delivered": ["go", "ts"]
         }
       }
     },
@@ -278,6 +304,7 @@
       "type": "object",
       "additionalProperties": false,
       "x-owner": "product",
+      "x-delivered": ["go", "ts"],
       "properties": {
         "formats": {
           "description": "The output formats rendered from the one ordered finding list: text (one finding per line, position first), json (the report document), github (one workflow annotation per finding, stale suppression, type-error skip and note, each at the command contract/grammar/annotations.md names), sarif (SARIF 2.1.0 for code scanning, contract/grammar/sarif.md) and template (a user-supplied template in the language contract/grammar/template.md states).",
@@ -289,35 +316,40 @@
             "enum": ["text", "json", "github", "sarif", "template"]
           },
           "default": ["text"],
-          "x-owner": "product"
+          "x-owner": "product",
+          "x-delivered": []
         },
         "sort": {
           "description": "The order findings are rendered in. position, the default, is the canonical order (path, line, column, code, symbol, analyzer); size orders by deletable lines, largest first.",
           "type": "string",
           "enum": ["position", "size"],
           "default": "position",
-          "x-owner": "product"
+          "x-owner": "product",
+          "x-delivered": ["go", "ts"]
         },
         "cascade": {
           "description": "How a dead component is rendered: roots, the default, lists a component's root members with the count of symbols and lines that fall with it; full lists every member of every component as well.",
           "type": "string",
           "enum": ["roots", "full"],
           "default": "roots",
-          "x-owner": "product"
+          "x-owner": "product",
+          "x-delivered": ["go", "ts"]
         },
         "max_findings": {
           "description": "The most findings a rendering prints. 0, the default, prints every finding; a positive count prints at most that many and reports the number omitted.",
           "type": "integer",
           "minimum": 0,
           "default": 0,
-          "x-owner": "product"
+          "x-owner": "product",
+          "x-delivered": []
         },
         "fail_on": {
           "description": "The lowest severity at which a finding fails the run: deny, the default, fails only on a deny finding; warn fails on a warn or deny finding; allow fails on the same findings as warn, because a finding at allow is withheld. The committed form of the invocation's fail-on option, which outranks it.",
           "type": "string",
           "enum": ["allow", "warn", "deny"],
           "default": "deny",
-          "x-owner": "product"
+          "x-owner": "product",
+          "x-delivered": ["go", "ts"]
         }
       }
     },
@@ -326,6 +358,7 @@
       "type": "object",
       "additionalProperties": false,
       "x-owner": "orchestrator",
+      "x-delivered": [],
       "properties": {
         "analyzers": {
           "description": "The provider list: one entry per analyzer the orchestrator may run. The orchestrator runs every entry whose languages include a language in scope, two entries claiming one language included, and executes an entry's command only where it already resolves to an executable on the local filesystem, so an analysis makes no network request. An entry may be added, edited or deleted, a default entry included, so a third-party analyzer joins a first-party one or replaces it. Two entries never share a name, because the run keys every file it writes for an analyzer by the entry's name: a list naming one name twice is refused with the usage code, naming the later entry's name. The default is the two first-party analyzers, deadset-go claiming go and deadset-ts claiming ts, each run by its own name. The default entries pin no artifact: an analysis executes only what is installed, and acquisition fetches only an entry that names its source, version and digest.",
@@ -417,10 +450,19 @@
             ]
           },
           "default": [
-            { "name": "deadset-go", "languages": ["go"], "command": "deadset-go" },
-            { "name": "deadset-ts", "languages": ["ts"], "command": "deadset-ts" }
+            {
+              "name": "deadset-go",
+              "languages": ["go"],
+              "command": "deadset-go"
+            },
+            {
+              "name": "deadset-ts",
+              "languages": ["ts"],
+              "command": "deadset-ts"
+            }
           ],
-          "x-owner": "orchestrator"
+          "x-owner": "orchestrator",
+          "x-delivered": []
         }
       }
     },
@@ -429,16 +471,18 @@
       "type": "object",
       "additionalProperties": false,
       "x-owner": "go-analyzer",
+      "x-delivered": ["go"],
       "properties": {}
     },
     "ts": {
-      "description": "The section the TypeScript analyzer owns; the orchestrator passes it through unread. Three of its keys name declarations, and each entry of those names one declaration in one of three shapes: symbol names a declaration of the analyzed program by its stable symbol reference; module and name name a declaration a module exports, by the bare specifier an import declaration of the target writes for the module and the declaration's path from that module's exports; global names a declaration of the global scope, the compiler's library declarations and any ambient global declaration included, by its path from that scope. A path is spelled as the fragment of a stable symbol reference in contract/grammar/symbol-ref.md: the name, then each member, joined by dots, with :static after a static member. A component in square brackets is a computed key, spelled as grammar/symbol-ref.md spells one, and names the member whose declaration writes that key, so Bag.[Symbol.iterator] names a member declared *[Symbol.iterator]() and Array.[Symbol.iterator] the library's array iterator. An entry names the declaration itself rather than an expression that reaches it: a call matches the entry when the declaration its callee resolves to, through every import, re-export and alias, is the declaration the entry names, so a method declared on an interface is named on the interface, CustomElementRegistry.define for a call written customElements.define. Where a key matches a class passed to a call, the class is passed when it is an argument of the call or an element of an array literal or a property value of an object literal written as an argument, at any depth, and a decorator written as a call is a call. An entry of the three keys that names no declaration in any project of the run is reported as a finding (DS1706) at the entry's own position rather than silently retaining nothing.",
+      "description": "The section the TypeScript analyzer owns; the orchestrator passes it through unread. Three of its keys name declarations, and each entry of those names one declaration in one of three shapes: symbol names a declaration of the analyzed program by its stable symbol reference; module and name name a declaration a module exports, by the bare specifier an import declaration of the target writes for the module and the declaration's path from that module's exports; global names a declaration of the global scope, the compiler's library declarations and any ambient global declaration included, by its path from that scope. A path is spelled as the fragment of a stable symbol reference in contract/grammar/symbol-ref.md: the name, then each member, joined by dots, with :static after a static member. A component in square brackets is a computed key, spelled as grammar/symbol-ref.md spells one, and names the member whose declaration writes that key, so Bag.[Symbol.iterator] names a member declared *[Symbol.iterator]() and Array.[Symbol.iterator] the library's array iterator. An entry names the declaration itself rather than an expression that reaches it: a call matches the entry when the declaration its callee resolves to, through every import, re-export and alias, is the declaration the entry names, so a method declared on an interface is named on the interface, CustomElementRegistry.define for a call written customElements.define. Where a key matches a class passed to a call, the class is passed when it is an argument of the call or an element of an array literal or a property value of an object literal written as an argument, at any depth, and a decorator written as a call is a call. An entry of the three keys that names no declaration in any project of the run is reported as a finding (DS9006) at the entry's own position rather than silently retaining nothing.",
       "type": "object",
       "additionalProperties": false,
       "x-owner": "ts-analyzer",
+      "x-delivered": ["ts"],
       "properties": {
         "test_files": {
-          "description": "Glob patterns, relative to the target root, naming the files classified as test files. The default is the naming the common TypeScript test runners share: a file whose name carries a .test or a .spec qualifier or the .test-d or .spec-d qualifier of a type test, and every file under a __tests__, a __mocks__ or a test-d directory; a project whose tests are named otherwise sets its own so that a symbol only its tests reach is reported as test-only use. A file no pattern names is still test code when it is test-support code, which grammar/analysis.md defines.",
+          "description": "Glob patterns, relative to the target root, naming the files classified as test files. The default is the naming the common TypeScript test runners share: a file whose name carries a .test or a .spec qualifier or the .test-d or .spec-d qualifier of a type test, and every file under a __tests__, a __mocks__ or a test-d directory; a project whose tests are named otherwise sets its own so that a symbol only its tests reach is reported as test-only use. A file no pattern names is still test code when it is test-support code, which grammar/analysis/tests.md defines.",
           "type": "array",
           "uniqueItems": true,
           "minItems": 1,
@@ -447,10 +491,11 @@
             "minLength": 1
           },
           "default": ["**/*.test.{ts,tsx,mts,cts}", "**/*.test-d.{ts,tsx,mts,cts}", "**/*.spec-d.{ts,tsx,mts,cts}", "**/*.spec.*", "**/__tests__/**", "**/__mocks__/**", "**/test-d/**"],
-          "x-owner": "ts-analyzer"
+          "x-owner": "ts-analyzer",
+          "x-delivered": ["ts"]
         },
         "entry_files": {
-          "description": "Glob patterns, relative to the target root, naming files whose exports are roots, beside the entry points the package manifest names and the roots grammar/analysis.md lists. An empty array, the default, adds none. The patterns apply whatever convention row applies or is disabled, so a project whose framework configuration moves a directory to a value the analysis cannot read names the files here.",
+          "description": "Glob patterns, relative to the target root, naming files whose exports are roots, beside the entry points the package manifest names and the roots grammar/analysis/roots.md lists. An empty array, the default, adds none. The patterns apply whatever convention row applies or is disabled, so a project whose framework configuration moves a directory to a value the analysis cannot read names the files here.",
           "type": "array",
           "uniqueItems": true,
           "items": {
@@ -458,10 +503,11 @@
             "minLength": 1
           },
           "default": [],
-          "x-owner": "ts-analyzer"
+          "x-owner": "ts-analyzer",
+          "x-delivered": ["ts"]
         },
         "component_extensions": {
-          "description": "The file name extensions of component files, each a full stop followed by letters and digits: a file whose name ends with one is read as markup holding script blocks, as grammar/analysis.md states. An empty array reads no file as a component file.",
+          "description": "The file name extensions of component files, each a full stop followed by letters and digits: a file whose name ends with one is read as markup holding script blocks, as grammar/analysis/program.md states. An empty array reads no file as a component file.",
           "type": "array",
           "uniqueItems": true,
           "items": {
@@ -469,7 +515,8 @@
             "pattern": "^\\.[A-Za-z0-9]+$"
           },
           "default": [".vue", ".svelte", ".astro"],
-          "x-owner": "ts-analyzer"
+          "x-owner": "ts-analyzer",
+          "x-delivered": ["ts"]
         },
         "disabled_conventions": {
           "description": "The names of the convention rows of the analyzer's table that do not apply, whatever the dependencies hold: a disabled row adds no root and raises no setup failure. A name the analyzer's table does not carry is refused with the usage code naming this key, so a misspelled name never leaves a row applying. An empty array, the default, disables none.",
@@ -480,7 +527,8 @@
             "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$"
           },
           "default": [],
-          "x-owner": "ts-analyzer"
+          "x-owner": "ts-analyzer",
+          "x-delivered": ["ts"]
         },
         "injection_registrations": {
           "description": "The declarations whose call registers a class with a dependency-injection container, read by the injection-container exemption: a registration function or method, and a decorator whose call lists the classes a container provides. Every class passed to a call of one of them is registered, so its constructor and the members the container injects are retained. An empty array, the default, registers no class through a call; the exemption's other half, a constructor parameter or a property that carries an injection decorator, needs no key and applies whatever this key holds.",
@@ -539,7 +587,8 @@
             ]
           },
           "default": [],
-          "x-owner": "ts-analyzer"
+          "x-owner": "ts-analyzer",
+          "x-delivered": ["ts"]
         },
         "lifecycle_contracts": {
           "description": "The lifecycle contracts of the frameworks the project declares, read by the framework-lifecycle exemption, one entry per framework: the declarations that make a class one of the framework's components, the classes whose subclasses are its components, and the names of the members the framework calls on a component. An entry names at least one of the first two. A member of a component whose name an entry lists is retained. An empty array, the default, declares no framework, so the exemption retains nothing.",
@@ -550,8 +599,22 @@
             "additionalProperties": false,
             "required": ["members"],
             "anyOf": [
-              { "required": ["components"], "properties": { "components": { "minItems": 1 } } },
-              { "required": ["bases"], "properties": { "bases": { "minItems": 1 } } }
+              {
+                "required": ["components"],
+                "properties": {
+                  "components": {
+                    "minItems": 1
+                  }
+                }
+              },
+              {
+                "required": ["bases"],
+                "properties": {
+                  "bases": {
+                    "minItems": 1
+                  }
+                }
+              }
             ],
             "properties": {
               "components": {
@@ -686,7 +749,8 @@
             }
           },
           "default": [],
-          "x-owner": "ts-analyzer"
+          "x-owner": "ts-analyzer",
+          "x-delivered": ["ts"]
         },
         "serializers": {
           "description": "The declarations whose call reads its arguments' data members by name, a serializer or a schema validator's parse or validate method, read by the serialization-contract exemption beside JSON.stringify, which every run reads as one: an argument of a call to one of them is a destination of the exemption exactly as an argument of JSON.stringify is. An empty array, the default, adds none.",
@@ -745,18 +809,20 @@
             ]
           },
           "default": [],
-          "x-owner": "ts-analyzer"
+          "x-owner": "ts-analyzer",
+          "x-delivered": ["ts"]
         },
         "roots_complete": {
           "description": "Declares that the roots the analysis finds are every root the target has: a TypeScript finding about a declaration only dead declarations reference, or a file only dead code imports, is then certain rather than probable.",
           "type": "boolean",
           "default": false,
-          "x-owner": "ts-analyzer"
+          "x-owner": "ts-analyzer",
+          "x-delivered": ["ts"]
         }
       }
     },
     "provenance": {
-      "description": "The source of each resolved setting, as the resolved-configuration printout writes it: a key is a setting's dotted path (target.kind, severity.DS1101) and a value is default, or repository, central or flag followed by a colon, a space and the file or flag that supplied the value. Accepted on input so that a printed resolved configuration reads back as a repository configuration, and ignored by resolution, so its presence in any source changes no resolved value.",
+      "description": "The source of each resolved setting, as the resolved-configuration printout writes it: a key is a setting's dotted path (target.kind, severity.DS1501) and a value is default, or repository, central or flag followed by a colon, a space and the file or flag that supplied the value. Accepted on input so that a printed resolved configuration reads back as a repository configuration, and ignored by resolution, so its presence in any source changes no resolved value.",
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
@@ -766,7 +832,8 @@
         }
       },
       "x-ignored-by-resolution": true,
-      "x-owner": "product"
+      "x-owner": "product",
+      "x-delivered": ["go", "ts"]
     }
   }
 }

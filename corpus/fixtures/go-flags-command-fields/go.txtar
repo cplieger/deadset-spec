@@ -1,0 +1,76 @@
+The Go rendering: a command line parsed by go-flags, the module replaced by a
+local copy of its API.
+
+-- fixture.json --
+{
+  "symbols": {
+    "options.Serve": {
+      "file": "target/main.go",
+      "line": 15
+    },
+    "options.Spare": {
+      "file": "target/main.go",
+      "line": 16
+    },
+    "serveCommand": {
+      "file": "target/main.go",
+      "line": 10
+    },
+    "serveCommand.Execute": {
+      "file": "target/main.go",
+      "line": 12
+    }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+
+require github.com/jessevdk/go-flags v1.6.1
+
+replace github.com/jessevdk/go-flags => ../flags
+-- target/main.go --
+// Command target runs the subcommand its arguments name.
+package main
+
+import (
+	"os"
+
+	flags "github.com/jessevdk/go-flags"
+)
+
+type serveCommand struct{}
+
+func (serveCommand) Execute(_ []string) error { return nil }
+
+type options struct {
+	Serve serveCommand `command:"serve"`
+	Spare string
+}
+
+func main() {
+	var opts options
+	if _, err := flags.NewParser(&opts, flags.Default).ParseArgs(os.Args[1:]); err != nil {
+		os.Exit(1)
+	}
+}
+-- flags/go.mod --
+module github.com/jessevdk/go-flags
+
+go 1.27.0
+-- flags/flags.go --
+// Package flags declares the part of go-flags' API the target calls.
+package flags
+
+// Default is the parser's default option set.
+const Default = 1
+
+// Parser fills a value from the command line.
+type Parser struct{ data any }
+
+// NewParser returns a parser over data.
+func NewParser(data any, options int) *Parser { return &Parser{data: data} }
+
+// ParseArgs fills the value and runs the command the arguments name.
+func (p *Parser) ParseArgs(args []string) ([]string, error) { return args, nil }

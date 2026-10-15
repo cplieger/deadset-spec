@@ -14,6 +14,7 @@ import (
 	"testing"
 
 	"github.com/cplieger/deadset-spec/v8"
+	"github.com/cplieger/deadset-spec/v8/corpus"
 	"github.com/santhosh-tekuri/jsonschema/v6"
 )
 
@@ -308,8 +309,8 @@ func loadNegativeIndex(t *testing.T) []negativeRow {
 		Description string        `json:"description"`
 		Negatives   []negativeRow `json:"negatives"`
 	}
-	if err := decodeStrict(data, &doc); err != nil {
-		t.Fatalf("Setup: decodeStrict(%q): %v", negativeIndex, err)
+	if err := corpus.DecodeStrict(data, &doc); err != nil {
+		t.Fatalf("Setup: corpus.DecodeStrict(%q): %v", negativeIndex, err)
 	}
 	if len(doc.Negatives) == 0 {
 		t.Fatalf("Setup: %s names no negative, want at least one", negativeIndex)
@@ -356,7 +357,7 @@ func TestEveryLiveIssueKindFamilyHasOneFindingExample(t *testing.T) {
 		byFamily[families[0]] = append(byFamily[families[0]], file)
 	}
 	for _, r := range doc.Ranges {
-		if isRetired(r) {
+		if r.Status != "live" {
 			continue
 		}
 		if got := byFamily[r.Family]; len(got) != 1 {
@@ -539,43 +540,9 @@ func TestEveryNegativeExampleHasOneIndexRow(t *testing.T) {
 	}
 }
 
-func TestCorpusFixtureDocumentsAreInstancesOfTheCorpusSchemas(t *testing.T) {
-	names, err := fixtureNames(spec.Corpus)
-	if err != nil {
-		t.Fatalf("Setup: fixtureNames(Corpus): %v", err)
-	}
-	if len(names) == 0 {
-		t.Fatal("Setup: the corpus holds no fixture, want at least one")
-	}
-	for _, name := range slices.Sorted(maps.Keys(names)) {
-		dir := path.Join(fixturesDir, name)
-		t.Run(subtestName(name), func(t *testing.T) {
-			expect, err := fs.ReadFile(spec.Corpus, path.Join(dir, expectFile))
-			if err != nil {
-				t.Fatalf("Setup: fs.ReadFile(Corpus, %q): %v", path.Join(dir, expectFile), err)
-			}
-			validateAgainst(t, expectSchemaPath, expect)
-			for _, language := range []string{"go", "ts"} {
-				files, err := renderingFiles(spec.Corpus, dir, language)
-				if err != nil {
-					continue
-				}
-				manifest, ok := files[manifestFile]
-				if !ok {
-					t.Errorf("the %s rendering of %s holds no %s, want the rendering manifest", language, name, manifestFile)
-					continue
-				}
-				t.Run(language, func(t *testing.T) {
-					validateAgainst(t, fixtureSchemaPath, manifest)
-				})
-			}
-		})
-	}
-}
-
 func TestConfigVectorExpectationsAreInstancesOfTheConfigSchema(t *testing.T) {
 	validated := 0
-	for _, name := range configVectorDirs(t) {
+	for _, name := range vectorCaseDirs(t, spec.Vectors, "config") {
 		at := path.Join(configVectorsDir, name, vectorExpectedFile)
 		data, err := fs.ReadFile(spec.Vectors, at)
 		if errors.Is(err, fs.ErrNotExist) {

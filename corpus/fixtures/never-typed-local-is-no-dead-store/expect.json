@@ -16,7 +16,7 @@
     },
     {
       "symbol": "other",
-      "report": "DS1807",
+      "report": "DS1404",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "store",

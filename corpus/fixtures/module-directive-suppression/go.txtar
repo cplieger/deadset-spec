@@ -28,13 +28,13 @@ func main() {}
   "description": "One entry for the requirement and one for the replace directive.",
   "ignore": [
     {
-      "code": "DS1601",
+      "code": "DS1701",
       "symbol": "go://example.com/app#golang.org/x/sync:require",
       "path": "go.mod",
       "reason": "Kept for a tool a workflow outside the module runs."
     },
     {
-      "code": "DS1605",
+      "code": "DS1702",
       "symbol": "go://example.com/app#golang.org/x/sync@v0.16.0:replace",
       "path": "go.mod",
       "reason": "Kept with the requirement it redirects."

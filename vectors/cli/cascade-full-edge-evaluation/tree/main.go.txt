@@ -1,0 +1,12 @@
+package main
+
+// ServerEvent is sent to the web client.
+type ServerEvent struct {
+	Kind string
+}
+
+func helper(e ServerEvent) string { return e.Kind }
+
+var _ = helper
+
+func main() {}

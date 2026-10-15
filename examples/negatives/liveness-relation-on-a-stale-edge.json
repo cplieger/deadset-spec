@@ -1,5 +1,5 @@
 {
-  "code": "DS1705",
+  "code": "DS9005",
   "kind": "stale-cross-language-edge",
   "language": "ts",
   "position": { "path": "deadset-edges.json", "line": 1, "column": 1, "end_line": 1 },

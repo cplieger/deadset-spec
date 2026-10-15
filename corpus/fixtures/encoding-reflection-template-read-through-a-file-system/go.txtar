@@ -1,0 +1,65 @@
+The Go rendering: a template directory embedded and read file by file.
+
+-- fixture.json --
+{
+  "symbols": {
+    "view.Hidden": {
+      "file": "target/main.go",
+      "line": 16
+    },
+    "view.Name": {
+      "file": "target/main.go",
+      "line": 15
+    }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target renders the templates of its own directory.
+package main
+
+import (
+	"embed"
+	"io"
+	"os"
+	"text/template"
+)
+
+//go:embed templates
+var files embed.FS
+
+type view struct {
+	Name   string
+	Hidden string
+}
+
+func load() *template.Template {
+	set := template.New("root")
+	entries, err := files.ReadDir("templates")
+	if err != nil {
+		panic(err)
+	}
+	for _, e := range entries {
+		f, err := files.Open("templates/" + e.Name())
+		if err != nil {
+			panic(err)
+		}
+		data, err := io.ReadAll(f)
+		if err != nil {
+			panic(err)
+		}
+		template.Must(set.New(e.Name()).Parse(string(data)))
+	}
+	return set
+}
+
+func main() {
+	if err := load().ExecuteTemplate(os.Stdout, "page.tmpl", view{Name: "n", Hidden: "h"}); err != nil {
+		panic(err)
+	}
+}
+-- target/templates/page.tmpl --
+Hello {{.Name}}

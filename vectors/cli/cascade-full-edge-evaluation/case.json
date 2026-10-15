@@ -1,0 +1,20 @@
+{
+  "description": "An analyzer's report under reporters.cascade full is an instance of the report schema: a finding an edge evaluation carries lists no component members, and its component is listed in the report's components.",
+  "products": [
+    "deadset-go"
+  ],
+  "rename": {
+    "go.mod.txt": "go.mod",
+    "main.go.txt": "main.go"
+  },
+  "argv": [
+    "analyze",
+    "--target=@TARGET@",
+    "--report=@OUT@/report.json",
+    "--exit-code=off"
+  ],
+  "expect": {
+    "exit": 0,
+    "report": "valid"
+  }
+}

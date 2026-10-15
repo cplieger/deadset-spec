@@ -8,7 +8,7 @@
   "expect": [
     {
       "symbol": "InitializerCallee",
-      "report": "DS1801",
+      "report": "DS1401",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "parameter",
@@ -22,7 +22,7 @@
     },
     {
       "symbol": "GoCallee",
-      "report": "DS1801",
+      "report": "DS1401",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "parameter",
@@ -36,7 +36,7 @@
     },
     {
       "symbol": "DeferCallee",
-      "report": "DS1801",
+      "report": "DS1401",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "parameter",
@@ -50,7 +50,7 @@
     },
     {
       "symbol": "InPlaceCallee",
-      "report": "DS1801",
+      "report": "DS1401",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "parameter",

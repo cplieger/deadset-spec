@@ -12,14 +12,14 @@
   "expect": [
     {
       "symbol": "AbsentPattern",
-      "report": "DS1704",
+      "report": "DS9004",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "root"
     },
     {
       "symbol": "AbsentReference",
-      "report": "DS1704",
+      "report": "DS9004",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "root"

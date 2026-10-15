@@ -6,7 +6,7 @@
   "expect": [
     { "symbol": "refused.Unwrap", "report": "none", "retained_by": ["errors-duck-typing"] },
     { "symbol": "banned.Unwrap", "report": "none", "retained_by": ["errors-duck-typing"] },
-    { "symbol": "rejected.Unwrap", "report": "DS1103", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "method", "liveness_relation": "reachability", "component": { "root": false } },
+    { "symbol": "rejected.Unwrap", "report": "DS1101", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "method", "liveness_relation": "reachability", "component": { "root": false } },
     { "symbol": "deadWiden", "report": "DS1002", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "function", "liveness_relation": "reference-counting", "component": { "root": true } }
   ]
 }

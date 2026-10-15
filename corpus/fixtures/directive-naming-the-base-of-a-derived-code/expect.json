@@ -1,0 +1,25 @@
+{
+  "name": "directive-naming-the-base-of-a-derived-code",
+  "description": "A directive is in effect only for the finding the declaration would carry: an exported function of an internal package nothing outside can import would be reported under the unreachable-export code, so a directive naming the unused-exported code is stale, and its mark still keeps the function from being reported.",
+  "pending": "suppression.md Staleness: the Go analyzer compares a record's code with the would-be finding's only for the three unused codes.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "suppressions_in_effect": 0,
+  "expect": [
+    {
+      "symbol": "Helper",
+      "report": "none"
+    },
+    {
+      "symbol": "WrongCode",
+      "report": "DS9003",
+      "confidence": "certain",
+      "symbol_kind": "suppression",
+      "details": {
+        "mechanism": "inline"
+      }
+    }
+  ]
+}

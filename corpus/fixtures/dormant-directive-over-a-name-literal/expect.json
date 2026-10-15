@@ -1,0 +1,15 @@
+{
+  "name": "dormant-directive-over-a-name-literal",
+  "description": "A directive over a finding the minimum withholds is dormant, not stale, and dormancy reads the confidence the finding itself carries: an unexported function a string literal spells is dead at possible, below the default minimum, so its directive is neither in effect nor stale and nothing is reported.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "suppressions_in_effect": 0,
+  "expect": [
+    {
+      "symbol": "lookedUp",
+      "report": "none"
+    }
+  ]
+}

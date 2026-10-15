@@ -1,0 +1,21 @@
+{
+  "name": "member-written-under-a-returned-type-and-never-read",
+  "description": "A member an object literal writes because the function's declared result type names it is written, not read: a member every caller ignores is reported as write-only even though the literal is typed by the annotated result, while a member a caller reads is not.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Providers.oauth",
+      "report": "none"
+    },
+    {
+      "symbol": "Providers.phone",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member"
+    }
+  ]
+}

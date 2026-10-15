@@ -113,7 +113,7 @@
       "liveness_relation": "reference-counting"
     },
     {
-      "code": "DS1101",
+      "code": "DS1501",
       "kind": "unnecessary-export",
       "language": "go",
       "position": {
@@ -198,7 +198,7 @@
       }
     },
     {
-      "code": "DS1801",
+      "code": "DS1401",
       "kind": "unused-parameter",
       "language": "go",
       "position": {
@@ -241,7 +241,7 @@
       }
     },
     {
-      "code": "DS1801",
+      "code": "DS1401",
       "kind": "unused-parameter",
       "language": "go",
       "position": {

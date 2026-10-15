@@ -9,7 +9,7 @@
   "expect": [
     {
       "symbol": "load",
-      "report": "DS1004",
+      "report": "DS1102",
       "confidence": "possible",
       "reachability_class": "possible",
       "symbol_kind": "function",
@@ -42,7 +42,7 @@
     },
     {
       "symbol": "testLoad",
-      "report": "DS1005",
+      "report": "DS1103",
       "confidence": "possible",
       "reachability_class": "certain",
       "symbol_kind": "function",

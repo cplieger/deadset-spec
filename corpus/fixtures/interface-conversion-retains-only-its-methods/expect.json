@@ -12,25 +12,25 @@
     },
     {
       "symbol": "Items.Unrelated",
-      "report": "DS1103",
+      "report": "DS1101",
       "confidence": "certain",
       "reachability_class": "certain"
     },
     {
       "symbol": "Beats.Len",
-      "report": "DS1103",
+      "report": "DS1101",
       "confidence": "certain",
       "reachability_class": "certain"
     },
     {
       "symbol": "Beats.Sorted",
-      "report": "DS1103",
+      "report": "DS1101",
       "confidence": "certain",
       "reachability_class": "certain"
     },
     {
       "symbol": "Items",
-      "report": "DS1101",
+      "report": "DS1501",
       "confidence": "certain",
       "reachability_class": "certain",
       "details": {
@@ -39,7 +39,7 @@
     },
     {
       "symbol": "Beats",
-      "report": "DS1101",
+      "report": "DS1501",
       "confidence": "certain",
       "reachability_class": "certain",
       "details": {
@@ -48,13 +48,13 @@
     },
     {
       "symbol": "Beats.Less",
-      "report": "DS1103",
+      "report": "DS1101",
       "confidence": "certain",
       "reachability_class": "certain"
     },
     {
       "symbol": "Beats.Swap",
-      "report": "DS1103",
+      "report": "DS1101",
       "confidence": "certain",
       "reachability_class": "certain"
     }

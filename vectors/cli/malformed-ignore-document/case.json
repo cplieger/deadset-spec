@@ -1,0 +1,23 @@
+{
+  "description": "An ignore file that is not a JSON document is a refused document: the run ends with the usage code 2, as suppression.md's refusals table states, in every analyzer.",
+  "products": [
+    "deadset-go"
+  ],
+  "rename": {
+    "deadset-ignore.json.txt": "deadset-ignore.json",
+    "go.mod.txt": "go.mod",
+    "main.go.txt": "main.go"
+  },
+  "argv": [
+    "analyze",
+    "--target=@TARGET@",
+    "--report=@OUT@/report.json"
+  ],
+  "expect": {
+    "exit": 2,
+    "stderr_contains": [
+      "deadset-ignore.json"
+    ],
+    "report": "absent"
+  }
+}

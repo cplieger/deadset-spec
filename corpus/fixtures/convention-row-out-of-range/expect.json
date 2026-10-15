@@ -8,14 +8,14 @@
   "expect": [
     {
       "symbol": "Page",
-      "report": "DS1502",
+      "report": "DS1602",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "file"
     },
     {
       "symbol": "Orphan",
-      "report": "DS1502",
+      "report": "DS1602",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "file"
