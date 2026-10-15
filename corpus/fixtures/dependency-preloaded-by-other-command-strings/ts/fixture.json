@@ -1,0 +1,16 @@
+{
+  "symbols": {
+    "NeverLoaded": {
+      "file": "target/package.json",
+      "line": 11
+    },
+    "TsNode": {
+      "file": "target/package.json",
+      "line": 12
+    },
+    "Tsx": {
+      "file": "target/package.json",
+      "line": 13
+    }
+  }
+}

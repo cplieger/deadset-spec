@@ -1,0 +1,22 @@
+{
+  "name": "dependency-preloaded-by-other-command-strings",
+  "description": "A runtime flag that preloads a module counts in every command string the analysis reads, not only in scripts: the exec command of nodemon's configuration in the manifest's nodemonConfig member uses the dependency its flag names, and so does a makefile recipe line, while a declared dependency nothing names is reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    { "symbol": "TsNode", "report": "none" },
+    { "symbol": "Tsx", "report": "none" },
+    {
+      "symbol": "NeverLoaded",
+      "report": "DS1601",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "dependency",
+      "details": {
+        "dependency_class": "dev-dependency"
+      }
+    }
+  ]
+}

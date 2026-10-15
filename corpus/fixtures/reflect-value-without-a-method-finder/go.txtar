@@ -28,6 +28,6 @@ type sample struct {
 func (sample) Describe() string { return "sample" }
 
 func main() {
-	v := reflect.ValueOf(sample{})
+	v := reflect.ValueOf(sample{Name: "s"})
 	println(v.NumField())
 }

@@ -1,7 +1,7 @@
-// Sample is serialized by the test file alone.
+// Sample is written by its initializer and serialized by the test file alone.
 export class Sample {
   id = 1;
-  name?: string;
+  name = "sample";
 }
 
 // Draft is serialized by nothing.

@@ -1,0 +1,13 @@
+{
+  "name": "serialization-contract-enumerated-named-and-index-parameter",
+  "description": "A TypeScript parameter typed as an object type that names properties beside a string index signature holds every other member of the value it is given under that signature, so a function that hands such a parameter to one that enumerates it reads every property of each value passed to it, the members its type does not name included; a parameter of that type read only by a literal key holds back nothing.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    { "symbol": "port", "report": "none" },
+    { "symbol": "seed", "report": "none" },
+    { "symbol": "unread", "report": "DS1301", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "type-member" }
+  ]
+}

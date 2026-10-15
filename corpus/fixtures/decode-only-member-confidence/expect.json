@@ -1,0 +1,27 @@
+{
+  "name": "decode-only-member-confidence",
+  "description": "A data member of a type the program only decodes into and never reads is reported: at certain where JSON.parse fills the value, whose result the program asserts to the type, and at possible where a generic function declared outside the analysis returns it through a type parameter none of its parameters names, because that function fills the member and may read it where the analysis cannot see.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "expect": [
+    {
+      "symbol": "Parsed.unread",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Fetched.unread",
+      "report": "DS1003",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "type-member",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

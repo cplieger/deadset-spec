@@ -1,6 +1,6 @@
 {
   "name": "encoding-reflection-filling-callee",
-  "description": "A function or method outside the analyzed program whose name starts with Unmarshal, Decode, Bind, ShouldBind or MustBind fills the fields of the value it is given and may read them, so a field it alone retains is reported at the reachability class possible rather than held live, unless its own body hands the value to a destination that reads fields, an encoder or a formatting function, which then reads every field. A field the program reads is no finding.",
+  "description": "A function or method outside the analyzed program whose name starts with Unmarshal, Decode, Bind, ShouldBind or MustBind fills the fields of the value it is given and may read them, so a field it alone retains is reported at the reachability class possible rather than held live. That holds where its own body hands the value to a destination that reads fields, an encoder or a formatting function, too: such a reader reads the fields the program writes, and the program writes none here. A field the program reads is no finding.",
   "languages": [
     "go"
   ],
@@ -20,10 +20,10 @@
     },
     {
       "symbol": "audit.Note",
-      "report": "none",
-      "retained_by": [
-        "encoding-reflection"
-      ]
+      "report": "DS1003",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "field"
     }
   ]
 }

@@ -1,0 +1,26 @@
+{
+  "name": "relayed-member-live-where-decoded",
+  "description": "A data member a decode fills is written: a value the program decodes and sends again carries the members the decoded document held, so they are live though no assignment or literal writes them, while a member of a sent type that nothing writes or decodes is reported.",
+  "languages": [
+    "go",
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Event.kind",
+      "report": "none"
+    },
+    {
+      "symbol": "Event.seq",
+      "report": "none"
+    },
+    {
+      "symbol": "Status.spare",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

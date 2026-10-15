@@ -1,0 +1,12 @@
+{
+  "symbols": {
+    "Parsed.unread": {
+      "file": "target/main.ts",
+      "line": 5
+    },
+    "Fetched.unread": {
+      "file": "target/main.ts",
+      "line": 10
+    }
+  }
+}

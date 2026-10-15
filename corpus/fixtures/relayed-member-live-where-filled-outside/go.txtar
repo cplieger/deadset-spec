@@ -1,0 +1,86 @@
+The Go rendering: a command that loads a row through a dependency's function handed a
+pointer to it, whose name says nothing of filling, and makes a value through the
+dependency's generic function, and encodes both, beside a value the dependency's
+function fills of which one field is read. The dependency is a local module the
+target requires and replaces, so the rendering loads with no network access.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Row.title": { "file": "target/main.go", "line": 14 },
+    "Made.label": { "file": "target/main.go", "line": 19 },
+    "Kept.unread": { "file": "target/main.go", "line": 25 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+
+require example.com/dep v0.0.0
+
+replace example.com/dep => ../dep
+-- target/main.go --
+// Command target encodes what a dependency fills and makes.
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"os"
+
+	"example.com/dep"
+)
+
+// row is filled by the dependency and encoded.
+type row struct {
+	Title string `json:"title"`
+}
+
+// made is made by the dependency and encoded.
+type made struct {
+	Label string `json:"label"`
+}
+
+// kept is filled by the dependency and one field is read.
+type kept struct {
+	Used   string `json:"used"`
+	Unread string `json:"unread"`
+}
+
+func main() {
+	var r row
+	var k kept
+	if dep.Get(&r, "row") != nil || dep.Get(&k, "kept") != nil {
+		os.Exit(1)
+	}
+	m, err := dep.Fetch[made]("https://example.com/made")
+	if err != nil {
+		os.Exit(1)
+	}
+	enc := json.NewEncoder(os.Stdout)
+	if enc.Encode(r) != nil || enc.Encode(m) != nil {
+		os.Exit(1)
+	}
+	fmt.Println(k.Used)
+}
+-- dep/go.mod --
+module example.com/dep
+
+go 1.27.0
+-- dep/dep.go --
+// Package dep fills and makes values where the analysis does not look.
+package dep
+
+// Get fills dest from a query.
+func Get(dest any, query string) error {
+	_, _ = dest, query
+	return nil
+}
+
+// Fetch makes a new T from a response.
+func Fetch[T any](url string) (T, error) {
+	var zero T
+	_ = url
+	return zero, nil
+}

@@ -1,0 +1,20 @@
+{
+  "symbols": {
+    "Window.fromEntry": {
+      "file": "target/index.ts",
+      "line": 5
+    },
+    "Window.fromImport": {
+      "file": "target/shape.ts",
+      "line": 3
+    },
+    "Window.unpublished": {
+      "file": "target/internal.ts",
+      "line": 3
+    },
+    "area": {
+      "file": "target/index.ts",
+      "line": 9
+    }
+  }
+}

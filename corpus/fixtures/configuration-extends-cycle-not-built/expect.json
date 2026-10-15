@@ -1,6 +1,6 @@
 {
   "name": "configuration-extends-cycle-not-built",
-  "description": "A derived configuration whose extends chain returns to a configuration it already passed is dropped before any program is built and listed in configurations_not_built with the compiler's circularity code, and so is a configuration that references it; the run analyzes the configurations left.",
+  "description": "A derived configuration whose extends chain returns to a configuration it already passed is dropped before any program is built and listed in configurations_not_built with the compiler's circularity code; a configuration that references it is built, as the compiler builds it, and the run analyzes it with the configurations left.",
   "languages": [
     "ts"
   ],
@@ -19,8 +19,19 @@
       "report": "none"
     },
     {
+      "symbol": "UseFile",
+      "report": "DS1502",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
       "symbol": "used",
-      "report": "none"
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "variable",
+      "liveness_relation": "reference-counting"
     }
   ]
 }

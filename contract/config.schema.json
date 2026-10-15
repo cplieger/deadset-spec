@@ -280,7 +280,7 @@
       "x-owner": "product",
       "properties": {
         "formats": {
-          "description": "The output formats rendered from the one ordered finding list: text (one finding per line, position first), json (the report document), github (one workflow annotation per failing finding and per stale suppression, and one warning annotation per type-error skip), sarif (SARIF 2.1.0 for code scanning, contract/grammar/sarif.md) and template (a user-supplied template in the language contract/grammar/template.md states).",
+          "description": "The output formats rendered from the one ordered finding list: text (one finding per line, position first), json (the report document), github (one workflow annotation per finding, stale suppression, type-error skip and note, each at the command contract/grammar/annotations.md names), sarif (SARIF 2.1.0 for code scanning, contract/grammar/sarif.md) and template (a user-supplied template in the language contract/grammar/template.md states).",
           "type": "array",
           "uniqueItems": true,
           "minItems": 1,

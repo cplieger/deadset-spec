@@ -1,0 +1,26 @@
+{
+  "name": "relayed-member-live-where-filled-outside",
+  "description": "A data member a function or method outside the analysis fills is written: a value an outside callee handed a pointer to it fills, whatever its name, one an outside generic makes, and in TypeScript one an outside call types as `any` or `unknown` read as the type, carries what that callee gave it, so a value the program sends after such a fill keeps those members, while a member of a type such a callee only fills and nothing reads is reported at the class possible.",
+  "languages": [
+    "go",
+    "ts"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "expect": [
+    {
+      "symbol": "Row.title",
+      "report": "none"
+    },
+    {
+      "symbol": "Made.label",
+      "report": "none"
+    },
+    {
+      "symbol": "Kept.unread",
+      "report": "DS1003",
+      "confidence": "possible",
+      "reachability_class": "possible"
+    }
+  ]
+}

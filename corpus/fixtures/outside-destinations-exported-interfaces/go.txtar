@@ -59,7 +59,7 @@ func (service) Name() string { return "service" }
 type impl struct{}
 
 // Server returns the value the host serves.
-func (impl) Server() (any, error) { return &service{}, nil }
+func (impl) Server() (any, error) { return &service{Addr: "a"}, nil }
 
 func main() {
 	plugin.Register(&record{})

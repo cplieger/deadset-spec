@@ -1,0 +1,61 @@
+{
+  "name": "serialized-member-written-by-copy-or-untyped-read",
+  "description": "A data member of a type whose values the program serializes is written where a value typed `any` or `unknown`, a `JSON.parse` result among them, is read as the type by the position it is written in: returned from a function declaring the type as its result, assigned to a variable of the type, or returned from a callback to a call whose result is read as an array of the type. It is written as well where an object literal's spread or an `Object.assign` call copies it from a value whose type has a member of that name. A `satisfies` check reads a value as no type, so a member that only a checked `JSON.parse` result could carry, and that nothing else writes, is reported, and so is a member no copy carries.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Saved.name",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    },
+    {
+      "symbol": "Line.id",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    },
+    {
+      "symbol": "Listed.tag",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    },
+    {
+      "symbol": "Spread.kind",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    },
+    {
+      "symbol": "Assigned.label",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    },
+    {
+      "symbol": "Assigned.note",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Checked.ghost",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

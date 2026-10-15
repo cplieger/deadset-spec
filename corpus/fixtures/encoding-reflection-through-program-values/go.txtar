@@ -128,7 +128,7 @@ func viaMethodValue() {
 
 func main() {
 	viaMethodValue()
-	println(reflect.TypeFor[shadow]().NumField())
+	println(reflect.TypeFor[shadow]().NumField(), shadow{A: "a"}.A != "")
 	dispatch("answer")
 	r, err := decode[request](nil)
 	println(r.K, err)

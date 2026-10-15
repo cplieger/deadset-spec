@@ -42,7 +42,7 @@ type stopped struct {
 func newEvent(kind string, payload any) event { return event{Kind: kind, Payload: payload} }
 
 func main() {
-	data, err := json.Marshal(newEvent("started", started{}))
+	data, err := json.Marshal(newEvent("started", started{ID: "s"}))
 	if err != nil {
 		panic(err)
 	}

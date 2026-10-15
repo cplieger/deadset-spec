@@ -24,6 +24,7 @@ The contract is versioned as one unit, apart from every analyzer's version and f
 - The symbol references, `contract/grammar/symbol-ref.md`. A reference names one declaration in one language and carries no line number, so it stays valid across edits above the declaration.
 - The text-line format, `contract/grammar/text-line.md`. Each line starts with the position as `path:line:col`, so one search expression matches the output of every analyzer.
 - The SARIF mapping, `contract/grammar/sarif.md`, with vectors under `vectors/sarif/`.
+- The GitHub annotations, `contract/grammar/annotations.md`. It states the workflow command each finding, stale suppression, type-error skip and note is written as, by its severity alone.
 - The template rendering, `contract/grammar/template.md`. It states the template language and the data model a user's template renders a report through, with vectors under `vectors/template/`.
 - The merge of several reports into one, `contract/grammar/merge.md`, stated as an algorithm with a deterministic order. The vectors under `vectors/merge/` test a merge implementation against declared data rather than against another implementation. [Cross-language edges](edges.md) explains the part of the merge that pairs symbols across languages.
 

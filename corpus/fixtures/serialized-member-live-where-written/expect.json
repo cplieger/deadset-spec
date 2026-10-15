@@ -1,0 +1,54 @@
+{
+  "name": "serialized-member-live-where-written",
+  "description": "A data member of a type whose values the program serializes is held live where production code writes it, by an object literal, an assignment or a class property's initializer, because the receiver reads what the value carries; a member nobody writes or reads is reported though its type is serialized.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Target.uri",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    },
+    {
+      "symbol": "Target.method",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    },
+    {
+      "symbol": "Target.body",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Stamp.at",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    },
+    {
+      "symbol": "Stamp.set",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    },
+    {
+      "symbol": "Stamp.unset",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "class-member",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

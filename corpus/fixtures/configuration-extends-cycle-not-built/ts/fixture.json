@@ -1,7 +1,6 @@
 {
   "configurations_not_built": [
-    "cycle/tsconfig.json",
-    "user/tsconfig.json"
+    "cycle/tsconfig.json"
   ],
   "symbols": {
     "orphan": {
@@ -13,6 +12,10 @@
       "line": 1
     },
     "used": {
+      "file": "target/user/use.ts",
+      "line": 3
+    },
+    "UseFile": {
       "file": "target/user/use.ts",
       "line": 1
     }

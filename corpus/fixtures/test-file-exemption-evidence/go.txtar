@@ -44,7 +44,9 @@ import (
 )
 
 func TestSampleEncodes(t *testing.T) {
-	if _, err := json.Marshal(newSample()); err != nil {
+	s := newSample()
+	s.Name = "t"
+	if _, err := json.Marshal(s); err != nil {
 		t.Fatal(err)
 	}
 }
