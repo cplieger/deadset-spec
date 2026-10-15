@@ -1,0 +1,31 @@
+{
+  "name": "go-flags-command-fields",
+  "description": "A field a go-flags command tag marks is a subcommand the parser fills and runs: the parser sets the field and calls its Execute method, so neither the field nor the method is reported, while a field of the options nothing reads is.",
+  "pending": "go-flags command fields as roots of the parser: the Go analyzer reports a subcommand field at possible.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "expect": [
+    {
+      "symbol": "options.Serve",
+      "report": "none"
+    },
+    {
+      "symbol": "serveCommand",
+      "report": "none"
+    },
+    {
+      "symbol": "serveCommand.Execute",
+      "report": "none"
+    },
+    {
+      "report": "DS1003",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "field",
+      "symbol": "options.Spare"
+    }
+  ]
+}

@@ -8,7 +8,7 @@
   "expect": [
     {
       "symbol": "AwaitedNumber",
-      "report": "DS1803",
+      "report": "DS1403",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "result",
@@ -24,7 +24,7 @@
     },
     {
       "symbol": "DroppedPromise",
-      "report": "DS1803",
+      "report": "DS1403",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "result",

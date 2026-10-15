@@ -1,0 +1,43 @@
+The Go rendering: a type an XML encoder alone reaches.
+
+-- fixture.json --
+{
+  "symbols": {
+    "item.Spare": {
+      "file": "target/main.go",
+      "line": 12
+    },
+    "item.Title": {
+      "file": "target/main.go",
+      "line": 11
+    },
+    "item.XMLName": {
+      "file": "target/main.go",
+      "line": 10
+    }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target encodes one item.
+package main
+
+import (
+	"encoding/xml"
+	"os"
+)
+
+type item struct {
+	XMLName xml.Name `xml:"item"`
+	Title   string   `xml:"title"`
+	Spare   string   `xml:"-"`
+}
+
+func main() {
+	if err := xml.NewEncoder(os.Stdout).Encode(item{Title: "t"}); err != nil {
+		panic(err)
+	}
+}

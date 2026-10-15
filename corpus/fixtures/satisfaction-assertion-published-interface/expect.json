@@ -23,28 +23,28 @@
     },
     {
       "symbol": "UnexportedAssertion",
-      "report": "DS1204",
+      "report": "DS1203",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "satisfaction-assertion"
     },
     {
       "symbol": "InternalAssertion",
-      "report": "DS1204",
+      "report": "DS1203",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "satisfaction-assertion"
     },
     {
       "symbol": "UnexportedInterfaceMethod",
-      "report": "DS1203",
+      "report": "DS1202",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "interface-method"
     },
     {
       "symbol": "PublishedInterface",
-      "report": "DS1101",
+      "report": "DS1501",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "interface",
@@ -54,14 +54,14 @@
     },
     {
       "symbol": "PublishedInterfaceMethod",
-      "report": "DS1203",
+      "report": "DS1202",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "interface-method"
     },
     {
       "symbol": "InternalInterface",
-      "report": "DS1101",
+      "report": "DS1501",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "interface",
@@ -71,7 +71,7 @@
     },
     {
       "symbol": "InternalInterfaceMethod",
-      "report": "DS1203",
+      "report": "DS1202",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "interface-method"

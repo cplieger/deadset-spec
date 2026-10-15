@@ -6,7 +6,7 @@ function dead(): number {
   return helper(1);
 }
 
-// deadset:ignore DS1801 -- Kept for a parameter that is read.
+// deadset:ignore DS1401 -- Kept for a parameter that is read.
 function helper(v: number): number {
   return v + 1;
 }

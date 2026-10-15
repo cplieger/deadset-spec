@@ -19,7 +19,7 @@
       "ts://@example/app/src/generated/*.ts#*"
     ]
   },
-  "severity": { "DS1101": "allow", "DS1201": "warn" },
+  "severity": { "DS1201": "warn", "DS1501": "allow" },
   "exemptions": { "disabled": [] },
   "reporters": {
     "formats": ["text"],
@@ -58,8 +58,8 @@
     "analysis.template_delimiters": "default",
     "consumers.complete": "default",
     "roots.patterns": "repository: repository.json",
-    "severity.DS1101": "repository: repository.json",
     "severity.DS1201": "central: central.json",
+    "severity.DS1501": "repository: repository.json",
     "exemptions.disabled": "default",
     "reporters.formats": "default",
     "reporters.sort": "default",

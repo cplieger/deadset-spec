@@ -8,7 +8,7 @@
   "expect": [
     {
       "symbol": "Free",
-      "report": "DS1801",
+      "report": "DS1401",
       "confidence": "probable",
       "reachability_class": "probable",
       "symbol_kind": "parameter",

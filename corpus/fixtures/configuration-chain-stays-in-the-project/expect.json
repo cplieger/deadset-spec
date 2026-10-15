@@ -4,9 +4,9 @@
   "languages": ["ts"],
   "target_kind": "application",
   "expect": [
-    { "symbol": "ModulePlugin", "report": "DS1601", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "dependency", "details": { "dependency_class": "dev-dependency" } },
+    { "symbol": "ModulePlugin", "report": "DS1701", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "dependency", "details": { "dependency_class": "dev-dependency" } },
     { "symbol": "Preset", "report": "none" },
     { "symbol": "ProjectPlugin", "report": "none" },
-    { "symbol": "SharedPlugin", "report": "DS1601", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "dependency", "details": { "dependency_class": "dev-dependency" } }
+    { "symbol": "SharedPlugin", "report": "DS1701", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "dependency", "details": { "dependency_class": "dev-dependency" } }
   ]
 }

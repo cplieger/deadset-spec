@@ -7,7 +7,7 @@
   ],
   "target_kind": "application",
   "severity": {
-    "DS1601": "allow"
+    "DS1701": "allow"
   },
   "suppressions_in_effect": 0,
   "expect": [
@@ -25,7 +25,7 @@
     },
     {
       "symbol": "WrongCodeEntry",
-      "report": "DS1703",
+      "report": "DS9003",
       "confidence": "certain",
       "symbol_kind": "suppression",
       "details": {
@@ -34,7 +34,7 @@
     },
     {
       "symbol": "AbsentRowEntry",
-      "report": "DS1703",
+      "report": "DS9003",
       "confidence": "certain",
       "symbol_kind": "suppression",
       "details": {

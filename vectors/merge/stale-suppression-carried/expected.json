@@ -20,7 +20,29 @@
     {
       "name": "deadset-go",
       "version": "1.0.0",
-      "digest": "sha256:ca44c6f01c073df92ee422025a7309547f821efd8d944692469f0aa8f2e92810"
+      "digest": "sha256:ca44c6f01c073df92ee422025a7309547f821efd8d944692469f0aa8f2e92810",
+      "languages": [
+        "go"
+      ],
+      "totals": {
+        "findings": 0,
+        "by_severity": {
+          "allow": 0,
+          "warn": 0,
+          "deny": 0
+        },
+        "deletable_lines": 0,
+        "suppressions_in_effect": 0,
+        "reasons_recorded": 1,
+        "stale_suppressions": 1,
+        "pending": 0,
+        "omitted": 0,
+        "withheld": {
+          "certain": 0,
+          "probable": 0,
+          "possible": 0
+        }
+      }
     }
   ],
   "target": {
@@ -46,7 +68,7 @@
   "edge_evaluations": [],
   "stale_suppressions": [
     {
-      "code": "DS1703",
+      "code": "DS9003",
       "mechanism": "ignore",
       "entry": {
         "code": "DS1001",

@@ -7,7 +7,7 @@
     { "symbol": "rttFailed", "report": "none" },
     {
       "symbol": "rttUntested",
-      "report": "DS1302",
+      "report": "DS1005",
       "confidence": "certain",
       "reachability_class": "certain",
       "liveness_relation": "reference-counting"

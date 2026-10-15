@@ -78,7 +78,7 @@
   "edge_evaluations": [],
   "stale_suppressions": [
     {
-      "code": "DS1703",
+      "code": "DS9003",
       "mechanism": "ignore",
       "entry": {
         "code": "DS1002",

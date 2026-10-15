@@ -1,0 +1,335 @@
+{
+  "description": "Human reference text per issue kind, for the generated family pages under docs/kinds/: why a finding of the kind is dead code in plain words, how to fix it, and one small before and after example in one of the kind's languages. The normative rule is the kind's row in contract/kinds.json; nothing here changes what an analyzer reports.",
+  "kinds": [
+    {
+      "code": "DS1001",
+      "why": "An exported declaration that nothing in the target and no loaded consumer refers to can go: no caller the analysis can see would notice.",
+      "fix": "Delete the declaration. In a library, check first that no program outside the run imports it, or declare the consumers that do.",
+      "example": {
+        "language": "go",
+        "before": "package store\n\nfunc Open(path string) (*DB, error) { ... }\n\n// Nothing calls Purge.\nfunc Purge(db *DB) error { ... }",
+        "after": "package store\n\nfunc Open(path string) (*DB, error) { ... }"
+      }
+    },
+    {
+      "code": "DS1002",
+      "why": "An unexported declaration only its own package or file can name, and nothing there names it.",
+      "fix": "Delete the declaration.",
+      "example": {
+        "language": "ts",
+        "before": "const retries = 3;\nfunction backoff(n: number): number { return 2 ** n; }\n\nexport function fetchAll(): void { /* backoff is never called */ }",
+        "after": "export function fetchAll(): void {}"
+      }
+    },
+    {
+      "code": "DS1003",
+      "why": "A field or member that nothing reads or writes after its declaration: the type is used, the member is not.",
+      "fix": "Delete the member and the writes of its initializer.",
+      "example": {
+        "language": "go",
+        "before": "type Job struct {\n\tID    string\n\tOwner string // never read or written\n}",
+        "after": "type Job struct {\n\tID string\n}"
+      }
+    },
+    {
+      "code": "DS1004",
+      "why": "An import binding nothing in its file reads: the import only names a value the file never uses.",
+      "fix": "Delete the binding, or the import declaration when it binds nothing else.",
+      "example": {
+        "language": "ts",
+        "before": "import { parse, stringify } from \"./codec.ts\";\n\nexport const read = (text: string) => parse(text);",
+        "after": "import { parse } from \"./codec.ts\";\n\nexport const read = (text: string) => parse(text);"
+      }
+    },
+    {
+      "code": "DS1005",
+      "why": "A member of an enumerated type that nothing names: the set of values is wider than any use.",
+      "fix": "Delete the member, or give a later member its present value first where the values are positional.",
+      "example": {
+        "language": "ts",
+        "before": "enum Level {\n  Debug,\n  Info,\n  Trace, // never named\n}",
+        "after": "enum Level {\n  Debug,\n  Info,\n}"
+      }
+    },
+    {
+      "code": "DS1006",
+      "why": "A type parameter that no parameter, result or body of its declaration uses.",
+      "fix": "Delete the type parameter and the type arguments callers pass for it.",
+      "example": {
+        "language": "go",
+        "before": "func Count[T any, K comparable](items []T) int { return len(items) }",
+        "after": "func Count[T any](items []T) int { return len(items) }"
+      }
+    },
+    {
+      "code": "DS1101",
+      "why": "An exported declaration in a package or file nothing outside can import, so its export marks no real surface and nothing inside uses it.",
+      "fix": "Delete the declaration.",
+      "example": {
+        "language": "go",
+        "before": "// internal/cache, which only this module can import\npackage cache\n\nfunc Warm() { ... } // nothing in the module calls it",
+        "after": "package cache"
+      }
+    },
+    {
+      "code": "DS1102",
+      "why": "A declaration only tests use: production code never refers to it, so it exists for its tests alone.",
+      "fix": "Delete the declaration and the tests of it, or move it into the test files when the tests need it as a helper.",
+      "example": {
+        "language": "go",
+        "before": "func normalize(s string) string { ... } // only normalize_test.go calls it",
+        "after": "// normalize and its test are deleted, or the helper moves to a _test.go file."
+      }
+    },
+    {
+      "code": "DS1103",
+      "why": "A test whose every subject is dead: it keeps testing code nothing in production uses.",
+      "fix": "Delete the test with the code it tests.",
+      "example": {
+        "language": "ts",
+        "before": "// legacy.ts: nothing imports formatLegacy\nexport function formatLegacy(n: number): string { return n.toFixed(2); }\n\n// legacy.test.ts\ntest(\"formats\", () => expect(formatLegacy(1)).toBe(\"1.00\"));",
+        "after": "// legacy.ts and legacy.test.ts are both deleted."
+      }
+    },
+    {
+      "code": "DS1104",
+      "why": "A declaration marked deprecated that no production code uses any more.",
+      "fix": "Delete the declaration: its replacement already carries every use.",
+      "example": {
+        "language": "go",
+        "before": "// Deprecated: use OpenContext.\nfunc Open(path string) (*DB, error) { ... }",
+        "after": "// Open is deleted; OpenContext stays."
+      }
+    },
+    {
+      "code": "DS1201",
+      "why": "An interface no value is ever used through: nothing converts to it, asserts it or calls a method through it.",
+      "fix": "Delete the interface.",
+      "example": {
+        "language": "go",
+        "before": "type Closer interface{ Close() error } // nothing converts a value to Closer",
+        "after": "// Closer is deleted."
+      }
+    },
+    {
+      "code": "DS1202",
+      "why": "An interface method nothing calls through the interface: implementations carry it for no caller.",
+      "fix": "Delete the method from the interface, then from each implementation that has no other use for it.",
+      "example": {
+        "language": "ts",
+        "before": "interface Store {\n  get(key: string): string;\n  flush(): void; // no caller calls store.flush()\n}",
+        "after": "interface Store {\n  get(key: string): string;\n}"
+      }
+    },
+    {
+      "code": "DS1203",
+      "why": "A compile-time assertion that a type satisfies an interface, where nothing else needs the type to satisfy it.",
+      "fix": "Delete the assertion, or keep the interface use it was guarding.",
+      "example": {
+        "language": "go",
+        "before": "var _ io.Closer = (*conn)(nil) // nothing uses conn as an io.Closer",
+        "after": "// The assertion is deleted."
+      }
+    },
+    {
+      "code": "DS1301",
+      "why": "A declaration the program writes and never reads: every write stores a value nobody looks at.",
+      "fix": "Delete the declaration and every write to it.",
+      "example": {
+        "language": "go",
+        "before": "type Stats struct{ hits int }\n\nfunc (s *Stats) Hit() { s.hits++ } // hits is never read",
+        "after": "type Stats struct{}\n\nfunc (s *Stats) Hit() {}"
+      }
+    },
+    {
+      "code": "DS1401",
+      "why": "A parameter the function body never reads, where the function's signature is free to change.",
+      "fix": "Delete the parameter and the argument every caller passes, or rename it to _ where the signature is fixed by a caller you keep.",
+      "example": {
+        "language": "go",
+        "before": "func render(w io.Writer, theme string) { fmt.Fprint(w, \"ok\") }",
+        "after": "func render(w io.Writer) { fmt.Fprint(w, \"ok\") }"
+      }
+    },
+    {
+      "code": "DS1402",
+      "why": "A method receiver the body never uses.",
+      "fix": "Drop the receiver's name, or make the method a function.",
+      "example": {
+        "language": "go",
+        "before": "func (c *Client) version() string { return \"1.0\" }",
+        "after": "func (*Client) version() string { return \"1.0\" }"
+      }
+    },
+    {
+      "code": "DS1403",
+      "why": "A result every caller ignores, or one the function always returns with the same meaning nobody reads.",
+      "fix": "Delete the result and the value each return statement gives it.",
+      "example": {
+        "language": "ts",
+        "before": "function save(doc: Doc): boolean { write(doc); return true; } // no caller reads the boolean",
+        "after": "function save(doc: Doc): void { write(doc); }"
+      }
+    },
+    {
+      "code": "DS1404",
+      "why": "A store to a local variable that no later read sees: the value is overwritten or the variable goes out of scope first.",
+      "fix": "Delete the store, or the variable when every store to it is dead.",
+      "example": {
+        "language": "go",
+        "before": "n := len(items)\nn = 0 // the first store is never read\nreturn n",
+        "after": "n := 0\nreturn n"
+      }
+    },
+    {
+      "code": "DS1405",
+      "why": "A statement no execution reaches, after a return, a panic or an unconditional jump.",
+      "fix": "Delete the statement.",
+      "example": {
+        "language": "ts",
+        "before": "function stop(): never {\n  throw new Error(\"stopped\");\n  cleanup(); // never runs\n}",
+        "after": "function stop(): never {\n  throw new Error(\"stopped\");\n}"
+      }
+    },
+    {
+      "code": "DS1406",
+      "why": "A case of a switch no value can select, because an earlier case already takes every value it names.",
+      "fix": "Delete the case.",
+      "example": {
+        "language": "go",
+        "before": "switch {\ncase n > 0:\n\treturn \"positive\"\ncase n > 10: // n > 0 already took it\n\treturn \"large\"\n}",
+        "after": "switch {\ncase n > 0:\n\treturn \"positive\"\n}"
+      }
+    },
+    {
+      "code": "DS1501",
+      "why": "An exported declaration only its own package uses: the export widens the surface for no caller.",
+      "fix": "Unexport the declaration.",
+      "example": {
+        "language": "go",
+        "before": "func Parse(s string) Config { ... } // only this package calls Parse",
+        "after": "func parse(s string) Config { ... }"
+      }
+    },
+    {
+      "code": "DS1502",
+      "why": "A declaration more visible than its uses need, such as an exported method of an unexported type nothing outside reaches.",
+      "fix": "Narrow its visibility to what its uses require.",
+      "example": {
+        "language": "go",
+        "before": "type parser struct{}\n\nfunc (p *parser) Next() token { ... } // only this package calls it",
+        "after": "func (p *parser) next() token { ... }"
+      }
+    },
+    {
+      "code": "DS1503",
+      "why": "An `export` keyword on a declaration no other module imports, in a file whose exports nothing outside reads.",
+      "fix": "Drop the `export` keyword.",
+      "example": {
+        "language": "ts",
+        "before": "export function helper(): void {} // only this file calls helper",
+        "after": "function helper(): void {}"
+      }
+    },
+    {
+      "code": "DS1601",
+      "why": "A source file no configuration of the run builds: its build constraints exclude it everywhere.",
+      "fix": "Delete the file, or add the configuration that builds it to the build matrix.",
+      "example": {
+        "language": "go",
+        "before": "//go:build plan9\n\npackage fs // no configuration of the run targets plan9",
+        "after": "// The file is deleted, or plan9 joins analysis.configurations."
+      }
+    },
+    {
+      "code": "DS1602",
+      "why": "A source file nothing imports and no root names: no entry point loads it.",
+      "fix": "Delete the file, or root it if a tool loads it by name.",
+      "example": {
+        "language": "ts",
+        "before": "// src/old-banner.ts: no import names it, no entry or convention roots it\nexport const banner = \"v1\";",
+        "after": "// src/old-banner.ts is deleted."
+      }
+    },
+    {
+      "code": "DS1701",
+      "why": "A declared dependency nothing in the program imports or runs.",
+      "fix": "Remove it from the manifest or the module file.",
+      "example": {
+        "language": "ts",
+        "before": "\"dependencies\": {\n  \"left-pad\": \"1.3.0\",\n  \"zod\": \"4.1.0\"\n}",
+        "after": "\"dependencies\": {\n  \"zod\": \"4.1.0\"\n}"
+      }
+    },
+    {
+      "code": "DS1702",
+      "why": "A module-file directive that changes nothing: a replacement or an exclusion no requirement it names reaches.",
+      "fix": "Delete the directive.",
+      "example": {
+        "language": "go",
+        "before": "replace example.com/old => ../old // no requirement names example.com/old",
+        "after": "// The replace directive is deleted."
+      }
+    },
+    {
+      "code": "DS9001",
+      "why": "A suppression that gives no reason: nobody can later tell whether it still holds.",
+      "fix": "Add the reason after the code, or delete the suppression.",
+      "example": {
+        "language": "go",
+        "before": "//deadset:ignore DS1002\nfunc legacy() {}",
+        "after": "//deadset:ignore DS1002 -- kept for the plugin loader, which calls it by name\nfunc legacy() {}"
+      }
+    },
+    {
+      "code": "DS9002",
+      "why": "An ignore-file entry that names no path, so it can bind more than the one site it was written for.",
+      "fix": "Give the entry the path of the file it is about.",
+      "example": {
+        "language": "go",
+        "before": "{\"code\": \"DS1001\", \"symbol\": \"go://example.com/app#Run\", \"reason\": \"called by the scheduler\"}",
+        "after": "{\"code\": \"DS1001\", \"symbol\": \"go://example.com/app#Run\", \"path\": \"run.go\", \"reason\": \"called by the scheduler\"}"
+      }
+    },
+    {
+      "code": "DS9003",
+      "why": "A suppression that no longer withholds any finding: the code it names would not be reported there any more.",
+      "fix": "Delete the suppression.",
+      "example": {
+        "language": "ts",
+        "before": "// deadset:ignore DS1002 -- used by the old router\nfunction route(): void {} // route is now called, so nothing is reported here",
+        "after": "function route(): void {}"
+      }
+    },
+    {
+      "code": "DS9004",
+      "why": "A configured root that names no declaration: the declaration was renamed or deleted.",
+      "fix": "Correct the root to the declaration's present reference, or delete it.",
+      "example": {
+        "language": "go",
+        "before": "\"roots\": { \"patterns\": [\"go://example.com/app#OldHandler\"] }",
+        "after": "\"roots\": { \"patterns\": [\"go://example.com/app#Handler\"] }"
+      }
+    },
+    {
+      "code": "DS9005",
+      "why": "A declared cross-language edge whose side names nothing any analyzer found.",
+      "fix": "Correct the edge to the present references, or delete it.",
+      "example": {
+        "language": "go",
+        "before": "{\"id\": \"render\", \"because\": \"generated\", \"provides\": \"go://example.com/app#RenderOld\", \"used_by\": \"ts://@example/web/src/render.ts#render\"}",
+        "after": "{\"id\": \"render\", \"because\": \"generated\", \"provides\": \"go://example.com/app#Render\", \"used_by\": \"ts://@example/web/src/render.ts#render\"}"
+      }
+    },
+    {
+      "code": "DS9006",
+      "why": "A configuration entry that names a declaration the analysis does not hold.",
+      "fix": "Correct the entry to the declaration's present reference, or delete it.",
+      "example": {
+        "language": "ts",
+        "before": "\"ts\": { \"serializers\": [{ \"module\": \"@example/codec\", \"name\": \"encodeOld\" }] }",
+        "after": "\"ts\": { \"serializers\": [{ \"module\": \"@example/codec\", \"name\": \"encode\" }] }"
+      }
+    }
+  ]
+}

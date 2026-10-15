@@ -1,0 +1,32 @@
+{
+  "name": "encoding-reflection-xml-name-encoded",
+  "description": "An XML encoder reads the XMLName field for the element's name, as the decoder does: a type only an XML encoder reaches keeps its XMLName field, and a field nothing writes is reported.",
+  "pending": "encoding-reflection retains XMLName for an XML encoder as well: the Go analyzer retains it for a decoder only.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "item.XMLName",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "item.Title",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field",
+      "symbol": "item.Spare"
+    }
+  ]
+}

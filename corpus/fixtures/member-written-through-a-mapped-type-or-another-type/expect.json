@@ -1,0 +1,25 @@
+{
+  "name": "member-written-through-a-mapped-type-or-another-type",
+  "description": "A member is written where a value of a mapped type over its type, or an object of another type Object.assign copies, stores into it: both members of the sent type are written, so neither is reported, while a member nothing writes is.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Rollout.name",
+      "report": "none"
+    },
+    {
+      "symbol": "Rollout.build",
+      "report": "none"
+    },
+    {
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member",
+      "symbol": "Rollout.notes"
+    }
+  ]
+}

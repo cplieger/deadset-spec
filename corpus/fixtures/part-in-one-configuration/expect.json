@@ -1,0 +1,27 @@
+{
+  "name": "part-in-one-configuration",
+  "description": "A part of a declaration is reported only where every configuration that compiles its file reports it: a statement after a call one project declares as never returning, and the other as returning, is no finding, while a statement after a return is reported in both.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "AfterStop",
+      "report": "none"
+    },
+    {
+      "report": "DS1405",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "statement",
+      "symbol": "AfterReturn",
+      "details": {
+        "overlap": [
+          "tsc allowUnreachableCode",
+          "eslint no-unreachable"
+        ]
+      }
+    }
+  ]
+}

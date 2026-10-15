@@ -9,7 +9,7 @@
   "expect": [
     {
       "symbol": "GhostLib",
-      "report": "DS1601",
+      "report": "DS1701",
       "confidence": "possible",
       "reachability_class": "possible",
       "symbol_kind": "dependency",

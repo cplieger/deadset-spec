@@ -1,0 +1,16 @@
+{
+  "symbols": {
+    "Local.unused": {
+      "file": "target/main.ts",
+      "line": 8
+    },
+    "Settings.theme": {
+      "file": "target/main.ts",
+      "line": 2
+    },
+    "Settings.width": {
+      "file": "target/main.ts",
+      "line": 3
+    }
+  }
+}

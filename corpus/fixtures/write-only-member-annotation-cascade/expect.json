@@ -1,0 +1,27 @@
+{
+  "name": "write-only-member-annotation-cascade",
+  "description": "Deleting a write-only member and its writes deletes every declaration whose only uses they hold: a type only the member's annotation and its writes name is no finding of its own, while the member is reported as write-only, and so is a member of that type only the writes store.",
+  "languages": [
+    "go",
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "clock.last",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    },
+    {
+      "symbol": "stamp",
+      "report": "none"
+    },
+    {
+      "symbol": "stamp.at",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    }
+  ]
+}

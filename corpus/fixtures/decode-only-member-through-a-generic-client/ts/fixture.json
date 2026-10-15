@@ -1,0 +1,12 @@
+{
+  "symbols": {
+    "Job.id": {
+      "file": "target/main.ts",
+      "line": 2
+    },
+    "Job.state": {
+      "file": "target/main.ts",
+      "line": 3
+    }
+  }
+}

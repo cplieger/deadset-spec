@@ -1,0 +1,37 @@
+The Go rendering: a function holding a type error, and one a string literal
+spells.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Broken": {
+      "file": "target/main.go",
+      "line": 5
+    },
+    "broken": {
+      "file": "target/main.go",
+      "line": 4
+    },
+    "spelled": {
+      "file": "target/main.go",
+      "line": 8
+    }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target holds a type error in a function nothing calls.
+package main
+
+func broken() int {
+	return "text"
+}
+
+func spelled() {}
+
+func main() {
+	println("spelled")
+}

@@ -1,0 +1,42 @@
+The Go rendering: an html/template whose only attribute value holds text shaped
+like an event handler.
+
+-- fixture.json --
+{
+  "symbols": {
+    "page.Title": {
+      "file": "target/main.go",
+      "line": 10
+    },
+    "page.Unused": {
+      "file": "target/main.go",
+      "line": 11
+    }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target renders one page.
+package main
+
+import (
+	"html/template"
+	"os"
+)
+
+type page struct {
+	Title  string
+	Unused string
+}
+
+const body = `<p title="status online = yes">{{.Title}}</p>`
+
+func main() {
+	t := template.Must(template.New("page").Parse(body))
+	if err := t.Execute(os.Stdout, page{Title: "t", Unused: "u"}); err != nil {
+		panic(err)
+	}
+}

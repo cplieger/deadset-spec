@@ -1,0 +1,30 @@
+{
+  "name": "directive-in-one-configuration",
+  "description": "An inline directive binds in every configuration of the run: a directive written in a file only one configuration of the matrix compiles suppresses the finding about the function below it, which is dead in that configuration, so the function is not reported and the directive is in effect.",
+  "pending": "matrix.4 with suppression.md: a directive binds in every configuration; the Go analyzer reads the directives of the first configuration only.",
+  "rules": [
+    "matrix.4"
+  ],
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "suppressions_in_effect": 1,
+  "expect": [
+    {
+      "symbol": "probeArm64",
+      "report": "none"
+    },
+    {
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "symbol": "unusedEverywhere",
+      "configurations": [
+        "linux-amd64",
+        "linux-arm64"
+      ]
+    }
+  ]
+}

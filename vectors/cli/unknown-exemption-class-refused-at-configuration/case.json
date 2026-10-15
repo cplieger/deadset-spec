@@ -1,0 +1,23 @@
+{
+  "description": "exemptions.disabled admits only the classes of contract/exemptions.json, and the check is a configuration check: print-config refuses a class the vocabulary does not hold with the usage code 2, as analyze does.",
+  "pending": "the class vocabulary as a configuration check: every product resolves print-config with an unknown class and refuses it only when the analysis runs.",
+  "products": [
+    "deadset",
+    "deadset-go",
+    "deadset-ts"
+  ],
+  "rename": {
+    "go.mod.txt": "go.mod",
+    "main.go.txt": "main.go"
+  },
+  "argv": [
+    "print-config",
+    "--target=@TARGET@"
+  ],
+  "expect": {
+    "exit": 2,
+    "stderr_contains": [
+      "no-such-class"
+    ]
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "name": "template-attribute-value-like-an-event-handler",
+  "description": "An html/template set reads a value whole only when a template holds an event-handler attribute: text inside another attribute's value that looks like one is no attribute, so the engine reads only the fields the templates name, and a field none names is reported.",
+  "pending": "the start-tag rule of encoding-reflection: the Go analyzer finds an event-handler attribute by a regular expression that matches attribute values.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "page.Title",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field",
+      "symbol": "page.Unused"
+    }
+  ]
+}

@@ -35,7 +35,7 @@ func main() {}
   "description": "One row naming init, which binds both init functions of main.go.",
   "baseline": [
     {
-      "code": "DS1805",
+      "code": "DS1405",
       "symbol": "go://example.com/app#init",
       "path": "main.go",
       "reason": "recorded by deadset-go 1.0.0"

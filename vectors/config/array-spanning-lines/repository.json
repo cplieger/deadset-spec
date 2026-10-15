@@ -7,5 +7,5 @@
       "ts://@example/app/src/generated/*.ts#*"
     ]
   },
-  "severity": { "DS1101": "allow" }
+  "severity": { "DS1501": "allow" }
 }

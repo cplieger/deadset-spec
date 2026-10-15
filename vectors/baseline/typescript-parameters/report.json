@@ -37,7 +37,7 @@
   },
   "findings": [
     {
-      "code": "DS1801",
+      "code": "DS1401",
       "kind": "unused-parameter",
       "language": "ts",
       "position": {
@@ -78,7 +78,7 @@
       }
     },
     {
-      "code": "DS1801",
+      "code": "DS1401",
       "kind": "unused-parameter",
       "language": "ts",
       "position": {

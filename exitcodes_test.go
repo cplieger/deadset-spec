@@ -13,8 +13,9 @@ import (
 )
 
 const (
-	exitCodesPath    = "contract/exit-codes.json"
-	analysisPagePath = "contract/grammar/analysis.md"
+	exitCodesPath         = "contract/exit-codes.json"
+	setupFailuresPagePath = "contract/grammar/analysis/setup-failures.md"
+	confidencePagePath    = "contract/grammar/analysis/confidence.md"
 )
 
 type exitCode struct {
@@ -26,6 +27,7 @@ type exitCode struct {
 type exitCodeTable struct {
 	Description      string         `json:"description"`
 	MemoryExhaustion string         `json:"memory_exhaustion"`
+	SetupPrefix      string         `json:"setup_failure_prefix"`
 	ExitCodes        []exitCode     `json:"exit_codes"`
 	SetupFailures    []setupFailure `json:"setup_failures"`
 }
@@ -33,9 +35,10 @@ type exitCodeTable struct {
 // setupFailure is one class of the setup failures code 3 names: what is missing and the fix the
 // line on standard error states.
 type setupFailure struct {
-	Class   string `json:"class"`
-	Meaning string `json:"meaning"`
-	Fix     string `json:"fix"`
+	Class     string   `json:"class"`
+	Meaning   string   `json:"meaning"`
+	Fix       string   `json:"fix"`
+	Languages []string `json:"languages"`
 }
 
 // mustLoadExitCodes refuses unknown fields, so a key the table gains fails
@@ -139,13 +142,13 @@ func TestExitCodesStateTheMemoryExhaustionLine(t *testing.T) {
 }
 
 // TestExitCodesSetupFailureClassesAreTheOnesTheAnalysisPageStates holds the two documents to one
-// set: every class the table carries is stated on grammar/analysis.md, and the page states none the
+// set: every class the table carries is stated on grammar/analysis/setup-failures.md, and the page states none the
 // table lacks.
 func TestExitCodesSetupFailureClassesAreTheOnesTheAnalysisPageStates(t *testing.T) {
 	table := mustLoadExitCodes(t)
-	page, err := fs.ReadFile(spec.Contract, analysisPagePath)
+	page, err := fs.ReadFile(spec.Contract, setupFailuresPagePath)
 	if err != nil {
-		t.Fatalf("Setup: fs.ReadFile(Contract, %q): %v", analysisPagePath, err)
+		t.Fatalf("Setup: fs.ReadFile(Contract, %q): %v", setupFailuresPagePath, err)
 	}
 	stated := map[string]bool{}
 	for _, m := range regexp.MustCompile("`setup failure: ([a-z0-9-]+)`").FindAllSubmatch(page, -1) {
@@ -153,11 +156,20 @@ func TestExitCodesSetupFailureClassesAreTheOnesTheAnalysisPageStates(t *testing.
 	}
 	for _, row := range table.SetupFailures {
 		if !stated[row.Class] {
-			t.Errorf("%s states no `setup failure: %s`, want every class of %s", analysisPagePath, row.Class, exitCodesPath)
+			t.Errorf("%s states no `setup failure: %s`, want every class of %s", setupFailuresPagePath, row.Class, exitCodesPath)
 		}
 		delete(stated, row.Class)
 	}
 	for class := range stated {
-		t.Errorf("%s states `setup failure: %s`, a class %s does not carry", analysisPagePath, class, exitCodesPath)
+		t.Errorf("%s states `setup failure: %s`, a class %s does not carry", setupFailuresPagePath, class, exitCodesPath)
+	}
+}
+
+// TestExitCodesStateTheSetupFailurePrefix pins the prefix the products read from the data to the
+// line the description states.
+func TestExitCodesStateTheSetupFailurePrefix(t *testing.T) {
+	table := mustLoadExitCodes(t)
+	if table.SetupPrefix == "" || !strings.Contains(table.Description, `starts with "`+table.SetupPrefix+`"`) {
+		t.Errorf("%s setup_failure_prefix = %q, want the prefix the description quotes", exitCodesPath, table.SetupPrefix)
 	}
 }

@@ -1,0 +1,25 @@
+The Go rendering: a function a string literal spells, suppressed by a directive.
+
+-- fixture.json --
+{
+  "symbols": {
+    "lookedUp": {
+      "file": "target/main.go",
+      "line": 5
+    }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target prints the name of a function it never calls.
+package main
+
+//deadset:ignore DS1002 -- a plugin loader finds it by name
+func lookedUp() {}
+
+func main() {
+	println("lookedUp")
+}

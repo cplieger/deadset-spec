@@ -8,7 +8,7 @@
   "expect": [
     {
       "symbol": "UnusedRuntime",
-      "report": "DS1601",
+      "report": "DS1701",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "dependency",
@@ -22,7 +22,7 @@
     },
     {
       "symbol": "Command",
-      "report": "DS1601",
+      "report": "DS1701",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "dependency",
@@ -52,7 +52,7 @@
     },
     {
       "symbol": "OrphanPeer",
-      "report": "DS1601",
+      "report": "DS1701",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "dependency",
@@ -62,7 +62,7 @@
     },
     {
       "symbol": "CycleA",
-      "report": "DS1601",
+      "report": "DS1701",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "dependency",
@@ -72,7 +72,7 @@
     },
     {
       "symbol": "CycleB",
-      "report": "DS1601",
+      "report": "DS1701",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "dependency",
@@ -82,7 +82,7 @@
     },
     {
       "symbol": "UnusedDev",
-      "report": "DS1601",
+      "report": "DS1701",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "dependency",
@@ -92,7 +92,7 @@
     },
     {
       "symbol": "UnusedPeer",
-      "report": "DS1601",
+      "report": "DS1701",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "dependency",

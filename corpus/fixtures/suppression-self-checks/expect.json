@@ -6,7 +6,7 @@
   "expect": [
     {
       "symbol": "ReasonlessDirective",
-      "report": "DS1701",
+      "report": "DS9001",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "suppression",
@@ -28,7 +28,7 @@
     },
     {
       "symbol": "UnscopedEntry",
-      "report": "DS1702",
+      "report": "DS9002",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "suppression",
@@ -50,7 +50,7 @@
     },
     {
       "symbol": "StaleEntry",
-      "report": "DS1703",
+      "report": "DS9003",
       "confidence": "certain",
       "symbol_kind": "suppression",
       "details": {

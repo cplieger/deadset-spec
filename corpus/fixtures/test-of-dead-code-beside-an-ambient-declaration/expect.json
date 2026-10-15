@@ -12,7 +12,7 @@
     },
     {
       "symbol": "Unused",
-      "report": "DS1004",
+      "report": "DS1102",
       "symbol_kind": "function",
       "confidence": "certain",
       "reachability_class": "certain",
@@ -20,7 +20,7 @@
     },
     {
       "symbol": "TestUnused",
-      "report": "DS1005",
+      "report": "DS1103",
       "symbol_kind": "function",
       "confidence": "certain",
       "reachability_class": "certain",

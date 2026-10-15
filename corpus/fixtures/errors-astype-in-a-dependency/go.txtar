@@ -52,7 +52,7 @@ func (u *upstream) Error() string { return u.err.Error() }
 
 func (*upstream) IsTransient() bool { return true }
 
-//deadset:ignore DS1103 -- The retry module asks for the delay.
+//deadset:ignore DS1101 -- The retry module asks for the delay.
 func (*upstream) Delay() int { return 1 }
 
 func (*upstream) Hint() string { return "later" }

@@ -1,5 +1,5 @@
 {
-  "code": "DS1203",
+  "code": "DS1202",
   "kind": "uncalled-interface-method",
   "language": "ts",
   "position": { "path": "src/wire.ts", "line": 34, "column": 3, "end_line": 34 },

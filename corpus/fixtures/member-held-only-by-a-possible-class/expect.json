@@ -1,0 +1,22 @@
+{
+  "name": "member-held-only-by-a-possible-class",
+  "description": "A member only a possible exemption class holds is reported at possible rather than retained: a method a reflective lookup's string literal names, and nothing else uses, is reported at possible, below the default minimum.",
+  "pending": "confidence.23: a member only records of a possible class hold is reported at possible; both analyzers retain it.",
+  "rules": [
+    "confidence.23"
+  ],
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "expect": [
+    {
+      "report": "DS1003",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "method",
+      "symbol": "handler.Ping"
+    }
+  ]
+}

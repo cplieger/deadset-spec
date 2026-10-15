@@ -20,7 +20,29 @@
     {
       "name": "deadset-ts",
       "version": "1.0.0",
-      "digest": "sha256:5c5ab9f4a00f39a12023fa05a42d8015800d96cca15e10cd6c920a313ee0745d"
+      "digest": "sha256:5c5ab9f4a00f39a12023fa05a42d8015800d96cca15e10cd6c920a313ee0745d",
+      "languages": [
+        "ts"
+      ],
+      "totals": {
+        "findings": 1,
+        "by_severity": {
+          "allow": 0,
+          "warn": 0,
+          "deny": 1
+        },
+        "deletable_lines": 1,
+        "suppressions_in_effect": 0,
+        "reasons_recorded": 0,
+        "stale_suppressions": 0,
+        "pending": 0,
+        "omitted": 0,
+        "withheld": {
+          "certain": 0,
+          "probable": 0,
+          "possible": 0
+        }
+      }
     }
   ],
   "target": {

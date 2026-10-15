@@ -6,7 +6,7 @@
   "expect": [
     {
       "symbol": "OnlyTested",
-      "report": "DS1004",
+      "report": "DS1102",
       "symbol_kind": "function",
       "confidence": "certain",
       "reachability_class": "certain",

@@ -7,11 +7,11 @@
   "expect": [
     { "symbol": "upstream.IsTransient", "report": "none", "retained_by": ["interface-satisfaction"] },
     { "symbol": "upstream.Delay", "report": "none", "retained_by": ["interface-satisfaction"] },
-    { "symbol": "DelayDirective", "report": "DS1703", "confidence": "certain", "symbol_kind": "suppression", "details": { "mechanism": "inline" } },
-    { "symbol": "upstream.Hint", "report": "DS1103", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "method" },
-    { "symbol": "note.Error", "report": "DS1103", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "method" },
-    { "symbol": "note.IsTransient", "report": "DS1103", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "method" },
+    { "symbol": "DelayDirective", "report": "DS9003", "confidence": "certain", "symbol_kind": "suppression", "details": { "mechanism": "inline" } },
+    { "symbol": "upstream.Hint", "report": "DS1101", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "method" },
+    { "symbol": "note.Error", "report": "DS1101", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "method" },
+    { "symbol": "note.IsTransient", "report": "DS1101", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "method" },
     { "symbol": "flaky.Error", "report": "none" },
-    { "symbol": "flaky.IsTransient", "report": "DS1103", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "method" }
+    { "symbol": "flaky.IsTransient", "report": "DS1101", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "method" }
   ]
 }

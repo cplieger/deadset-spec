@@ -16,6 +16,7 @@ import (
 	"testing"
 
 	"github.com/cplieger/deadset-spec/v8"
+	"github.com/cplieger/deadset-spec/v8/corpus"
 )
 
 const (
@@ -99,25 +100,6 @@ func newVectorSchemaIndex(t *testing.T) vectorSchemaIndex {
 	return index
 }
 
-// configVectorDirs lists the case directories under vectors/config, in name order.
-func configVectorDirs(t *testing.T) []string {
-	t.Helper()
-	entries, err := fs.ReadDir(spec.Vectors, configVectorsDir)
-	if err != nil {
-		t.Fatalf("Setup: fs.ReadDir(Vectors, %q): %v", configVectorsDir, err)
-	}
-	var dirs []string
-	for _, entry := range entries {
-		if entry.IsDir() {
-			dirs = append(dirs, entry.Name())
-		}
-	}
-	if len(dirs) == 0 {
-		t.Fatalf("Setup: fs.ReadDir(Vectors, %q) lists no case directory", configVectorsDir)
-	}
-	return dirs
-}
-
 // readVectorFile reads one file of a case and reports whether the case holds it. Any error
 // other than absence fails the test.
 func readVectorFile(t *testing.T, dir, name string) ([]byte, bool) {
@@ -141,7 +123,7 @@ func loadVectorCase(t *testing.T, dir string) configVectorCase {
 		t.Fatalf("Setup: %s/%s/%s is absent, want every case to declare itself", configVectorsDir, dir, vectorCaseFile)
 	}
 	var c configVectorCase
-	if err := decodeStrict(data, &c); err != nil {
+	if err := corpus.DecodeStrict(data, &c); err != nil {
 		t.Fatalf("Setup: decoding %s/%s/%s: %v", configVectorsDir, dir, vectorCaseFile, err)
 	}
 	return c
@@ -363,7 +345,7 @@ func vectorBranchProblems(t *testing.T, index vectorSchemaIndex, where, at, sche
 func caseCovering(t *testing.T, aspect string) string {
 	t.Helper()
 	var dirs []string
-	for _, dir := range configVectorDirs(t) {
+	for _, dir := range vectorCaseDirs(t, spec.Vectors, "config") {
 		if slices.Contains(loadVectorCase(t, dir).Covers, aspect) {
 			dirs = append(dirs, dir)
 		}
@@ -376,7 +358,7 @@ func caseCovering(t *testing.T, aspect string) string {
 
 func TestConfigVectorsCoverEveryAspectOnce(t *testing.T) {
 	covered := map[string][]string{}
-	for _, dir := range configVectorDirs(t) {
+	for _, dir := range vectorCaseDirs(t, spec.Vectors, "config") {
 		c := loadVectorCase(t, dir)
 		t.Run(dir, func(t *testing.T) {
 			if strings.TrimSpace(c.Name) == "" {
@@ -406,7 +388,7 @@ func TestConfigVectorsCoverEveryAspectOnce(t *testing.T) {
 }
 
 func TestConfigVectorCasesCarryOneOutcome(t *testing.T) {
-	for _, dir := range configVectorDirs(t) {
+	for _, dir := range vectorCaseDirs(t, spec.Vectors, "config") {
 		t.Run(dir, func(t *testing.T) {
 			entries, err := fs.ReadDir(spec.Vectors, configVectorsDir+"/"+dir)
 			if err != nil {
@@ -432,7 +414,7 @@ func TestConfigVectorCasesCarryOneOutcome(t *testing.T) {
 }
 
 func TestConfigVectorDocumentsDecodeAsOneObject(t *testing.T) {
-	for _, dir := range configVectorDirs(t) {
+	for _, dir := range vectorCaseDirs(t, spec.Vectors, "config") {
 		t.Run(dir, func(t *testing.T) {
 			for _, name := range append(slices.Clone(vectorConfigFiles), vectorFlagsFile) {
 				data, ok := readVectorFile(t, dir, name)
@@ -449,7 +431,7 @@ func TestConfigVectorDocumentsDecodeAsOneObject(t *testing.T) {
 
 func TestConfigVectorExpectationsNameOnlyDeclaredKeys(t *testing.T) {
 	index := newVectorSchemaIndex(t)
-	for _, dir := range configVectorDirs(t) {
+	for _, dir := range vectorCaseDirs(t, spec.Vectors, "config") {
 		data, ok := readVectorFile(t, dir, vectorExpectedFile)
 		if !ok {
 			continue
@@ -494,7 +476,7 @@ func vectorMissingKeys(schema schemaNode, doc map[string]any, at string) []strin
 // without its resolved value in the published cases fails here.
 func TestConfigVectorExpectationsNameEveryDeclaredKey(t *testing.T) {
 	schema := loadConfigSchema(t)
-	for _, dir := range configVectorDirs(t) {
+	for _, dir := range vectorCaseDirs(t, spec.Vectors, "config") {
 		data, ok := readVectorFile(t, dir, vectorExpectedFile)
 		if !ok {
 			continue
@@ -517,7 +499,7 @@ func TestConfigVectorRefusalsNameATableCode(t *testing.T) {
 	for _, row := range table.ExitCodes {
 		codes = append(codes, row.Code)
 	}
-	for _, dir := range configVectorDirs(t) {
+	for _, dir := range vectorCaseDirs(t, spec.Vectors, "config") {
 		data, ok := readVectorFile(t, dir, vectorErrorFile)
 		if !ok {
 			continue
@@ -525,7 +507,7 @@ func TestConfigVectorRefusalsNameATableCode(t *testing.T) {
 		t.Run(dir, func(t *testing.T) {
 			where := fmt.Sprintf("%s/%s/%s", configVectorsDir, dir, vectorErrorFile)
 			var refusal configVectorError
-			if err := decodeStrict(data, &refusal); err != nil {
+			if err := corpus.DecodeStrict(data, &refusal); err != nil {
 				t.Fatalf("Setup: decoding %s: %v", where, err)
 			}
 			if !slices.Contains(codes, refusal.ExitCode) {
@@ -742,7 +724,7 @@ func refusalNames(t *testing.T, dir string) string {
 		t.Fatalf("Setup: %s is absent, want a refused case to name its exit code", where)
 	}
 	var refusal configVectorError
-	if err := decodeStrict(data, &refusal); err != nil {
+	if err := corpus.DecodeStrict(data, &refusal); err != nil {
 		t.Fatalf("Setup: decoding %s: %v", where, err)
 	}
 	return refusal.Names
@@ -843,7 +825,7 @@ const plantedVectorConfiguration = `{"contract_version": "1.0.0", "target": {"ki
 	`"analysis": {"languages": ["go", "ts"], "min_confidence": "probable", "generated_files": "exclude", ` +
 	`"configurations": [{"id": "linux-amd64", "os": "linux", "arch": "amd64", "tags": []}, ` +
 	`{"id": "tsconfig.json", "project": "tsconfig.json"}]}, ` +
-	`"severity": {"DS1101": "warn", "DS18": "allow"}, ` +
+	`"severity": {"DS1501": "warn", "DS14": "allow"}, ` +
 	`"reporters": {"formats": ["text"], "sort": "size", "fail_on": "deny"}}`
 
 func TestVectorSchemaProblemsAcceptsAResolvedConfiguration(t *testing.T) {
@@ -910,7 +892,7 @@ func TestVectorSchemaProblemsRefuses(t *testing.T) {
 		},
 		{
 			name:    "a_severity_key_the_code_pattern_refuses",
-			old:     `"DS1101": "warn"`,
+			old:     `"DS1501": "warn"`,
 			planted: `"ds1101": "warn"`,
 			wantMsg: `severity names "ds1101", which contract/config.schema.json does not declare under severity`,
 		},
@@ -962,7 +944,7 @@ func TestVectorSchemaProblemsRefuses(t *testing.T) {
 // schema moves cannot leave a case resolving to the old one.
 func TestConfigVectorDefaultsAreTheSchemaDefaults(t *testing.T) {
 	index := newVectorSchemaIndex(t)
-	for _, dir := range configVectorDirs(t) {
+	for _, dir := range vectorCaseDirs(t, spec.Vectors, "config") {
 		data, ok := readVectorFile(t, dir, vectorExpectedFile)
 		if !ok {
 			continue
@@ -1055,10 +1037,10 @@ func TestConfigVectorTargetKindCasesNameTheFaultTheKeyOrders(t *testing.T) {
 	kinds := []string{"application", "library"}
 	languages := loadKinds(t).Languages
 	checked := 0
-	for _, dir := range configVectorDirs(t) {
+	for _, dir := range vectorCaseDirs(t, spec.Vectors, "config") {
 		var refusal configVectorError
 		if data, refused := readVectorFile(t, dir, vectorErrorFile); refused {
-			if err := decodeStrict(data, &refusal); err != nil {
+			if err := corpus.DecodeStrict(data, &refusal); err != nil {
 				t.Fatalf("Setup: decoding %s/%s/%s: %v", configVectorsDir, dir, vectorErrorFile, err)
 			}
 			if !strings.HasPrefix(refusal.Names, "target.kind") {

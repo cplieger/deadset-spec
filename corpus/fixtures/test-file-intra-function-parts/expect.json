@@ -8,7 +8,7 @@
   "expect": [
     {
       "symbol": "HelperUnread",
-      "report": "DS1801",
+      "report": "DS1401",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "parameter",
@@ -36,7 +36,7 @@
     },
     {
       "symbol": "FirstStore",
-      "report": "DS1807",
+      "report": "DS1404",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "store",

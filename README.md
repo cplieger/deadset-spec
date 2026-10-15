@@ -4,7 +4,7 @@
 
 deadset-spec is the contract every deadset dead-code analyzer implements, and the conformance corpus each one passes before it releases.
 
-It holds data and documentation, with a Go test suite that checks them, and no analyzer runs anything here. You can write a conforming analyzer for another language from this repository alone. The Go package imports only the standard library, needs Go 1.27.1 or later and is licensed under Apache-2.0.
+It holds the contract as data and documentation, the Go packages that read it, and the corpus runner every analyzer is tested with. You can write a conforming analyzer for another language from this repository alone. The module needs Go 1.27.2 or later and is licensed under Apache-2.0.
 
 ## Why use it
 
@@ -24,47 +24,42 @@ go get github.com/cplieger/deadset-spec/v8@latest
 
 ## Usage
 
-A Go analyzer requires the module from its tests and reads the embedded files with `io/fs`. The first test below fails when the vocabulary file is missing. The second walks the corpus, where each directory under `corpus/fixtures/` is one fixture. A runner reads the fixture's `expect.json` and writes the fixture's copy for its language, called a rendering, to a temporary directory. It then analyzes that directory as it would a real repository and compares the report with the expectations.
+An analyzer runs the conformance corpus through its own command line. `deadset-corpus run` copies each fixture's rendering for the analyzer's language to a temporary directory, writes the configuration the fixture names, and runs the analyzer's `analyze` and `print-retained` verbs over it as over a real repository. It then compares the report with the expectations, runs the suppression phase and writes the results document.
+
+```sh
+go run github.com/cplieger/deadset-spec/v8/cmd/deadset-corpus@latest run \
+    --language=go --gaps=conformance.json --out=conformance-results.json -- ./deadset-go
+```
+
+`deadset-corpus check` holds every fixture to the corpus format, and `deadset-corpus agree a.json b.json` compares two analyzers' results documents. A Go analyzer can call the same runner from its tests:
 
 ```go
 import (
-    "io/fs"
-    "path"
     "testing"
 
     "github.com/cplieger/deadset-spec/v8"
+    "github.com/cplieger/deadset-spec/v8/corpus"
 )
 
-func TestKindsAreCurrent(t *testing.T) {
-    data, err := fs.ReadFile(spec.Contract, "contract/kinds.json")
+func TestConformanceCorpus(t *testing.T) {
+    results, err := corpus.Run(t.Context(), spec.Corpus,
+        corpus.Analyzer{Command: []string{"./deadset-go"}, Language: "go"}, corpus.Options{Jobs: 4})
     if err != nil {
-        t.Fatalf("fs.ReadFile(Contract, kinds.json) = %v, want the document present", err)
+        t.Fatal(err)
     }
-    _ = data // decode it and compare it with the kinds this analyzer implements
-}
-
-func TestCorpus(t *testing.T) {
-    entries, err := fs.ReadDir(spec.Corpus, "corpus/fixtures")
-    if err != nil {
-        t.Fatalf("fs.ReadDir(Corpus, corpus/fixtures) = %v, want the fixture list", err)
-    }
-    for _, e := range entries {
-        expect, err := fs.ReadFile(spec.Corpus, path.Join("corpus/fixtures", e.Name(), "expect.json"))
-        if err != nil {
-            t.Fatalf("fs.ReadFile(Corpus, %s/expect.json) = %v, want the expectations", e.Name(), err)
-        }
-        _ = expect // skip a fixture with no go.txtar, extract it, run the analyzer, compare
+    if results.Result != corpus.Pass {
+        t.Errorf("the corpus result is %s", results.Result)
     }
 }
 ```
 
-A TypeScript analyzer clones this repository at a release tag instead, because no npm package is published. [The corpus format](corpus/README.md) states every rule a runner follows.
-
 ## API
 
 - `spec.Contract`, `spec.Corpus`, `spec.Vectors` and `spec.Examples` are four `embed.FS` values holding the `contract/`, `corpus/`, `vectors/` and `examples/` trees at the module version. Paths inside them start with the directory name.
+- `vocab` holds the contract's closed vocabularies as Go values: the issue kinds and their families, the symbol kinds, the exemption classes, the evidence that lowers a finding's class, the exit codes, the setup-failure classes and the versions. It imports only the standard library, and `go generate` writes it from the contract's documents.
+- `corpus` reads, checks and runs the conformance corpus: `Load`, `Check`, `Run`, `Agree` and one typed model of every corpus document.
+- `cmd/deadset-corpus` is the corpus runner, and `cmd/deadset-gen` writes every file this module derives from the contract.
 - `examples/` holds one finding per kind family, one report per report state, scope and describe documents, and refused documents with an index naming the constraint each one breaks.
-- Nothing else is exported. Code that interprets a document belongs to the analyzer that reads it.
 
 The generated reference is on [pkg.go.dev](https://pkg.go.dev/github.com/cplieger/deadset-spec/v8).
 
@@ -78,7 +73,7 @@ A kind enters the vocabulary only when it passes two tests. What it reports must
 
 ## The conformance corpus
 
-`corpus/` holds 403 fixture projects. For each one, an `expect.json` file names in language-neutral terms what an analyzer must and must not report for each issue kind and each exemption class. Of these, 53 apply to both languages, 128 to Go only and 222 to TypeScript only. Every analyzer runs the corpus before each of its releases.
+<!-- corpus-counts -->`corpus/` holds 422 fixture projects. For each one, an `expect.json` file names in language-neutral terms what an analyzer must and must not report for each issue kind and each exemption class. Of these, 55 apply to both languages, 138 to Go only and 229 to TypeScript only.<!-- /corpus-counts --> Every analyzer runs the corpus before each of its releases.
 
 An analyzer records each capability it does not implement as a declared gap in its committed `conformance.json`, and its runner writes `conformance-results.json`. Both follow the schemas in `corpus/`. An expectation that is neither answered nor declared fails the analyzer. Where two analyzers answer the same expectation, they must agree on the code, the confidence and what a suppression does. Before any analysis, the product that runs the analyzers, such as deadset, reads the describe document each analyzer prints about itself. It runs an analyzer only when that document records a corpus result of `pass`.
 

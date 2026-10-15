@@ -1,0 +1,8 @@
+// Package lib is read by a module of its workspace.
+package lib
+
+// Used is called by the reader module.
+func Used() {}
+
+// Unused is called by nothing.
+func Unused() {}

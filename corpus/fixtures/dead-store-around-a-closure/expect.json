@@ -8,7 +8,7 @@
   "expect": [
     {
       "symbol": "OverwrittenBeforeClosure",
-      "report": "DS1807",
+      "report": "DS1404",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "store",
@@ -30,7 +30,7 @@
     },
     {
       "symbol": "BeforeLoop",
-      "report": "DS1807",
+      "report": "DS1404",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "store",
@@ -52,7 +52,7 @@
     },
     {
       "symbol": "StoredAfterACall",
-      "report": "DS1807",
+      "report": "DS1404",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "store",

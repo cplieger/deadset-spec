@@ -8,13 +8,13 @@
       "reason": "recorded by deadset-go 1.20.2"
     },
     {
-      "code": "DS1601",
+      "code": "DS1701",
       "symbol": "go://example.com/app#example.com/lib:require",
       "path": "go.mod",
       "reason": "recorded by deadset-go 1.20.2"
     },
     {
-      "code": "DS1605",
+      "code": "DS1702",
       "symbol": "go://example.com/app#example.com/old@v1.0.0:replace",
       "path": "go.mod",
       "reason": "recorded by deadset-go 1.20.2"

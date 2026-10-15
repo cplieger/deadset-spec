@@ -5,7 +5,7 @@ if (Date.now() < 0) {
 
 // firstLine is called by nothing, and its body never reads chunk; the
 // directive above it names the parameter's code alone.
-// deadset:ignore DS1801 -- Kept to match the decoder signature the next release adds.
+// deadset:ignore DS1401 -- Kept to match the decoder signature the next release adds.
 function firstLine(chunk: Uint8Array): number {
   return 1;
 }
@@ -13,7 +13,7 @@ function firstLine(chunk: Uint8Array): number {
 // wrapped is called by nothing, and its body never reads chunk; the directive
 // inside the parameter list names the parameter's code alone.
 function wrapped(
-  // deadset:ignore DS1801 -- Kept to match the decoder signature the next release adds.
+  // deadset:ignore DS1401 -- Kept to match the decoder signature the next release adds.
   chunk: Uint8Array,
 ): number {
   return 2;

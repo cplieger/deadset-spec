@@ -12,7 +12,7 @@
     },
     {
       "symbol": "DestructuredContextual",
-      "report": "DS1801",
+      "report": "DS1401",
       "confidence": "probable",
       "reachability_class": "probable",
       "symbol_kind": "parameter",
@@ -25,7 +25,7 @@
     },
     {
       "symbol": "DeclaredAnnotated",
-      "report": "DS1801",
+      "report": "DS1401",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "parameter",
@@ -38,7 +38,7 @@
     },
     {
       "symbol": "UncontextualExpression",
-      "report": "DS1801",
+      "report": "DS1401",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "parameter",
@@ -51,7 +51,7 @@
     },
     {
       "symbol": "ArrayElementBeforeUsed",
-      "report": "DS1807",
+      "report": "DS1404",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "store",

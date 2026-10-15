@@ -1,0 +1,18 @@
+# Fixability
+
+Rules `fixability.1` to `fixability.7` of [the analysis](../analysis.md). A rule is cited by its id, which is never reused for another rule.
+
+**fixability.1** A finding carries the fixability [`kinds.json`](../../kinds.json) gives its kind, unless a rule below gives it another one, which is always one the kind's `finding_fixabilities` lists. A finding about a declaration in a generated file carries `none` under every kind, as the `generated-file` class of [`exemptions.json`](../../exemptions.json) states.
+
+## Positional members
+
+**fixability.2** A declaration's dependents are the declarations of its group whose value its deletion changes, or leaves undefined:
+
+- **fixability.3** In Go, the dependents of a specification S of a parenthesized constant declaration are each later specification of that declaration that repeats S's expression list, being, where S writes one, each specification after S that writes none, up to the next one that does, and each later specification whose expression list, the one it writes or the one it repeats, uses `iota`. Deleting S makes each specification that repeats its list repeat an earlier list, or none where S is the first, and lowers `iota` by one in every later specification, and deleting one of several names S declares, with its expression, changes the length of the list those that repeat it repeat. Where S writes no expression list and declares several names, S is a dependent of itself as well, because deleting one of its names leaves fewer names than the list it repeats has expressions. A constant S declares has the dependents of S, so the rule decides a specification as a whole, whichever of its names are live.
+- **fixability.4** In TypeScript, the dependents of a member of an `enum` declaration are each later member of that declaration with no initializer, up to the first one with an initializer. Deleting the member moves the value of each of them.
+
+**fixability.5** A dependent is live when it declares a constant or a member the analysis holds live under reachability, so a specification that declares only blank names is no live dependent. A dead declaration with a live dependent is a positional member, and a finding about it carries `manual`, whatever its code: its deletion changes a live value, while replacing a Go constant's name with `_` keeps every value, and so does giving a TypeScript member's first dependent an initializer that holds its present value.
+
+**fixability.6** No mechanical edit deletes a positional member, so none deletes a declaration its value depends on either. The positional members, each dead declaration that a held declaration references, and each dead declaration of which a held declaration is a dependent, are held, and so on until no further declaration joins: a finding about one of them carries `manual`, and none of them carries `removes_last_use_of`. Their components are the weakly connected parts of the held declarations over the references among them, each with the root members the component rule gives it and `deletable_lines` 0. A reference between a held declaration and a dead declaration that is not held joins nothing, so a dead function that names a held declaration is a component of its own and deletes without it.
+
+**fixability.7** A dead declaration that is not held, and each of its dead dependents, none of which is held then, belong to one component, because deleting it alone changes their values and can stop code that uses them from building. The joint is no reference, so it makes no member a non-root member and makes no declaration live. A group whose every declaration is dead is therefore one component and deletes whole, and its findings carry their kinds' own fixability.

@@ -1,0 +1,8 @@
+{
+  "target": {
+    "kind": "library"
+  },
+  "analysis": {
+    "min_confidence": "possible"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "symbols": {
+    "HttpTarget.body": {
+      "file": "target/main.ts",
+      "line": 3
+    },
+    "HttpTarget.uri": {
+      "file": "target/main.ts",
+      "line": 2
+    }
+  }
+}

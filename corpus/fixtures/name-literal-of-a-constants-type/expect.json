@@ -12,7 +12,7 @@
   "expect": [
     {
       "symbol": "Kind",
-      "report": "DS1101",
+      "report": "DS1501",
       "confidence": "possible",
       "reachability_class": "possible",
       "symbol_kind": "type",
@@ -23,7 +23,7 @@
     },
     {
       "symbol": "KindA",
-      "report": "DS1101",
+      "report": "DS1501",
       "confidence": "possible",
       "reachability_class": "possible",
       "symbol_kind": "constant",
@@ -34,7 +34,7 @@
     },
     {
       "symbol": "KindB",
-      "report": "DS1101",
+      "report": "DS1501",
       "confidence": "possible",
       "reachability_class": "possible",
       "symbol_kind": "constant",
@@ -45,7 +45,7 @@
     },
     {
       "symbol": "Mode",
-      "report": "DS1101",
+      "report": "DS1501",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "type",
@@ -55,7 +55,7 @@
     },
     {
       "symbol": "ModeA",
-      "report": "DS1101",
+      "report": "DS1501",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "constant",
@@ -65,7 +65,7 @@
     },
     {
       "symbol": "ModeB",
-      "report": "DS1101",
+      "report": "DS1501",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "constant",

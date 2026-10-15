@@ -20,7 +20,7 @@
   "edge_evaluations": [],
   "stale_suppressions": [
     {
-      "code": "DS1703",
+      "code": "DS9003",
       "mechanism": "inline",
       "entry": {
         "code": "DS1002",
@@ -32,7 +32,7 @@
       "message": "the inline directive named DS1002 and no candidate under that code sits below it"
     },
     {
-      "code": "DS1703",
+      "code": "DS9003",
       "mechanism": "ignore",
       "entry": {
         "code": "DS1001",

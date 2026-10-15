@@ -1,0 +1,16 @@
+{
+  "symbols": {
+    "Rollout.build": {
+      "file": "target/main.ts",
+      "line": 3
+    },
+    "Rollout.name": {
+      "file": "target/main.ts",
+      "line": 2
+    },
+    "Rollout.notes": {
+      "file": "target/main.ts",
+      "line": 4
+    }
+  }
+}

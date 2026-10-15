@@ -29,7 +29,7 @@
     },
     {
       "symbol": "config.String",
-      "report": "DS1103",
+      "report": "DS1101",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "method"

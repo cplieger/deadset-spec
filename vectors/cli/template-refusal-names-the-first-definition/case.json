@@ -1,0 +1,32 @@
+{
+  "description": "A template refused for its definitions names the first definition in the order the text writes them, whatever order a product holds them in, so two runs of one template print one refusal.",
+  "products": [
+    "deadset",
+    "deadset-go"
+  ],
+  "rename": {
+    "go.mod.txt": "go.mod",
+    "main.go.txt": "main.go"
+  },
+  "argv": [
+    "analyze",
+    "--target=@TARGET@",
+    "--report=@OUT@/report.json",
+    "--template=@TARGET@/report.tmpl"
+  ],
+  "argv_by_product": {
+    "deadset": [
+      "analyze",
+      "--target=@TARGET@",
+      "--template=@TARGET@/report.tmpl"
+    ]
+  },
+  "expect": {
+    "exit": 2,
+    "report": "absent",
+    "stderr_contains": [
+      "\"alpha\""
+    ],
+    "repeat": 12
+  }
+}

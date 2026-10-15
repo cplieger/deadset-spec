@@ -6,9 +6,12 @@ The contract is versioned as one unit, apart from every analyzer's version and f
 
 ## Vocabularies
 
-- The issue kinds, in `contract/kinds.json`. Every kind has a code, the prefix `DS` and four digits, grouped by family into numbered ranges. A code renders identically in a text output line, an ignore entry, a configuration key and a SARIF rule identifier, and a retired code stays retired for the life of the code space. [Issue kinds](kinds.md) is the reference page.
+- The issue kinds, in `contract/kinds.json`. Every kind has a code, the prefix `DS` and four digits: two name the family, the question a reader asks of the finding, and two the kind within it. A code renders identically in a text output line, an ignore entry, a configuration key and a SARIF rule identifier, and a retired code stays retired for the life of the code space. [Issue kinds](kinds.md) is the reference page, with one generated page per family under `kinds/`.
 - The exemption classes, in `contract/exemptions.json`. Each is a reason an unreferenced symbol is still live, such as a method that satisfies an interface. [Exemption classes](exemptions.md) is the reference page.
-- The exit codes, in `contract/exit-codes.json`. Code 0 is a clean report, and 1 is findings at or above the failing severity or a stale suppression. Code 2 is a usage error, and 3 is a failure before any verdict. Code 4 is a report holding a finding whose cross-language reference is still unresolved. [Exit codes](exit-codes.md) is the reference page.
+- The exit codes, in `contract/exit-codes.json`. Code 0 is a clean report, and 1 is findings at or above the failing severity or a stale suppression. Code 2 is a usage error, an unreadable file the invocation names among them, and 3 is a failure before any verdict. Code 4 is a report holding a finding whose cross-language reference is still unresolved. [Exit codes](exit-codes.md) is the reference page.
+- The evidence that lowers a finding's confidence, in `contract/confidence.json`, one row per kind of evidence with the rule that states it. [Confidence evidence](confidence.md) is the reference page.
+- The languages, in `contract/languages.json`: what puts each in scope, what identifies its modules and how its report is obtained, read alike by the orchestrator and each analyzer.
+- The command-line surface, in `contract/cli.json`: each product's verbs, the closed list of options each takes, and the exit codes each can end with.
 
 ## Documents
 
@@ -19,7 +22,7 @@ The contract is versioned as one unit, apart from every analyzer's version and f
 
 ## Grammars and rules
 
-- The analysis rules, `contract/grammar/analysis.md`. They state what the program is, component files and workspace packages included, and which of it is test code. They also state the roots an analyzer marks beside the configured ones, what a type error withholds, the setup failures that end a run with the fix named, and the notes a report carries.
+- The analysis rules, the pages [`contract/grammar/analysis.md`](../contract/grammar/analysis.md) lists, one per family, each rule a numbered paragraph cited by its id. They state what the program is, component files and workspace packages included, and which of it is test code. They also state the roots an analyzer marks beside the configured ones, what a type error withholds, the setup failures that end a run with the fix named, and the notes a report carries.
 - The suppression grammar, `contract/grammar/suppression.md`. It has two mechanisms, an inline directive in one of the positions the placement table of that page lists, and an ignore-file entry scoped to one symbol or one dependency row in one file. A baseline uses the same row shape to record existing findings, so a run fails only on new ones, and it adjudicates nothing. Each suppression carries a reason, and a suppression record that is stale is itself reported. The vectors under `vectors/baseline/` test the baseline.
 - The symbol references, `contract/grammar/symbol-ref.md`. A reference names one declaration in one language and carries no line number, so it stays valid across edits above the declaration.
 - The text-line format, `contract/grammar/text-line.md`. Each line starts with the position as `path:line:col`, so one search expression matches the output of every analyzer.

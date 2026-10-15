@@ -14,7 +14,7 @@
     },
     {
       "symbol": "Forgotten",
-      "report": "DS1103",
+      "report": "DS1101",
       "confidence": "certain",
       "reachability_class": "certain",
       "liveness_relation": "reference-counting",

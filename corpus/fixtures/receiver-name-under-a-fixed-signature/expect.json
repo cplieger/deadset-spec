@@ -8,7 +8,7 @@
   "expect": [
     {
       "symbol": "Epoch.f",
-      "report": "DS1802",
+      "report": "DS1402",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "receiver",
@@ -20,7 +20,7 @@
     },
     {
       "symbol": "Label.f",
-      "report": "DS1802",
+      "report": "DS1402",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "receiver",

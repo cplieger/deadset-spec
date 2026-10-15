@@ -1,0 +1,27 @@
+# Issue kinds
+
+Every finding carries a code that names its kind. A code is `DS` and four digits: the first two name the family, the question a reader asks of the finding, and the last two the kind within it. A kind is a concept, not a language, so a language joins the codes whose concept it has. A code names at most one kind for the life of the code space, and a retired code is never reused. This page and the family pages are generated from `contract/kinds.json`, `contract/confidence.json` and the examples in `authoring/kinds-guide.json`; the normative rule of each kind is its row in `contract/kinds.json`.
+
+DS19 to DS89 are left for families not yet defined, and DS90 to DS99 hold the findings about deadset's own configuration.
+
+| Family | Codes | The question it answers | Kinds |
+| --- | --- | --- | --- |
+{{- range .Ranges}}
+| [{{.Title}}](kinds/{{.Family}}.md) | `{{.Start}}` to `{{.End}}` | {{.Question}} | {{if .Kinds}}{{ticks (codes .Kinds)}}{{else}}reserved{{end}} |
+{{- end}}
+
+## The columns
+
+- Languages are the languages that report the kind: `go` is Go, `ts` is TypeScript.
+- Default is `default_enabled`: `on` means an analyzer reports the kind unless a configuration disables it.
+- Severity is `default_severity`, one of `allow`, `warn` and `deny`. A finding at or above `reporters.fail_on`, `deny` by default, fails the run.
+- Fixability is `fixability`: what a mechanical edit may do with the finding. A finding in a generated file carries `none` under every kind.
+- Confidence is the finding's reachability class capped by the kind's `max_class` and lowered by the evidence each family page lists. `analysis.min_confidence`, `probable` by default, withholds the findings below it.
+
+## Retired codes
+
+{{if .Kinds.Retired}}| Code | Name |
+| --- | --- |
+{{- range .Kinds.Retired}}
+| `{{.Code}}` | `{{.Name}}` |
+{{- end}}{{else}}No code is retired.{{end}}

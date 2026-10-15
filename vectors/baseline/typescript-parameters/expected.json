@@ -2,13 +2,13 @@
   "description": "Recorded findings: a run fails only on a finding this document does not hold. Every reason is the analyzer that recorded the row, never an adjudication.",
   "baseline": [
     {
-      "code": "DS1801",
+      "code": "DS1401",
       "symbol": "ts://@example/app/src/main.ts#total(first)",
       "path": "src/main.ts",
       "reason": "recorded by deadset-ts 3.12.0"
     },
     {
-      "code": "DS1801",
+      "code": "DS1401",
       "symbol": "ts://@example/app/src/main.ts#total(second)",
       "path": "src/main.ts",
       "reason": "recorded by deadset-ts 3.12.0"

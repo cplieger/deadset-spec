@@ -1,0 +1,1 @@
+function deadB(): void {}

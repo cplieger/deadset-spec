@@ -80,7 +80,7 @@
   "edge_evaluations": [],
   "stale_suppressions": [
     {
-      "code": "DS1703",
+      "code": "DS9003",
       "mechanism": "ignore",
       "entry": {
         "code": "DS1002",
@@ -128,12 +128,56 @@
     {
       "name": "deadset-go",
       "version": "1.20.2",
-      "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "languages": [
+        "go"
+      ],
+      "totals": {
+        "findings": 1,
+        "by_severity": {
+          "allow": 0,
+          "warn": 0,
+          "deny": 1
+        },
+        "deletable_lines": 1,
+        "suppressions_in_effect": 0,
+        "reasons_recorded": 1,
+        "stale_suppressions": 1,
+        "pending": 0,
+        "omitted": 0,
+        "withheld": {
+          "certain": 0,
+          "probable": 0,
+          "possible": 0
+        }
+      }
     },
     {
       "name": "deadset-ts",
       "version": "3.12.0",
-      "digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      "digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "languages": [
+        "ts"
+      ],
+      "totals": {
+        "findings": 0,
+        "by_severity": {
+          "allow": 0,
+          "warn": 0,
+          "deny": 0
+        },
+        "deletable_lines": 0,
+        "suppressions_in_effect": 0,
+        "reasons_recorded": 0,
+        "stale_suppressions": 0,
+        "pending": 0,
+        "omitted": 0,
+        "withheld": {
+          "certain": 0,
+          "probable": 0,
+          "possible": 0
+        }
+      }
     }
   ]
 }

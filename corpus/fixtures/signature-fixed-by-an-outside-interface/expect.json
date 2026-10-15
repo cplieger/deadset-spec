@@ -12,7 +12,7 @@
     },
     {
       "symbol": "Save.count",
-      "report": "DS1803",
+      "report": "DS1403",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "result",
@@ -28,7 +28,7 @@
     },
     {
       "symbol": "Load.r",
-      "report": "DS1801",
+      "report": "DS1401",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "parameter",
@@ -46,7 +46,7 @@
     },
     {
       "symbol": "fault.Detail",
-      "report": "DS1101",
+      "report": "DS1501",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "method",
@@ -64,7 +64,7 @@
     },
     {
       "symbol": "Archive.count",
-      "report": "DS1803",
+      "report": "DS1403",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "result",

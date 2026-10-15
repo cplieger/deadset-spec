@@ -1,9 +1,11 @@
 // Package spec carries the deadset contract, the conformance corpus, the
 // published test vectors and the example documents as embedded file trees, so a
-// Go program can pin them at a module version. It is a data carrier: no deadset analyzer or
-// orchestrator executes anything in this module, and a helper that interprets
-// a document belongs to the product that reads it.
+// Go program can pin them at a module version. It decides no analysis rule: an
+// analyzer's own rules belong to the analyzer, and code shared by the products
+// lives in this module's other packages.
 package spec
+
+//go:generate go run ./cmd/deadset-gen
 
 import "embed"
 
@@ -13,10 +15,10 @@ import "embed"
 //go:embed contract
 var Contract embed.FS
 
-// Corpus holds the corpus/ tree: the conformance fixtures and expectation
-// files every analyzer passes before it releases.
+// Corpus holds the corpus/ documents and fixtures: the conformance fixtures and
+// expectation files every analyzer passes before it releases.
 //
-//go:embed all:corpus
+//go:embed corpus/*.json corpus/README.md all:corpus/fixtures
 var Corpus embed.FS
 
 // Vectors holds the vectors/ tree: the published merge, configuration,

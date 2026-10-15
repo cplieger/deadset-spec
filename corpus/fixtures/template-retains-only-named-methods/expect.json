@@ -12,7 +12,7 @@
     },
     {
       "symbol": "View.WithSuccess",
-      "report": "DS1103",
+      "report": "DS1101",
       "confidence": "certain",
       "reachability_class": "certain"
     },
@@ -22,7 +22,7 @@
     },
     {
       "symbol": "Status.Code",
-      "report": "DS1103",
+      "report": "DS1101",
       "confidence": "certain",
       "reachability_class": "certain"
     },
@@ -38,7 +38,7 @@
     },
     {
       "symbol": "User",
-      "report": "DS1101",
+      "report": "DS1501",
       "confidence": "certain",
       "reachability_class": "certain",
       "details": {
@@ -47,7 +47,7 @@
     },
     {
       "symbol": "Status",
-      "report": "DS1101",
+      "report": "DS1501",
       "confidence": "certain",
       "reachability_class": "certain",
       "details": {
@@ -56,7 +56,7 @@
     },
     {
       "symbol": "View",
-      "report": "DS1101",
+      "report": "DS1501",
       "confidence": "certain",
       "reachability_class": "certain",
       "details": {

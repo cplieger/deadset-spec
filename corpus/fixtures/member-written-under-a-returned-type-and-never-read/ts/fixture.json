@@ -1,0 +1,12 @@
+{
+  "symbols": {
+    "Providers.oauth": {
+      "file": "target/main.ts",
+      "line": 2
+    },
+    "Providers.phone": {
+      "file": "target/main.ts",
+      "line": 3
+    }
+  }
+}

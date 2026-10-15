@@ -1,0 +1,46 @@
+{{- $r := .Range -}}
+# {{$r.Title}}: `{{$r.Start}}` to `{{$r.End}}`
+
+{{$r.Question}} {{$r.Description}} Generated from `contract/kinds.json`; the [issue kinds](../kinds.md) page lists every family.
+{{if not $r.Kinds}}
+The family is reserved and holds no kind yet.
+{{else}}
+| Code | Name | Languages | Default | Severity | Fixability |
+| --- | --- | --- | --- | --- | --- |
+{{- range $r.Kinds}}
+| `{{.Code}}` | `{{.Name}}` | {{ticks .Languages}} | `{{onoff .DefaultEnabled}}` | `{{.DefaultSeverity}}`{{if .Fixed}}, fixed{{end}} | `{{.Fixability}}` |
+{{- end}}
+{{range $r.Kinds}}
+## {{.Code}} {{.Name}}
+
+{{.Guide.Why}}
+
+Before:
+
+{{fence .Guide.Example.Language .Guide.Example.Before}}
+
+After:
+
+{{fence .Guide.Example.Language .Guide.Example.After}}
+
+How to fix it: {{.Guide.Fix}} The finding's fixability is `{{.Fixability}}`{{if .FindingFixability}}, or {{ticks .FindingFixability}} where a rule of the analysis gives it{{end}}.
+
+The rule: {{.Rule}}
+{{if .Precondition}}
+Before reporting: {{.Precondition}}
+{{end}}{{if .DerivedFrom}}
+Derived from {{ticks .DerivedFrom}}: a finding is reported once, under the most specific code.
+{{end}}{{if .OverlapByLanguage}}
+Other tools that report it:
+{{range .OverlapByLanguage}}
+- `{{index . 0}}`: {{index . 1}}
+{{- end}}
+{{end}}
+What lowers its confidence:
+
+- The kind's ceiling, `max_class`, is `{{.MaxClass}}`.
+{{- range .Lowered}}
+- `{{.Class}}` ([`{{.Rule}}`](../../{{rulepage .Rule}})): {{.Description}}
+{{- end}}
+- A finding about a member of a dead component carries no higher confidence than the component's root members.
+{{end}}{{end}}

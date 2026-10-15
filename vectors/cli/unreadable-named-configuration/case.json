@@ -1,0 +1,23 @@
+{
+  "description": "A configuration file the invocation names that cannot be read ends the run with the usage code 2, the file named, before any analysis.",
+  "products": [
+    "deadset",
+    "deadset-go",
+    "deadset-ts"
+  ],
+  "rename": {
+    "go.mod.txt": "go.mod",
+    "main.go.txt": "main.go"
+  },
+  "argv": [
+    "print-config",
+    "--target=@TARGET@",
+    "--central=@TARGET@/missing.json"
+  ],
+  "expect": {
+    "exit": 2,
+    "stderr_contains": [
+      "missing.json"
+    ]
+  }
+}

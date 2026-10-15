@@ -9,7 +9,7 @@
   "expect": [
     {
       "symbol": "Unmarshal",
-      "report": "DS1004",
+      "report": "DS1102",
       "confidence": "possible",
       "reachability_class": "possible"
     },
@@ -19,13 +19,13 @@
     },
     {
       "symbol": "spare",
-      "report": "DS1004",
+      "report": "DS1102",
       "confidence": "certain",
       "reachability_class": "certain"
     },
     {
       "symbol": "TestSpare",
-      "report": "DS1005",
+      "report": "DS1103",
       "confidence": "certain",
       "reachability_class": "certain"
     }

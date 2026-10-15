@@ -51,7 +51,7 @@
   },
   "findings": [
     {
-      "code": "DS1101",
+      "code": "DS1501",
       "kind": "unnecessary-export",
       "language": "go",
       "position": {

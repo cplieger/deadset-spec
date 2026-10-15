@@ -1,0 +1,17 @@
+{
+  "description": "A tree holding TypeScript sources and a manifest but no compiler configuration puts no language in scope, because TypeScript is in scope by a marker alone: the run holds no program and ends with exit code 3 and the setup failure no-program.",
+  "pending": "languages.json detection with every exit 3 naming a setup class: the orchestrator detects TypeScript by a source file and a manifest, and the TypeScript analyzer then exits 3 with no setup failure line.",
+  "products": [
+    "deadset"
+  ],
+  "argv": [
+    "analyze",
+    "--target=@TARGET@"
+  ],
+  "expect": {
+    "exit": 3,
+    "stderr_contains": [
+      "setup failure: no-program"
+    ]
+  }
+}

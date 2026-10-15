@@ -1,0 +1,42 @@
+The Go rendering: a field written and never read, of a type only that field and
+its write name.
+
+-- fixture.json --
+{
+  "symbols": {
+    "clock.last": {
+      "file": "target/main.go",
+      "line": 9
+    },
+    "stamp": {
+      "file": "target/main.go",
+      "line": 4
+    },
+    "stamp.at": {
+      "file": "target/main.go",
+      "line": 5
+    }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target ticks a clock.
+package main
+
+type stamp struct {
+	at int
+}
+
+type clock struct {
+	last stamp
+}
+
+func (c *clock) tick(n int) { c.last = stamp{at: n} }
+
+func main() {
+	var c clock
+	c.tick(1)
+}

@@ -1,5 +1,5 @@
 {
-  "code": "DS1601",
+  "code": "DS1701",
   "kind": "unused-dependency",
   "language": "ts",
   "position": { "path": "package.json", "line": 24, "column": 5, "end_line": 24 },

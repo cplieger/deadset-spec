@@ -16,7 +16,7 @@
     },
     {
       "symbol": "orphan",
-      "report": "DS1502",
+      "report": "DS1602",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "file"

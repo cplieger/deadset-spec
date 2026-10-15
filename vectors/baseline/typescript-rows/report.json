@@ -75,7 +75,7 @@
       "liveness_relation": "reference-counting"
     },
     {
-      "code": "DS1502",
+      "code": "DS1602",
       "kind": "file-never-imported",
       "language": "ts",
       "position": {
@@ -109,7 +109,7 @@
       "details": {}
     },
     {
-      "code": "DS1706",
+      "code": "DS9006",
       "kind": "unmatched-configured-declaration",
       "language": "ts",
       "position": {

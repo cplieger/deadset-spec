@@ -22,21 +22,21 @@
   "expect": [
     {
       "symbol": "Mutated",
-      "report": "DS1502",
+      "report": "DS1602",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "file"
     },
     {
       "symbol": "Covered",
-      "report": "DS1502",
+      "report": "DS1602",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "file"
     },
     {
       "symbol": "Excluded",
-      "report": "DS1502",
+      "report": "DS1602",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "file"

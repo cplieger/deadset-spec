@@ -6,7 +6,7 @@
   "expect": [
     { "symbol": "Counter.registerInto", "report": "none", "retained_by": ["interface-satisfaction"] },
     { "symbol": "Gauge.registerInto", "report": "none", "retained_by": ["interface-satisfaction"] },
-    { "symbol": "GaugeDirective", "report": "DS1703", "confidence": "certain", "symbol_kind": "suppression", "details": { "mechanism": "inline" } },
+    { "symbol": "GaugeDirective", "report": "DS9003", "confidence": "certain", "symbol_kind": "suppression", "details": { "mechanism": "inline" } },
     { "symbol": "Trace.attach", "report": "none", "retained_by": ["interface-satisfaction"] },
     { "symbol": "Buffer.Write", "report": "none", "retained_by": ["interface-satisfaction"] },
     { "symbol": "Ratio.sample", "report": "none", "retained_by": ["interface-satisfaction"] },

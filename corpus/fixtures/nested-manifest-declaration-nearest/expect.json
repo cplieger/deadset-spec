@@ -12,7 +12,7 @@
     },
     {
       "symbol": "RootCharts",
-      "report": "DS1601",
+      "report": "DS1701",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "dependency",

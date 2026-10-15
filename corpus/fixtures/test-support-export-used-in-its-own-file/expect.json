@@ -13,7 +13,7 @@
     },
     {
       "symbol": "FakeRequest",
-      "report": "DS1104",
+      "report": "DS1503",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "variable",

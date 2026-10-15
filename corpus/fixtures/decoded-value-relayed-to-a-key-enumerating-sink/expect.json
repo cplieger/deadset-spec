@@ -1,0 +1,26 @@
+{
+  "name": "decoded-value-relayed-to-a-key-enumerating-sink",
+  "description": "A decoded value relayed whole to a sink that enumerates its keys keeps every member the decode fills: Object.entries over a value JSON.parse returns reads each member by its key, so no member of the decoded type is reported, while a member of a type nothing decodes or enumerates is.",
+  "pending": "the key-enumerating sink of serialization-contract (sinks vocabulary): no product keeps the members of a decoded value an enumeration of its keys reads.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Settings.theme",
+      "report": "none"
+    },
+    {
+      "symbol": "Settings.width",
+      "report": "none"
+    },
+    {
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member",
+      "symbol": "Local.unused"
+    }
+  ]
+}

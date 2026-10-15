@@ -1,5 +1,5 @@
 {
-  "code": "DS1101",
+  "code": "DS1501",
   "kind": "unnecessary-export",
   "language": "go",
   "position": { "path": "normalize.go", "line": 12, "column": 6, "end_line": 27 },

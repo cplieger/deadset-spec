@@ -17,6 +17,7 @@ import (
 	"testing/fstest"
 
 	"github.com/cplieger/deadset-spec/v8"
+	"github.com/cplieger/deadset-spec/v8/corpus"
 )
 
 // This file is the merge contract/grammar/merge.md states, run over each published case's
@@ -335,7 +336,7 @@ func sortByKey(records []*jsonValue, key func(*jsonValue) mergeKey) {
 
 // unionEntries carries every entry of the named array of every input once, ordered by the
 // named member and then by the compact encoding.
-func unionEntries(inputs []mergeInput, array string, by ...string) *jsonValue {
+func unionEntries(inputs []mergeInput, trace mergeTrace, array string, by ...string) *jsonValue {
 	seen := map[string]bool{}
 	var out []*jsonValue
 	for _, in := range inputs {
@@ -347,6 +348,7 @@ func unionEntries(inputs []mergeInput, array string, by ...string) *jsonValue {
 			}
 		}
 	}
+	read := slices.Clone(out)
 	slices.SortStableFunc(out, func(a, b *jsonValue) int {
 		for _, member := range by {
 			x, y := a.get(member), b.get(member)
@@ -358,7 +360,11 @@ func unionEntries(inputs []mergeInput, array string, by ...string) *jsonValue {
 				return order
 			}
 		}
-		return bytes.Compare(a.compactBytes(), b.compactBytes())
+		order := bytes.Compare(a.compactBytes(), b.compactBytes())
+		if order != 0 && slices.Index(read, a) < slices.Index(read, b) == (order > 0) {
+			trace.hit(traceTieAgainstReadOrder + array)
+		}
+		return order
 	})
 	return jsonArrayOf(out...)
 }
@@ -422,19 +428,60 @@ var idKeyedPairs = [][2]idKeyedArray{
 	{{path: []string{"consumers", "loaded"}}, {path: []string{"consumers", "unavailable"}, freeText: "reason"}},
 }
 
+// mergeTrace records the branches of contract/grammar/merge.md the reference merge takes, so
+// the case set's coverage is read from what the merge does rather than restated beside it.
+type mergeTrace map[string]bool
+
+func (t mergeTrace) hit(point string) {
+	if t != nil {
+		t[point] = true
+	}
+}
+
+// The trace points the reference merge records; a point ending in a space is completed by the
+// state, array or path the branch turns on.
+const (
+	traceOneReport               = "one report only"
+	traceNoEdges                 = "two reports with no edges"
+	traceWithheldSummed          = "two reports that each withheld findings, the counts summed"
+	traceStaleSuppression        = "a report holding a stale suppression"
+	traceSchemaVersion           = "a schema version outside the accepted range"
+	traceConformance             = "an analyzer with no conformance pass"
+	traceOmitted                 = "a report that omitted a finding"
+	traceTargets                 = "two reports naming different targets"
+	traceMixedNotLanguages       = "a mixed report whose language kinds are not its languages"
+	traceTwoKindsOneLanguage     = "two reports claiming two kinds for one language"
+	traceTwoKindsMixed           = "two single-kind reports of two kinds, merged as mixed"
+	traceTwoAnalyzersOneLanguage = "two analyzers claiming one language, merged"
+	traceOneArtifact             = "two reports one analyzer artifact wrote"
+	traceOneNameTwoVersions      = "two reports one analyzer name wrote at two versions from two artifacts"
+	traceOneNameOther            = "two reports carrying one analyzer name, neither one artifact nor two versions"
+	traceUnresolvedEdge          = "a pending finding whose edge appears in no other report"
+	tracePromotedDeadPair        = "a pending finding whose pair is dead promoted into the merged report"
+	traceFallsWithPair           = "a finding falling with its pending component, whose pair is "
+	traceDroppedBesideDeadPair   = "a component pending beside a dead pair, dropped by a pair that is "
+	traceEdgeAbsent              = "an edge side every evaluation reports absent"
+	traceFreeTextMerged          = "two entries under one id whose free text alone differs, the first kept, in "
+	traceTieAgainstReadOrder     = "two entries tied on their order, sorted by encoding against the read order, in "
+)
+
 var errUnresolvedEdge = errors.New("a dead evaluation meets no evaluation of its edge's other side")
 
 // referenceMerge runs the seven steps of contract/grammar/merge.md and returns the merged report
 // and the exit code, or a nil report and code 3 where a step ends the run.
-func referenceMerge(inputs []mergeInput, accepted []string, caller mergeCaller, kinds map[string]kindRow) (*jsonValue, int, error) {
-	if err := admit(inputs, accepted); err != nil {
+func referenceMerge(inputs []mergeInput, accepted []string, caller mergeCaller, kinds map[string]kindRow, trace mergeTrace) (*jsonValue, int, error) {
+	if err := admit(inputs, accepted, trace); err != nil {
 		return nil, mergeFailureExit, err
+	}
+	if len(inputs) == 1 {
+		trace.hit(traceOneReport)
 	}
 
 	var findings, stale, gaps []*jsonValue
 	var evaluations []referenceEvaluation
 	for _, in := range inputs {
 		for _, r := range in.report.get("stale_suppressions").items {
+			trace.hit(traceStaleSuppression)
 			stale = append(stale, carried(r, in.name, ""))
 		}
 		for _, r := range in.report.get("declared_gaps").items {
@@ -447,28 +494,37 @@ func referenceMerge(inputs []mergeInput, accepted []string, caller mergeCaller, 
 		}
 	}
 
-	promoted, dropped, err := resolveEvaluations(evaluations)
+	if len(inputs) > 1 && len(evaluations) == 0 {
+		trace.hit(traceNoEdges)
+	}
+	promoted, dropped, err := resolveEvaluations(evaluations, trace)
 	if err != nil {
 		return nil, mergeFailureExit, err
 	}
 	for _, in := range inputs {
 		for _, f := range in.report.get("findings").items {
-			if !dropped[f.at("component", "id").str()] {
-				findings = append(findings, carried(f, in.name, "details"))
+			if pair := dropped[f.at("component", "id").str()]; pair != "" {
+				trace.hit(traceFallsWithPair + pair)
+				continue
 			}
+			findings = append(findings, carried(f, in.name, "details"))
 		}
 	}
 	for _, p := range promoted {
 		findings = append(findings, p.finding)
 	}
 	joined := unionComponents(findings, promoted)
-	findings = append(findings, staleEdges(evaluations, caller.Analyzer.Name, kinds)...)
+	staleEdge := staleEdges(evaluations, caller.Analyzer.Name, kinds)
+	if len(staleEdge) > 0 {
+		trace.hit(traceEdgeAbsent)
+	}
+	findings = append(findings, staleEdge...)
 
 	sortByKey(findings, findingKey)
 	sortByKey(stale, staleKey)
 	sortByKey(gaps, gapKey)
 
-	report := mergedEnvelope(inputs, accepted, caller)
+	report := mergedEnvelope(inputs, accepted, caller, trace)
 	report.set("findings", jsonArrayOf(findings...), "")
 	report.set("edge_evaluations", keptEvaluations(evaluations), "")
 	if listed := listedComponents(inputs, findings, joined); listed != nil {
@@ -477,12 +533,12 @@ func referenceMerge(inputs []mergeInput, accepted []string, caller mergeCaller, 
 	report.set("stale_suppressions", jsonArrayOf(stale...), "")
 	report.set("declared_gaps", jsonArrayOf(gaps...), "")
 	report.set("excluded_by_cgo", unionStrings(inputs, "excluded_by_cgo"), "")
-	report.set("test_file_rules", unionEntries(inputs, "test_file_rules", "rule"), "")
-	report.set("type_error_skips", unionEntries(inputs, "type_error_skips", "path", "line"), "")
-	report.set("notes", unionEntries(inputs, "notes", "kind", "path"), "")
-	report.set("unanswered_questions", unionEntries(inputs, "unanswered_questions", "configuration"), "")
-	report.set("conventions_applied", unionEntries(inputs, "conventions_applied", "name", "manifest"), "")
-	report.set("totals", mergedTotals(inputs, findings, stale), "")
+	report.set("test_file_rules", unionEntries(inputs, trace, "test_file_rules", "rule"), "")
+	report.set("type_error_skips", unionEntries(inputs, trace, "type_error_skips", "path", "line"), "")
+	report.set("notes", unionEntries(inputs, trace, "notes", "kind", "path"), "")
+	report.set("unanswered_questions", unionEntries(inputs, trace, "unanswered_questions", "configuration"), "")
+	report.set("conventions_applied", unionEntries(inputs, trace, "conventions_applied", "name", "manifest"), "")
+	report.set("totals", mergedTotals(inputs, findings, stale, trace), "")
 
 	exit := mergeCleanExit
 	failing := func(f *jsonValue) bool { return severityRank[f.get("severity").str()] >= severityRank[caller.FailOn] }
@@ -493,32 +549,38 @@ func referenceMerge(inputs []mergeInput, accepted []string, caller mergeCaller, 
 }
 
 // admit runs step 1 over every input and every two inputs, naming the first refusal.
-func admit(inputs []mergeInput, accepted []string) error {
+func admit(inputs []mergeInput, accepted []string, trace mergeTrace) error {
 	for _, in := range inputs {
 		if !slices.Contains(accepted, in.report.get("schema_version").str()) {
+			trace.hit(traceSchemaVersion)
 			return fmt.Errorf("%s: schema_version %s is outside %q", in.file, in.report.get("schema_version").str(), accepted)
 		}
 		if in.report.at("analyzer", "conformance", "result").str() != "pass" {
+			trace.hit(traceConformance)
 			return fmt.Errorf("%s: %s records no conformance pass", in.file, in.name)
 		}
 		if omitted := in.report.at("totals", "omitted").num(); omitted != 0 {
+			trace.hit(traceOmitted)
 			return fmt.Errorf("%s: %s omitted %d findings", in.file, in.name, omitted)
 		}
 	}
-	if _, err := claimedKinds(inputs); err != nil {
+	if _, err := claimedKinds(inputs, trace); err != nil {
 		return err
 	}
 	for i, in := range inputs {
 		for _, other := range inputs[i+1:] {
 			for _, member := range []string{"root", "identity"} {
 				if a, b := in.report.at("target", member), other.report.at("target", member); !sameJSON(a, b) {
+					trace.hit(traceTargets)
 					return fmt.Errorf("%s names the target %s %s and %s names %s", in.file, member, a.compactBytes(), other.file, b.compactBytes())
 				}
 			}
 			if entries, id, held := conflictingEntry(in.report, other.report); held {
+				trace.hit(entries)
 				return fmt.Errorf("%s and %s carry %s under the id %q", in.file, other.file, entries, id)
 			}
 			if in.name == other.name {
+				trace.hit(oneNameTwice(in, other))
 				return fmt.Errorf("%s and %s carry one analyzer name, %s", in.file, other.file, in.name)
 			}
 		}
@@ -526,10 +588,23 @@ func admit(inputs []mergeInput, accepted []string) error {
 	return nil
 }
 
+// oneNameTwice is the trace point of two reports carrying one analyzer name: one artifact run
+// twice, or one name at two versions from two artifacts.
+func oneNameTwice(in, other mergeInput) string {
+	sameVersion := sameJSON(in.report.at("analyzer", "version"), other.report.at("analyzer", "version"))
+	switch {
+	case sameVersion && in.digest != "" && in.digest == other.digest:
+		return traceOneArtifact
+	case !sameVersion && in.digest != other.digest:
+		return traceOneNameTwoVersions
+	}
+	return traceOneNameOther
+}
+
 // claimedKinds is the kind every input report claims for each language its analyzer.languages
 // names, refusing a mixed kind whose language_kinds is not exactly those languages or names
 // one kind for all of them, and two reports claiming two kinds for one language.
-func claimedKinds(inputs []mergeInput) (map[string]string, error) {
+func claimedKinds(inputs []mergeInput, trace mergeTrace) (map[string]string, error) {
 	claims, from := map[string]string{}, map[string]string{}
 	for _, in := range inputs {
 		kind, perLanguage := in.report.at("target", "kind").str(), in.report.at("target", "language_kinds")
@@ -548,11 +623,13 @@ func claimedKinds(inputs []mergeInput) (map[string]string, error) {
 			}
 			distinct := slices.Compact(slices.Sorted(maps.Values(own)))
 			if !slices.Equal(slices.Sorted(maps.Keys(own)), slices.Sorted(slices.Values(languages))) || len(distinct) < 2 {
+				trace.hit(traceMixedNotLanguages)
 				return nil, fmt.Errorf("%s names the kinds %s for the languages %q", in.file, perLanguage.compactBytes(), languages)
 			}
 		}
 		for _, language := range slices.Sorted(maps.Keys(own)) {
 			if prior, ok := claims[language]; ok && prior != own[language] {
+				trace.hit(traceTwoKindsOneLanguage)
 				return nil, fmt.Errorf("%s gives %s the kind %s and %s gives it %s", from[language], language, prior, in.file, own[language])
 			}
 			claims[language], from[language] = own[language], in.file
@@ -576,11 +653,14 @@ func contractLanguages() []string {
 
 // mergedTarget is the target of the merged report: the inputs' root and identity, and the
 // one kind every claimed language shares, or mixed with each language's kind in schema order.
-func mergedTarget(inputs []mergeInput, kinds map[string]string, languageOrder []string) *jsonValue {
+func mergedTarget(inputs []mergeInput, kinds map[string]string, languageOrder []string, trace mergeTrace) *jsonValue {
 	first := inputs[0].report.get("target")
 	distinct := slices.Compact(slices.Sorted(maps.Values(kinds)))
 	if len(distinct) == 1 {
 		return jsonObjectOf("kind", jsonText(distinct[0]), "root", first.get("root").clone(), "identity", first.get("identity").clone())
+	}
+	if !slices.ContainsFunc(inputs, func(in mergeInput) bool { return in.report.at("target", "kind").str() == "mixed" }) {
+		trace.hit(traceTwoKindsMixed)
 	}
 	perLanguage := jsonObjectOf()
 	for _, language := range languageOrder {
@@ -619,7 +699,7 @@ func conflictingEntry(a, b *jsonValue) (entries, id string, held bool) {
 			other := pair[1-i]
 			for _, entry := range b.at(other.path...).items {
 				if _, ok := byID[entry.get("id").str()]; ok {
-					return "a " + array.name() + " entry and a " + other.name() + " entry", entry.get("id").str(), true
+					return "a " + pair[0].name() + " entry and a " + pair[1].name() + " entry", entry.get("id").str(), true
 				}
 			}
 		}
@@ -643,8 +723,9 @@ type promotion struct {
 
 // resolveEvaluations runs step 4 over every dead evaluation: rule 1 in canonical order of the
 // findings, rules 2 and 4 to a fixpoint over the components they drop, then rule 3. It returns
-// the findings it promotes, in canonical order, and the components it drops.
-func resolveEvaluations(evaluations []referenceEvaluation) ([]promotion, map[string]bool, error) {
+// the findings it promotes, in canonical order, and the components it drops, each with the
+// state of the pair that dropped it.
+func resolveEvaluations(evaluations []referenceEvaluation, trace mergeTrace) ([]promotion, map[string]string, error) {
 	var dead []referenceEvaluation
 	for _, e := range evaluations {
 		if e.state == mergeStateDead {
@@ -654,25 +735,30 @@ func resolveEvaluations(evaluations []referenceEvaluation) ([]promotion, map[str
 	slices.SortStableFunc(dead, func(a, b referenceEvaluation) int {
 		return findingKey(carried(a.record.get("finding"), a.analyzer, "details")).compare(findingKey(carried(b.record.get("finding"), b.analyzer, "details")))
 	})
-	dropped := map[string]bool{}
+	dropped, droppedOn := map[string]string{}, map[string]string{}
 	for _, e := range dead {
 		if strongestOther(e, evaluations, dropped) == "" {
+			trace.hit(traceUnresolvedEdge)
 			return nil, nil, fmt.Errorf("%w: edge %s side %s", errUnresolvedEdge, e.edge, e.side)
 		}
 	}
 	for grew := true; grew; {
 		grew = false
 		for _, e := range dead {
-			if !dropped[e.component()] && strongestOther(e, evaluations, dropped) != mergeStateDead {
-				dropped[e.component()] = true
+			if pair := strongestOther(e, evaluations, dropped); dropped[e.component()] == "" && pair != mergeStateDead {
+				dropped[e.component()], droppedOn[e.component()] = pair, e.edge
 				grew = true
 			}
 		}
 	}
 	var promoted []promotion
 	for _, e := range dead {
-		if !dropped[e.component()] {
+		pair := dropped[e.component()]
+		if pair == "" {
+			trace.hit(tracePromotedDeadPair)
 			promoted = append(promoted, promotion{finding: carried(e.record.get("finding"), e.analyzer, "details"), evaluation: e})
+		} else if e.edge != droppedOn[e.component()] && strongestOther(e, evaluations, nil) == mergeStateDead {
+			trace.hit(traceDroppedBesideDeadPair + pair)
 		}
 	}
 	return promoted, dropped, nil
@@ -685,14 +771,14 @@ func (e referenceEvaluation) component() string {
 
 // strongestOther is the strongest state the evaluations on the other sides of e's edge read as,
 // a dead evaluation of a dropped component reading as live, or "" where no other side holds one.
-func strongestOther(e referenceEvaluation, evaluations []referenceEvaluation, dropped map[string]bool) string {
+func strongestOther(e referenceEvaluation, evaluations []referenceEvaluation, dropped map[string]string) string {
 	strongest := ""
 	for _, other := range evaluations {
 		if other.edge != e.edge || other.side == e.side {
 			continue
 		}
 		state := other.state
-		if state == mergeStateDead && dropped[other.component()] {
+		if state == mergeStateDead && dropped[other.component()] != "" {
 			state = mergeStateLive
 		}
 		if strongest == "" || stateStrength[state] < stateStrength[strongest] {
@@ -799,7 +885,7 @@ func listedComponents(inputs []mergeInput, findings []*jsonValue, joined map[str
 	for _, f := range findings {
 		id := f.at("component", "id").str()
 		held, ok := members[id]
-		if !ok && f.get("code").str() == "DS1705" {
+		if !ok && f.get("code").str() == "DS9005" {
 			held, ok = []*jsonValue{jsonObjectOf("ref", f.at("symbol", "ref"), "name", f.at("symbol", "name"), "position", f.get("position"))}, true
 		}
 		if !ok || seen[id] {
@@ -821,7 +907,7 @@ func listedComponents(inputs []mergeInput, findings []*jsonValue, joined map[str
 	return out
 }
 
-// staleEdges runs step 5: one DS1705 per edge with a side whose every evaluation is absent.
+// staleEdges runs step 5: one DS9005 per edge with a side whose every evaluation is absent.
 func staleEdges(evaluations []referenceEvaluation, merger string, kinds map[string]kindRow) []*jsonValue {
 	sides := map[string]map[string][]referenceEvaluation{}
 	for _, e := range evaluations {
@@ -830,7 +916,7 @@ func staleEdges(evaluations []referenceEvaluation, merger string, kinds map[stri
 		}
 		sides[e.edge][e.side] = append(sides[e.edge][e.side], e)
 	}
-	row := kinds["DS1705"]
+	row := kinds["DS9005"]
 	var out []*jsonValue
 	for _, edge := range slices.Sorted(maps.Keys(sides)) {
 		var staleSides []string
@@ -917,10 +1003,13 @@ func unionStrings(inputs []mergeInput, array string) *jsonValue {
 
 // mergedEnvelope builds every member step 6 takes from the caller or derives from the inputs
 // ahead of the record arrays, in report.schema.json's order.
-func mergedEnvelope(inputs []mergeInput, accepted []string, caller mergeCaller) *jsonValue {
+func mergedEnvelope(inputs []mergeInput, accepted []string, caller mergeCaller, trace mergeTrace) *jsonValue {
 	languages := map[string]bool{}
 	for _, in := range inputs {
 		for _, l := range in.report.at("analyzer", "languages").items {
+			if languages[l.str()] {
+				trace.hit(traceTwoAnalyzersOneLanguage)
+			}
 			languages[l.str()] = true
 		}
 	}
@@ -928,20 +1017,21 @@ func mergedEnvelope(inputs []mergeInput, accepted []string, caller mergeCaller) 
 	if err != nil {
 		conformance = jsonText(err.Error())
 	}
-	claims, err := claimedKinds(inputs)
+	claims, err := claimedKinds(inputs, nil)
 	if err != nil {
 		claims = map[string]string{err.Error(): ""}
 	}
-	target := mergedTarget(inputs, claims, contractLanguages())
+	target := mergedTarget(inputs, claims, contractLanguages(), trace)
 	from := slices.Clone(inputs)
 	slices.SortStableFunc(from, mergedFromOrder)
 	mergedFrom := jsonArrayOf()
 	for _, in := range from {
 		mergedFrom.items = append(mergedFrom.items, jsonObjectOf(
 			"name", jsonText(in.name), "version", jsonText(in.report.at("analyzer", "version").str()), "digest", jsonText(in.digest),
+			"languages", in.report.at("analyzer", "languages"), "totals", in.report.at("totals"),
 		))
 	}
-	loaded, unavailable := unionByID(inputs, "consumers", "loaded"), unionByID(inputs, "consumers", "unavailable")
+	loaded, unavailable := unionByID(inputs, trace, "consumers", "loaded"), unionByID(inputs, trace, "consumers", "unavailable")
 	return jsonObjectOf(
 		"schema_version", jsonText(caller.SchemaVersion),
 		"contract_version", jsonText(caller.ContractVersion),
@@ -954,8 +1044,8 @@ func mergedEnvelope(inputs []mergeInput, accepted []string, caller mergeCaller) 
 		),
 		"merged_from", mergedFrom,
 		"target", target,
-		"configurations", unionByID(inputs, "configurations"),
-		"configurations_not_built", unionByID(inputs, "configurations_not_built"),
+		"configurations", unionByID(inputs, trace, "configurations"),
+		"configurations_not_built", unionByID(inputs, trace, "configurations_not_built"),
 		"consumers", jsonObjectOf(
 			"declared", jsonNumberOf(len(loaded.items)+len(unavailable.items)),
 			"loaded", loaded,
@@ -969,7 +1059,7 @@ func mergedFromOrder(a, b mergeInput) int { return strings.Compare(a.name, b.nam
 
 // unionByID carries one entry per id of the id-keyed array at path, ordered by id: the entry of
 // the input that comes first in merged_from.
-func unionByID(inputs []mergeInput, path ...string) *jsonValue {
+func unionByID(inputs []mergeInput, trace mergeTrace, path ...string) *jsonValue {
 	type held struct {
 		entry *jsonValue
 		in    mergeInput
@@ -979,6 +1069,9 @@ func unionByID(inputs []mergeInput, path ...string) *jsonValue {
 		for _, entry := range in.report.at(path...).items {
 			id := entry.get("id").str()
 			prior, ok := first[id]
+			if ok && !sameJSON(prior.entry, entry) {
+				trace.hit(traceFreeTextMerged + strings.Join(path, "."))
+			}
 			if !ok || mergedFromOrder(in, prior.in) < 0 {
 				first[id] = held{entry: entry, in: in}
 			}
@@ -993,7 +1086,7 @@ func unionByID(inputs []mergeInput, path ...string) *jsonValue {
 
 // mergedTotals recomputes the counts over the merged arrays, summing the two that count records
 // no merged array holds.
-func mergedTotals(inputs []mergeInput, findings, stale []*jsonValue) *jsonValue {
+func mergedTotals(inputs []mergeInput, findings, stale []*jsonValue, trace mergeTrace) *jsonValue {
 	severities := map[string]int{}
 	lines := map[string]int{}
 	for _, f := range findings {
@@ -1008,12 +1101,21 @@ func mergedTotals(inputs []mergeInput, findings, stale []*jsonValue) *jsonValue 
 	}
 	inEffect, reasons := 0, 0
 	withheld := map[string]int{}
+	withholding := 0
 	for _, in := range inputs {
 		inEffect += in.report.at("totals", "suppressions_in_effect").num()
 		reasons += in.report.at("totals", "reasons_recorded").num()
+		held := 0
 		for _, level := range withheldLevels {
+			held += in.report.at("totals", "withheld", level).num()
 			withheld[level] += in.report.at("totals", "withheld", level).num()
 		}
+		if held > 0 {
+			withholding++
+		}
+	}
+	if withholding > 1 {
+		trace.hit(traceWithheldSummed)
 	}
 	return jsonObjectOf(
 		"findings", jsonNumberOf(len(findings)),
@@ -1043,7 +1145,7 @@ func loadReferenceCase(fsys fs.FS, root, dir string) ([]mergeInput, []string, me
 	case !held:
 		return nil, nil, caller, fmt.Errorf("the case holds no %s, want the facts the caller supplies", mergeCallerFile)
 	}
-	if err := decodeStrict(data, &caller); err != nil {
+	if err := corpus.DecodeStrict(data, &caller); err != nil {
 		return nil, nil, caller, fmt.Errorf("decoding %s: %w", mergeCallerFile, err)
 	}
 	if _, ranked := severityRank[caller.FailOn]; !ranked {
@@ -1100,7 +1202,7 @@ func firstDifference(got, want []byte) string {
 
 // mergeReproductionProblems runs the reference merge over one case and names every way its
 // result departs from what the case expects.
-func mergeReproductionProblems(fsys fs.FS, root, dir string, kinds map[string]kindRow) []string {
+func mergeReproductionProblems(fsys fs.FS, root, dir string, kinds map[string]kindRow, trace mergeTrace) []string {
 	inputs, accepted, caller, err := loadReferenceCase(fsys, root, dir)
 	if err != nil {
 		return []string{err.Error()}
@@ -1109,7 +1211,7 @@ func mergeReproductionProblems(fsys fs.FS, root, dir string, kinds map[string]ki
 	if err != nil {
 		return []string{err.Error()}
 	}
-	report, exit, mergeErr := referenceMerge(inputs, accepted, caller, kinds)
+	report, exit, mergeErr := referenceMerge(inputs, accepted, caller, kinds, trace)
 	if exit != c.exit {
 		return []string{fmt.Sprintf("the merge returns %d (%v), want %s = %d", exit, mergeErr, mergeExitFile, c.exit)}
 	}
@@ -1137,20 +1239,6 @@ func kindsByCode(t *testing.T) map[string]kindRow {
 		out[k.Code] = k
 	}
 	return out
-}
-
-// TestMergeVectorCasesReproduceFromTheirInputsAndTheCallersFacts merges every published case
-// from its inputs, its accepted range and its caller.json alone, so an expected byte the three do
-// not determine is a failure here.
-func TestMergeVectorCasesReproduceFromTheirInputsAndTheCallersFacts(t *testing.T) {
-	kinds := kindsByCode(t)
-	for _, dir := range mergeCaseDirs(t) {
-		t.Run(dir, func(t *testing.T) {
-			for _, problem := range mergeReproductionProblems(spec.Vectors, mergeVectorsDir, dir, kinds) {
-				t.Errorf("%s/%s: %s", mergeVectorsDir, dir, problem)
-			}
-		})
-	}
 }
 
 // copiedMergeCase copies one published case into memory, so a planted change exercises the
@@ -1257,11 +1345,11 @@ func TestMergeReproductionRefuses(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			m := copiedMergeCase(t, tc.dir)
 			at := mergeVectorsDir + "/" + tc.dir
-			if problems := mergeReproductionProblems(m, mergeVectorsDir, tc.dir, kinds); len(problems) != 0 {
+			if problems := mergeReproductionProblems(m, mergeVectorsDir, tc.dir, kinds, nil); len(problems) != 0 {
 				t.Fatalf("Setup: mergeReproductionProblems(%s unchanged) = %q, want none", tc.dir, problems)
 			}
 			tc.mutate(t, m, at)
-			problems := mergeReproductionProblems(m, mergeVectorsDir, tc.dir, kinds)
+			problems := mergeReproductionProblems(m, mergeVectorsDir, tc.dir, kinds, nil)
 			if !slices.ContainsFunc(problems, func(p string) bool { return strings.Contains(p, tc.wantMsg) }) {
 				t.Errorf("mergeReproductionProblems(%s with %s) = %q, want a problem containing %q", tc.dir, tc.name, problems, tc.wantMsg)
 			}

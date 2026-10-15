@@ -12,7 +12,7 @@
   "expect": [
     {
       "symbol": "AboveMarkerDirective",
-      "report": "DS1703",
+      "report": "DS9003",
       "confidence": "certain",
       "symbol_kind": "suppression",
       "details": {
@@ -40,7 +40,7 @@
     },
     {
       "symbol": "BetweenDirective",
-      "report": "DS1703",
+      "report": "DS9003",
       "confidence": "certain",
       "symbol_kind": "suppression",
       "details": {

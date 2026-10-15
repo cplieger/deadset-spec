@@ -4,8 +4,13 @@
   "analyzer": {
     "name": "deadset",
     "version": "1.0.0",
-    "languages": ["go", "ts"],
-    "schema_versions_accepted": ["9.0.0"],
+    "languages": [
+      "go",
+      "ts"
+    ],
+    "schema_versions_accepted": [
+      "9.0.0"
+    ],
     "conformance": {
       "corpus_version": "6.0.0",
       "result": "pass",
@@ -16,27 +21,92 @@
     {
       "name": "deadset-go",
       "version": "1.0.0",
-      "digest": "sha256:da34805c36e00a21a4769860acdea3cb84ffdc2580d6205ddd74461d18e43ae6"
+      "digest": "sha256:da34805c36e00a21a4769860acdea3cb84ffdc2580d6205ddd74461d18e43ae6",
+      "languages": [
+        "go"
+      ],
+      "totals": {
+        "findings": 1,
+        "by_severity": {
+          "allow": 0,
+          "warn": 0,
+          "deny": 1
+        },
+        "deletable_lines": 41,
+        "suppressions_in_effect": 0,
+        "reasons_recorded": 0,
+        "stale_suppressions": 1,
+        "pending": 0,
+        "omitted": 0,
+        "withheld": {
+          "certain": 0,
+          "probable": 0,
+          "possible": 0
+        }
+      }
     },
     {
       "name": "deadset-ts",
       "version": "1.0.0",
-      "digest": "sha256:c5b8664245f23f797fc16bd700847e280aec9b2926075fadec52517b2af4b4aa"
+      "digest": "sha256:c5b8664245f23f797fc16bd700847e280aec9b2926075fadec52517b2af4b4aa",
+      "languages": [
+        "ts"
+      ],
+      "totals": {
+        "findings": 1,
+        "by_severity": {
+          "allow": 0,
+          "warn": 0,
+          "deny": 1
+        },
+        "deletable_lines": 6,
+        "suppressions_in_effect": 0,
+        "reasons_recorded": 0,
+        "stale_suppressions": 0,
+        "pending": 0,
+        "omitted": 0,
+        "withheld": {
+          "certain": 0,
+          "probable": 0,
+          "possible": 0
+        }
+      }
     }
   ],
-  "target": { "kind": "library", "root": "src/app", "identity": "example.com/app" },
+  "target": {
+    "kind": "library",
+    "root": "src/app",
+    "identity": "example.com/app"
+  },
   "configurations": [
-    { "id": "linux-amd64", "os": "linux", "arch": "amd64", "tags": [] },
-    { "id": "tsconfig.json", "project": "tsconfig.json" }
+    {
+      "id": "linux-amd64",
+      "os": "linux",
+      "arch": "amd64",
+      "tags": []
+    },
+    {
+      "id": "tsconfig.json",
+      "project": "tsconfig.json"
+    }
   ],
   "configurations_not_built": [],
-  "consumers": { "declared": 0, "loaded": [], "unavailable": [] },
+  "consumers": {
+    "declared": 0,
+    "loaded": [],
+    "unavailable": []
+  },
   "findings": [
     {
       "code": "DS1001",
       "kind": "unused-exported",
       "language": "go",
-      "position": { "path": "catalog.go", "line": 214, "column": 6, "end_line": 231 },
+      "position": {
+        "path": "catalog.go",
+        "line": 214,
+        "column": 6,
+        "end_line": 231
+      },
       "symbol": {
         "ref": "go://example.com/app#Catalog.ResolveAlias",
         "kind": "method",
@@ -51,9 +121,16 @@
       "liveness_relation": "reference-counting",
       "test_only": false,
       "generated": false,
-      "component": { "id": "deadset-go/c-0007", "root": true, "symbol_count": 3, "deletable_lines": 41 },
+      "component": {
+        "id": "deadset-go/c-0007",
+        "root": true,
+        "symbol_count": 3,
+        "deletable_lines": 41
+      },
       "retained_by": [],
-      "configurations": ["linux-amd64"],
+      "configurations": [
+        "linux-amd64"
+      ],
       "consumers_loaded": [],
       "fixability": "deletable",
       "severity": "deny",
@@ -62,10 +139,15 @@
       "details": {}
     },
     {
-      "code": "DS1705",
+      "code": "DS9005",
       "kind": "stale-cross-language-edge",
       "language": "ts",
-      "position": { "path": "deadset-edges.json", "line": 1, "column": 1, "end_line": 1 },
+      "position": {
+        "path": "deadset-edges.json",
+        "line": 1,
+        "column": 1,
+        "end_line": 1
+      },
       "symbol": {
         "ref": "ts://@example/app/src/wire.ts#ServerEvent",
         "kind": "edge",
@@ -76,7 +158,12 @@
       "confidence": "certain",
       "test_only": false,
       "generated": false,
-      "component": { "id": "deadset/c-0001", "root": true, "symbol_count": 1, "deletable_lines": 0 },
+      "component": {
+        "id": "deadset/c-0001",
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 0
+      },
       "retained_by": [],
       "configurations": [],
       "consumers_loaded": [],
@@ -86,8 +173,16 @@
       "details": {
         "edge": "wire/ServerEvent",
         "sides": [
-          { "side": "provides", "symbol": "go://example.com/app#ServerEvent", "state": "live" },
-          { "side": "used_by", "symbol": "ts://@example/app/src/wire.ts#ServerEvent", "state": "absent" }
+          {
+            "side": "provides",
+            "symbol": "go://example.com/app#ServerEvent",
+            "state": "live"
+          },
+          {
+            "side": "used_by",
+            "symbol": "ts://@example/app/src/wire.ts#ServerEvent",
+            "state": "absent"
+          }
         ]
       }
     },
@@ -95,7 +190,12 @@
       "code": "DS1001",
       "kind": "unused-exported",
       "language": "ts",
-      "position": { "path": "src/wire.ts", "line": 12, "column": 7, "end_line": 17 },
+      "position": {
+        "path": "src/wire.ts",
+        "line": 12,
+        "column": 7,
+        "end_line": 17
+      },
       "symbol": {
         "ref": "ts://@example/app/src/wire.ts#legacyFrame",
         "kind": "variable",
@@ -109,9 +209,16 @@
       "liveness_relation": "reference-counting",
       "test_only": false,
       "generated": false,
-      "component": { "id": "deadset-ts/c-0004", "root": true, "symbol_count": 1, "deletable_lines": 6 },
+      "component": {
+        "id": "deadset-ts/c-0004",
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 6
+      },
       "retained_by": [],
-      "configurations": ["tsconfig.json"],
+      "configurations": [
+        "tsconfig.json"
+      ],
       "consumers_loaded": [],
       "fixability": "deletable",
       "severity": "deny",
@@ -138,7 +245,7 @@
   ],
   "stale_suppressions": [
     {
-      "code": "DS1703",
+      "code": "DS9003",
       "mechanism": "ignore",
       "entry": {
         "code": "DS1001",
@@ -146,7 +253,11 @@
         "path": "catalog.go",
         "reason": "removal is breaking for the published API"
       },
-      "position": { "path": "deadset-ignore.json", "line": 7, "column": 5 },
+      "position": {
+        "path": "deadset-ignore.json",
+        "line": 7,
+        "column": 5
+      },
       "symbol": "go://example.com/app#Catalog.legacyAlias",
       "message": "the ignore entry named DS1001 and the symbol it names reports DS1003",
       "analyzer": "deadset-go"
@@ -162,8 +273,14 @@
   ],
   "excluded_by_cgo": [],
   "test_file_rules": [
-    { "rule": "go-test-suffix", "matched": 61 },
-    { "rule": "ts-test-glob", "matched": 12 }
+    {
+      "rule": "go-test-suffix",
+      "matched": 61
+    },
+    {
+      "rule": "ts-test-glob",
+      "matched": 12
+    }
   ],
   "type_error_skips": [],
   "notes": [],
@@ -171,7 +288,11 @@
   "conventions_applied": [],
   "totals": {
     "findings": 3,
-    "by_severity": { "allow": 0, "warn": 0, "deny": 3 },
+    "by_severity": {
+      "allow": 0,
+      "warn": 0,
+      "deny": 3
+    },
     "deletable_lines": 47,
     "suppressions_in_effect": 0,
     "reasons_recorded": 1,

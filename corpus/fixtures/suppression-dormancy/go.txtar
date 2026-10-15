@@ -23,7 +23,7 @@ func main() {}
 
 func dead() int { return helper(1) }
 
-//deadset:ignore DS1801 -- Kept for a parameter that is read.
+//deadset:ignore DS1401 -- Kept for a parameter that is read.
 func helper(v int) int { return v + 1 }
 
 //deadset:ignore DS1002 -- Kept for the next release.

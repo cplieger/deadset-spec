@@ -6,7 +6,7 @@
   "expect": [
     {
       "symbol": "Old",
-      "report": "DS1006",
+      "report": "DS1104",
       "symbol_kind": "function",
       "confidence": "certain",
       "reachability_class": "certain",
@@ -14,7 +14,7 @@
     },
     {
       "symbol": "Stale",
-      "report": "DS1006",
+      "report": "DS1104",
       "symbol_kind": "variable",
       "confidence": "certain",
       "reachability_class": "certain",
@@ -22,7 +22,7 @@
     },
     {
       "symbol": "StaleToo",
-      "report": "DS1006",
+      "report": "DS1104",
       "symbol_kind": "variable",
       "confidence": "certain",
       "reachability_class": "certain",
@@ -30,7 +30,7 @@
     },
     {
       "symbol": "Counter.Old",
-      "report": "DS1006",
+      "report": "DS1104",
       "confidence": "certain",
       "reachability_class": "certain",
       "liveness_relation": "reference-counting"

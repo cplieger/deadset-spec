@@ -16,7 +16,7 @@
   },
   "consumers": { "complete": true },
   "roots": { "patterns": ["go://example.com/app#Catalog.*"] },
-  "severity": { "DS1101": "warn", "DS18": "allow" },
+  "severity": { "DS1501": "warn", "DS14": "allow" },
   "exemptions": { "disabled": ["template-field"] },
   "reporters": {
     "formats": ["text", "sarif"],
@@ -68,6 +68,6 @@
     "target.kind": "flag: --target-kind",
     "analysis.min_confidence": "central: central.json",
     "analysis.generated_files": "default",
-    "severity.DS1101": "central: central.json"
+    "severity.DS1501": "central: central.json"
   }
 }

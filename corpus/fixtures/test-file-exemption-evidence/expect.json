@@ -9,7 +9,7 @@
   "expect": [
     {
       "symbol": "Sample.Name",
-      "report": "DS1004",
+      "report": "DS1102",
       "confidence": "certain",
       "reachability_class": "certain",
       "liveness_relation": "reference-counting"

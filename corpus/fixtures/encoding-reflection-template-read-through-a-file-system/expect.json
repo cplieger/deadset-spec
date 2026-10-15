@@ -1,0 +1,24 @@
+{
+  "name": "encoding-reflection-template-read-through-a-file-system",
+  "description": "Templates the program reads through a file system's ReadDir and Open and io.ReadAll, then parses, are templates the analysis reads: the engine reads only the fields they name, so a field no template names is reported as written and never read.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "view.Name",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field",
+      "symbol": "view.Hidden"
+    }
+  ]
+}

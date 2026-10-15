@@ -1,0 +1,39 @@
+{
+  "name": "test-relays-a-decoded-value",
+  "description": "A test that decodes a value and encodes it again relays every member the decode fills, in the run that counts test references: the fields of a type a test decodes and re-encodes are read, so none is reported, while a field the type's own production code never touches and no test decodes is.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "report": "DS1102",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type",
+      "symbol": "doc"
+    },
+    {
+      "symbol": "doc.Title",
+      "report": "none"
+    },
+    {
+      "symbol": "doc.Body",
+      "report": "none"
+    },
+    {
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field",
+      "symbol": "other.Spare"
+    },
+    {
+      "report": "DS1103",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "symbol": "BenchmarkRoundTrip"
+    }
+  ]
+}

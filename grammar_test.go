@@ -468,7 +468,7 @@ type inlineVerdict string
 const (
 	notADirective inlineVerdict = "step 1, not a directive"
 	wellFormed    inlineVerdict = "step 2, a directive"
-	reasonMissing inlineVerdict = "step 3, DS1701"
+	reasonMissing inlineVerdict = "step 3, DS9001"
 	malformed     inlineVerdict = "step 4, exit code 2"
 )
 
@@ -500,8 +500,8 @@ var (
 	}
 	statedOutcome = map[inlineVerdict]string{
 		notADirective: "not a directive",
-		wellFormed:    "DS1703",
-		reasonMissing: "DS1701",
+		wellFormed:    "DS9003",
+		reasonMissing: "DS9001",
 		malformed:     "exit code 2",
 	}
 )
@@ -675,7 +675,7 @@ func TestSuppressionInlineCorpusFollowsTheDecisionProcedure(t *testing.T) {
 				codes := reasonlessCodes(t, exprs, in.Comment)
 				wantReports := []string(nil)
 				if len(codes) > 1 {
-					wantReports = slices.Repeat([]string{"DS1701"}, len(codes))
+					wantReports = slices.Repeat([]string{"DS9001"}, len(codes))
 				}
 				if !slices.Equal(c.Reports, wantReports) {
 					t.Errorf("reasonless case %d names the codes %v and reports %v, want %v: one refusal per code", i, codes, c.Reports, wantReports)
@@ -790,8 +790,8 @@ func rulesReporting(codes []string) []string {
 // statedEntryOutcome is the outcome the page states for a refused ignore entry or
 // baseline row under each rule.
 var statedEntryOutcome = map[string]string{
-	"reason-required": "DS1701",
-	"path-required":   "DS1702",
+	"reason-required": "DS9001",
+	"path-required":   "DS9002",
 	"path-form":       "exit code 2",
 	"symbol-form":     "exit code 2",
 	"code-form":       "exit code 2",

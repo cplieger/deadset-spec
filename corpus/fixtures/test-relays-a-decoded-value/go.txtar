@@ -1,0 +1,68 @@
+The Go rendering: a benchmark that decodes a document and encodes it again.
+
+-- fixture.json --
+{
+  "symbols": {
+    "BenchmarkRoundTrip": {
+      "file": "target/main_test.go",
+      "line": 8
+    },
+    "doc": {
+      "file": "target/main.go",
+      "line": 4
+    },
+    "doc.Body": {
+      "file": "target/main.go",
+      "line": 6
+    },
+    "doc.Title": {
+      "file": "target/main.go",
+      "line": 5
+    },
+    "other.Spare": {
+      "file": "target/main.go",
+      "line": 11
+    }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target declares the document type its tests round-trip.
+package main
+
+type doc struct {
+	Title string `json:"title"`
+	Body  string `json:"body"`
+}
+
+type other struct {
+	Used  int
+	Spare int
+}
+
+func main() {
+	o := other{Used: 1}
+	println(o.Used)
+}
+-- target/main_test.go --
+package main
+
+import (
+	"encoding/json"
+	"testing"
+)
+
+func BenchmarkRoundTrip(b *testing.B) {
+	for b.Loop() {
+		var d doc
+		if err := json.Unmarshal([]byte(`{"title":"t","body":"b"}`), &d); err != nil {
+			b.Fatal(err)
+		}
+		if _, err := json.Marshal(d); err != nil {
+			b.Fatal(err)
+		}
+	}
+}

@@ -15,7 +15,7 @@
     },
     {
       "symbol": "Tone.Quiet",
-      "report": "DS1302",
+      "report": "DS1005",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "enum-member",

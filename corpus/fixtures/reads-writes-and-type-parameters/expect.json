@@ -21,7 +21,7 @@
     },
     {
       "symbol": "UnnamedMember",
-      "report": "DS1302",
+      "report": "DS1005",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "enum-member",
@@ -29,7 +29,7 @@
     },
     {
       "symbol": "UnusedTypeParameter",
-      "report": "DS1303",
+      "report": "DS1006",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "type-parameter",

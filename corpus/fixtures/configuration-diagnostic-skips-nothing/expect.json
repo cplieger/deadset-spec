@@ -12,7 +12,7 @@
   "expect": [
     {
       "symbol": "spareImport",
-      "report": "DS1002",
+      "report": "DS1004",
       "confidence": "certain"
     },
     {

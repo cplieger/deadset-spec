@@ -6,16 +6,16 @@
   "expect": [
     { "symbol": "busy.Backoff", "report": "none", "retained_by": ["interface-satisfaction"] },
     { "symbol": "busy.Attempts", "report": "none", "retained_by": ["interface-satisfaction"] },
-    { "symbol": "busy.Remaining", "report": "DS1103", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "method", "liveness_relation": "reachability", "component": { "root": false } },
-    { "symbol": "busy.Spare", "report": "DS1103", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "method" },
+    { "symbol": "busy.Remaining", "report": "DS1101", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "method", "liveness_relation": "reachability", "component": { "root": false } },
+    { "symbol": "busy.Spare", "report": "DS1101", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "method" },
     { "symbol": "budget.Remaining", "report": "none", "retained_by": ["interface-satisfaction"] },
     { "symbol": "deadQuota", "report": "DS1002", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "function", "liveness_relation": "reference-counting", "component": { "root": true } },
     { "symbol": "fault.Code", "report": "none", "retained_by": ["interface-satisfaction"] },
     { "symbol": "fault.Close", "report": "none", "retained_by": ["interface-satisfaction"] },
-    { "symbol": "fault.Flush", "report": "DS1103", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "method" },
-    { "symbol": "recorder.Close", "report": "DS1103", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "method" },
-    { "symbol": "busy.Pause", "report": "DS1004", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "method" },
+    { "symbol": "fault.Flush", "report": "DS1101", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "method" },
+    { "symbol": "recorder.Close", "report": "DS1101", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "method" },
+    { "symbol": "busy.Pause", "report": "DS1102", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "method" },
     { "symbol": "stamp.Show", "report": "none", "retained_by": ["interface-satisfaction"] },
-    { "symbol": "stamp.Label", "report": "DS1103", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "method" }
+    { "symbol": "stamp.Label", "report": "DS1101", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "method" }
   ]
 }

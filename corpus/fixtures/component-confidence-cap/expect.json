@@ -10,7 +10,7 @@
   "expect": [
     {
       "symbol": "Published",
-      "report": "DS1004",
+      "report": "DS1102",
       "confidence": "possible",
       "reachability_class": "possible",
       "symbol_kind": "function",
@@ -30,7 +30,7 @@
     },
     {
       "symbol": "Internal",
-      "report": "DS1004",
+      "report": "DS1102",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "function",
@@ -42,7 +42,7 @@
     },
     {
       "symbol": "TestInternal",
-      "report": "DS1005",
+      "report": "DS1103",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "function",

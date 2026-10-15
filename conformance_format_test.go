@@ -3,15 +3,14 @@ package spec_test
 import (
 	"errors"
 	"fmt"
-	"io/fs"
 	"maps"
 	"regexp"
 	"slices"
 	"strings"
 	"testing"
-	"testing/fstest"
 
 	"github.com/cplieger/deadset-spec/v8"
+	"github.com/cplieger/deadset-spec/v8/corpus"
 )
 
 const (
@@ -23,71 +22,8 @@ const (
 	answerPath            = expectationRowPath + "/properties/actual"
 )
 
-// resultsDocument mirrors conformance-results.json closely enough that an
-// unknown key fails a strict decode.
-type resultsDocument struct {
-	Fixtures      []fixtureResult `json:"fixtures"`
-	CorpusVersion string          `json:"corpus_version"`
-	Result        string          `json:"result"`
-	Product       productIdentity `json:"product"`
-	Totals        resultTotals    `json:"totals"`
-}
-
-type productIdentity struct {
-	Name     string `json:"name"`
-	Version  string `json:"version"`
-	Language string `json:"language"`
-}
-
-type resultTotals struct {
-	Fixtures int `json:"fixtures"`
-	Pass     int `json:"pass"`
-	Gap      int `json:"gap"`
-	Fail     int `json:"fail"`
-}
-
-type fixtureResult struct {
-	Expectations []expectationResult `json:"expectations"`
-	Unexpected   []unexpectedFinding `json:"unexpected"`
-	Fixture      string              `json:"fixture"`
-	Result       string              `json:"result"`
-	Message      string              `json:"message"`
-}
-
-type expectationResult struct {
-	Suppression *suppressionResult `json:"suppression"`
-	Symbol      string             `json:"symbol"`
-	Result      string             `json:"result"`
-	Capability  string             `json:"capability"`
-	Message     string             `json:"message"`
-	Actual      answer             `json:"actual"`
-}
-
-type answer struct {
-	Configurations    []string `json:"configurations"`
-	RetainedBy        []string `json:"retained_by"`
-	Report            string   `json:"report"`
-	SymbolKind        string   `json:"symbol_kind"`
-	Confidence        string   `json:"confidence"`
-	ReachabilityClass string   `json:"reachability_class"`
-	LivenessRelation  string   `json:"liveness_relation"`
-	Fixability        string   `json:"fixability"`
-}
-
-type suppressionResult struct {
-	Suppressed bool `json:"suppressed"`
-	Stale      bool `json:"stale"`
-}
-
-type unexpectedFinding struct {
-	File   string `json:"file"`
-	Report string `json:"report"`
-	Line   int    `json:"line"`
-}
-
 var (
 	errGapRowIncomplete = errors.New("gap row lacks a required field")
-	errUnknownFixture   = errors.New("results name a fixture the corpus does not hold")
 
 	// resultValues is the closed result set of a fixture and of an expectation.
 	resultValues = []string{"pass", "gap", "fail"}
@@ -154,54 +90,6 @@ func checkGapRows(schema, doc map[string]any) error {
 	return errors.Join(errs...)
 }
 
-// fixtureNames returns the set of fixture directory names under
-// corpus/fixtures in fsys. An absent fixtures directory is the empty set.
-func fixtureNames(fsys fs.FS) (map[string]bool, error) {
-	entries, err := fs.ReadDir(fsys, fixturesDir)
-	if errors.Is(err, fs.ErrNotExist) {
-		return map[string]bool{}, nil
-	}
-	if err != nil {
-		return nil, err
-	}
-	names := make(map[string]bool, len(entries))
-	for _, e := range entries {
-		if e.IsDir() {
-			names[e.Name()] = true
-		}
-	}
-	return names, nil
-}
-
-// checkResultsFixtures refuses a results document naming a fixture outside
-// known; the error names every such fixture.
-func checkResultsFixtures(doc *resultsDocument, known map[string]bool) error {
-	var errs []error
-	for _, f := range doc.Fixtures {
-		if !known[f.Fixture] {
-			errs = append(errs, fmt.Errorf("%w: %q", errUnknownFixture, f.Fixture))
-		}
-	}
-	return errors.Join(errs...)
-}
-
-// knownFixtures is the fixture set the results checks run against: what the
-// embedded corpus holds today plus the planted fixture, so the check has a
-// member before the first fixture lands and keeps the real set afterwards.
-func knownFixtures(t *testing.T) map[string]bool {
-	t.Helper()
-	known, err := fixtureNames(spec.Corpus)
-	if err != nil {
-		t.Fatalf("Setup: fixtureNames(Corpus): %v", err)
-	}
-	planted, err := fixtureNames(plantedFixture())
-	if err != nil {
-		t.Fatalf("Setup: fixtureNames(planted): %v", err)
-	}
-	maps.Copy(known, planted)
-	return known
-}
-
 // plantedGaps is a well-formed declared-gap document.
 const plantedGaps = `{
   "corpus_version": "1.0.0",
@@ -229,7 +117,7 @@ const plantedResults = `{
   "corpus_version": "1.0.0",
   "product": {"name": "deadset-go", "version": "1.0.0", "language": "go"},
   "result": "fail",
-  "totals": {"fixtures": 1, "pass": 0, "gap": 0, "fail": 1},
+  "totals": {"fixtures": 1, "pass": 0, "gap": 0, "fail": 1, "pending": 0},
   "fixtures": [
     {
       "fixture": "planted",
@@ -260,7 +148,7 @@ const plantedResults = `{
 func decodeGaps(t *testing.T, data string) map[string]any {
 	t.Helper()
 	var doc map[string]any
-	if err := decodeStrict([]byte(data), &doc); err != nil {
+	if err := corpus.DecodeStrict([]byte(data), &doc); err != nil {
 		t.Fatalf("Setup: decoding the planted declared-gap document: %v", err)
 	}
 	return doc
@@ -303,7 +191,7 @@ func TestConformanceSchemaProperties(t *testing.T) {
 		{name: "gap_row", schema: conformanceSchemaPath, at: gapRowPath, want: []string{"capability", "fixture", "reason", "symbol"}},
 		{name: "results_document", schema: resultsSchemaPath, at: "", want: []string{"corpus_version", "fixtures", "product", "result", "totals"}},
 		{name: "results_product", schema: resultsSchemaPath, at: "properties/product", want: []string{"language", "name", "version"}},
-		{name: "results_totals", schema: resultsSchemaPath, at: "properties/totals", want: []string{"fail", "fixtures", "gap", "pass"}},
+		{name: "results_totals", schema: resultsSchemaPath, at: "properties/totals", want: []string{"fail", "fixtures", "gap", "pass", "pending"}},
 		{name: "fixture_row", schema: resultsSchemaPath, at: fixtureRowPath, want: []string{"expectations", "fixture", "message", "result", "unexpected"}},
 		{name: "expectation_row", schema: resultsSchemaPath, at: expectationRowPath, want: []string{"actual", "capability", "message", "result", "suppression", "symbol"}},
 		{name: "answer", schema: resultsSchemaPath, at: answerPath, want: []string{"component", "confidence", "configurations", "details", "fixability", "liveness_relation", "reachability_class", "report", "retained_by", "symbol_kind"}},
@@ -329,7 +217,7 @@ func TestConformanceResultVocabulary(t *testing.T) {
 		at   string
 		want []string
 	}{
-		{name: "fixture_result", at: fixtureRowPath + "/properties/result", want: resultValues},
+		{name: "fixture_result", at: fixtureRowPath + "/properties/result", want: append(slices.Clone(resultValues), "pending")},
 		{name: "expectation_result", at: expectationRowPath + "/properties/result", want: resultValues},
 		{name: "document_result", at: "properties/result", want: []string{"pass", "fail"}},
 		{name: "language", at: "properties/product/properties/language", want: kinds.Languages},
@@ -415,16 +303,16 @@ func TestGapRowRequiresReason(t *testing.T) {
 }
 
 func TestResultsDocumentDecodesStrictly(t *testing.T) {
-	var doc resultsDocument
-	if err := decodeStrict([]byte(plantedResults), &doc); err != nil {
-		t.Fatalf("decodeStrict(plantedResults) = %v, want a document carrying only declared fields", err)
+	var doc corpus.Results
+	if err := corpus.DecodeStrict([]byte(plantedResults), &doc); err != nil {
+		t.Fatalf("corpus.DecodeStrict(plantedResults) = %v, want a document carrying only declared fields", err)
 	}
 	if got := doc.Fixtures[0].Expectations[0].Suppression; got == nil || !got.Suppressed || got.Stale {
 		t.Errorf("plantedResults DeadExport suppression = %+v, want suppressed and not stale", got)
 	}
 	planted := strings.Replace(plantedResults, `"result": "fail",`, `"result": "fail", "language": "go",`, 1)
-	if err := decodeStrict([]byte(planted), &doc); err == nil || !strings.Contains(err.Error(), `unknown field "language"`) {
-		t.Errorf("decodeStrict(results with a top-level language) error = %v, want an unknown-field error", err)
+	if err := corpus.DecodeStrict([]byte(planted), &doc); err == nil || !strings.Contains(err.Error(), `unknown field "language"`) {
+		t.Errorf("corpus.DecodeStrict(results with a top-level language) error = %v, want an unknown-field error", err)
 	}
 	if got := doc.Fixtures[0].Expectations[0].Actual.Fixability; got != "deletable" {
 		t.Errorf("plantedResults DeadExport actual fixability = %q, want %q", got, "deletable")
@@ -442,7 +330,7 @@ func TestResultsSchemaFixabilityBindsToAReportedFinding(t *testing.T) {
 		{name: "a_reported_finding_echoes_its_fixability", actual: deadExport},
 		{name: "a_value_outside_the_vocabulary", actual: `"actual": {"report": "DS1001", "confidence": "certain", "fixability": "removable"}`, want: at + "/fixability"},
 		{name: "an_unreported_subject_carries_no_fixability", actual: `"actual": {"report": "none", "fixability": "deletable"}`, want: at},
-		{name: "a_stale_suppression_carries_no_fixability", actual: `"actual": {"report": "DS1703", "confidence": "certain", "fixability": "manual"}`, want: at},
+		{name: "a_stale_suppression_carries_no_fixability", actual: `"actual": {"report": "DS9003", "confidence": "certain", "fixability": "manual"}`, want: at},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -465,39 +353,4 @@ func TestResultsSchemaFixabilityBindsToAReportedFinding(t *testing.T) {
 			}
 		})
 	}
-}
-
-func TestResultsNameOnlyCorpusFixtures(t *testing.T) {
-	known := knownFixtures(t)
-	if !known["planted"] {
-		t.Fatalf("Setup: knownFixtures = %v, want it to hold the planted fixture", slices.Sorted(maps.Keys(known)))
-	}
-
-	t.Run("accepts_corpus_fixtures", func(t *testing.T) {
-		doc := resultsDocument{Fixtures: []fixtureResult{{Fixture: "planted", Result: "pass"}}}
-		if err := checkResultsFixtures(&doc, known); err != nil {
-			t.Errorf("checkResultsFixtures(planted) = %v, want nil", err)
-		}
-	})
-
-	t.Run("refuses_a_fixture_absent_from_the_corpus", func(t *testing.T) {
-		doc := resultsDocument{Fixtures: []fixtureResult{
-			{Fixture: "planted", Result: "pass"},
-			{Fixture: "absent-fixture", Result: "pass"},
-		}}
-		err := checkResultsFixtures(&doc, known)
-		if !errors.Is(err, errUnknownFixture) {
-			t.Fatalf("checkResultsFixtures(absent-fixture) error = %v, want %v", err, errUnknownFixture)
-		}
-		if !strings.Contains(err.Error(), `"absent-fixture"`) || strings.Contains(err.Error(), `"planted"`) {
-			t.Errorf("checkResultsFixtures(absent-fixture) error = %q, want it to name only the absent fixture", err)
-		}
-	})
-
-	t.Run("no_fixtures_directory_is_the_empty_set", func(t *testing.T) {
-		got, err := fixtureNames(fstest.MapFS{"corpus/corpus.json": {Data: []byte("{}")}})
-		if err != nil || len(got) != 0 {
-			t.Errorf("fixtureNames(no fixtures directory) = %v, %v, want an empty set and nil", got, err)
-		}
-	})
 }

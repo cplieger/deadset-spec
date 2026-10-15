@@ -12,28 +12,28 @@
     },
     {
       "symbol": "subtract",
-      "report": "DS1004",
+      "report": "DS1102",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "function"
     },
     {
       "symbol": "multiply",
-      "report": "DS1004",
+      "report": "DS1102",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "function"
     },
     {
       "symbol": "divide",
-      "report": "DS1004",
+      "report": "DS1102",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "function"
     },
     {
       "symbol": "difference",
-      "report": "DS1005",
+      "report": "DS1103",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "variable",
@@ -41,7 +41,7 @@
     },
     {
       "symbol": "product",
-      "report": "DS1005",
+      "report": "DS1103",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "variable",
@@ -49,7 +49,7 @@
     },
     {
       "symbol": "quotient",
-      "report": "DS1005",
+      "report": "DS1103",
       "confidence": "certain",
       "reachability_class": "certain",
       "symbol_kind": "variable",

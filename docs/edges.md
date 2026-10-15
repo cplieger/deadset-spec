@@ -57,9 +57,9 @@ The finding a `dead` record carries is the pending finding. It sits inside the e
 
 A pending finding is not a weaker finding. Its `confidence` and every other field are what the kind declares. What is unresolved is the pairing, not the analysis.
 
-A narrowing candidate is published the same way. A declared edge counts as a reference from outside the symbol's own package. When it is the only such reference, the analyzer publishes the narrowing finding inside the edge evaluation rather than reporting it. A wire type consumed only through its generated client is therefore never reported as unnecessarily exported. The source is `contract/kinds.json`, rows `DS1101` and `DS1102`.
+A narrowing candidate is published the same way. A declared edge counts as a reference from outside the symbol's own package. When it is the only such reference, the analyzer publishes the narrowing finding inside the edge evaluation rather than reporting it. A wire type consumed only through its generated client is therefore never reported as unnecessarily exported. The source is `contract/kinds.json`, rows `DS1501` and `DS1502`.
 
-A file is evaluated with the edge too. A declared edge names a declaration of the file that holds it, as a root does. While the edge names one of them, a file whose only declarations are edge-paired is not reported as never imported. The declaration's own evaluation carries the answer, and a pair the merge finds dead is reported through the declaration's finding. The source is `contract/kinds.json`, row `DS1502`.
+A file is evaluated with the edge too. A declared edge names a declaration of the file that holds it, as a root does. While the edge names one of them, a file whose only declarations are edge-paired is not reported as never imported. The declaration's own evaluation carries the answer, and a pair the merge finds dead is reported through the declaration's finding. The source is `contract/kinds.json`, row `DS1602`.
 
 ## What the merge does with each pairing
 
@@ -70,9 +70,9 @@ The merge takes every `dead` evaluation in canonical order and reads the stronge
 | `live` | `live` | Nothing. No side holds a pending finding. |
 | `dead` | `live` | Drops the pending finding's component. The pair is live, so the symbol stays, and so does everything it references. |
 | `dead` | `dead` | Promotes each pending finding into the merged report's findings and unions the paired symbols' components, so one deletion covers both sides. |
-| `dead` | `absent` | Drops the pending finding's component and reports the edge as `DS1705`. |
-| `live` | `absent` | Reports the edge as `DS1705`. |
-| `absent` | `absent` | Reports the edge as `DS1705`, once for the edge however many sides are absent. |
+| `dead` | `absent` | Drops the pending finding's component and reports the edge as `DS9005`. |
+| `live` | `absent` | Reports the edge as `DS9005`. |
+| `absent` | `absent` | Reports the edge as `DS9005`, once for the edge however many sides are absent. |
 | `dead` | no record at all | Ends the run with the failure code, 3, naming the unresolved edge, the pending side and its symbol. |
 | `live` | no record at all | Nothing. Nothing looked at the paired side, so there is nothing to report. |
 
@@ -80,16 +80,16 @@ Dropping a component drops every finding its report carries in that component, p
 
 A drop reaches every edge the dropped component holds a pending finding on. Once a component is dropped, each of its `dead` evaluations reads as `live` on its own edge. A member of a component dropped on one edge therefore keeps the symbol paired with it on another edge from being promoted, whichever rule dropped the component. The merge repeats the drops until no further component is dropped, and only then promotes what remains, so the outcome does not depend on the order it visits the edges in.
 
-The source for the pairings and the drops is `contract/grammar/merge.md`, steps 4 and 5. `DS1705` is `stale-cross-language-edge`, and only the merge emits it. An analyzer never does, whatever it finds on its own side. The source is `contract/kinds.json`, row `DS1705`.
+The source for the pairings and the drops is `contract/grammar/merge.md`, steps 4 and 5. `DS9005` is `stale-cross-language-edge`, and only the merge emits it. An analyzer never does, whatever it finds on its own side. The source is `contract/kinds.json`, row `DS9005`.
 
 The merged report carries every evaluation whose state is `live` or `absent` and none whose state is `dead`. It holds no pending finding, so its verdict is an answer rather than an input. The source is `contract/grammar/merge.md`, step 6.
 
 ## Reading a stale edge
 
-`DS1705` says that an edge names a symbol no analyzer claiming its language enumerates. Three edits produce it, and the finding names the edge, each side's symbol and each side's state so a reader can tell which:
+`DS9005` says that an edge names a symbol no analyzer claiming its language enumerates. Three edits produce it, and the finding names the edge, each side's symbol and each side's state so a reader can tell which:
 
 - The reference is misspelled, or it was written in a form the grammar does not define.
 - The symbol was renamed or moved, which changes its reference.
 - The symbol was deleted, and the edge is the record that outlived it.
 
-`DS1705` carries the `deny` severity, so a run that emits one returns the findings code, 1. The sources are `contract/kinds.json`, row `DS1705`, and `contract/exit-codes.json`, code 1.
+`DS9005` carries the `deny` severity, so a run that emits one returns the findings code, 1. The sources are `contract/kinds.json`, row `DS9005`, and `contract/exit-codes.json`, code 1.
