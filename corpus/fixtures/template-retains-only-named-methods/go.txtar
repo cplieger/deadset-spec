@@ -71,10 +71,10 @@ type View struct{ State Status }
 
 func (View) Shown() string { return "s" }
 
-func (View) User() *User { return &User{} }
+func (View) User() *User { return &User{Name: "u"} }
 
 func (View) WithSuccess() View { return View{} }
 
 var page = template.Must(template.New("v").Parse("{{.Shown}} {{.User.Name}} {{.State}}"))
 
-func main() { _ = page.Execute(os.Stdout, View{}) }
+func main() { _ = page.Execute(os.Stdout, View{State: 1}) }

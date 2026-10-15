@@ -1,0 +1,72 @@
+The Go rendering: a command that loads its page templates through a file system a
+helper chooses, a directory on disk or the embedded files, reading each file the
+file system lists into one set. The page template names the page's title alone.
+
+-- fixture.json --
+{
+  "symbols": {
+    "page.Title": { "file": "target/main.go", "line": 14 },
+    "page.Footer": { "file": "target/main.go", "line": 15 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target renders a page through templates it loads from a file system.
+package main
+
+import (
+	"html/template"
+	"io"
+	"io/fs"
+	"os"
+
+	"example.com/target/views"
+)
+
+type page struct {
+	Title  string
+	Footer string
+}
+
+func choose(dir string, embedded fs.FS) fs.FS {
+	if os.Getenv("DEV") != "" {
+		return os.DirFS(dir)
+	}
+	return embedded
+}
+
+func load(fsys fs.FS) map[string]*template.Template {
+	set := template.New("")
+	loaded := make(map[string]*template.Template)
+	entries, _ := fs.ReadDir(fsys, ".")
+	for _, entry := range entries {
+		file, err := fsys.Open(entry.Name())
+		if err != nil {
+			continue
+		}
+		data, _ := io.ReadAll(file)
+		_ = file.Close()
+		loaded[entry.Name()] = template.Must(set.New(entry.Name()).Parse(string(data)))
+	}
+	return loaded
+}
+
+func main() {
+	pages := load(choose("views", views.Files))
+	_ = pages["page.html"].Execute(os.Stdout, page{Title: "t", Footer: "f"})
+}
+-- target/views/views.go --
+// Package views embeds the page templates.
+package views
+
+import "embed"
+
+// Files holds the page templates.
+//
+//go:embed *.html
+var Files embed.FS
+-- target/views/page.html --
+<h1>{{.Title}}</h1>

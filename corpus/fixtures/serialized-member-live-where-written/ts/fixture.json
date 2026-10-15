@@ -1,0 +1,28 @@
+{
+  "symbols": {
+    "Target.uri": {
+      "file": "target/main.ts",
+      "line": 2
+    },
+    "Target.body": {
+      "file": "target/main.ts",
+      "line": 3
+    },
+    "Target.method": {
+      "file": "target/main.ts",
+      "line": 4
+    },
+    "Stamp.at": {
+      "file": "target/main.ts",
+      "line": 8
+    },
+    "Stamp.unset": {
+      "file": "target/main.ts",
+      "line": 9
+    },
+    "Stamp.set": {
+      "file": "target/main.ts",
+      "line": 10
+    }
+  }
+}

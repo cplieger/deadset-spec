@@ -1,0 +1,21 @@
+{
+  "name": "encoding-reflection-template-file-system-read",
+  "description": "In Go, templates a program loads through a file system it can bound are read as files a path names: the file system is an embedded one or a directory a helper chooses through its parameters, and each file it holds is read through Open and io.ReadAll into the set. Every template the engine parses in the program is then read, so an execution through a map the loader fills reads only the fields those templates name, and a field of the page no template names is reported as written and never read.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "page.Title",
+      "report": "none"
+    },
+    {
+      "symbol": "page.Footer",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field"
+    }
+  ]
+}

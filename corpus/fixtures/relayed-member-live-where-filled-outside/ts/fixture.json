@@ -1,0 +1,7 @@
+{
+  "symbols": {
+    "Row.title": { "file": "target/main.ts", "line": 4 },
+    "Made.label": { "file": "target/main.ts", "line": 8 },
+    "Kept.unread": { "file": "target/main.ts", "line": 13 }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "symbols": {
+    "Event.kind": { "file": "target/main.ts", "line": 2 },
+    "Event.seq": { "file": "target/main.ts", "line": 3 },
+    "Status.spare": { "file": "target/main.ts", "line": 7 }
+  }
+}

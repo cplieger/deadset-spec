@@ -39,7 +39,7 @@ type feed struct {
 }
 
 func main() {
-	data, err := json.Marshal(record{})
+	data, err := json.Marshal(record{ID: "i", Dash: "d"})
 	if err != nil {
 		panic(err)
 	}

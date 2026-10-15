@@ -1,13 +1,14 @@
-The Go rendering: a target module encoding a value of one struct type and
-returning a value of another, declared the same way, that reaches no encoder,
-and the consumer module that calls both. Neither type's field is named by any
-source.
+The Go rendering: a target module encoding a value of one struct type, whose
+literal writes one of its two fields, and returning a value of another, declared
+the same way, that reaches no encoder, and the consumer module that calls both. No
+source reads any field.
 
 -- fixture.json --
 {
   "symbols": {
     "Draft.Name": { "file": "target/draft.go", "line": 5 },
-    "Record.Name": { "file": "target/record.go", "line": 9 }
+    "Record.Name": { "file": "target/record.go", "line": 9 },
+    "Record.Spare": { "file": "target/record.go", "line": 10 }
   }
 }
 -- target/go.mod --
@@ -21,13 +22,14 @@ package target
 
 import "encoding/json"
 
-// Record is encoded, and the encoder reads its field by name.
+// Record is encoded, and the encoder reads its fields by name.
 type Record struct {
-	Name string `json:"name"`
+	Name  string `json:"name"`
+	Spare string `json:"spare"`
 }
 
 // Encode hands a Record to the encoder.
-func Encode() ([]byte, error) { return json.Marshal(Record{}) }
+func Encode() ([]byte, error) { return json.Marshal(Record{Name: "r"}) }
 -- target/draft.go --
 package target
 

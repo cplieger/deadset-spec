@@ -1,0 +1,43 @@
+{
+  "name": "published-global-augmentation-members",
+  "description": "In a library, every declaration a declare global block holds is published API where the block is in a file a published entry point names or in a file that holds a published declaration, because the consumer's compiler loads that file's typings and the global scope they declare: such a member nobody uses is reported at the published API's class, possible with no consumer declared, while a block in a file the published API does not reach is judged as the library's internals are.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "library",
+  "min_confidence": "possible",
+  "expect": [
+    {
+      "symbol": "Window.fromEntry",
+      "report": "DS1003",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "type-member",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Window.fromImport",
+      "report": "DS1003",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "type-member",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Window.unpublished",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "area",
+      "report": "DS1001",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

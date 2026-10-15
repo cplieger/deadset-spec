@@ -63,6 +63,6 @@ func hold(v any) reflect.Value {
 
 func main() {
 	println(name(Named{}))
-	run(Runner{})
-	println(hold(Held{}).IsValid())
+	run(Runner{Speed: 1})
+	println(hold(Held{Size: 1}).IsValid())
 }

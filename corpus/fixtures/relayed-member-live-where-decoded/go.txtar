@@ -1,0 +1,51 @@
+The Go rendering: one command that decodes each event of its input and encodes it
+again, and encodes a status whose field nothing writes. Nothing imports anything
+outside the standard library, so the rendering loads with no network access.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Event.kind": { "file": "target/main.go", "line": 10 },
+    "Event.seq": { "file": "target/main.go", "line": 11 },
+    "Status.spare": { "file": "target/main.go", "line": 16 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+package main
+
+import (
+	"encoding/json"
+	"os"
+)
+
+// event is relayed: decoded from the input and encoded again.
+type event struct {
+	Kind string `json:"kind"`
+	Seq  int    `json:"seq"`
+}
+
+// status is encoded with a field nothing writes.
+type status struct {
+	Spare string `json:"spare"`
+}
+
+func main() {
+	enc := json.NewEncoder(os.Stdout)
+	if enc.Encode(status{}) != nil {
+		os.Exit(1)
+	}
+	dec := json.NewDecoder(os.Stdin)
+	for {
+		var relayed event
+		if dec.Decode(&relayed) != nil {
+			return
+		}
+		if enc.Encode(&relayed) != nil {
+			os.Exit(1)
+		}
+	}
+}

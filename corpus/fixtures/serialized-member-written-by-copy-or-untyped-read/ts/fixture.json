@@ -1,0 +1,11 @@
+{
+  "symbols": {
+    "Saved.name": { "file": "target/main.ts", "line": 2 },
+    "Line.id": { "file": "target/main.ts", "line": 5 },
+    "Listed.tag": { "file": "target/main.ts", "line": 8 },
+    "Spread.kind": { "file": "target/main.ts", "line": 14 },
+    "Assigned.label": { "file": "target/main.ts", "line": 17 },
+    "Assigned.note": { "file": "target/main.ts", "line": 18 },
+    "Checked.ghost": { "file": "target/main.ts", "line": 22 }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "symbols": {
+    "port": { "file": "target/src/main.ts", "line": 2 },
+    "seed": { "file": "target/src/main.ts", "line": 3 },
+    "unread": { "file": "target/src/main.ts", "line": 7 }
+  }
+}
