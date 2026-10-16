@@ -12,6 +12,7 @@ examples/
   reports/<state>.json    one report per envelope state, an instance of contract/report.schema.json
   scope/<shape>.json      one scope document per shape, an instance of contract/scope.schema.json
   describe/<state>.json   one describe document per conformance state, an instance of contract/describe.schema.json
+  edges/<shape>.json      one edges document per shape, an instance of contract/edges.schema.json
   negatives/<name>.json   a refused document, each violating exactly one constraint
   negatives/index.json    one row per refused document: its schema, its constraint, its instance path
 ```
@@ -70,6 +71,15 @@ absent record and a result other than pass. The negatives whose row names
 [`../contract/describe.schema.json`](../contract/describe.schema.json) are the describe documents
 a decoder refuses, a `null` conformance among them. A decoder also refuses a key written twice and
 anything after the object, which no schema keyword states, so no document here carries one.
+
+## edges/
+
+The edges documents a product accepts. `declared.json` names every member
+[`../contract/edges.schema.json`](../contract/edges.schema.json) declares, and a reference whose
+`*` sits inside a quoted component, which names one symbol. The negatives whose row names that
+schema are the edges documents a product refuses. A decoder also refuses a key written twice in
+one object, an edge identifier among them, which no schema keyword states, so no document here
+carries one; the command-line vector `edge-identifier-written-twice-refused` does.
 
 ## negatives/
 

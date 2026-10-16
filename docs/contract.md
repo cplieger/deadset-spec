@@ -19,6 +19,7 @@ The contract is versioned as one unit, apart from every analyzer's version and f
 - The configuration document, `contract/config.schema.json`. It holds a closed key list, the precedence between the repository file, the central file and the invocation's flags, and the resolved configuration a run prints. The vectors under `vectors/config/` test a resolution against declared data.
 - The configuration key table, `contract/settings.json`, generated from the configuration schema and the vocabularies. Each key has one row naming its role, its owner, the languages that read it and receive it, its default, the schema of its value, the values its vocabulary admits and the option that supplies it.
 - The scope document, `contract/scope.schema.json`. It names the target an analysis reports on and the consumers whose references count against it. The product that invokes the analyzer writes it, and the analyzer reads it.
+- The edges document, `contract/edges.schema.json`. It declares the cross-language edges of one target, `deadset-edges.json` at the target root, which every analyzer the run invokes reads.
 - The describe document, `contract/describe.schema.json`. It is what an analyzer states about itself before any analysis runs, and the invoking product reads it to admit or refuse the analyzer.
 
 ## Grammars and rules

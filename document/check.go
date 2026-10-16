@@ -135,7 +135,7 @@ func (n *node) checkName(name, at string, found *[]Error) {
 	n.names.check(name, at, &refused)
 	if len(refused) > 0 {
 		*found = append(*found, Error{
-			Keyword: "propertyNames", Pointer: at,
+			Keyword: namesKeyword, Pointer: at, Member: name,
 			Reason: "the member name " + strconv.Quote(name) + ": " + refused[0].Reason,
 		})
 	}
@@ -177,13 +177,13 @@ func (n *node) checkMember(name string, v any, at string, found *[]Error) {
 
 // missing is the violation of one required member that is absent.
 func missing(name, at string) Error {
-	return Error{Keyword: "required", Pointer: at, Reason: "the member " + strconv.Quote(name) + " is absent"}
+	return Error{Keyword: requiredKeyword, Pointer: at, Member: name, Reason: "the member " + strconv.Quote(name) + " is absent"}
 }
 
 // unknown is the violation of one member the schema does not declare.
 func unknown(name, at string) Error {
 	return Error{
-		Keyword: "additionalProperties", Pointer: at,
+		Keyword: additionalKeyword, Pointer: at, Member: name,
 		Reason: "the member " + strconv.Quote(name) + " is not one the schema declares",
 	}
 }
@@ -242,7 +242,7 @@ func (n *node) checkApplicators(v any, at string, found *[]Error) {
 	if n.oneOf != nil {
 		if matched := countMatching(n.oneOf, v, at); matched != 1 {
 			*found = append(*found, Error{
-				Keyword: "oneOf", Pointer: at,
+				Keyword: oneOfKeyword, Pointer: at,
 				Reason: fmt.Sprintf("the value matches %d of the alternatives, want exactly one", matched),
 			})
 		}

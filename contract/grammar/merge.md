@@ -6,7 +6,7 @@ This page states the algorithm for an implementer who has no access to any exist
 
 ## Vocabulary
 
-A **cross-language edge** is a declared pair of language-tagged symbol references, with no language named in the mechanism, so a further language joins without a change of form. An edge has an identifier and two sides, `provides` and `used_by`; `provides` exists because `used_by` uses it. A side may name any declaration, a type or a member. An edge that names a type says nothing about that type's members: each member is judged on its own, or through an edge whose side names it. A maintainer or a code generator declares edges in `deadset-edges.json` at the target root. Nothing infers an edge.
+A **cross-language edge** is a declared pair of language-tagged symbol references, with no language named in the mechanism, so a further language joins without a change of form. An edge has an identifier and two sides, `provides` and `used_by`; `provides` exists because `used_by` uses it. A side may name any declaration, a type or a member. An edge that names a type says nothing about that type's members: each member is judged on its own, or through an edge whose side names it. A maintainer or a code generator declares edges in `deadset-edges.json` at the target root, each under its identifier, so one identifier names one edge. Nothing infers an edge.
 
 An analyzer reads only the sides of an edge that carry its own language, and it never resolves the paired symbol. For each such side it publishes one **edge evaluation**, a record `{edge, side, symbol, state, finding?}` in the report's `edge_evaluations` array, with `state` one of three values:
 

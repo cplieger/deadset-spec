@@ -78,6 +78,40 @@ func TestAPlantedKindsEditMovesTheGeneratedFiles(t *testing.T) {
 	}
 }
 
+// TestAPlantedEdgeIdentifierEditReachesEveryCorpusSchema proves the edge
+// identifier form has one authored source: a planted edit of the finding
+// schema's definition reaches every inline copy the corpus schemas state.
+func TestAPlantedEdgeIdentifierEditReachesEveryCorpusSchema(t *testing.T) {
+	const source, planted = "authoring/finding.schema.json", `"pattern": "^planted$"`
+	inputs := generatorInputs(t)
+	var finding struct {
+		Defs struct {
+			EdgeIdentifier struct {
+				Pattern string `json:"pattern"`
+			} `json:"edge_identifier"`
+		} `json:"$defs"`
+	}
+	if err := json.Unmarshal(inputs[source].Data, &finding); err != nil {
+		t.Fatalf("Setup: decode %s: %v", source, err)
+	}
+	pattern, _ := json.Marshal(finding.Defs.EdgeIdentifier.Pattern)
+	old := `"pattern": ` + string(pattern)
+	plant(t, inputs, source, old, planted)
+	files, err := gen.Generate(inputs)
+	if err != nil {
+		t.Fatalf("gen.Generate(planted) = %v", err)
+	}
+	for _, name := range []string{"corpus/expect.schema.json", "corpus/conformance-results.schema.json"} {
+		got := files[name]
+		if bytes.Contains(got, []byte(old)) || !bytes.Contains(got, []byte(planted)) {
+			t.Errorf("%s keeps an edge identifier the planted definition does not state, want every copy written from it", name)
+		}
+		if bytes.Contains(got, []byte("x-inline")) {
+			t.Errorf("%s carries x-inline, want the definition written in its place", name)
+		}
+	}
+}
+
 // generatorInputs is a copy of every file of the module the generator reads.
 func generatorInputs(t *testing.T) fstest.MapFS {
 	t.Helper()
@@ -323,6 +357,14 @@ func TestAPlantedConfigurationDefectFailsGeneration(t *testing.T) {
 		{name: "a per-language column that is none", path: schema, old: `"when": "takes_target_kind"`, planted: `"when": "kind"`, want: `when "kind"`},
 		{name: "an option naming no setting", path: "contract/cli.json", old: `"setting": "reporters.sort"`, planted: `"setting": "reporters.sorts"`, want: `"reporters.sorts", which is no setting`},
 		{name: "a language column the registry lacks", path: "contract/languages.json", old: `"language": "go",`, planted: `"language": "go", "planted": true,`, want: `unknown field "planted"`},
+		{name: "an inline copy of no definition", path: "authoring/expect.schema.json", old: `"x-inline": "authoring/finding.schema.json#/$defs/edge_identifier"`, planted: `"x-inline": "authoring/finding.schema.json#/$defs/planted"`, want: `x-inline "authoring/finding.schema.json#/$defs/planted" names no definition`},
+		{name: "an inline copy beside a member it writes", path: "authoring/expect.schema.json", old: `"x-inline": "authoring/finding.schema.json#/$defs/edge_identifier"`, planted: `"type": "string", ` + `"x-inline": "authoring/finding.schema.json#/$defs/edge_identifier"`, want: `member "type" is both a sibling`},
+		{name: "an inline copy of a definition that references another", path: "authoring/expect.schema.json", old: `"x-inline": "authoring/finding.schema.json#/$defs/edge_identifier"`, planted: `"x-inline": "authoring/finding.schema.json#/$defs/position"`, want: "references another"},
+		{name: "an inline copy named by a number", path: "authoring/expect.schema.json", old: `"x-inline": "authoring/finding.schema.json#/$defs/edge_identifier"`, planted: `"x-inline": 1`, want: "x-inline is not a non-empty string"},
+		{name: "an inline copy named by an empty string", path: "authoring/expect.schema.json", old: `"x-inline": "authoring/finding.schema.json#/$defs/edge_identifier"`, planted: `"x-inline": ""`, want: "x-inline is not a non-empty string"},
+		{name: "an inline copy of a whole file", path: "authoring/expect.schema.json", old: `"x-inline": "authoring/finding.schema.json#/$defs/edge_identifier"`, planted: `"x-inline": "authoring/finding.schema.json"`, want: `x-inline "authoring/finding.schema.json" names no definition`},
+		{name: "an inline copy of a boolean definition", path: "authoring/finding.schema.json", old: `"edge_identifier": {`, planted: `"edge_identifier": false, "planted": {`, want: "not an object"},
+		{name: "an inline copy of a definition that inlines another", path: "authoring/finding.schema.json", old: `"edge_identifier": {`, planted: `"edge_identifier": { "x-inline": "authoring/finding.schema.json#/$defs/position",`, want: "inlines another"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			inputs := generatorInputs(t)

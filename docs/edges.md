@@ -8,32 +8,31 @@ Neither analyzer resolves an edge. An analyzer reads only the sides of an edge t
 
 ## The edges document
 
-The edges document is `deadset-edges.json` at the target root, and every analyzer the run invokes reads it. The merge reads no edges document. It works from the evaluations the reports carry, which is what makes it a function of its inputs. The source is `contract/grammar/merge.md`, the opening paragraph.
+The edges document is `deadset-edges.json` at the target root, and every analyzer the run invokes reads it. The merge reads no edges document. It works from the evaluations the reports carry, which is what makes it a function of its inputs. The source is `contract/grammar/merge.md`, the opening paragraph, and `contract/edges.schema.json` states the document's shape. A document outside that shape ends the run with the usage code, 2, before any analysis, and so does one larger than the bound `contract/config.schema.json` declares under `x-max-bytes`. A name that resolves outside the target root, or to anything but a regular file, ends the run with the failure code, 3.
 
 ```json
 {
   "description": "Each edge pairs a Go wire type with the TypeScript generated from it.",
-  "edges": [
-    {
-      "id": "wire/ServerEvent",
+  "edges": {
+    "wire/ServerEvent": {
       "because": "generated",
       "provides": "go://example.com/app#ServerEvent",
       "used_by": "ts://@example/app/src/wire.ts#ServerEvent"
     }
-  ]
+  }
 }
 ```
 
 | Member | Meaning |
 | --- | --- |
 | `description` | What a file header comment would have carried. |
-| `edges` | The declared edges, in document order. May be empty. |
-| `id` | The edge's identifier, one or more `/`-separated segments of ASCII letters, digits, `_`, `.` and `-`. |
+| `edges` | The declared edges, each under its identifier. May be empty. |
+| identifier | Each member name of `edges`: one or more `/`-separated segments of ASCII letters, digits, `_`, `.` and `-`. |
 | `because` | Why the pair exists, for whoever reads the document next. |
 | `provides` | The stable symbol reference of the symbol the pair's other side uses. |
 | `used_by` | The stable symbol reference of the symbol that uses it. |
 
-Every evaluation of an edge names its `id`, and the merge orders and groups records by it. The source is `contract/report.schema.json`, `edge_evaluations[].edge`.
+Every evaluation of an edge names its identifier, and the merge orders and groups records by it. An identifier written twice is a key written twice and ends the run with the usage code, so one identifier names one edge. The form is defined once, as `edge_identifier` in `contract/finding.schema.json`, and the edges document, every edge evaluation and every finding about an edge reference it.
 
 An edge has exactly two sides, `provides` and `used_by`, and `provides` exists because `used_by` uses it. The source is `contract/report.schema.json`, `edge_evaluations[].side`. Each side names one symbol in the grammar `contract/grammar/symbol-ref.md` states. A reference in that grammar is language-tagged and carries no line number, so an edge survives every edit above the declarations it names.
 

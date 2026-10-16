@@ -975,6 +975,16 @@ func armCodes(arms any, field string, requiredSide bool) map[string][]string {
 	return out
 }
 
+// inlined is node, or the definition of schema node references, which is the
+// shape an inline copy of the reference states.
+func inlined(schema, node map[string]any) map[string]any {
+	ref, _ := node["$ref"].(string)
+	if name, local := strings.CutPrefix(ref, "#/$defs/"); local {
+		return objectAt(schema, "$defs/"+name)
+	}
+	return node
+}
+
 // withoutDescriptions is the schema with every description dropped, which is what
 // makes two documents comparable on shape alone: each states its own member in
 // its own words and the values they admit must be identical.
@@ -1098,7 +1108,7 @@ func TestExpectSchemaDetailsMirrorsTheFindingSchema(t *testing.T) {
 					expectSchemaPath, member, got, findingSchemaPath, want)
 			}
 			got := withoutDescriptions(objectAt(expect, expectSchemaDetailsPath+"/properties/"+member))
-			want := withoutDescriptions(objectAt(finding, "properties/details/properties/"+member))
+			want := withoutDescriptions(inlined(finding, objectAt(finding, "properties/details/properties/"+member)))
 			if !reflect.DeepEqual(got, want) {
 				t.Errorf("%s declares details.%s as\n%s\nand %s declares it as\n%s\nwant the same shape",
 					expectSchemaPath, member, asJSON(t, got), findingSchemaPath, asJSON(t, want))

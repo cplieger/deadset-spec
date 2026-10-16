@@ -2,8 +2,10 @@
 
 package vocab
 
-// ConfigMaxBytes bounds a configuration document: one larger is refused without being read whole.
-const ConfigMaxBytes = 1048576
+// DocumentMaxBytes bounds a configuration document, a scope document, and the
+// ignore file, the baseline and the edges document at the target root: one
+// larger is refused without being read whole.
+const DocumentMaxBytes = 1048576
 
 var languageRows = []LanguageRow{
 	{
@@ -306,7 +308,7 @@ var configKeys = []ConfigKey{
 		ReadBy:    []Language{Go, TS},
 		Delivered: []Language{},
 		Default:   `0`,
-		Value:     `{"type":"integer","minimum":0}`,
+		Value:     `{"type":"integer","minimum":0,"maximum":9007199254740991}`,
 		Option:    "max-findings",
 	},
 	{

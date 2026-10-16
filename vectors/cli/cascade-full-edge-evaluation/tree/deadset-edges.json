@@ -1,11 +1,10 @@
 {
   "description": "The wire type the web client is generated from.",
-  "edges": [
-    {
-      "id": "wire/ServerEvent",
+  "edges": {
+    "wire/ServerEvent": {
       "because": "generated",
       "provides": "go://example.com/target#ServerEvent",
       "used_by": "ts://@example/web/src/wire.ts#ServerEvent"
     }
-  ]
+  }
 }

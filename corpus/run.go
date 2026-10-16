@@ -18,6 +18,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/cplieger/deadset-spec/v8/suppress"
 	"github.com/cplieger/deadset-spec/v8/vocab"
 )
 
@@ -44,10 +45,8 @@ type Options struct {
 
 // The file names the run writes and reads in a fixture's scratch directory.
 const (
-	ignoreFile    = "deadset-ignore.json"
 	nodeModules   = "node_modules"
 	renderingDir  = "rendering"
-	setupPrefix   = "setup failure: "
 	runnerReason  = "Written by the conformance run to check that the finding it names is suppressed."
 	ignoreSummary = "The adjudications the conformance run writes for its suppression phase."
 	typeErrorCap  = "type-error-skips"
@@ -237,7 +236,7 @@ func (r *runner) answer(ctx context.Context, fixture *Fixture) (FixtureResult, e
 		return FixtureResult{}, err
 	}
 	if written != "" {
-		before[path.Join(TargetDir, ignoreFile)] = written
+		before[path.Join(TargetDir, suppress.IgnoreFileName)] = written
 	}
 	after, err := digests(at.rendering)
 	if err != nil {
@@ -623,7 +622,7 @@ func (r *runner) setupFixture(ctx context.Context, at *scratch, name string, wan
 // setupFailureDifference is why one run's end does not answer the fixture's
 // setup failure, or "".
 func setupFailureDifference(want *SetupFailure, code int, stderr string, findings int) string {
-	prefix := setupPrefix + want.Class + ": "
+	prefix := vocab.SetupFailurePrefix + want.Class + ": "
 	named := false
 	for line := range strings.SplitSeq(stderr, "\n") {
 		if strings.HasPrefix(line, prefix) && !slices.ContainsFunc(want.Names, func(name string) bool { return !strings.Contains(line, name) }) {

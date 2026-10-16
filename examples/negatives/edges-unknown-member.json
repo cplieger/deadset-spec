@@ -1,0 +1,9 @@
+{
+  "edges": {
+    "wire/ServerEvent": {
+      "provides": "go://example.com/app#ServerEvent",
+      "used_by": "ts://@example/app/src/wire.ts#ServerEvent",
+      "line": 12
+    }
+  }
+}
