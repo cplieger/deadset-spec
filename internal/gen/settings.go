@@ -67,14 +67,15 @@ type languagesDoc struct {
 	Languages   []languageDoc `json:"languages"`
 }
 
-// configContext is every Contract document the configuration's generated files
-// are derived from beside the schema's authoring source.
+// configContext is every Contract document the published schemas' generated
+// members are derived from beside their authoring sources.
 type configContext struct {
-	options    map[string]string // a setting's path to the option that supplies it
-	contract   contractDoc
-	exemptions exemptionsDoc
-	languages  languagesDoc
-	kinds      kindsDoc
+	options     map[string]string // a setting's path to the option that supplies it
+	contract    contractDoc
+	exemptions  exemptionsDoc
+	languages   languagesDoc
+	kinds       kindsDoc
+	symbolKinds []string
 }
 
 func loadConfigContext(fsys fs.FS) (*configContext, error) {
@@ -100,9 +101,14 @@ func loadConfigContext(fsys fs.FS) (*configContext, error) {
 	}
 	dec := json.NewDecoder(bytes.NewReader(data))
 	dec.DisallowUnknownFields()
-	if err := dec.Decode(&c.languages); err != nil {
+	if err = dec.Decode(&c.languages); err != nil {
 		return nil, fmt.Errorf("%s: %w", languagesPath, err)
 	}
+	symbolKinds, err := parse(c.kinds.SymbolKinds)
+	if err != nil {
+		return nil, fmt.Errorf("%s: symbol_kinds: %w", kindsPath, err)
+	}
+	c.symbolKinds = fieldNames(symbolKinds)
 	for _, o := range cli.Options {
 		if o.Setting == "" {
 			continue
@@ -143,8 +149,9 @@ func (c *configContext) readers(owner string) ([]string, error) {
 	return nil, fmt.Errorf("x-owner %q is none of product, analyzer, orchestrator and <language>%s for a language of %s", owner, ownerSuffix, languagesPath)
 }
 
-// enumSource is the closed value list one x-enum names.
-func (c *configContext) enumSource(name string) ([]string, error) {
+// valueList is the closed value list one x-enum names, from the Contract
+// document that owns it.
+func (c *configContext) valueList(name string) ([]string, error) {
 	switch name {
 	case "languages":
 		return c.languageIDs(nil), nil
@@ -152,13 +159,12 @@ func (c *configContext) enumSource(name string) ([]string, error) {
 		return c.kinds.Severities, nil
 	case "reachability-classes":
 		return c.kinds.ReachabilityClasses, nil
-	}
-	return nil, fmt.Errorf("x-enum %q names no value list: languages, severities or reachability-classes", name)
-}
-
-// vocabulary is every value one x-vocabulary admits.
-func (c *configContext) vocabulary(name string) ([]string, error) {
-	switch name {
+	case "fixabilities":
+		return c.kinds.Fixabilities, nil
+	case "symbol-kinds":
+		return c.symbolKinds, nil
+	case "target-kinds":
+		return c.kinds.TargetKinds, nil
 	case "exemption-classes":
 		classes := make([]string, 0, len(c.exemptions.Exemptions))
 		for i := range c.exemptions.Exemptions {
@@ -168,7 +174,7 @@ func (c *configContext) vocabulary(name string) ([]string, error) {
 	case "severity-keys":
 		return c.severityKeys(), nil
 	}
-	return nil, fmt.Errorf("x-vocabulary %q names no vocabulary: exemption-classes or severity-keys", name)
+	return nil, fmt.Errorf("x-enum %q names no value list: languages, severities, reachability-classes, fixabilities, symbol-kinds, target-kinds, exemption-classes or severity-keys", name)
 }
 
 // severityKeys is every key the severity object admits, ascending: the code of
@@ -257,8 +263,9 @@ type configKey struct {
 // disagree. The authoring source states no list another document owns: x-enum
 // names a value list, x-per-language one member per selected language,
 // x-delivered is derived from x-owner unless false keeps a key with the
-// orchestrator, x-vocabulary names the values settings.json lists, and a
-// patternProperties member named {severity-keys} stands for its name pattern.
+// orchestrator, and a patternProperties member named {severity-keys} stands for
+// its name pattern. A key's vocabulary is the list its items or its member names
+// draw from.
 func configuration(fsys fs.FS, out map[string][]byte) error {
 	ctx, err := loadConfigContext(fsys)
 	if err != nil {
@@ -383,6 +390,10 @@ func isTrue(v *value) bool {
 // describeValue fills the members of a row that is no section: its value schema
 // with the generated members written in, its default, vocabulary and option.
 func (c *configContext) describeValue(node *value, row *configKey) error {
+	row.vocabulary = node.get("items").get("x-enum").str()
+	if row.vocabulary == "" {
+		row.vocabulary = node.get("propertyNames").get("x-enum").str()
+	}
 	perLanguage, err := c.fill(node)
 	if err != nil {
 		return err
@@ -396,15 +407,15 @@ func (c *configContext) describeValue(node *value, row *configKey) error {
 	if err := c.namePatterns(node.get("patternProperties")); err != nil {
 		return err
 	}
-	if name := node.get("x-vocabulary").str(); name != "" {
-		values, err := c.vocabulary(name)
+	if row.vocabulary != "" {
+		values, err := c.valueList(row.vocabulary)
 		if err != nil {
 			return err
 		}
-		row.vocabulary, row.values = name, values
+		row.values = values
 	}
 	row.val = clone(node)
-	for _, k := range []string{"default", "x-setting", "x-vocabulary", "x-ignored-by-resolution", "x-delivered"} {
+	for _, k := range []string{"default", "x-setting", "x-ignored-by-resolution", "x-delivered"} {
 		drop(row.val, k)
 	}
 	stripAnnotations(row.val)
@@ -431,11 +442,17 @@ func (c *configContext) fill(v *value) ([]string, error) {
 		named = append(named, inner...)
 	}
 	if source := v.get("x-enum"); source != nil {
-		values, err := c.enumSource(source.str())
+		values, err := c.valueList(source.str())
 		if err != nil {
 			return nil, err
 		}
-		replaceMember(v, "x-enum", "enum", strsValue(values))
+		// An enum beside the x-enum lists the values the schema admits after the list's.
+		added := v.get("enum").strs()
+		if i := slices.IndexFunc(added, func(a string) bool { return slices.Contains(values, a) }); i >= 0 {
+			return nil, fmt.Errorf("the enum beside x-enum %q repeats %q", source.str(), added[i])
+		}
+		drop(v, "enum")
+		replaceMember(v, "x-enum", "enum", strsValue(slices.Concat(values, added)))
 	}
 	if spec := v.get("x-per-language"); spec != nil {
 		languages, err := c.perLanguage(v, spec)
@@ -447,9 +464,10 @@ func (c *configContext) fill(v *value) ([]string, error) {
 	return named, nil
 }
 
-// perLanguage writes, in the place of an x-per-language, one required member
-// per language whose languages.json column the spec's when names, each the
-// spec's member with the language's name written into its description.
+// perLanguage writes, in the place of an x-per-language, one member per
+// language whose languages.json column the spec's when names, each the spec's
+// member with the language's name written into its description, every one
+// required unless the spec is optional.
 func (c *configContext) perLanguage(v, spec *value) ([]string, error) {
 	when, member := spec.get("when").str(), spec.get("member")
 	if member == nil {
@@ -472,6 +490,10 @@ func (c *configContext) perLanguage(v, spec *value) ([]string, error) {
 		}
 		props.set(l.Language, m)
 		ids = append(ids, l.Language)
+	}
+	if isTrue(spec.get("optional")) {
+		replaceMember(v, "x-per-language", "properties", props)
+		return ids, nil
 	}
 	replaceMember(v, "x-per-language", "required", strsValue(ids))
 	setAfter(v, "required", "properties", props)

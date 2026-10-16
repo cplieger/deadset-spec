@@ -111,9 +111,11 @@ func (n *node) checkNumber(v json.Number, at string, found *[]Error) {
 	}
 }
 
-// checkObject applies required, minProperties and every member keyword.
+// checkObject applies required, minProperties, propertyNames and every member
+// keyword.
 func (n *node) checkObject(v map[string]any, at string, found *[]Error) {
 	for _, name := range slices.Sorted(maps.Keys(v)) {
+		n.checkName(name, at, found)
 		n.checkMember(name, v[name], at, found)
 	}
 	for _, name := range n.required {
@@ -122,6 +124,21 @@ func (n *node) checkObject(v map[string]any, at string, found *[]Error) {
 		}
 	}
 	n.checkMembers(len(v), at, found)
+}
+
+// checkName applies propertyNames to one member name of the object at at.
+func (n *node) checkName(name, at string, found *[]Error) {
+	if n.names == nil {
+		return
+	}
+	var refused []Error
+	n.names.check(name, at, &refused)
+	if len(refused) > 0 {
+		*found = append(*found, Error{
+			Keyword: "propertyNames", Pointer: at,
+			Reason: "the member name " + strconv.Quote(name) + ": " + refused[0].Reason,
+		})
+	}
 }
 
 // checkMembers applies minProperties to an object of length members.

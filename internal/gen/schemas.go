@@ -156,26 +156,55 @@ type detailsBranch struct {
 	languages []string // set where only these languages' findings carry the members
 }
 
+// filledSchemas are the published schemas whose source differs from them only
+// by the members x-enum and x-per-language stand for, by source.
+var filledSchemas = map[string]string{
+	"authoring/describe.schema.json":            "contract/describe.schema.json",
+	"authoring/report.schema.json":              "contract/report.schema.json",
+	"authoring/conformance-results.schema.json": "corpus/conformance-results.schema.json",
+	"authoring/expect.schema.json":              "corpus/expect.schema.json",
+}
+
+// publishedSchemas writes each of filledSchemas from its source.
+func publishedSchemas(fsys fs.FS, out map[string][]byte) error {
+	ctx, err := loadConfigContext(fsys)
+	if err != nil {
+		return err
+	}
+	for _, source := range sortedKeys(filledSchemas) {
+		src, err := readValue(fsys, source)
+		if err != nil {
+			return err
+		}
+		if _, err := ctx.fill(src); err != nil {
+			return fmt.Errorf("%s: %w", source, err)
+		}
+		out[filledSchemas[source]] = encode(src)
+	}
+	return nil
+}
+
 // findingSchema writes the published finding schema: its source, with the
-// per-code branches of the details object and the liveness-relation rule
-// generated from the kind rows ahead of the source's own allOf entries.
+// members x-enum and x-per-language stand for written in, and the per-code
+// branches of the details object and the liveness-relation rule generated from
+// the kind rows ahead of the source's own allOf entries.
 func findingSchema(fsys fs.FS, out map[string][]byte) error {
 	src, err := readValue(fsys, findingSource)
 	if err != nil {
 		return err
+	}
+	ctx, err := loadConfigContext(fsys)
+	if err != nil {
+		return err
+	}
+	if _, err = ctx.fill(src); err != nil {
+		return fmt.Errorf("%s: %w", findingSource, err)
 	}
 	kinds, kindsDoc, err := loadKinds(fsys)
 	if err != nil {
 		return err
 	}
 	symbolKinds := kindsDoc.get("symbol_kinds")
-	if symbolKinds == nil {
-		return fmt.Errorf("%s: no symbol_kinds", kindsPath)
-	}
-	enum := src.get("properties").get("symbol").get("properties").get("kind").get("enum").strs()
-	if !slices.Equal(enum, symbolKinds.keys) {
-		return fmt.Errorf("%s: symbol_kinds %v differ from the finding schema's symbol kinds %v", kindsPath, symbolKinds.keys, enum)
-	}
 	members := src.get("properties").get("details").get("properties")
 	if members == nil {
 		return fmt.Errorf("%s: no details members", findingSource)

@@ -61,6 +61,7 @@ type node struct {
 	properties map[string]*node
 	patterns   []patternNode
 	additional *node
+	names      *node
 
 	items    *node
 	maxItems *int
@@ -262,6 +263,8 @@ func (c *compiler) applicator(n *node, doc, at, keyword string, value any) (err 
 		n.patterns, err = c.patternMembers(doc, at, value)
 	case "additionalProperties":
 		n.additional, err = c.at(doc, at)
+	case "propertyNames":
+		n.names, err = c.at(doc, at)
 	case "items":
 		n.items, err = c.at(doc, at)
 	case "not":

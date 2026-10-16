@@ -4,9 +4,23 @@
   "description": "The language-neutral expectation file of one conformance fixture, expect.json. It names what an analyzer must report and what it must not report, per issue kind and per exemption class, and it binds to each language rendering through one thing only: the fixture-local logical name in each expectation's symbol field, which the rendering's manifest, fixture.json, maps to a file and a line. No field of an expectation names a language; the fixture-level languages array is the one place a language appears, and it names which renderings exist rather than what any of them contains. The expectation list is exhaustive for the target: a finding on a position no expectation resolves to fails the analyzer.",
   "type": "object",
   "additionalProperties": false,
-  "if": { "required": ["setup_failure"] },
-  "then": { "properties": { "expect": { "maxItems": 0 } } },
-  "else": { "properties": { "expect": { "minItems": 1 } } },
+  "if": {
+    "required": ["setup_failure"]
+  },
+  "then": {
+    "properties": {
+      "expect": {
+        "maxItems": 0
+      }
+    }
+  },
+  "else": {
+    "properties": {
+      "expect": {
+        "minItems": 1
+      }
+    }
+  },
   "required": ["name", "description", "languages", "target_kind", "expect"],
   "properties": {
     "name": {
@@ -54,13 +68,21 @@
           "enum": ["application", "library"]
         },
         {
-          "description": "The kind of each language contract/kinds.json declares, every member required.",
+          "description": "The kind of each language contract/languages.json marks takes_target_kind, every member required.",
           "type": "object",
           "additionalProperties": false,
           "required": ["go", "ts"],
           "properties": {
-            "go": { "description": "The kind of the target's Go code.", "type": "string", "enum": ["application", "library"] },
-            "ts": { "description": "The kind of the target's TypeScript code.", "type": "string", "enum": ["application", "library"] }
+            "go": {
+              "description": "The kind of the target's Go code.",
+              "type": "string",
+              "enum": ["application", "library"]
+            },
+            "ts": {
+              "description": "The kind of the target's TypeScript code.",
+              "type": "string",
+              "enum": ["application", "library"]
+            }
           }
         }
       ]
@@ -110,10 +132,20 @@
         "additionalProperties": false,
         "required": ["key", "entry"],
         "if": {
-          "properties": { "key": { "enum": ["ts.lifecycle_contracts.components", "ts.lifecycle_contracts.bases"] } }
+          "properties": {
+            "key": {
+              "enum": ["ts.lifecycle_contracts.components", "ts.lifecycle_contracts.bases"]
+            }
+          }
         },
-        "then": { "required": ["members"] },
-        "else": { "not": { "required": ["members"] } },
+        "then": {
+          "required": ["members"]
+        },
+        "else": {
+          "not": {
+            "required": ["members"]
+          }
+        },
         "properties": {
           "key": {
             "description": "The configuration key the entry is written into, as its dotted path in contract/config.schema.json, the path through an entry of ts.lifecycle_contracts naming the list of that entry the declaration is written into.",
@@ -125,7 +157,10 @@
             "type": "array",
             "minItems": 1,
             "uniqueItems": true,
-            "items": { "type": "string", "minLength": 1 }
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
           },
           "entry": {
             "description": "One entry of that key, in one of the shapes contract/config.schema.json declares for the key's entries, spelled as the configuration document spells it.",
@@ -163,9 +198,28 @@
         "type": "object",
         "additionalProperties": false,
         "required": ["edge", "side", "state"],
-        "if": { "properties": { "state": { "const": "dead" } } },
-        "then": { "required": ["symbol", "report"] },
-        "else": { "not": { "anyOf": [{ "required": ["symbol"] }, { "required": ["report"] }] } },
+        "if": {
+          "properties": {
+            "state": {
+              "const": "dead"
+            }
+          }
+        },
+        "then": {
+          "required": ["symbol", "report"]
+        },
+        "else": {
+          "not": {
+            "anyOf": [
+              {
+                "required": ["symbol"]
+              },
+              {
+                "required": ["report"]
+              }
+            ]
+          }
+        },
         "properties": {
           "edge": {
             "description": "The identifier of the edge, as the edges document spells it.",
@@ -474,38 +528,64 @@
         },
         "if": {
           "properties": {
-            "report": { "const": "none" }
+            "report": {
+              "const": "none"
+            }
           }
         },
         "then": {
           "not": {
             "anyOf": [
-              { "required": ["symbol_kind"] },
-              { "required": ["confidence"] },
-              { "required": ["reachability_class"] },
-              { "required": ["liveness_relation"] },
-              { "required": ["fixability"] },
-              { "required": ["configurations"] },
-              { "required": ["details"] },
-              { "required": ["component"] }
+              {
+                "required": ["symbol_kind"]
+              },
+              {
+                "required": ["confidence"]
+              },
+              {
+                "required": ["reachability_class"]
+              },
+              {
+                "required": ["liveness_relation"]
+              },
+              {
+                "required": ["fixability"]
+              },
+              {
+                "required": ["configurations"]
+              },
+              {
+                "required": ["details"]
+              },
+              {
+                "required": ["component"]
+              }
             ]
           }
         },
         "else": {
           "required": ["confidence"],
-          "not": { "required": ["retained_by"] }
+          "not": {
+            "required": ["retained_by"]
+          }
         },
         "allOf": [
           {
             "if": {
               "required": ["report"],
               "properties": {
-                "report": { "enum": ["DS1501", "DS1502", "DS1503"] }
+                "report": {
+                  "enum": ["DS1501", "DS1502", "DS1503"]
+                }
               }
             },
             "else": {
               "properties": {
-                "details": { "not": { "required": ["narrower_visibility"] } }
+                "details": {
+                  "not": {
+                    "required": ["narrower_visibility"]
+                  }
+                }
               }
             }
           },
@@ -513,12 +593,18 @@
             "if": {
               "required": ["report"],
               "properties": {
-                "report": { "const": "DS1601" }
+                "report": {
+                  "const": "DS1601"
+                }
               }
             },
             "else": {
               "properties": {
-                "details": { "not": { "required": ["excluded_by"] } }
+                "details": {
+                  "not": {
+                    "required": ["excluded_by"]
+                  }
+                }
               }
             }
           },
@@ -526,12 +612,18 @@
             "if": {
               "required": ["report"],
               "properties": {
-                "report": { "const": "DS1701" }
+                "report": {
+                  "const": "DS1701"
+                }
               }
             },
             "else": {
               "properties": {
-                "details": { "not": { "required": ["dependency_class"] } }
+                "details": {
+                  "not": {
+                    "required": ["dependency_class"]
+                  }
+                }
               }
             }
           },
@@ -539,12 +631,18 @@
             "if": {
               "required": ["report"],
               "properties": {
-                "report": { "const": "DS1702" }
+                "report": {
+                  "const": "DS1702"
+                }
               }
             },
             "else": {
               "properties": {
-                "details": { "not": { "required": ["replacement"] } }
+                "details": {
+                  "not": {
+                    "required": ["replacement"]
+                  }
+                }
               }
             }
           },
@@ -552,12 +650,18 @@
             "if": {
               "required": ["report"],
               "properties": {
-                "report": { "enum": ["DS9001", "DS9002", "DS9003"] }
+                "report": {
+                  "enum": ["DS9001", "DS9002", "DS9003"]
+                }
               }
             },
             "else": {
               "properties": {
-                "details": { "not": { "required": ["mechanism"] } }
+                "details": {
+                  "not": {
+                    "required": ["mechanism"]
+                  }
+                }
               }
             }
           },
@@ -565,17 +669,29 @@
             "if": {
               "required": ["report"],
               "properties": {
-                "report": { "const": "DS9003" }
+                "report": {
+                  "const": "DS9003"
+                }
               }
             },
             "then": {
               "not": {
                 "anyOf": [
-                  { "required": ["reachability_class"] },
-                  { "required": ["liveness_relation"] },
-                  { "required": ["fixability"] },
-                  { "required": ["configurations"] },
-                  { "required": ["component"] }
+                  {
+                    "required": ["reachability_class"]
+                  },
+                  {
+                    "required": ["liveness_relation"]
+                  },
+                  {
+                    "required": ["fixability"]
+                  },
+                  {
+                    "required": ["configurations"]
+                  },
+                  {
+                    "required": ["component"]
+                  }
                 ]
               }
             }
@@ -584,12 +700,18 @@
             "if": {
               "required": ["report"],
               "properties": {
-                "report": { "const": "DS9005" }
+                "report": {
+                  "const": "DS9005"
+                }
               }
             },
             "else": {
               "properties": {
-                "details": { "not": { "required": ["edge"] } }
+                "details": {
+                  "not": {
+                    "required": ["edge"]
+                  }
+                }
               }
             }
           },
@@ -597,12 +719,18 @@
             "if": {
               "required": ["report"],
               "properties": {
-                "report": { "enum": ["DS1001", "DS1002", "DS1102", "DS1104", "DS1501", "DS1502", "DS1101"] }
+                "report": {
+                  "enum": ["DS1001", "DS1002", "DS1102", "DS1104", "DS1501", "DS1502", "DS1101"]
+                }
               }
             },
             "else": {
               "properties": {
-                "details": { "not": { "required": ["name_literal"] } }
+                "details": {
+                  "not": {
+                    "required": ["name_literal"]
+                  }
+                }
               }
             }
           },
@@ -610,12 +738,18 @@
             "if": {
               "required": ["report"],
               "properties": {
-                "report": { "enum": ["DS1401", "DS1402", "DS1403", "DS1405", "DS1404", "DS1406"] }
+                "report": {
+                  "enum": ["DS1401", "DS1402", "DS1403", "DS1405", "DS1404", "DS1406"]
+                }
               }
             },
             "else": {
               "properties": {
-                "details": { "not": { "required": ["overlap"] } }
+                "details": {
+                  "not": {
+                    "required": ["overlap"]
+                  }
+                }
               }
             }
           }

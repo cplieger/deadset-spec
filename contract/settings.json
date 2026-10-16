@@ -68,6 +68,8 @@
       "delivered": [],
       "default": [],
       "option": "languages",
+      "vocabulary": "languages",
+      "values": ["go", "ts"],
       "value": {
         "type": "array",
         "uniqueItems": true,
@@ -310,7 +312,7 @@
         "uniqueItems": true,
         "items": {
           "type": "string",
-          "pattern": "^[a-z][a-z0-9-]*$"
+          "enum": ["interface-satisfaction", "encoding-reflection", "format-verb-contract", "errors-duck-typing", "enum-group", "generated-file", "linkname-cgo-asm-plugin", "template-field", "reflective-lookup", "decorator", "injection-container", "framework-lifecycle", "serialization-contract"]
         }
       }
     },

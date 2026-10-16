@@ -248,37 +248,61 @@
                   },
                   "if": {
                     "properties": {
-                      "report": { "const": "none" }
+                      "report": {
+                        "const": "none"
+                      }
                     }
                   },
                   "then": {
                     "not": {
                       "anyOf": [
-                        { "required": ["symbol_kind"] },
-                        { "required": ["confidence"] },
-                        { "required": ["reachability_class"] },
-                        { "required": ["liveness_relation"] },
-                        { "required": ["fixability"] },
-                        { "required": ["configurations"] },
-                        { "required": ["details"] },
-                        { "required": ["component"] }
+                        {
+                          "required": ["symbol_kind"]
+                        },
+                        {
+                          "required": ["confidence"]
+                        },
+                        {
+                          "required": ["reachability_class"]
+                        },
+                        {
+                          "required": ["liveness_relation"]
+                        },
+                        {
+                          "required": ["fixability"]
+                        },
+                        {
+                          "required": ["configurations"]
+                        },
+                        {
+                          "required": ["details"]
+                        },
+                        {
+                          "required": ["component"]
+                        }
                       ]
                     }
                   },
                   "else": {
                     "required": ["confidence"],
-                    "not": { "required": ["retained_by"] }
+                    "not": {
+                      "required": ["retained_by"]
+                    }
                   },
                   "allOf": [
                     {
                       "if": {
                         "required": ["report"],
                         "properties": {
-                          "report": { "const": "DS9003" }
+                          "report": {
+                            "const": "DS9003"
+                          }
                         }
                       },
                       "then": {
-                        "not": { "required": ["fixability"] }
+                        "not": {
+                          "required": ["fixability"]
+                        }
                       }
                     }
                   ]
@@ -308,7 +332,9 @@
               },
               "if": {
                 "properties": {
-                  "result": { "const": "gap" }
+                  "result": {
+                    "const": "gap"
+                  }
                 },
                 "required": ["result"]
               },
@@ -316,7 +342,9 @@
                 "required": ["capability"]
               },
               "else": {
-                "not": { "required": ["capability"] }
+                "not": {
+                  "required": ["capability"]
+                }
               }
             }
           },
@@ -358,21 +386,29 @@
           {
             "if": {
               "properties": {
-                "unexpected": { "minItems": 1 }
+                "unexpected": {
+                  "minItems": 1
+                }
               },
               "required": ["unexpected"]
             },
             "then": {
               "properties": {
-                "result": { "enum": ["fail", "pending"] }
+                "result": {
+                  "enum": ["fail", "pending"]
+                }
               }
             }
           },
           {
             "if": {
               "properties": {
-                "expectations": { "maxItems": 0 },
-                "result": { "const": "fail" }
+                "expectations": {
+                  "maxItems": 0
+                },
+                "result": {
+                  "const": "fail"
+                }
               },
               "required": ["expectations", "result"]
             },
@@ -386,7 +422,9 @@
   },
   "if": {
     "properties": {
-      "result": { "const": "pass" }
+      "result": {
+        "const": "pass"
+      }
     },
     "required": ["result"]
   },
@@ -394,7 +432,9 @@
     "properties": {
       "totals": {
         "properties": {
-          "fail": { "const": 0 }
+          "fail": {
+            "const": 0
+          }
         }
       }
     }
@@ -403,7 +443,9 @@
     "properties": {
       "totals": {
         "properties": {
-          "fail": { "minimum": 1 }
+          "fail": {
+            "minimum": 1
+          }
         }
       }
     }

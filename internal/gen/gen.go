@@ -2,8 +2,9 @@
 // Contract's data: the published configuration schema expanded from its
 // authoring source, the configuration key table derived from it and the
 // configuration vectors' resolved configurations, the per-code branches of the
-// finding schema, the reference pages under docs/, the vocab package's data and
-// the report package's document types. A freshness test regenerates and
+// finding schema, the closed lists the x-enum members of every authoring source
+// name, the reference pages under docs/, the vocab package's data and the
+// report package's document types. A freshness test regenerates and
 // compares, so a derived file never drifts from the data it is derived from.
 package gen
 
@@ -21,6 +22,7 @@ func Generate(fsys fs.FS) (map[string][]byte, error) {
 	steps := []func(fs.FS, map[string][]byte) error{
 		configuration,
 		findingSchema,
+		publishedSchemas,
 		docsPages,
 		readmeCounts,
 		vocabSource,
