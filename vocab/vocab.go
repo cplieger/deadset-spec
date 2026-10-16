@@ -2,12 +2,11 @@
 // kinds and their families, the symbol kinds and the subject each names, the
 // exemption classes, the evidence that lowers a finding's class, the exit codes,
 // the setup-failure classes, the versions, the language registry, the
-// orchestrator's command line, the keys of the configuration and the name of
-// the edges document. A product compiles them in rather than reading the
-// documents at run time. vocab_gen.go and config_gen.go are written by
-// deadset-gen from contract/*.json, authoring/config.schema.json and
-// corpus/corpus.json, and a freshness test fails when a document moves and
-// nobody regenerated.
+// products' command lines, the keys of the configuration and the name of the
+// edges document. A product compiles them in rather than reading the documents
+// at run time. vocab_gen.go and config_gen.go are written by deadset-gen from
+// contract/*.json, authoring/config.schema.json and corpus/corpus.json, and a
+// freshness test fails when a document moves and nobody regenerated.
 package vocab
 
 import (
@@ -300,12 +299,15 @@ func Formats() []Format { return slices.Clone(formatValues) }
 // SymbolKinds returns every symbol kind the vocabulary declares, in its order.
 func SymbolKinds() []string { return slices.Clone(symbolKindOrder) }
 
+// OptionValue is the kind of value a command-line option takes.
+type OptionValue string
+
 // Option is one command-line option of cli.json: its name, spelled after
 // "--", the kind of value it takes, the setting it supplies or "", and what it
 // does.
 type Option struct {
 	Name       string
-	Value      string
+	Value      OptionValue
 	Setting    string
 	Summary    string
 	Repeatable bool
@@ -324,9 +326,9 @@ func OptionOf(name string) (Option, bool) {
 	return options[i], true
 }
 
-// Verb is one verb of the orchestrator's command line: its closed option
-// list, in cli.json's order, what it writes on standard output and the exit
-// codes it can end with.
+// Verb is one verb of a product's command line: its closed option list, in
+// cli.json's order, what it writes on standard output and the exit codes it
+// can end with.
 type Verb struct {
 	Name      string
 	Summary   string
@@ -341,6 +343,29 @@ func OrchestratorVerbs() []Verb {
 	held := slices.Clone(orchestratorVerbs)
 	for i := range held {
 		held[i].Options, held[i].ExitCodes = slices.Clone(held[i].Options), slices.Clone(held[i].ExitCodes)
+	}
+	return held
+}
+
+// analyzerVerb is one row of cli.json's analyzer verbs: a verb with the closed
+// option list of each language's analyzer that serves it.
+type analyzerVerb struct {
+	Options map[Language][]string
+	Verb
+}
+
+// AnalyzerVerbs returns every verb the analyzer of one language serves, in
+// cli.json's order, each with that analyzer's option list.
+func AnalyzerVerbs(language Language) []Verb {
+	var held []Verb
+	for i := range analyzerVerbs {
+		options, served := analyzerVerbs[i].Options[language]
+		if !served {
+			continue
+		}
+		verb := analyzerVerbs[i].Verb
+		verb.Options, verb.ExitCodes = slices.Clone(options), slices.Clone(verb.ExitCodes)
+		held = append(held, verb)
 	}
 	return held
 }

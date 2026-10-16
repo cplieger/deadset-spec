@@ -17,6 +17,7 @@ import (
 
 	"github.com/cplieger/deadset-spec/v8"
 	"github.com/cplieger/deadset-spec/v8/corpus"
+	"github.com/cplieger/deadset-spec/v8/vocab"
 )
 
 const (
@@ -80,6 +81,7 @@ type configVectorCase struct {
 	Name        string   `json:"name"`
 	Description string   `json:"description"`
 	Covers      []string `json:"covers"`
+	Products    []string `json:"products"`
 }
 
 // configVectorError mirrors an expected-error.json.
@@ -369,6 +371,14 @@ func TestConfigVectorsCoverEveryAspectOnce(t *testing.T) {
 			}
 			if len(c.Covers) == 0 {
 				t.Errorf("%s/%s/%s: covers = %q, want at least one aspect", configVectorsDir, dir, vectorCaseFile, c.Covers)
+			}
+			if c.Products != nil && (len(c.Products) == 0 || len(slices.Compact(slices.Sorted(slices.Values(c.Products)))) != len(c.Products)) {
+				t.Errorf("%s/%s/%s: products = %q, want absent or distinct products", configVectorsDir, dir, vectorCaseFile, c.Products)
+			}
+			for _, product := range c.Products {
+				if !slices.Contains(vectorProducts(), product) {
+					t.Errorf("%s/%s/%s: products names %q, want one of %q", configVectorsDir, dir, vectorCaseFile, product, vectorProducts())
+				}
 			}
 			for _, aspect := range c.Covers {
 				if !slices.Contains(configVectorAspects, aspect) {
@@ -1077,4 +1087,14 @@ func TestConfigVectorTargetKindCasesNameTheFaultTheKeyOrders(t *testing.T) {
 	if checked == 0 {
 		t.Error("cases writing a target kind = 0, want every case that writes one checked")
 	}
+}
+
+// vectorProducts are the products a case may name: the orchestrator and the
+// analyzer of every language contract/languages.json lists.
+func vectorProducts() []string {
+	products := []string{"deadset"}
+	for _, row := range vocab.LanguageRows() {
+		products = append(products, row.Analyzer)
+	}
+	return products
 }

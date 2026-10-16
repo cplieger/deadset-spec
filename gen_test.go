@@ -299,6 +299,44 @@ func TestAPlantedConfigurationEditReachesEveryGeneratedTable(t *testing.T) {
 	})
 }
 
+// TestAPlantedCommandLineEditReachesTheVocabulary proves the command line's
+// generated handles move with their sources: an analyzer verb's option list,
+// a kind of value an option takes, and a choice a setting's schema lists.
+func TestAPlantedCommandLineEditReachesTheVocabulary(t *testing.T) {
+	for _, tc := range []struct {
+		name, path, old, planted, file, want string
+	}{
+		{
+			name: "an analyzer verb's option", path: "contract/cli.json",
+			old:     `"go": ["target", "config", "central", "min-confidence"],`,
+			planted: `"go": ["target", "config", "central", "min-confidence", "sort"],`,
+			file:    "vocab/vocab_gen.go", want: `Go: []string{"target", "config", "central", "min-confidence", "sort"}`,
+		},
+		{
+			name: "a kind of value", path: "contract/cli.json",
+			old: `"value": "integer"`, planted: `"value": "count"`,
+			file: "vocab/vocab_gen.go", want: `OptionValueCount OptionValue = "count"`,
+		},
+		{
+			name: "a choice", path: "authoring/config.schema.json",
+			old: `"enum": ["position", "size"]`, planted: `"enum": ["position", "size", "planted"]`,
+			file: "vocab/config_gen.go", want: `ReportersSortPlanted Choice = "planted"`,
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			inputs := generatorInputs(t)
+			plant(t, inputs, tc.path, tc.old, tc.planted)
+			files, err := gen.Generate(inputs)
+			if err != nil {
+				t.Fatalf("gen.Generate(planted) = %v", err)
+			}
+			if !regexp.MustCompile(strings.ReplaceAll(regexp.QuoteMeta(tc.want), " ", `\s+`)).Match(files[tc.file]) {
+				t.Errorf("%s holds no %s, want the planted edit generated", tc.file, tc.want)
+			}
+		})
+	}
+}
+
 // languageLists returns, by JSON pointer, every enum and required list of the
 // schema doc that names two or more of languages. A list naming one language is
 // a condition on that language, not a copy of the vocabulary.

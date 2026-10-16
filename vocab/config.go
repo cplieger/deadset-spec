@@ -9,6 +9,10 @@ import (
 // Key is one key of the closed configuration key list, by its dotted path.
 type Key string
 
+// Choice is one value of a setting's closed choice that no other vocabulary
+// owns.
+type Choice string
+
 // Role is what one key of the configuration is.
 type Role string
 

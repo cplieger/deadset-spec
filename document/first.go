@@ -29,36 +29,19 @@ func (n *node) first(v any, at string) *Error {
 			first = other
 		}
 	}
-	if first.Keyword != oneOfKeyword {
+	if first.oneOf == nil {
 		return &first
 	}
-	held, holders := v, []*node{n}
+	held := v
 	for _, segment := range segments(strings.TrimPrefix(first.Pointer, at)) {
-		held, holders = below(holders, held, segment)
+		held = valueAt(held, segment)
 	}
-	if inner := explainOneOf(holders, held, first.Pointer); inner != nil {
-		return inner
-	}
-	return &first
-}
-
-// explainOneOf returns the first refusal of the alternative held was written
-// for, under a oneOf no alternative matches among the nodes holders apply at
-// the place at, or nil where none explains it.
-func explainOneOf(holders []*node, held any, at string) *Error {
-	for _, holder := range holders {
-		for _, applied := range holder.applied(held) {
-			if applied.oneOf == nil || countMatching(applied.oneOf, held, at) > 0 {
-				continue
-			}
-			if alternative := closest(applied.oneOf, held); alternative != nil {
-				if inner := alternative.first(held, at); inner != nil {
-					return inner
-				}
-			}
+	if alternative := closest(first.oneOf.oneOf, held); alternative != nil {
+		if inner := alternative.first(held, first.Pointer); inner != nil {
+			return inner
 		}
 	}
-	return nil
+	return &first
 }
 
 // before reports whether a reader fixes a before b.
@@ -101,44 +84,6 @@ func (n *node) applied(v any) []*node {
 	}
 	if branch != nil {
 		held = append(held, branch.applied(v)...)
-	}
-	return held
-}
-
-// below returns the value one JSON Pointer segment names inside v, and the
-// nodes checked there when holders are checked at v.
-func below(holders []*node, v any, segment string) (any, []*node) {
-	var next []*node
-	for _, holder := range holders {
-		for _, at := range holder.applied(v) {
-			next = append(next, at.member(v, segment)...)
-		}
-	}
-	return valueAt(v, segment), next
-}
-
-// member returns the nodes n checks the member or the entry segment names in v
-// with.
-func (n *node) member(v any, segment string) []*node {
-	if _, isArray := v.([]any); isArray {
-		if n.items == nil {
-			return nil
-		}
-		return []*node{n.items}
-	}
-	var held []*node
-	declared, named := n.properties[segment]
-	if named {
-		held = append(held, declared)
-	}
-	for _, p := range n.patterns {
-		if p.pattern.MatchString(segment) {
-			named = true
-			held = append(held, p.schema)
-		}
-	}
-	if !named && n.additional != nil {
-		held = append(held, n.additional)
 	}
 	return held
 }

@@ -2,24 +2,29 @@ package document
 
 import "strings"
 
-// Key spells the place e refuses as a configuration refusal names a key: the
-// member names of Pointer joined by full stops, an index in brackets after the
-// array it indexes, then Member for a refusal about a member; "" is the whole
-// document. A segment of ASCII digits alone is an index, and Member is always a
-// name. An empty segment or Member is the member named "", so /a//b spells a..b
-// and never names the key a.b.
-func (e *Error) Key() string {
+// Key spells the place e refuses in v, the value e was found in, as a
+// configuration refusal names a key: under, the key of the place v sits at or
+// "" for a whole document, then each member name of Pointer after a full stop
+// and each index of an array in brackets, then Member for a refusal about a
+// member. Whether a segment is an index is read from v, so the member named 1
+// spells .1 and never [1]. An empty segment or Member is the member named "",
+// so /a//b spells a..b and never names the key a.b.
+func (e *Error) Key(under string, v any) string {
 	var key strings.Builder
-	for i, segment := range segments(e.Pointer) {
-		if isIndex(segment) {
+	key.WriteString(under)
+	started := under != ""
+	for _, segment := range segments(e.Pointer) {
+		if _, isArray := v.([]any); isArray {
 			key.WriteString("[" + segment + "]")
-			continue
+		} else {
+			joinMember(&key, started, segment)
 		}
-		joinMember(&key, i > 0, segment)
+		started = true
+		v = valueAt(v, segment)
 	}
 	switch e.Keyword {
 	case requiredKeyword, additionalKeyword, namesKeyword:
-		joinMember(&key, e.Pointer != "", e.Member)
+		joinMember(&key, started, e.Member)
 	}
 	return key.String()
 }
@@ -31,10 +36,4 @@ func joinMember(key *strings.Builder, preceded bool, name string) {
 		key.WriteByte('.')
 	}
 	key.WriteString(name)
-}
-
-// isIndex reports whether a JSON Pointer segment is an array index, ASCII
-// digits alone.
-func isIndex(segment string) bool {
-	return segment != "" && strings.Trim(segment, "0123456789") == ""
 }

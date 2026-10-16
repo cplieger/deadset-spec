@@ -20,6 +20,10 @@ var ErrMalformed = errors.New("the document is not one strict JSON value")
 // additionalProperties or propertyNames refusal is about, the object being at
 // Pointer; it is empty for every other keyword.
 type Error struct {
+	// oneOf is the node whose oneOf no alternative matches, for a oneOf
+	// refusal, so [Schema.FirstRefusal] explains that oneOf and not another
+	// one checked at the same place.
+	oneOf   *node
 	Pointer string
 	Keyword string
 	Reason  string
