@@ -114,15 +114,7 @@ func runCorpus(ctx context.Context, args []string, stdout, stderr io.Writer) int
 		fmt.Fprintln(stderr, "deadset-corpus:", err)
 		return 3
 	}
-	if *out == "" {
-		_, err = stdout.Write(data)
-	} else {
-		var absolute string
-		if absolute, err = filepath.Abs(*out); err == nil {
-			_, err = atomicfile.WriteFile(ctx, absolute, data)
-		}
-	}
-	if err != nil {
+	if err := writeResults(ctx, stdout, *out, data); err != nil {
 		fmt.Fprintln(stderr, "deadset-corpus:", err)
 		return 3
 	}
@@ -144,6 +136,21 @@ func readGaps(path string) ([]corpus.GapRow, error) {
 		return nil, fmt.Errorf("%s: %w", path, err)
 	}
 	return gaps.Gaps, nil
+}
+
+// writeResults writes the results document to the file out, or to stdout
+// where out is empty.
+func writeResults(ctx context.Context, stdout io.Writer, out string, data []byte) error {
+	if out == "" {
+		_, err := stdout.Write(data)
+		return err
+	}
+	absolute, err := filepath.Abs(out)
+	if err != nil {
+		return err
+	}
+	_, err = atomicfile.WriteFile(ctx, absolute, data)
+	return err
 }
 
 func agree(args []string, stdout, stderr io.Writer) int {

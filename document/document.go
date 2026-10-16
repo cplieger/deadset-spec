@@ -16,11 +16,14 @@ var ErrMalformed = errors.New("the document is not one strict JSON value")
 
 // Error is one value a document is refused for: the JSON Pointer (RFC 6901) of
 // the value, the empty string for the whole document, the keyword or the rule
-// that refuses it, and why.
+// that refuses it, and why. Member is the name of the member a required,
+// additionalProperties or propertyNames refusal is about, the object being at
+// Pointer; it is empty for every other keyword.
 type Error struct {
 	Pointer string
 	Keyword string
 	Reason  string
+	Member  string
 }
 
 // Error renders the refusal as one line.
@@ -54,15 +57,15 @@ func Decode(data []byte) (any, error) {
 }
 
 // Unmarshal reads data as one strict JSON instance of s into v. A document
-// that is not strict JSON is refused wrapping [ErrMalformed], and the first
-// value s refuses as a [*Error].
+// that is not strict JSON is refused wrapping [ErrMalformed], and one s
+// refuses as the [*Error] [Schema.FirstRefusal] names.
 func (s *Schema) Unmarshal(data []byte, v any) error {
 	value, err := Decode(data)
 	if err != nil {
 		return err
 	}
-	if found := s.CheckValue(value); len(found) > 0 {
-		return &found[0]
+	if refused := s.FirstRefusal(value); refused != nil {
+		return refused
 	}
 	return json.Unmarshal(data, v)
 }

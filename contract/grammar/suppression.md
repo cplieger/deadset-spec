@@ -256,6 +256,8 @@ The report's `totals.suppressions_in_effect` counts records in effect and `total
 | Separator absent and no reason, or separator present and the reason empty or whitespace | inline | One `DS9001` per code the directive names, at the directive's line. Binds nothing. |
 | A directive alone on its line that is not immediately above a line where a declaration begins, or a trailing directive on a line where no declaration begins | inline | Well formed, bound to nothing: `DS9003` at the directive's line. |
 | Document not strict JSON; a key outside the closed list; a value of the wrong type; `code` or `symbol` absent; a `code`, `symbol` or `path` value outside its form | ignore entry, baseline row | Exit code 2, the document and the entry named. |
+| Document larger than the `x-max-bytes` of [`config.schema.json`](../config.schema.json) | ignore file, baseline | Exit code 2, the document named, before it is read whole. |
+| Document name resolving outside the target root, or to anything but a regular file: a FIFO, a device, a socket, a directory | ignore file, baseline | Exit code 3, the document named; nothing is read from it. |
 | `reason` absent, empty or whitespace | ignore entry, baseline row | `DS9001` at the entry's position. Binds nothing. |
 | `path` absent or empty | ignore entry, baseline row | `DS9002` at the entry's position. Binds nothing. |
 | `reason` and `path` both absent or empty | ignore entry, baseline row | `DS9001` and `DS9002` at the entry's position. Binds nothing. |

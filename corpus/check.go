@@ -38,7 +38,7 @@ const missingConsumerClass = "missing-consumer"
 
 // edgesDocumentPath is where a rendering carries the edges document its target
 // declares.
-const edgesDocumentPath = TargetDir + "/deadset-edges.json"
+const edgesDocumentPath = TargetDir + "/" + vocab.EdgesFileName
 
 // Check holds every fixture of the corpus in fsys to the corpus format and to the
 // Contract's vocabularies, and the corpus to its coverage rules. It names every
@@ -400,13 +400,12 @@ func checkInstalledPackages(language string, files map[string][]byte) []error {
 
 // edgesDocument is a target's deadset-edges.json.
 type edgesDocument struct {
-	Description string `json:"description"`
-	Edges       []struct {
-		ID       string `json:"id"`
+	Edges map[string]struct {
 		Because  string `json:"because"`
 		Provides string `json:"provides"`
 		UsedBy   string `json:"used_by"`
 	} `json:"edges"`
+	Description string `json:"description"`
 }
 
 // checkEdgeEvaluations holds edge_evaluations to the edges document of the
@@ -430,10 +429,10 @@ func checkEdgeEvaluations(expect *Expectation, language string, files map[string
 	}
 	prefix := language + "://"
 	sides := map[string]bool{}
-	for _, edge := range edges.Edges {
+	for id, edge := range edges.Edges {
 		for side, ref := range map[string]string{"provides": edge.Provides, "used_by": edge.UsedBy} {
 			if strings.HasPrefix(ref, prefix) {
-				sides[edge.ID+" "+side] = true
+				sides[id+" "+side] = true
 			}
 		}
 	}

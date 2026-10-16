@@ -1,0 +1,12 @@
+{
+  "edges": {
+    "wire/ServerEvent": {
+      "provides": "go://example.com/target#ServerEvent",
+      "used_by": "ts://@example/web/src/wire.ts#ServerEvent"
+    },
+    "wire/ServerEvent": {
+      "provides": "go://example.com/target#ClientEvent",
+      "used_by": "ts://@example/web/src/wire.ts#ClientEvent"
+    }
+  }
+}

@@ -202,8 +202,7 @@
                         },
                         "edge": {
                           "description": "The declared cross-language edge the reported finding named.",
-                          "type": "string",
-                          "pattern": "^[A-Za-z0-9_.-]+(/[A-Za-z0-9_.-]+)*$"
+                          "x-inline": "authoring/finding.schema.json#/$defs/edge_identifier"
                         },
                         "name_literal": {
                           "description": "The logical name of the string literal the reported finding's details.name_literal resolved to, echoed where its file and its line matched the row's.",

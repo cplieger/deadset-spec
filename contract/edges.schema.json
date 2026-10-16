@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "deadset edges document",
+  "description": "The cross-language edges of one target, deadset-edges.json at the target root: each a declared pair of stable symbol references, provides existing because used_by uses it, as contract/grammar/merge.md states, written under the edge's identifier, so one identifier names one edge. A maintainer or a code generator writes the document and nothing infers an edge. The document is strict JSON with a closed key list at every level: a key this schema does not declare, a key written twice in one object, an edge identifier among them, a value of a type it does not admit, null included, and a value outside its form are refused, and the run ends with the usage code before any analysis. A document larger than the x-max-bytes of contract/config.schema.json is refused the same way before it is read whole, and a document name resolving outside the target root or to anything but a regular file ends the run with the failure code, nothing read from it. An absent document declares no edge.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "edges"
+  ],
+  "properties": {
+    "description": {
+      "description": "What a file header comment would have carried; no analysis reads it.",
+      "type": "string"
+    },
+    "edges": {
+      "description": "The declared edges, each under its identifier, which every evaluation of the edge names. May be empty.",
+      "type": "object",
+      "propertyNames": {
+        "$ref": "finding.schema.json#/$defs/edge_identifier"
+      },
+      "additionalProperties": {
+        "description": "One edge, its sides and why it exists.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "provides",
+          "used_by"
+        ],
+        "properties": {
+          "because": {
+            "description": "Why the pair exists, for whoever reads the document next; no analysis reads it.",
+            "type": "string"
+          },
+          "provides": {
+            "description": "The stable symbol reference of the symbol the other side uses.",
+            "$ref": "#/$defs/reference"
+          },
+          "used_by": {
+            "description": "The stable symbol reference of the symbol that uses it.",
+            "$ref": "#/$defs/reference"
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+
+    "reference": {
+      "description": "One side of an edge: a stable symbol reference naming exactly one symbol, a language tag, ://, a scope, # and a fragment, with no whitespace. A reference admits no wildcard: a * outside a quoted component and a computed key makes it name more than one symbol. A reference in this shape that the language's grammar does not define names no symbol, and its side evaluates absent rather than ending the run.",
+      "type": "string",
+      "allOf": [
+        {
+          "pattern": "^[a-z][a-z0-9]*://[^ \\t\\r\\n#]+#[^ \\t\\r\\n]*$"
+        },
+        {
+          "pattern": "^(?:[^'\\[*]|'(?:[^'\\\\]|\\\\[^\\r\\n])*'|\\[[^\\]]*\\])*(?:'(?:[^'\\\\]|\\\\[^\\r\\n])*\\\\?|\\[[^\\]]*)?$"
+        }
+      ]
+    }
+  }
+}

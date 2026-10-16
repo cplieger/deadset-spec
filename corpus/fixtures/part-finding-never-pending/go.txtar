@@ -41,24 +41,21 @@ func decode(
 -- target/deadset-edges.json --
 {
   "description": "The edges whose provides sides the target declares, or does not.",
-  "edges": [
-    {
-      "id": "wire/encode",
+  "edges": {
+    "wire/encode": {
       "because": "generated",
       "provides": "go://example.com/app#encode",
       "used_by": "ts://@example/web/src/wire.ts#encode"
     },
-    {
-      "id": "wire/decode",
+    "wire/decode": {
       "because": "generated",
       "provides": "go://example.com/app#decode",
       "used_by": "ts://@example/web/src/wire.ts#decode"
     },
-    {
-      "id": "wire/missing",
+    "wire/missing": {
       "because": "generated",
       "provides": "go://example.com/app#neverDeclared",
       "used_by": "ts://@example/web/src/wire.ts#missing"
     }
-  ]
+  }
 }

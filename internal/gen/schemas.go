@@ -17,6 +17,7 @@ const (
 	defsPrefix        = "#/$defs/"
 	deletableOnlyName = "removes_last_use_of"
 	impliesKey        = "x-implies"
+	inlineKey         = "x-inline"
 	presenceRequired  = "required"
 )
 
@@ -157,7 +158,7 @@ type detailsBranch struct {
 }
 
 // filledSchemas are the published schemas whose source differs from them only
-// by the members x-enum and x-per-language stand for, by source.
+// by the members x-inline, x-enum and x-per-language stand for, by source.
 var filledSchemas = map[string]string{
 	"authoring/describe.schema.json":            "contract/describe.schema.json",
 	"authoring/report.schema.json":              "contract/report.schema.json",
@@ -176,12 +177,78 @@ func publishedSchemas(fsys fs.FS, out map[string][]byte) error {
 		if err != nil {
 			return err
 		}
+		if err := inlineDefinitions(fsys, src); err != nil {
+			return fmt.Errorf("%s: %w", source, err)
+		}
 		if _, err := ctx.fill(src); err != nil {
 			return fmt.Errorf("%s: %w", source, err)
 		}
 		out[filledSchemas[source]] = encode(src)
 	}
 	return nil
+}
+
+// inlineDefinitions writes, in the place of each x-inline under v, the members
+// of the object definition it names as <path>#/$defs/<name>, less the
+// definition's description, beside the members of v. Every x-inline is expanded
+// or refused: one that is no such reference, a member v also declares, and a
+// definition holding a $ref, which a copy cannot resolve, or an x-inline, which
+// the walk has already passed.
+func inlineDefinitions(fsys fs.FS, v *value) error {
+	for _, child := range append(slices.Clone(v.items), fieldValues(v)...) {
+		if err := inlineDefinitions(fsys, child); err != nil {
+			return err
+		}
+	}
+	directive := v.get(inlineKey)
+	if directive == nil {
+		return nil
+	}
+	ref := directive.str()
+	if ref == "" {
+		return fmt.Errorf("%s is not a non-empty string", inlineKey)
+	}
+	file, name, ok := strings.Cut(ref, defsPrefix)
+	if !ok {
+		return fmt.Errorf("%s %q names no definition", inlineKey, ref)
+	}
+	src, err := readValue(fsys, file)
+	if err != nil {
+		return err
+	}
+	def := src.get("$defs").get(name)
+	switch {
+	case def == nil:
+		return fmt.Errorf("%s %q names no definition", inlineKey, ref)
+	case def.kind != 'o':
+		return fmt.Errorf("%s %q names a definition that is not an object", inlineKey, ref)
+	case holds(def, "$ref"):
+		return fmt.Errorf("%s %q names a definition that references another", inlineKey, ref)
+	case holds(def, inlineKey):
+		return fmt.Errorf("%s %q names a definition that inlines another", inlineKey, ref)
+	}
+	at := slices.Index(v.keys, inlineKey)
+	drop(v, inlineKey)
+	for _, k := range fieldNames(def) {
+		if k == "description" {
+			continue
+		}
+		if v.fields[k] != nil {
+			return fmt.Errorf("member %q is both a sibling of %s %q and a member of its definition", k, inlineKey, ref)
+		}
+		v.keys = slices.Insert(v.keys, at, k)
+		v.fields[k] = clone(def.fields[k])
+		at++
+	}
+	return nil
+}
+
+// holds reports whether v or a value under it has the member key.
+func holds(v *value, key string) bool {
+	if v.get(key) != nil {
+		return true
+	}
+	return slices.ContainsFunc(append(slices.Clone(v.items), fieldValues(v)...), func(c *value) bool { return holds(c, key) })
 }
 
 // findingSchema writes the published finding schema: its source, with the

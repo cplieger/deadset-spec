@@ -251,8 +251,7 @@
         },
         "edge": {
           "description": "The identifier of the declared cross-language edge the finding reports, as the edges document at the target root spells it and as an edge evaluation carries it.",
-          "type": "string",
-          "pattern": "^[A-Za-z0-9_.-]+(/[A-Za-z0-9_.-]+)*$"
+          "$ref": "#/$defs/edge_identifier"
         },
         "sides": {
           "description": "Every side of the edge an analyzer evaluated, with the symbol that side names and the state the evaluation reported. A side no analyzer evaluated is absent from this list, which is not the same as a side an analyzer evaluated as absent.",
@@ -700,6 +699,11 @@
     }
   ],
   "$defs": {
+    "edge_identifier": {
+      "description": "The identifier of one declared cross-language edge: one or more solidus-separated segments of ASCII letters, digits, underscore, full stop and hyphen. The edges document writes each edge under it, and every edge evaluation and every finding about an edge names the edge by it.",
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_.-]+(/[A-Za-z0-9_.-]+)*$"
+    },
     "position": {
       "description": "A position in a file of the target: where a subject starts, and the line it ends on.",
       "type": "object",

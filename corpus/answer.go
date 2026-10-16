@@ -15,6 +15,7 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/cplieger/deadset-spec/v8/suppress"
 	"github.com/cplieger/deadset-spec/v8/vocab"
 )
 
@@ -443,7 +444,7 @@ func (r *runner) suppressionPhase(ctx context.Context, at *scratch, expect *Expe
 	if len(covered) == 0 {
 		return "", nil
 	}
-	body, err := writeIgnore(filepath.Join(at.rendering, TargetDir, ignoreFile), order)
+	body, err := writeIgnore(filepath.Join(at.rendering, TargetDir, suppress.IgnoreFileName), order)
 	if err != nil {
 		return "", err
 	}
@@ -500,7 +501,7 @@ func writeIgnore(name string, entries []ignoreEntry) ([]byte, error) {
 	switch {
 	case err == nil:
 		if decodeErr := json.Unmarshal(data, &document); decodeErr != nil {
-			return nil, fixtureError("the rendering's %s: %v", ignoreFile, decodeErr)
+			return nil, fixtureError("the rendering's %s: %v", suppress.IgnoreFileName, decodeErr)
 		}
 	case !errors.Is(err, fs.ErrNotExist):
 		return nil, err

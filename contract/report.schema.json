@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "deadset report envelope",
-  "description": "One report per analyzer invocation, and one report per merge over analyzer reports. The document is strict JSON, decoded by each language's standard library with a closed key list: a key this schema does not declare fails the decode. Every member is required and every array is present even when empty, so a reader never distinguishes an absent array from an empty one. Field order is the order this schema lists the properties in, and every array is ordered by the canonical key grammar/merge.md defines, so two runs over an unchanged tree write the same bytes and no timestamp, duration or host detail appears anywhere in the document. The finding object is declared once, in finding.schema.json, and referenced from the two places a finding appears: findings and the finding an edge evaluation carries. That reference, and the one to the positioned symbol a components entry lists, are the cross-file references in this contract, because a finding is one document with one owner. A report an analyzer writes names that analyzer in analyzer; a report a merge writes names the merging product there, carries merged_from with one entry per input report, and holds no edge evaluation whose state is dead.",
+  "description": "One report per analyzer invocation, and one report per merge over analyzer reports. The document is strict JSON, decoded by each language's standard library with a closed key list: a key this schema does not declare fails the decode. Every member is required and every array is present even when empty, so a reader never distinguishes an absent array from an empty one. Field order is the order this schema lists the properties in, and every array is ordered by the canonical key grammar/merge.md defines, so two runs over an unchanged tree write the same bytes and no timestamp, duration or host detail appears anywhere in the document. The finding object is declared once, in finding.schema.json, and referenced from the two places a finding appears: findings and the finding an edge evaluation carries. That reference, and the one to the positioned symbol a components entry lists, are cross-file references because a finding is one document with one owner; the edge an evaluation names references the edge identifier finding.schema.json defines, which the edges document also references, so the identifier has one owner. A report an analyzer writes names that analyzer in analyzer; a report a merge writes names the merging product there, carries merged_from with one entry per input report, and holds no edge evaluation whose state is dead.",
   "type": "object",
   "additionalProperties": false,
   "required": ["schema_version", "contract_version", "analyzer", "target", "configurations", "configurations_not_built", "consumers", "findings", "edge_evaluations", "stale_suppressions", "declared_gaps", "excluded_by_cgo", "test_file_rules", "type_error_skips", "notes", "unanswered_questions", "conventions_applied", "totals"],
@@ -418,8 +418,7 @@
         "properties": {
           "edge": {
             "description": "The identifier of the edge this record evaluates, as the edges document at the target root spells it.",
-            "type": "string",
-            "pattern": "^[A-Za-z0-9_.-]+(/[A-Za-z0-9_.-]+)*$"
+            "$ref": "finding.schema.json#/$defs/edge_identifier"
           },
           "side": {
             "description": "Which side of the edge the record evaluates: provides, the side a paired symbol uses, or used_by, the side that uses it.",

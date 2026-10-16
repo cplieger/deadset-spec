@@ -168,8 +168,7 @@
         "properties": {
           "edge": {
             "description": "The identifier of the edge, as the edges document spells it.",
-            "type": "string",
-            "pattern": "^[A-Za-z0-9_.-]+(/[A-Za-z0-9_.-]+)*$"
+            "x-inline": "authoring/finding.schema.json#/$defs/edge_identifier"
           },
           "side": {
             "description": "The side of the edge the evaluation is about.",
@@ -427,8 +426,7 @@
               },
               "edge": {
                 "description": "The identifier of the declared cross-language edge the finding reports, as the edges document at the target root spells it.",
-                "type": "string",
-                "pattern": "^[A-Za-z0-9_.-]+(/[A-Za-z0-9_.-]+)*$"
+                "x-inline": "authoring/finding.schema.json#/$defs/edge_identifier"
               },
               "name_literal": {
                 "description": "The fixture-local logical name of the string literal whose position the finding's details.name_literal must carry, resolved through the rendering's manifest as an expectation's symbol is and compared by its file and its line. It is the one positional member a row spells, because the manifest gives the literal its own position in each rendering.",

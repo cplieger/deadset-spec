@@ -1,0 +1,19 @@
+{
+  "description": "The edges document keys each edge by its identifier, so an identifier written twice is a key written twice: the run ends with the usage code 2 before any analysis, the edges document named, as contract/edges.schema.json states.",
+  "products": [
+    "deadset"
+  ],
+  "rename": {
+    "deadset-edges.json.txt": "deadset-edges.json"
+  },
+  "argv": [
+    "analyze",
+    "--target=@TARGET@"
+  ],
+  "expect": {
+    "exit": 2,
+    "stderr_contains": [
+      "deadset-edges.json"
+    ]
+  }
+}

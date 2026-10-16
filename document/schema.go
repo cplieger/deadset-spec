@@ -24,9 +24,13 @@ import (
 
 // The keyword and the type names a check names more than once.
 const (
-	typeKeyword = "type"
-	arrayType   = "array"
-	objectType  = "object"
+	typeKeyword       = "type"
+	requiredKeyword   = "required"
+	additionalKeyword = "additionalProperties"
+	namesKeyword      = "propertyNames"
+	oneOfKeyword      = "oneOf"
+	arrayType         = "array"
+	objectType        = "object"
 )
 
 // errSchema reports a schema this package cannot compile.
@@ -244,7 +248,7 @@ func (c *compiler) keyword(n *node, doc, at, keyword string, value any) (err err
 		n.maxItems = &most
 	case "uniqueItems":
 		n.unique, _ = value.(bool)
-	case "required":
+	case requiredKeyword:
 		n.required, err = stringList(value)
 	case "minProperties":
 		n.minProps, err = count(value)
@@ -261,9 +265,9 @@ func (c *compiler) applicator(n *node, doc, at, keyword string, value any) (err 
 		n.properties, err = c.members(doc, at, value)
 	case "patternProperties":
 		n.patterns, err = c.patternMembers(doc, at, value)
-	case "additionalProperties":
+	case additionalKeyword:
 		n.additional, err = c.at(doc, at)
-	case "propertyNames":
+	case namesKeyword:
 		n.names, err = c.at(doc, at)
 	case "items":
 		n.items, err = c.at(doc, at)
@@ -279,7 +283,7 @@ func (c *compiler) applicator(n *node, doc, at, keyword string, value any) (err 
 		n.allOf, err = c.list(doc, at, value)
 	case "anyOf":
 		n.anyOf, err = c.list(doc, at, value)
-	case "oneOf":
+	case oneOfKeyword:
 		n.oneOf, err = c.list(doc, at, value)
 	case "$ref":
 		n.ref, err = c.reference(doc, value)

@@ -2,11 +2,12 @@
 // kinds and their families, the symbol kinds and the subject each names, the
 // exemption classes, the evidence that lowers a finding's class, the exit codes,
 // the setup-failure classes, the versions, the language registry, the
-// orchestrator's command line and the keys of the configuration. A product
-// compiles them in rather than reading the documents at run time. vocab_gen.go
-// and config_gen.go are written by deadset-gen from contract/*.json,
-// authoring/config.schema.json and corpus/corpus.json, and a freshness test
-// fails when a document moves and nobody regenerated.
+// orchestrator's command line, the keys of the configuration and the name of
+// the edges document. A product compiles them in rather than reading the
+// documents at run time. vocab_gen.go and config_gen.go are written by
+// deadset-gen from contract/*.json, authoring/config.schema.json and
+// corpus/corpus.json, and a freshness test fails when a document moves and
+// nobody regenerated.
 package vocab
 
 import (
@@ -14,6 +15,10 @@ import (
 	"strings"
 	"sync"
 )
+
+// EdgesFileName is the name the Contract fixes for the edges document, at the
+// target root.
+const EdgesFileName = "deadset-edges.json"
 
 // Code is an issue-kind code: the prefix, two digits naming the family and two
 // naming the kind within it.

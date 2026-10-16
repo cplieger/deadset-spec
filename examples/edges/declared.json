@@ -1,0 +1,14 @@
+{
+  "description": "Each edge pairs a Go wire type with the TypeScript generated from it.",
+  "edges": {
+    "wire/ServerEvent": {
+      "because": "generated",
+      "provides": "go://example.com/app#ServerEvent",
+      "used_by": "ts://@example/app/src/wire.ts#ServerEvent"
+    },
+    "wire/ServerEvent.kind": {
+      "provides": "go://example.com/app#ServerEvent.Kind",
+      "used_by": "ts://@example/app/src/wire.ts#ServerEvent['kind*']"
+    }
+  }
+}

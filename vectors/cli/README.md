@@ -15,6 +15,7 @@ A case with `pending` states a rule no product implements yet, named by the reas
 | Case | What it pins |
 | --- | --- |
 | `cascade-full-edge-evaluation` | An analyzer's report under reporters.cascade full is an instance of the report schema: a finding an edge evaluation carries lists no component members, and its component is listed in the report's components. |
+| `edge-identifier-written-twice-refused` | The edges document keys each edge by its identifier, so an identifier written twice is a key written twice: the run ends with the usage code 2 before any analysis, the edges document named, as contract/edges.schema.json states. |
 | `findings-ordered-bytewise-above-the-basic-plane` | A report lists findings in the bytewise order of their paths' UTF-8 encoding: a path holding U+FF5E sorts before one holding U+1F600, whose encoding starts with a higher byte, though the latter's UTF-16 code unit is lower. |
 | `go-work-reader-under-a-scope-document` | A module of the target's workspace is a reader of the target whatever source names the target: a function the workspace's other module calls is live with or without a scope document, and a function nothing calls is reported. |
 | `malformed-ignore-document` | An ignore file that is not a JSON document is a refused document: the run ends with the usage code 2, as suppression.md's refusals table states, in every analyzer. |

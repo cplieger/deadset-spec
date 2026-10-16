@@ -65,6 +65,34 @@
       "violates": "the evaluation reports the live state and still carries a pending finding"
     },
     {
+      "file": "edges-identifier-form.json",
+      "schema": "contract/edges.schema.json",
+      "constraint": "propertyNames",
+      "instance_path": "/edges",
+      "violates": "an edge is written under an identifier holding a space, outside the form every evaluation of the edge names it by"
+    },
+    {
+      "file": "edges-object-absent.json",
+      "schema": "contract/edges.schema.json",
+      "constraint": "required",
+      "instance_path": "",
+      "violates": "the edges document leaves out the edges object, which it holds even when it declares no edge"
+    },
+    {
+      "file": "edges-reference-wildcard.json",
+      "schema": "contract/edges.schema.json",
+      "constraint": "pattern",
+      "instance_path": "/edges/wire~1ServerEvent/provides",
+      "violates": "a side of an edge carries a wildcard, so it names more than the one symbol an edge may name"
+    },
+    {
+      "file": "edges-unknown-member.json",
+      "schema": "contract/edges.schema.json",
+      "constraint": "additionalProperties",
+      "instance_path": "/edges/wire~1ServerEvent",
+      "violates": "an edge carries a line, a key outside the closed key list of an edge"
+    },
+    {
       "file": "exemption-class-unknown.json",
       "schema": "contract/config.schema.json",
       "constraint": "enum",
@@ -182,6 +210,13 @@
       "constraint": "additionalProperties",
       "instance_path": "",
       "violates": "the envelope carries a member the schema does not declare"
+    },
+    {
+      "file": "reporters-max-findings-above-maximum.json",
+      "schema": "contract/config.schema.json",
+      "constraint": "maximum",
+      "instance_path": "/reporters/max_findings",
+      "violates": "the most findings a rendering prints is one above the largest integer every JSON reader holds exactly"
     },
     {
       "file": "scope-consumer-role-target.json",

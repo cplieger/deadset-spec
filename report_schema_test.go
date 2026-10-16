@@ -41,9 +41,11 @@ const (
 
 // reportFindingRefPaths are the references a report makes into the finding
 // schema, as paths into the schema tree: the members a component's listing holds,
-// the reported findings and the pending finding an edge evaluation carries.
+// the edge an edge evaluation names and the pending finding it carries, and the
+// reported findings.
 var reportFindingRefPaths = []string{
 	"/" + reportMemberItemsPath + "/$ref",
+	"/properties/edge_evaluations/items/properties/edge/$ref",
 	"/properties/edge_evaluations/items/properties/finding/$ref",
 	"/properties/findings/items/$ref",
 }
