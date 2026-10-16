@@ -174,6 +174,8 @@ func (v *jsonValue) str() string {
 	return v.text
 }
 
+func (v *jsonValue) truth() bool { return v != nil && v.kind == jsonBool && v.text == "true" }
+
 func (v *jsonValue) num() int {
 	if v == nil {
 		return 0
@@ -405,6 +407,9 @@ var stateStrength = map[string]int{mergeStateLive: 0, mergeStateDead: 1, mergeSt
 // severityRank orders the severities a caller's fail_on names, lowest first.
 var severityRank = map[string]int{"allow": 0, "warn": 1, "deny": 2}
 
+// classRank orders the confidences, highest first.
+var classRank = map[string]int{"certain": 0, "probable": 1, "possible": 2}
+
 // idKeyedArray is one array whose entries a merge unions under their id, with the member of an
 // entry that is free text rather than identity, where the array's entries carry one.
 type idKeyedArray struct {
@@ -461,6 +466,9 @@ const (
 	traceFallsWithPair           = "a finding falling with its pending component, whose pair is "
 	traceDroppedBesideDeadPair   = "a component pending beside a dead pair, dropped by a pair that is "
 	traceEdgeAbsent              = "an edge side every evaluation reports absent"
+	traceRootMatchedElsewhere    = "an unmatched root another analyzer reading it matched, not carried"
+	tracePromotedOnce            = "a finding two dead evaluations carry, promoted once"
+	traceJoinedConfidence        = "a joined component's finding lowered to its roots' lowest confidence"
 	traceFreeTextMerged          = "two entries under one id whose free text alone differs, the first kept, in "
 	traceTieAgainstReadOrder     = "two entries tied on their order, sorted by encoding against the read order, in "
 )
@@ -501,10 +509,15 @@ func referenceMerge(inputs []mergeInput, accepted []string, caller mergeCaller, 
 	if err != nil {
 		return nil, mergeFailureExit, err
 	}
+	matched := matchedRoots(inputs)
 	for _, in := range inputs {
 		for _, f := range in.report.get("findings").items {
 			if pair := dropped[f.at("component", "id").str()]; pair != "" {
 				trace.hit(traceFallsWithPair + pair)
+				continue
+			}
+			if f.get("code").str() == unmatchedRootCode && matched[f.at("symbol", "ref").str()] {
+				trace.hit(traceRootMatchedElsewhere)
 				continue
 			}
 			findings = append(findings, carried(f, in.name, "details"))
@@ -513,7 +526,7 @@ func referenceMerge(inputs []mergeInput, accepted []string, caller mergeCaller, 
 	for _, p := range promoted {
 		findings = append(findings, p.finding)
 	}
-	joined := unionComponents(findings, promoted)
+	joined := unionComponents(findings, promoted, trace)
 	staleEdge := staleEdges(evaluations, caller.Analyzer.Name, kinds)
 	if len(staleEdge) > 0 {
 		trace.hit(traceEdgeAbsent)
@@ -713,6 +726,40 @@ func conflictingEntry(a, b *jsonValue) (entries, id string, held bool) {
 	return "", "", false
 }
 
+// unmatchedRootCode is the kind whose findings step 2 carries only where no analyzer reading the
+// configured string matched it.
+const unmatchedRootCode = "DS9004"
+
+// matchedRoots is every configured string a DS9004 finding names that an input report reading it
+// holds no DS9004 finding for.
+func matchedRoots(inputs []mergeInput) map[string]bool {
+	reported := make([]map[string]bool, len(inputs))
+	var configured []string
+	for i, in := range inputs {
+		reported[i] = map[string]bool{}
+		for _, f := range in.report.get("findings").items {
+			if f.get("code").str() == unmatchedRootCode {
+				reported[i][f.at("symbol", "ref").str()] = true
+				configured = append(configured, f.at("symbol", "ref").str())
+			}
+		}
+	}
+	matched := map[string]bool{}
+	for _, root := range configured {
+		prefix, _, found := strings.Cut(root, "://")
+		for i, in := range inputs {
+			reads := !found || strings.ContainsAny(prefix, "*?")
+			for _, language := range in.report.at("analyzer", "languages").items {
+				reads = reads || language.str() == prefix
+			}
+			if reads && !reported[i][root] {
+				matched[root] = true
+			}
+		}
+	}
+	return matched
+}
+
 // carried copies a record from an input report with the analyzer member naming that report,
 // inserted before the member named before or at the end.
 func carried(record *jsonValue, analyzer, before string) *jsonValue {
@@ -721,10 +768,10 @@ func carried(record *jsonValue, analyzer, before string) *jsonValue {
 	return out
 }
 
-// promotion is one finding step 4 promoted, with the evaluation that carried it.
+// promotion is one finding step 4 promoted, with every evaluation that carried it.
 type promotion struct {
-	finding    *jsonValue
-	evaluation referenceEvaluation
+	finding     *jsonValue
+	evaluations []referenceEvaluation
 }
 
 // resolveEvaluations runs step 4 over every dead evaluation: rule 1 in canonical order of the
@@ -762,7 +809,13 @@ func resolveEvaluations(evaluations []referenceEvaluation, trace mergeTrace) ([]
 		pair := dropped[e.component()]
 		if pair == "" {
 			trace.hit(tracePromotedDeadPair)
-			promoted = append(promoted, promotion{finding: carried(e.record.get("finding"), e.analyzer, "details"), evaluation: e})
+			finding := carried(e.record.get("finding"), e.analyzer, "details")
+			if n := len(promoted); n > 0 && findingKey(promoted[n-1].finding).compare(findingKey(finding)) == 0 {
+				trace.hit(tracePromotedOnce)
+				promoted[n-1].evaluations = append(promoted[n-1].evaluations, e)
+				continue
+			}
+			promoted = append(promoted, promotion{finding: finding, evaluations: []referenceEvaluation{e}})
 		} else if e.edge != droppedOn[e.component()] && strongestOther(e, evaluations, nil) == mergeStateDead {
 			trace.hit(traceDroppedBesideDeadPair + pair)
 		}
@@ -796,9 +849,10 @@ func strongestOther(e referenceEvaluation, evaluations []referenceEvaluation, dr
 
 // unionComponents joins the components of promoted findings on the other sides of one edge, in
 // canonical order, the identifier the loop reaches first surviving however many edges a join
-// spans, and rewrites every finding whose component the union named. It returns the surviving
+// spans, and rewrites every finding whose component the union named, its confidence lowered to
+// the lowest of the joined component's roots that are not test-only. It returns the surviving
 // identifier of every component the union reached.
-func unionComponents(findings []*jsonValue, promoted []promotion) map[string]string {
+func unionComponents(findings []*jsonValue, promoted []promotion, trace mergeTrace) map[string]string {
 	parent := map[string]string{}
 	reached := map[string]int{}
 	var find func(id string) string
@@ -814,11 +868,21 @@ func unionComponents(findings []*jsonValue, promoted []promotion) map[string]str
 			reached[id] = len(reached)
 		}
 	}
+	paired := func(f, g promotion) bool {
+		for _, e := range f.evaluations {
+			for _, o := range g.evaluations {
+				if e.edge == o.edge && e.side != o.side {
+					return true
+				}
+			}
+		}
+		return false
+	}
 	for _, f := range promoted {
 		id := f.finding.at("component", "id").str()
 		reach(id)
 		for _, g := range promoted {
-			if g.evaluation.edge != f.evaluation.edge || g.evaluation.side == f.evaluation.side {
+			if !paired(f, g) {
 				continue
 			}
 			other := g.finding.at("component", "id").str()
@@ -844,12 +908,26 @@ func unionComponents(findings []*jsonValue, promoted []promotion) map[string]str
 		root := find(id)
 		sums[root] = [2]int{sums[root][0] + counts[id][0], sums[root][1] + counts[id][1]}
 	}
+	lowest := map[string]string{}
+	for _, f := range findings {
+		id := f.at("component", "id").str()
+		if _, unioned := parent[id]; !unioned || !f.at("component", "root").truth() || f.get("test_only").truth() {
+			continue
+		}
+		if held, ok := lowest[find(id)]; !ok || classRank[f.get("confidence").str()] > classRank[held] {
+			lowest[find(id)] = f.get("confidence").str()
+		}
+	}
 	for _, f := range findings {
 		id := f.at("component", "id").str()
 		if _, unioned := parent[id]; !unioned {
 			continue
 		}
 		root := find(id)
+		if cap, ok := lowest[root]; ok && classRank[cap] > classRank[f.get("confidence").str()] {
+			trace.hit(traceJoinedConfidence)
+			f.set("confidence", jsonText(cap), "")
+		}
 		component := f.get("component")
 		component.set("id", jsonText(root), "")
 		component.set("symbol_count", jsonNumberOf(sums[root][0]), "")

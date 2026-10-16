@@ -1,6 +1,7 @@
 package vocab
 
 import (
+	"path"
 	"slices"
 	"sync"
 )
@@ -92,24 +93,30 @@ func ConfigKeyOf(key Key) (ConfigKey, bool) {
 	return row.clone(), true
 }
 
+// IdentitySource is the file whose declared name identifies a module of a
+// language, and the member of it that declares the name.
+type IdentitySource struct {
+	File  string
+	Field string
+}
+
 // LanguageRow is one language of the suite, its members those of its
-// contract/languages.json row; IdentityFile and IdentityField are its
-// identity_source.
+// contract/languages.json row. Markers, Companions and SkippedDirectories are
+// path.Match patterns over a name alone.
 type LanguageRow struct {
+	IdentitySource       IdentitySource
 	Language             Language
 	Name                 string
 	Kind                 string
 	Scheme               string
 	Runner               string
 	Analyzer             string
-	IdentityFile         string
-	IdentityField        string
 	Markers              []string
 	Extensions           []string
 	Companions           []string
+	SkippedDirectories   []string
 	WorkspaceFiles       []string
 	ProgramWithoutMarker bool
-	SkipsUnderscored     bool
 	TakesTargetKind      bool
 }
 
@@ -118,11 +125,13 @@ func (l *LanguageRow) clone() LanguageRow {
 	held.Markers = slices.Clone(l.Markers)
 	held.Extensions = slices.Clone(l.Extensions)
 	held.Companions = slices.Clone(l.Companions)
+	held.SkippedDirectories = slices.Clone(l.SkippedDirectories)
 	held.WorkspaceFiles = slices.Clone(l.WorkspaceFiles)
 	return held
 }
 
-// LanguageRows returns every language's row, in the registry's order.
+// LanguageRows returns every language's row, in the registry's order, which is
+// the order a module's identity source is chosen in.
 func LanguageRows() []LanguageRow {
 	held := make([]LanguageRow, len(languageRows))
 	for i := range languageRows {
@@ -142,6 +151,28 @@ func LanguageRowOf(language Language) (LanguageRow, bool) {
 	return LanguageRow{}, false
 }
 
-// SkippedDirectories returns the directory names under which no file puts a
-// language in scope.
-func SkippedDirectories() []string { return slices.Clone(skippedDirectories) }
+// Skips reports whether the language's discovery leaves a directory of that
+// name unread.
+func (l *LanguageRow) Skips(dir string) bool { return matchesAny(l.SkippedDirectories, dir) }
+
+// Marks reports whether a file of that name puts the language in scope alone.
+func (l *LanguageRow) Marks(file string) bool { return matchesAny(l.Markers, file) }
+
+// Accompanies reports whether a file of that name is one of the language's
+// companions.
+func (l *LanguageRow) Accompanies(file string) bool { return matchesAny(l.Companions, file) }
+
+// Sources reports whether a file of that name is a source file of the
+// language, by its extension.
+func (l *LanguageRow) Sources(file string) bool {
+	return slices.Contains(l.Extensions, path.Ext(file))
+}
+
+// matchesAny reports whether a name matches one of the patterns; a pattern
+// path.Match cannot parse matches nothing.
+func matchesAny(patterns []string, name string) bool {
+	return slices.ContainsFunc(patterns, func(pattern string) bool {
+		matched, err := path.Match(pattern, name)
+		return err == nil && matched
+	})
+}

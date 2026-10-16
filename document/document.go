@@ -2,6 +2,7 @@ package document
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"strings"
@@ -50,6 +51,20 @@ func Decode(data []byte) (any, error) {
 		return nil, fmt.Errorf("%w: %w", ErrMalformed, err)
 	}
 	return v, nil
+}
+
+// Unmarshal reads data as one strict JSON instance of s into v. A document
+// that is not strict JSON is refused wrapping [ErrMalformed], and the first
+// value s refuses as a [*Error].
+func (s *Schema) Unmarshal(data []byte, v any) error {
+	value, err := Decode(data)
+	if err != nil {
+		return err
+	}
+	if found := s.CheckValue(value); len(found) > 0 {
+		return &found[0]
+	}
+	return json.Unmarshal(data, v)
 }
 
 // Escape spells one member name as a JSON Pointer token.

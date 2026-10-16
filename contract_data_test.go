@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"io/fs"
+	"path"
 	"regexp"
 	"slices"
 	"strconv"
@@ -37,9 +38,8 @@ func strictDecode(t *testing.T, path string, into any) {
 }
 
 type languagesDocument struct {
-	Description        string        `json:"description"`
-	SkippedDirectories []string      `json:"skipped_directories"`
-	Languages          []languageRow `json:"languages"`
+	Description string        `json:"description"`
+	Languages   []languageRow `json:"languages"`
 }
 
 type languageRow struct {
@@ -53,15 +53,14 @@ type languageRow struct {
 	Markers              []string          `json:"markers"`
 	Extensions           []string          `json:"extensions"`
 	Companions           []string          `json:"companions"`
+	SkippedDirectories   []string          `json:"skipped_directories"`
 	WorkspaceFiles       []string          `json:"workspace_files"`
 	ProgramWithoutMarker bool              `json:"program_without_marker"`
-	SkipsUnderscored     bool              `json:"skips_underscored"`
 	TakesTargetKind      bool              `json:"takes_target_kind"`
 }
 
 // TestEveryLanguageRowHoldsItsClosedValues pins each languages.json row to its
-// own closed values: a row that reads a program from source files alone names
-// the companions that tell its tree apart.
+// own closed values: every pattern is one path.Match parses.
 func TestEveryLanguageRowHoldsItsClosedValues(t *testing.T) {
 	var doc languagesDocument
 	strictDecode(t, languagesPath, &doc)
@@ -79,8 +78,10 @@ func TestEveryLanguageRowHoldsItsClosedValues(t *testing.T) {
 			if len(row.Markers) == 0 && !row.ProgramWithoutMarker {
 				t.Errorf("%s has no marker and reads no program without one, so nothing puts it in scope", row.Language)
 			}
-			if row.ProgramWithoutMarker && len(row.Companions) == 0 {
-				t.Errorf("%s reads a program without a marker and names no companion", row.Language)
+			for _, pattern := range slices.Concat(row.Markers, row.Companions, row.SkippedDirectories) {
+				if _, err := path.Match(pattern, ""); err != nil {
+					t.Errorf("%s pattern %q: %v", row.Language, pattern, err)
+				}
 			}
 			if row.Name == "" {
 				t.Errorf("%s name is empty, want how a sentence names the language", row.Language)

@@ -5,8 +5,6 @@ package vocab
 // ConfigMaxBytes bounds a configuration document: one larger is refused without being read whole.
 const ConfigMaxBytes = 1048576
 
-var skippedDirectories = []string{"node_modules", "testdata", "vendor"}
-
 var languageRows = []LanguageRow{
 	{
 		Language:             Go,
@@ -18,11 +16,10 @@ var languageRows = []LanguageRow{
 		Markers:              []string{"go.mod"},
 		Extensions:           []string{".go"},
 		Companions:           []string{},
+		SkippedDirectories:   []string{"node_modules", "testdata", "vendor", ".*", "_*"},
 		WorkspaceFiles:       []string{"go.work"},
-		IdentityFile:         "go.mod",
-		IdentityField:        "module",
-		ProgramWithoutMarker: false,
-		SkipsUnderscored:     true,
+		IdentitySource:       IdentitySource{File: "go.mod", Field: "module"},
+		ProgramWithoutMarker: true,
 		TakesTargetKind:      true,
 	},
 	{
@@ -35,11 +32,10 @@ var languageRows = []LanguageRow{
 		Markers:              []string{"tsconfig*.json"},
 		Extensions:           []string{".ts", ".tsx", ".mts", ".cts"},
 		Companions:           []string{"package.json"},
+		SkippedDirectories:   []string{"node_modules", ".git"},
 		WorkspaceFiles:       []string{"package.json", "pnpm-workspace.yaml"},
-		IdentityFile:         "package.json",
-		IdentityField:        "name",
+		IdentitySource:       IdentitySource{File: "package.json", Field: "name"},
 		ProgramWithoutMarker: false,
-		SkipsUnderscored:     false,
 		TakesTargetKind:      true,
 	},
 }

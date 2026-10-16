@@ -1,0 +1,5 @@
+analyzer deadset-go 1.0.0
+analyzer deadset-ts 1.0.0
+deadset.json:1:1 DS9004 unmatched-root deny deadset-go
+deadset.json:1:1 DS9004 unmatched-root deny deadset-ts
+2 findings, 0 stale, 0 omitted

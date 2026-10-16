@@ -51,7 +51,9 @@ The identity members of two entries are compared as JSON values: two objects are
 
 ### Step 2: Union
 
-Carry every finding, every stale-suppression record and every declared gap from every input into the merged report, without deduplication. Two analyzers that claim one language and report the same finding produce two records, and step 6 orders them by the analyzer name. Carry every edge evaluation into a working set for steps 3 to 5. Exit code: none.
+Carry every finding, every stale-suppression record and every declared gap from every input into the merged report, without deduplication. Two analyzers that claim one language and report the same finding produce two records, and step 6 orders them by the analyzer name. Carry every edge evaluation into a working set for steps 3 to 5.
+
+A `DS9004` finding is the one exception. Its `symbol.ref` is a configured root string the reporting analyzer matched with no symbol, and every analyzer is handed every configured string, its own language's or not. A report **reads** a configured string when the text before the string's first `://` holds no `*` and no `?` and is a language its `analyzer.languages` names; every report reads a string with no such text. Where a report that reads a configured string holds no `DS9004` finding for it, an analyzer matched the string, and the merge carries no `DS9004` finding for that string from any report. Every other `DS9004` finding is carried as any finding is, so a string no analyzer matched is reported by every analyzer that reported it. Exit code: none.
 
 ### Step 3: Index
 
@@ -66,7 +68,7 @@ Collect every evaluation whose state is `dead`, from every report, and order the
 3. Any evaluation in `other` reads as `dead`. Promote the finding into `findings`. The paired symbols join one component under the rule below.
 4. Every evaluation in `other` is `absent`. Drop the component of `e`, below. The edge names a symbol no analyzer enumerates, and step 5 reports the edge. The finding is not promoted, because the stale edge is the defect to fix first: a misspelled paired reference would otherwise turn a live pairing into a reported deletion.
 
-Rule 1 runs first, over the whole collection in its order, and the first evaluation it applies to names the edge. Rules 2 to 4 read the strongest state across `other`, in the order `live`, then `dead`, then `absent`. When one analyzer evaluates each side, `other` holds one evaluation and the three rules are the three states. When two analyzers evaluate one side and disagree, one `live` answer keeps the pair live, and one `dead` answer with no `live` answer promotes. An evaluation reads as its own state, except that a `dead` evaluation whose component is dropped reads as `live`. The finding promoted is the one the evaluation carried, unchanged apart from its component.
+Rule 1 runs first, over the whole collection in its order, and the first evaluation it applies to names the edge. Rules 2 to 4 read the strongest state across `other`, in the order `live`, then `dead`, then `absent`. When one analyzer evaluates each side, `other` holds one evaluation and the three rules are the three states. When two analyzers evaluate one side and disagree, one `live` answer keeps the pair live, and one `dead` answer with no `live` answer promotes. An evaluation reads as its own state, except that a `dead` evaluation whose component is dropped reads as `live`. The finding promoted is the one the evaluation carried, unchanged apart from its component and its confidence. Two dead evaluations of one report carry one finding where two edges name one symbol: a finding is promoted once, however many of its report's dead evaluations carry it, and it takes part in the component union on every edge whose evaluation carried it. Two carried findings are one finding when they are equal on the canonical key.
 
 **The fixpoint.** Rules 2 and 4 run to a fixpoint before rule 3 promotes anything, because a drop changes what the rules read on every other edge where the dropped component holds a dead evaluation:
 
@@ -78,7 +80,7 @@ Then promote, under rule 3, the finding of every dead evaluation whose component
 
 **What a drop removes.** Dropping a component removes every finding of it from the merged report: the finding of each of its dead evaluations, whichever edge carries the evaluation, and every finding step 2 carried whose `component.id` names the component. A component is one deletion, and a symbol that falls with a root is dead only through it, so once one finding of the component is kept out of the merged report, none of them is reported.
 
-**Component union.** After every `dead` evaluation has been decided, take the promoted findings in canonical order. For each one, union its component with the component of every promoted finding on the other sides of the same edge. The merged component keeps the identifier of the component the loop reached first, the component of the earliest promoted finding in canonical order among those the union joins, however many edges the join spans; every finding step 2 carried whose `component.id` named a unioned component takes that identifier; `symbol_count` and `deletable_lines` become the sums over the unioned components, each component's two counts read from any one of its findings, because every finding of a component names the same counts; each finding keeps its own `root` flag. A finding step 4 dropped takes part in no union. Iteration in canonical order rather than in report order is what makes the surviving identifier independent of which analyzer finished first.
+**Component union.** After every `dead` evaluation has been decided, take the promoted findings in canonical order. For each one, union its component with the component of every promoted finding on the other sides of the same edge. The merged component keeps the identifier of the component the loop reached first, the component of the earliest promoted finding in canonical order among those the union joins, however many edges the join spans; every finding step 2 carried whose `component.id` named a unioned component takes that identifier; `symbol_count` and `deletable_lines` become the sums over the unioned components, each component's two counts read from any one of its findings, because every finding of a component names the same counts; each finding keeps its own `root` flag. A finding step 4 dropped takes part in no union. Every finding of a unioned component then takes one confidence, by rule confidence.29 of [`analysis/confidence.md`](analysis/confidence.md): the lowest `confidence` among the unioned component's root findings whose `test_only` is `false`, or its own where its own is lower, so a finding production code only tests use keeps its `possible`. Where every root finding of the unioned component has `test_only` `true`, each finding keeps its own confidence. Iteration in canonical order rather than in report order is what makes the surviving identifier independent of which analyzer finished first.
 
 Exit code: 3 under rule 1; otherwise none.
 
@@ -148,7 +150,8 @@ merge(reports, accepted_schema_range, caller) -> (report, exit_code)
                   the array paired with it in another report    -> exit 3
                   r.analyzer.name equals another report's       -> exit 3
 2. Union.       carry every finding, stale suppression and declared gap,
-                without deduplication
+                without deduplication, but no DS9004 for a configured
+                string a report that reads it holds no DS9004 for
 3. Index.       index[edge][side] = [evaluation, ...] over every report
 4. Resolve.     dead = every dead evaluation, in canonical order of its finding
                 other(e) = index[e.edge][side != e.side]
@@ -161,12 +164,14 @@ merge(reports, accepted_schema_range, caller) -> (report, exit_code)
                     its comp in dropped  -> add comp(e) to dropped
                     all(other(e)) absent -> add comp(e) to dropped;
                                             step 5 reports
-                promote e.finding for each e in dead, comp(e) not in dropped
+                promote e.finding once for each e in dead, comp(e) not
+                in dropped
                 drop every finding of a dropped component: the finding of
                 each of its dead evaluations, and every carried finding
                 with its component.id
                 union the components of promoted paired findings,
-                in canonical order
+                in canonical order; each finding of a unioned component
+                takes the lowest confidence of its non-test-only roots
 5. Stale edges. for each edge with a side whose every evaluation is absent:
                   emit one DS9005
 6. Order.       sort findings, stale_suppressions and declared_gaps by the
