@@ -1,0 +1,19 @@
+{
+  "description": "A compiler configuration in a directory whose name starts with a full stop puts TypeScript in scope, because the TypeScript row of languages.json skips only node_modules and .git, the directories its analyzer's discovery leaves unread: the run then needs an analyzer claiming ts, and a provider list naming only the Go analyzer is refused with the usage code 2.",
+  "products": [
+    "deadset"
+  ],
+  "rename": {
+    "dot-config/tsconfig.json": ".config/tsconfig.json"
+  },
+  "argv": [
+    "analyze",
+    "--target=@TARGET@"
+  ],
+  "expect": {
+    "exit": 2,
+    "stderr_contains": [
+      "claiming \"ts\""
+    ]
+  }
+}

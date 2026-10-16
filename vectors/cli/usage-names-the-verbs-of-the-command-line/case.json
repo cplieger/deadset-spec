@@ -1,0 +1,18 @@
+{
+  "description": "A verb the orchestrator's row of cli.json does not name is refused with the usage code 2, and the usage text names every verb of that row with its summary.",
+  "products": [
+    "deadset"
+  ],
+  "argv": [
+    "explain"
+  ],
+  "expect": {
+    "exit": 2,
+    "stderr_contains": [
+      "unknown command \"explain\"",
+      "analyze       Analyze every language in scope and write the merged report.",
+      "print-config  Print the resolved configuration with the provenance of every setting.",
+      "version       Print the product's version and the Contract version it implements."
+    ]
+  }
+}

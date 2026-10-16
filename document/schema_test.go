@@ -198,3 +198,33 @@ func TestCompileBytesChecksAValueAndRefusesAnOutsideReference(t *testing.T) {
 		t.Error("CompileBytes(a reference to another document) = nil, want a compile error")
 	}
 }
+
+// Unmarshal fills the value from an instance and refuses, before filling
+// anything, a document that is not strict JSON and one the schema refuses.
+func TestUnmarshalReadsOnlyAStrictInstance(t *testing.T) {
+	t.Parallel()
+
+	scope := compiled(t, "contract/scope.schema.json")
+	var read struct {
+		Target struct {
+			Path string `json:"path"`
+		} `json:"target"`
+	}
+	if err := scope.Unmarshal([]byte(`{"target": {"path": "app"}}`), &read); err != nil || read.Target.Path != "app" {
+		t.Errorf("Unmarshal(an instance) = %v with the path %q, want nil and app", err, read.Target.Path)
+	}
+	for _, c := range []struct {
+		name, data string
+		malformed  bool
+	}{
+		{name: "member-twice", data: `{"target": {"path": "a", "path": "b"}}`, malformed: true},
+		{name: "member-undeclared", data: `{"target": {"path": "a"}, "network": true}`},
+	} {
+		var into map[string]any
+		err := scope.Unmarshal([]byte(c.data), &into)
+		_, refused := errors.AsType[*Error](err)
+		if errors.Is(err, ErrMalformed) != c.malformed || refused == c.malformed || into != nil {
+			t.Errorf("Unmarshal(%s) = %v, filled %v, want a refusal (malformed %t) and nothing filled", c.name, err, into, c.malformed)
+		}
+	}
+}

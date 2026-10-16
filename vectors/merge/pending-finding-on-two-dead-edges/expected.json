@@ -1,0 +1,261 @@
+{
+  "schema_version": "9.0.0",
+  "contract_version": "8.0.0",
+  "analyzer": {
+    "name": "deadset",
+    "version": "1.0.0",
+    "languages": [
+      "go",
+      "ts"
+    ],
+    "schema_versions_accepted": [
+      "9.0.0"
+    ],
+    "conformance": {
+      "corpus_version": "1.0.0",
+      "result": "pass",
+      "digest": "sha256:890ddff06aecf253706705aa5cefa6281c1d1f63ddb62927d11f6d0ef03b1ade"
+    }
+  },
+  "merged_from": [
+    {
+      "name": "deadset-go",
+      "version": "1.0.0",
+      "digest": "sha256:76feaadd8cf834854d44d40c5a3d2832be051559a61213c714ff93c226c7a76c",
+      "languages": [
+        "go"
+      ],
+      "totals": {
+        "findings": 0,
+        "by_severity": {
+          "allow": 0,
+          "warn": 0,
+          "deny": 0
+        },
+        "deletable_lines": 0,
+        "suppressions_in_effect": 0,
+        "reasons_recorded": 0,
+        "stale_suppressions": 0,
+        "pending": 2,
+        "omitted": 0,
+        "withheld": {
+          "certain": 0,
+          "probable": 0,
+          "possible": 0
+        }
+      }
+    },
+    {
+      "name": "deadset-ts",
+      "version": "1.0.0",
+      "digest": "sha256:d9e2871b144c85830df69d6d3a53060bb5852dc1df4f2a9ea6557d3b932bbfa4",
+      "languages": [
+        "ts"
+      ],
+      "totals": {
+        "findings": 0,
+        "by_severity": {
+          "allow": 0,
+          "warn": 0,
+          "deny": 0
+        },
+        "deletable_lines": 0,
+        "suppressions_in_effect": 0,
+        "reasons_recorded": 0,
+        "stale_suppressions": 0,
+        "pending": 2,
+        "omitted": 0,
+        "withheld": {
+          "certain": 0,
+          "probable": 0,
+          "possible": 0
+        }
+      }
+    }
+  ],
+  "target": {
+    "kind": "application",
+    "root": ".",
+    "identity": "example.com/app"
+  },
+  "configurations": [
+    {
+      "id": "default",
+      "os": "linux",
+      "arch": "amd64",
+      "tags": []
+    },
+    {
+      "id": "linux-amd64",
+      "os": "linux",
+      "arch": "amd64",
+      "tags": []
+    }
+  ],
+  "configurations_not_built": [],
+  "consumers": {
+    "declared": 0,
+    "loaded": [],
+    "unavailable": []
+  },
+  "findings": [
+    {
+      "code": "DS1001",
+      "kind": "unused-exported",
+      "language": "go",
+      "position": {
+        "path": "internal/wire/wire.go",
+        "line": 14,
+        "column": 6,
+        "end_line": 21
+      },
+      "symbol": {
+        "ref": "go://example.com/app/internal/wire#ServerEvent",
+        "kind": "type",
+        "name": "ServerEvent",
+        "parent": "go://example.com/app/internal/wire#",
+        "exported": true,
+        "size_lines": 8,
+        "objectpath": "ServerEvent"
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "liveness_relation": "reference-counting",
+      "test_only": false,
+      "generated": false,
+      "component": {
+        "id": "deadset-go/c-1",
+        "root": true,
+        "symbol_count": 3,
+        "deletable_lines": 17
+      },
+      "retained_by": [],
+      "configurations": [
+        "linux-amd64"
+      ],
+      "consumers_loaded": [],
+      "fixability": "deletable",
+      "severity": "deny",
+      "message": "exported type has no reference in the target and none from any loaded consumer",
+      "analyzer": "deadset-go",
+      "details": {}
+    },
+    {
+      "code": "DS1001",
+      "kind": "unused-exported",
+      "language": "ts",
+      "position": {
+        "path": "web/src/wire.ts",
+        "line": 8,
+        "column": 18,
+        "end_line": 12
+      },
+      "symbol": {
+        "ref": "ts://@example/app/src/wire.ts#ServerEvent",
+        "kind": "interface",
+        "name": "ServerEvent",
+        "parent": "ts://@example/app/src/wire.ts#",
+        "exported": true,
+        "size_lines": 5
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "liveness_relation": "reference-counting",
+      "test_only": false,
+      "generated": false,
+      "component": {
+        "id": "deadset-go/c-1",
+        "root": true,
+        "symbol_count": 3,
+        "deletable_lines": 17
+      },
+      "retained_by": [],
+      "configurations": [
+        "default"
+      ],
+      "consumers_loaded": [],
+      "fixability": "deletable",
+      "severity": "deny",
+      "message": "exported interface has no reference in the target and none from any loaded consumer",
+      "analyzer": "deadset-ts",
+      "details": {}
+    },
+    {
+      "code": "DS1001",
+      "kind": "unused-exported",
+      "language": "ts",
+      "position": {
+        "path": "web/src/wire.ts",
+        "line": 14,
+        "column": 13,
+        "end_line": 17
+      },
+      "symbol": {
+        "ref": "ts://@example/app/src/wire.ts#ServerEventPayload",
+        "kind": "type",
+        "name": "ServerEventPayload",
+        "parent": "ts://@example/app/src/wire.ts#",
+        "exported": true,
+        "size_lines": 4
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "liveness_relation": "reference-counting",
+      "test_only": false,
+      "generated": false,
+      "component": {
+        "id": "deadset-go/c-1",
+        "root": true,
+        "symbol_count": 3,
+        "deletable_lines": 17
+      },
+      "retained_by": [],
+      "configurations": [
+        "default"
+      ],
+      "consumers_loaded": [],
+      "fixability": "deletable",
+      "severity": "deny",
+      "message": "exported type has no reference in the target and none from any loaded consumer",
+      "analyzer": "deadset-ts",
+      "details": {}
+    }
+  ],
+  "edge_evaluations": [],
+  "stale_suppressions": [],
+  "declared_gaps": [],
+  "excluded_by_cgo": [],
+  "test_file_rules": [
+    {
+      "rule": "go-test-suffix",
+      "matched": 3
+    },
+    {
+      "rule": "ts-test-suffix",
+      "matched": 2
+    }
+  ],
+  "type_error_skips": [],
+  "notes": [],
+  "unanswered_questions": [],
+  "conventions_applied": [],
+  "totals": {
+    "findings": 3,
+    "by_severity": {
+      "allow": 0,
+      "warn": 0,
+      "deny": 3
+    },
+    "deletable_lines": 17,
+    "suppressions_in_effect": 0,
+    "reasons_recorded": 0,
+    "stale_suppressions": 0,
+    "pending": 0,
+    "omitted": 0,
+    "withheld": {
+      "certain": 0,
+      "probable": 0,
+      "possible": 0
+    }
+  }
+}

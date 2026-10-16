@@ -1,0 +1,18 @@
+{
+  "schema_version": "9.0.0",
+  "contract_version": "8.0.0",
+  "analyzer": {
+    "name": "deadset",
+    "version": "1.0.0",
+    "conformance": {
+      "corpus_version": "1.0.0",
+      "result": "pass",
+      "digest": "sha256:890ddff06aecf253706705aa5cefa6281c1d1f63ddb62927d11f6d0ef03b1ade"
+    }
+  },
+  "digests": {
+    "00-go.json": "sha256:76feaadd8cf834854d44d40c5a3d2832be051559a61213c714ff93c226c7a76c",
+    "01-ts.json": "sha256:d9e2871b144c85830df69d6d3a53060bb5852dc1df4f2a9ea6557d3b932bbfa4"
+  },
+  "fail_on": "deny"
+}

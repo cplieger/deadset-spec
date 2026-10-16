@@ -1,0 +1,141 @@
+{
+  "schema_version": "9.0.0",
+  "contract_version": "8.0.0",
+  "analyzer": {
+    "name": "deadset-go",
+    "version": "1.0.0",
+    "languages": [
+      "go"
+    ],
+    "schema_versions_accepted": [
+      "9.0.0"
+    ],
+    "conformance": {
+      "corpus_version": "1.0.0",
+      "result": "pass",
+      "digest": "sha256:fb237604539ae340a82c566bac533eff435e19596423b1990a5f7533d07d6593"
+    }
+  },
+  "target": {
+    "kind": "application",
+    "root": ".",
+    "identity": "example.com/app"
+  },
+  "configurations": [
+    {
+      "id": "linux-amd64",
+      "os": "linux",
+      "arch": "amd64",
+      "tags": []
+    }
+  ],
+  "configurations_not_built": [],
+  "consumers": {
+    "declared": 0,
+    "loaded": [],
+    "unavailable": []
+  },
+  "findings": [
+    {
+      "code": "DS9004",
+      "kind": "unmatched-root",
+      "language": "go",
+      "position": {
+        "path": "deadset.json",
+        "line": 1,
+        "column": 1,
+        "end_line": 1
+      },
+      "symbol": {
+        "ref": "go://example.com/app/internal/wire#absent*",
+        "kind": "root",
+        "name": "go://example.com/app/internal/wire#absent*",
+        "size_lines": 1
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "test_only": false,
+      "generated": false,
+      "component": {
+        "id": "deadset-go/c-1",
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 0
+      },
+      "retained_by": [],
+      "configurations": [],
+      "consumers_loaded": [],
+      "fixability": "none",
+      "severity": "deny",
+      "message": "configured root pattern matches no symbol of the inventory",
+      "details": {}
+    },
+    {
+      "code": "DS9004",
+      "kind": "unmatched-root",
+      "language": "go",
+      "position": {
+        "path": "deadset.json",
+        "line": 1,
+        "column": 1,
+        "end_line": 1
+      },
+      "symbol": {
+        "ref": "ts://@example/app/src/main.ts#start*",
+        "kind": "root",
+        "name": "ts://@example/app/src/main.ts#start*",
+        "size_lines": 1
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "test_only": false,
+      "generated": false,
+      "component": {
+        "id": "deadset-go/c-2",
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 0
+      },
+      "retained_by": [],
+      "configurations": [],
+      "consumers_loaded": [],
+      "fixability": "none",
+      "severity": "deny",
+      "message": "configured root pattern matches no symbol of the inventory",
+      "details": {}
+    }
+  ],
+  "edge_evaluations": [],
+  "stale_suppressions": [],
+  "declared_gaps": [],
+  "excluded_by_cgo": [],
+  "test_file_rules": [
+    {
+      "rule": "go-test-suffix",
+      "matched": 3
+    }
+  ],
+  "type_error_skips": [],
+  "notes": [],
+  "unanswered_questions": [],
+  "conventions_applied": [],
+  "totals": {
+    "findings": 2,
+    "by_severity": {
+      "allow": 0,
+      "warn": 0,
+      "deny": 2
+    },
+    "deletable_lines": 0,
+    "suppressions_in_effect": 0,
+    "reasons_recorded": 0,
+    "stale_suppressions": 0,
+    "pending": 0,
+    "omitted": 0,
+    "withheld": {
+      "certain": 0,
+      "probable": 0,
+      "possible": 0
+    }
+  }
+}

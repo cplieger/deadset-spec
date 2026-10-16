@@ -1,12 +1,12 @@
 // Package vocab is the Contract's closed vocabularies as Go values: the issue
 // kinds and their families, the symbol kinds and the subject each names, the
 // exemption classes, the evidence that lowers a finding's class, the exit codes,
-// the setup-failure classes, the versions, the language registry and the keys of
-// the configuration. A product compiles them in rather than reading the
-// documents at run time. vocab_gen.go and config_gen.go are written by
-// deadset-gen from contract/*.json, authoring/config.schema.json and
-// corpus/corpus.json, and a freshness test fails when a document moves and
-// nobody regenerated.
+// the setup-failure classes, the versions, the language registry, the
+// orchestrator's command line and the keys of the configuration. A product
+// compiles them in rather than reading the documents at run time. vocab_gen.go
+// and config_gen.go are written by deadset-gen from contract/*.json,
+// authoring/config.schema.json and corpus/corpus.json, and a freshness test
+// fails when a document moves and nobody regenerated.
 package vocab
 
 import (
@@ -294,3 +294,48 @@ func Formats() []Format { return slices.Clone(formatValues) }
 
 // SymbolKinds returns every symbol kind the vocabulary declares, in its order.
 func SymbolKinds() []string { return slices.Clone(symbolKindOrder) }
+
+// Option is one command-line option of cli.json: its name, spelled after
+// "--", the kind of value it takes, the setting it supplies or "", and what it
+// does.
+type Option struct {
+	Name       string
+	Value      string
+	Setting    string
+	Summary    string
+	Repeatable bool
+}
+
+// Options returns every option cli.json declares, in its order.
+func Options() []Option { return slices.Clone(options) }
+
+// OptionOf returns the option of one name, and false for one cli.json does
+// not declare.
+func OptionOf(name string) (Option, bool) {
+	i := slices.IndexFunc(options, func(o Option) bool { return o.Name == name })
+	if i < 0 {
+		return Option{}, false
+	}
+	return options[i], true
+}
+
+// Verb is one verb of the orchestrator's command line: its closed option
+// list, in cli.json's order, what it writes on standard output and the exit
+// codes it can end with.
+type Verb struct {
+	Name      string
+	Summary   string
+	Stdout    string
+	Options   []string
+	ExitCodes []int
+}
+
+// OrchestratorVerbs returns every verb of the orchestrator's command line, in
+// cli.json's order.
+func OrchestratorVerbs() []Verb {
+	held := slices.Clone(orchestratorVerbs)
+	for i := range held {
+		held[i].Options, held[i].ExitCodes = slices.Clone(held[i].Options), slices.Clone(held[i].ExitCodes)
+	}
+	return held
+}

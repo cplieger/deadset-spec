@@ -1,0 +1,16 @@
+{
+  "description": "A compiler configuration under a testdata directory puts TypeScript in scope, because only the Go row of languages.json skips testdata: the run then needs an analyzer claiming ts, and a provider list naming only the Go analyzer is refused with the usage code 2.",
+  "products": [
+    "deadset"
+  ],
+  "argv": [
+    "analyze",
+    "--target=@TARGET@"
+  ],
+  "expect": {
+    "exit": 2,
+    "stderr_contains": [
+      "claiming \"ts\""
+    ]
+  }
+}

@@ -745,3 +745,33 @@ var setupClasses = []SetupClass{
 	{Name: SetupConventionNotLiteral, Languages: []Language{TS}},
 	{Name: SetupNoProgram, Languages: []Language{Go, TS}},
 }
+
+var options = []Option{
+	{Name: "target", Value: "path", Setting: "", Summary: "The target root; the working directory where absent.", Repeatable: false},
+	{Name: "scope", Value: "path", Setting: "", Summary: "The scope document naming the target and its consumers, read before the configuration.", Repeatable: false},
+	{Name: "config", Value: "path", Setting: "", Summary: "The configuration document an orchestrator writes for this analyzer, read in place of the repository configuration.", Repeatable: false},
+	{Name: "central", Value: "path", Setting: "", Summary: "The central configuration, resolved below the repository configuration.", Repeatable: false},
+	{Name: "report", Value: "path", Setting: "", Summary: "The path the JSON report is written to.", Repeatable: false},
+	{Name: "run-dir", Value: "path", Setting: "", Summary: "The directory the orchestrator writes each analyzer's configuration, scope and report into; a fresh directory where absent.", Repeatable: false},
+	{Name: "format", Value: "name", Setting: "", Summary: "One rendering written beside the report, named by its format.", Repeatable: true},
+	{Name: "formats", Value: "list", Setting: "reporters.formats", Summary: "The renderings the run writes, comma-separated.", Repeatable: false},
+	{Name: "template", Value: "path", Setting: "", Summary: "The template the template format renders, read and parsed before any analysis.", Repeatable: false},
+	{Name: "baseline-write", Value: "path", Setting: "", Summary: "The baseline the run writes from its own findings.", Repeatable: false},
+	{Name: "exit-code", Value: "switch", Setting: "", Summary: "on, the default, puts the verdict in the exit code; off exits 0 after any complete run.", Repeatable: false},
+	{Name: "languages", Value: "list", Setting: "analysis.languages", Summary: "The languages to analyze, comma-separated, in place of detection.", Repeatable: false},
+	{Name: "min-confidence", Value: "name", Setting: "analysis.min_confidence", Summary: "The minimum confidence a reported finding carries.", Repeatable: false},
+	{Name: "sort", Value: "name", Setting: "reporters.sort", Summary: "The order the renderings list findings in.", Repeatable: false},
+	{Name: "cascade", Value: "name", Setting: "reporters.cascade", Summary: "How much of a dead component the renderings list.", Repeatable: false},
+	{Name: "max-findings", Value: "integer", Setting: "reporters.max_findings", Summary: "The most findings the report lists, 0 for every finding.", Repeatable: false},
+	{Name: "fail-on", Value: "name", Setting: "reporters.fail_on", Summary: "The lowest severity that fails the run.", Repeatable: false},
+	{Name: "why", Value: "symbol", Setting: "", Summary: "The symbol to explain.", Repeatable: false},
+	{Name: "why-live", Value: "symbol", Setting: "", Summary: "The symbol to explain, asked why it is live.", Repeatable: false},
+	{Name: "why-not", Value: "symbol", Setting: "", Summary: "The symbol to explain, asked why it is not reported.", Repeatable: false},
+	{Name: "mode", Value: "name", Setting: "", Summary: "The reference mode whose exemption records are listed: the analysis mode where absent, plain for every record.", Repeatable: false},
+}
+
+var orchestratorVerbs = []Verb{
+	{Name: "analyze", Summary: "Analyze every language in scope and write the merged report.", Stdout: "renderings", Options: []string{"target", "scope", "central", "run-dir", "template", "exit-code", "languages", "min-confidence", "formats", "fail-on"}, ExitCodes: []int{0, 1, 2, 3, 4}},
+	{Name: "print-config", Summary: "Print the resolved configuration with the provenance of every setting.", Stdout: "configuration", Options: []string{"target", "central", "languages", "min-confidence", "formats", "fail-on"}, ExitCodes: []int{0, 2, 3}},
+	{Name: "version", Summary: "Print the product's version and the Contract version it implements.", Stdout: "version", Options: []string{}, ExitCodes: []int{0, 2}},
+}

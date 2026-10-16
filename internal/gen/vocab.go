@@ -45,6 +45,26 @@ type (
 	corpusDoc struct {
 		CorpusVersion string `json:"corpus_version"`
 	}
+	cliDoc struct {
+		Options []struct {
+			Option     string `json:"option"`
+			Value      string `json:"value"`
+			Setting    string `json:"setting"`
+			Summary    string `json:"summary"`
+			Repeatable bool   `json:"repeatable"`
+		} `json:"options"`
+		Products []struct {
+			Role  string          `json:"role"`
+			Verbs json.RawMessage `json:"verbs"`
+		} `json:"products"`
+	}
+	orchestratorVerb struct {
+		Verb      string   `json:"verb"`
+		Summary   string   `json:"summary"`
+		Stdout    string   `json:"stdout"`
+		Options   []string `json:"options"`
+		ExitCodes []int    `json:"exit_codes"`
+	}
 	configDoc struct {
 		Properties struct {
 			Reporters struct {
@@ -69,6 +89,7 @@ type vocabDocs struct {
 	exemptions exemptionsDoc
 	confidence confidenceDoc
 	languages  languagesDoc
+	cli        cliDoc
 	config     configDoc
 }
 
@@ -83,7 +104,7 @@ func vocabSource(fsys fs.FS, out map[string][]byte) error {
 	for name, into := range map[string]any{
 		kindsPath: &d.kinds, exemptionsPath: &d.exemptions, "contract/exit-codes.json": &d.exits,
 		"contract/contract.json": &d.contract, "contract/confidence.json": &d.confidence, "corpus/corpus.json": &d.corpus,
-		configSource: &d.config, languagesPath: &d.languages,
+		configSource: &d.config, languagesPath: &d.languages, cliPath: &d.cli,
 	} {
 		data, err := fs.ReadFile(fsys, name)
 		if err != nil {
@@ -107,6 +128,9 @@ func vocabSource(fsys fs.FS, out map[string][]byte) error {
 	}
 	d.exemptionRows(w)
 	d.exitRows(w)
+	if err := d.commandLine(w); err != nil {
+		return err
+	}
 	src, err := format.Source([]byte(w.b.String()))
 	if err != nil {
 		return fmt.Errorf("%s: %w", vocabPath, err)
@@ -260,6 +284,34 @@ func (d *vocabDocs) exitRows(w *writer) {
 		w.f("{Name: Setup%s, Languages: %s},\n", ident(s.Class), goConsts("Language", s.Languages, languageIdent))
 	}
 	w.f("}\n")
+}
+
+// commandLine writes cli.json's options and the orchestrator's verbs.
+func (d *vocabDocs) commandLine(w *writer) error {
+	w.f("\nvar options = []Option{\n")
+	for _, o := range d.cli.Options {
+		w.f("{Name: %q, Value: %q, Setting: %q, Summary: %q, Repeatable: %t},\n", o.Option, o.Value, o.Setting, o.Summary, o.Repeatable)
+	}
+	w.f("}\n\nvar orchestratorVerbs = []Verb{\n")
+	for _, p := range d.cli.Products {
+		if p.Role != "orchestrator" {
+			continue
+		}
+		var verbs []orchestratorVerb
+		if err := json.Unmarshal(p.Verbs, &verbs); err != nil {
+			return fmt.Errorf("contract/cli.json: the orchestrator's verbs: %w", err)
+		}
+		for _, v := range verbs {
+			codes := make([]string, len(v.ExitCodes))
+			for i, code := range v.ExitCodes {
+				codes[i] = strconv.Itoa(code)
+			}
+			w.f("{Name: %q, Summary: %q, Stdout: %q, Options: %s, ExitCodes: []int{%s}},\n",
+				v.Verb, v.Summary, v.Stdout, goStrings(v.Options), strings.Join(codes, ", "))
+		}
+	}
+	w.f("}\n")
+	return nil
 }
 
 // writeConsts writes one typed constant per value of a closed list, and the
