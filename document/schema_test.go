@@ -185,3 +185,16 @@ func checkAll(s *Schema, data []byte) ([]Error, error) {
 	}
 	return s.CheckValue(value), nil
 }
+
+func TestCompileBytesChecksAValueAndRefusesAnOutsideReference(t *testing.T) {
+	schema, err := CompileBytes("value", []byte(`{"type": "string", "enum": ["a"]}`))
+	if err != nil {
+		t.Fatalf("CompileBytes(an enum) = %v, want it compiled", err)
+	}
+	if refused := schema.CheckValue("b"); len(refused) != 1 {
+		t.Errorf("CheckValue(b) = %v, want one refusal", refused)
+	}
+	if _, err := CompileBytes("value", []byte(`{"$ref": "other.json"}`)); err == nil {
+		t.Error("CompileBytes(a reference to another document) = nil, want a compile error")
+	}
+}

@@ -68,6 +68,7 @@ type vocabDocs struct {
 	contract   contractDoc
 	exemptions exemptionsDoc
 	confidence confidenceDoc
+	languages  languagesDoc
 	config     configDoc
 }
 
@@ -80,9 +81,9 @@ func (w *writer) f(layout string, args ...any) { fmt.Fprintf(&w.b, layout, args.
 func vocabSource(fsys fs.FS, out map[string][]byte) error {
 	var d vocabDocs
 	for name, into := range map[string]any{
-		kindsPath: &d.kinds, "contract/exemptions.json": &d.exemptions, "contract/exit-codes.json": &d.exits,
+		kindsPath: &d.kinds, exemptionsPath: &d.exemptions, "contract/exit-codes.json": &d.exits,
 		"contract/contract.json": &d.contract, "contract/confidence.json": &d.confidence, "corpus/corpus.json": &d.corpus,
-		configSource: &d.config,
+		configSource: &d.config, languagesPath: &d.languages,
 	} {
 		data, err := fs.ReadFile(fsys, name)
 		if err != nil {
@@ -122,11 +123,14 @@ func (d *vocabDocs) versions(w *writer) {
 	w.f("CorpusVersion = %q\n", d.corpus.CorpusVersion)
 	w.f("Prefix = %q\n)\n\n", d.kinds.Prefix)
 	w.f("var schemaVersions = %s\n\n", goStrings(d.contract.SchemaVersions))
+	ids := make([]string, 0, len(d.languages.Languages))
 	w.f("// The languages the vocabularies name.\nconst (\n")
-	for _, l := range d.kinds.Languages {
+	for i := range d.languages.Languages {
+		l := d.languages.Languages[i].Language
+		ids = append(ids, l)
 		w.f("%s Language = %q\n", languageIdent(l), l)
 	}
-	w.f(")\n\nvar languages = %s\n\n", goConsts("Language", d.kinds.Languages, languageIdent))
+	w.f(")\n\nvar languages = %s\n\n", goConsts("Language", ids, languageIdent))
 	writeConsts(w.f, "subjects a finding is about", "Subject", "Subject", d.kinds.Subjects, ident)
 	writeConsts(w.f, "reachability classes, from the most to the least certain", "Class", "", d.kinds.ReachabilityClasses, ident)
 	writeConsts(w.f, "severities a configuration may give a kind", "Severity", "", d.kinds.Severities, ident)

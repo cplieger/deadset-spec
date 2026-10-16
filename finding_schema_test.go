@@ -424,7 +424,7 @@ func TestFindingSchemaEnumsAreTheContractVocabularies(t *testing.T) {
 		at   string
 		want []string
 	}{
-		{name: "language", at: "properties/language", want: kinds.Languages},
+		{name: "language", at: "properties/language", want: contractLanguages()},
 		{name: "reachability_class", at: "properties/reachability_class", want: kinds.ReachabilityClasses},
 		{name: "confidence", at: "properties/confidence", want: kinds.ReachabilityClasses},
 		{name: "fixability", at: "properties/fixability", want: kinds.Fixabilities},

@@ -1,0 +1,8 @@
+{
+  "target": {
+    "kind": "application"
+  },
+  "provenance": {
+    "target.kind": "repository: repository.json"
+  }
+}

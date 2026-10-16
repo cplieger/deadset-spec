@@ -1,0 +1,115 @@
+{
+  "target": {
+    "kind": "library"
+  },
+  "analysis": {
+    "languages": ["go", "ts"],
+    "generated_files": "include",
+    "consumer_tests": "production",
+    "configurations": [
+      {
+        "id": "linux-amd64",
+        "os": "linux",
+        "arch": "amd64",
+        "tags": []
+      },
+      {
+        "id": "linux-arm64",
+        "os": "linux",
+        "arch": "arm64",
+        "tags": ["netgo"]
+      }
+    ],
+    "matrix": {
+      "complete": true
+    },
+    "template_dirs": ["templates"],
+    "template_delimiters": {
+      "left": "<%",
+      "right": "%>"
+    }
+  },
+  "consumers": {
+    "complete": true
+  },
+  "roots": {
+    "patterns": ["go://example.com/app#Catalog.*"]
+  },
+  "severity": {
+    "DS1501": "warn",
+    "DS14": "allow"
+  },
+  "exemptions": {
+    "disabled": ["template-field"]
+  },
+  "reporters": {
+    "formats": ["text", "sarif"],
+    "sort": "size",
+    "max_findings": 200,
+    "fail_on": "warn"
+  },
+  "providers": {
+    "analyzers": [
+      {
+        "name": "deadset-ts",
+        "languages": ["ts"],
+        "command": "deadset-ts"
+      },
+      {
+        "name": "example-go",
+        "languages": ["go"],
+        "command": "/opt/example-go/bin/example-go",
+        "source": "go:example.com/example-go/cmd/example-go",
+        "version": "1.4.0",
+        "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
+      }
+    ]
+  },
+  "ts": {
+    "test_files": ["**/*.test.ts"],
+    "entry_files": ["src/cli.ts"],
+    "injection_registrations": [
+      {
+        "module": "@example/container",
+        "name": "Container.bind"
+      },
+      {
+        "module": "@example/container",
+        "name": "Module"
+      }
+    ],
+    "lifecycle_contracts": [
+      {
+        "components": [
+          {
+            "module": "@example/ui/decorators.js",
+            "name": "element"
+          },
+          {
+            "global": "CustomElementRegistry.define"
+          }
+        ],
+        "bases": [
+          {
+            "global": "HTMLElement"
+          }
+        ],
+        "members": ["connectedCallback", "disconnectedCallback", "observedAttributes:static"]
+      }
+    ],
+    "serializers": [
+      {
+        "symbol": "ts://@example/app/src/wire.ts#encode"
+      },
+      {
+        "global": "structuredClone"
+      }
+    ]
+  },
+  "x-input": {
+    "target.kind": "flag: --target-kind",
+    "analysis.min_confidence": "central: central.json",
+    "analysis.generated_files": "default",
+    "severity.DS1501": "central: central.json"
+  }
+}

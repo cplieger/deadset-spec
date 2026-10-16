@@ -1,23 +1,49 @@
 {
   "contract_version": "8.0.0",
-  "target": { "kind": "library" },
+  "target": {
+    "kind": "library"
+  },
   "analysis": {
     "languages": ["go", "ts"],
     "min_confidence": "probable",
     "generated_files": "include",
     "consumer_tests": "production",
     "configurations": [
-      { "id": "linux-amd64", "os": "linux", "arch": "amd64", "tags": [] },
-      { "id": "linux-arm64", "os": "linux", "arch": "arm64", "tags": ["netgo"] }
+      {
+        "id": "linux-amd64",
+        "os": "linux",
+        "arch": "amd64",
+        "tags": []
+      },
+      {
+        "id": "linux-arm64",
+        "os": "linux",
+        "arch": "arm64",
+        "tags": ["netgo"]
+      }
     ],
-    "matrix": { "complete": true },
+    "matrix": {
+      "complete": true
+    },
     "template_dirs": ["templates"],
-    "template_delimiters": { "left": "<%", "right": "%>" }
+    "template_delimiters": {
+      "left": "<%",
+      "right": "%>"
+    }
   },
-  "consumers": { "complete": true },
-  "roots": { "patterns": ["go://example.com/app#Catalog.*"] },
-  "severity": { "DS1501": "warn", "DS14": "allow" },
-  "exemptions": { "disabled": ["template-field"] },
+  "consumers": {
+    "complete": true
+  },
+  "roots": {
+    "patterns": ["go://example.com/app#Catalog.*"]
+  },
+  "severity": {
+    "DS14": "allow",
+    "DS1501": "warn"
+  },
+  "exemptions": {
+    "disabled": ["template-field"]
+  },
   "reporters": {
     "formats": ["text", "sarif"],
     "sort": "size",
@@ -27,7 +53,11 @@
   },
   "providers": {
     "analyzers": [
-      { "name": "deadset-ts", "languages": ["ts"], "command": "deadset-ts" },
+      {
+        "name": "deadset-ts",
+        "languages": ["ts"],
+        "command": "deadset-ts"
+      },
       {
         "name": "example-go",
         "languages": ["go"],
@@ -45,22 +75,41 @@
     "component_extensions": [".vue", ".svelte", ".astro"],
     "disabled_conventions": [],
     "injection_registrations": [
-      { "module": "@example/container", "name": "Container.bind" },
-      { "module": "@example/container", "name": "Module" }
+      {
+        "module": "@example/container",
+        "name": "Container.bind"
+      },
+      {
+        "module": "@example/container",
+        "name": "Module"
+      }
     ],
     "lifecycle_contracts": [
       {
         "components": [
-          { "module": "@example/ui/decorators.js", "name": "element" },
-          { "global": "CustomElementRegistry.define" }
+          {
+            "module": "@example/ui/decorators.js",
+            "name": "element"
+          },
+          {
+            "global": "CustomElementRegistry.define"
+          }
         ],
-        "bases": [{ "global": "HTMLElement" }],
+        "bases": [
+          {
+            "global": "HTMLElement"
+          }
+        ],
         "members": ["connectedCallback", "disconnectedCallback", "observedAttributes:static"]
       }
     ],
     "serializers": [
-      { "symbol": "ts://@example/app/src/wire.ts#encode" },
-      { "global": "structuredClone" }
+      {
+        "symbol": "ts://@example/app/src/wire.ts#encode"
+      },
+      {
+        "global": "structuredClone"
+      }
     ],
     "roots_complete": false
   },
@@ -77,8 +126,8 @@
     "analysis.template_delimiters": "repository: repository.json",
     "consumers.complete": "repository: repository.json",
     "roots.patterns": "repository: repository.json",
-    "severity.DS1501": "repository: repository.json",
     "severity.DS14": "repository: repository.json",
+    "severity.DS1501": "repository: repository.json",
     "exemptions.disabled": "repository: repository.json",
     "reporters.formats": "repository: repository.json",
     "reporters.sort": "repository: repository.json",

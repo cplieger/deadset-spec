@@ -105,6 +105,28 @@ func Compile(fsys fs.FS, name string) (*Schema, error) {
 	return &Schema{root: root, name: name}, nil
 }
 
+// CompileBytes compiles one schema document held in memory, such as a
+// configuration key's value schema; a $ref to another document fails to compile.
+func CompileBytes(name string, data []byte) (*Schema, error) {
+	value, err := decode(data)
+	if err != nil {
+		return nil, fmt.Errorf("%w: %s: %w", errSchema, name, err)
+	}
+	c := &compiler{fsys: noFiles{}, docs: map[string]any{name: value}, built: make(map[string]*node)}
+	root, err := c.at(name, "")
+	if err != nil {
+		return nil, err
+	}
+	return &Schema{root: root, name: name}, nil
+}
+
+// noFiles is a file system holding no file.
+type noFiles struct{}
+
+func (noFiles) Open(name string) (fs.File, error) {
+	return nil, &fs.PathError{Op: "open", Path: name, Err: fs.ErrNotExist}
+}
+
 // at compiles the schema at one JSON Pointer of one document.
 func (c *compiler) at(doc, pointer string) (*node, error) {
 	key := doc + "#" + pointer

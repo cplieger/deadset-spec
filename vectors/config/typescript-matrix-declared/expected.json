@@ -1,23 +1,42 @@
 {
   "contract_version": "8.0.0",
-  "target": { "kind": "application" },
+  "target": {
+    "kind": "application"
+  },
   "analysis": {
     "languages": ["ts"],
     "min_confidence": "probable",
     "generated_files": "exclude",
     "consumer_tests": "test",
     "configurations": [
-      { "id": "tsconfig.json", "project": "tsconfig.json" },
-      { "id": "packages/app/tsconfig.json", "project": "packages/app/tsconfig.json" }
+      {
+        "id": "tsconfig.json",
+        "project": "tsconfig.json"
+      },
+      {
+        "id": "packages/app/tsconfig.json",
+        "project": "packages/app/tsconfig.json"
+      }
     ],
-    "matrix": { "complete": true },
+    "matrix": {
+      "complete": true
+    },
     "template_dirs": [],
-    "template_delimiters": { "left": "{{", "right": "}}" }
+    "template_delimiters": {
+      "left": "{{",
+      "right": "}}"
+    }
   },
-  "consumers": { "complete": false },
-  "roots": { "patterns": [] },
+  "consumers": {
+    "complete": false
+  },
+  "roots": {
+    "patterns": []
+  },
   "severity": {},
-  "exemptions": { "disabled": [] },
+  "exemptions": {
+    "disabled": []
+  },
   "reporters": {
     "formats": ["text"],
     "sort": "position",
@@ -27,8 +46,16 @@
   },
   "providers": {
     "analyzers": [
-      { "name": "deadset-go", "languages": ["go"], "command": "deadset-go" },
-      { "name": "deadset-ts", "languages": ["ts"], "command": "deadset-ts" }
+      {
+        "name": "deadset-go",
+        "languages": ["go"],
+        "command": "deadset-go"
+      },
+      {
+        "name": "deadset-ts",
+        "languages": ["ts"],
+        "command": "deadset-ts"
+      }
     ]
   },
   "go": {},

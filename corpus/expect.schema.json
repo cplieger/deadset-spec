@@ -36,7 +36,7 @@
       }
     },
     "languages": {
-      "description": "The languages the fixture has a rendering for, drawn from the languages field of contract/kinds.json. Every expectation applies to every rendering listed, so every logical name must resolve through every rendering's manifest. An analyzer answers the fixture only when its language is listed.",
+      "description": "The languages the fixture has a rendering for, drawn from the languages contract/languages.json lists. Every expectation applies to every rendering listed, so every logical name must resolve through every rendering's manifest. An analyzer answers the fixture only when its language is listed.",
       "type": "array",
       "minItems": 1,
       "uniqueItems": true,

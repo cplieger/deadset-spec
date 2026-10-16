@@ -252,7 +252,7 @@ func TestReportSchemaVocabulariesAreTheContractVocabularies(t *testing.T) {
 		want   []string
 		source string
 	}{
-		{name: "languages", at: "properties/analyzer/properties/languages/items", want: kinds.Languages, source: kindsPath},
+		{name: "languages", at: "properties/analyzer/properties/languages/items", want: contractLanguages(), source: languagesPath},
 		{name: "conformance_result", at: reportConformancePath + "/properties/result", want: enumAt(results, "properties/result"), source: resultsSchemaPath},
 		{name: "target_kind", at: "properties/target/properties/kind", want: append(enumAt(config, configTargetKindStringPath), "mixed"), source: configSchemaPath},
 		{name: "target_language_kind_go", at: "properties/target/properties/language_kinds/properties/go", want: enumAt(config, configTargetKindStringPath), source: configSchemaPath},
@@ -270,8 +270,8 @@ func TestReportSchemaVocabulariesAreTheContractVocabularies(t *testing.T) {
 	}
 
 	t.Run("target_language_kinds", func(t *testing.T) {
-		if got := propertyNames(schema, "properties/target/properties/language_kinds"); !slices.Equal(got, slices.Sorted(slices.Values(kinds.Languages))) {
-			t.Errorf("propertyNames(%s, language_kinds) = %v, want the languages %s declares, %v", reportSchemaPath, got, kindsPath, kinds.Languages)
+		if got := propertyNames(schema, "properties/target/properties/language_kinds"); !slices.Equal(got, slices.Sorted(slices.Values(contractLanguages()))) {
+			t.Errorf("propertyNames(%s, language_kinds) = %v, want the languages %s declares, %v", reportSchemaPath, got, languagesPath, contractLanguages())
 		}
 	})
 

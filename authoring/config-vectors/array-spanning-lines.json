@@ -1,0 +1,28 @@
+{
+  "target": {
+    "kind": "library"
+  },
+  "analysis": {
+    "min_confidence": "possible",
+    "generated_files": "include"
+  },
+  "roots": {
+    "patterns": ["go://example.com/app#Catalog.*", "go://example.com/app/internal/*#*", "ts://@example/app/src/generated/*.ts#*"]
+  },
+  "severity": {
+    "DS1201": "warn",
+    "DS1501": "allow"
+  },
+  "reporters": {
+    "fail_on": "warn"
+  },
+  "provenance": {
+    "target.kind": "repository: repository.json",
+    "analysis.min_confidence": "flag: --min-confidence",
+    "analysis.generated_files": "central: central.json",
+    "roots.patterns": "repository: repository.json",
+    "severity.DS1201": "central: central.json",
+    "severity.DS1501": "repository: repository.json",
+    "reporters.fail_on": "central: central.json"
+  }
+}

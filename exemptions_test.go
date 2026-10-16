@@ -54,7 +54,6 @@ var (
 	// by single hyphens, so a `retained_by` value never needs quoting or
 	// escaping in any reporter.
 	classNamePattern = regexp.MustCompile(`^[a-z][a-z0-9]*(-[a-z0-9]+)*$`)
-	knownLanguages   = []string{"go", "ts"}
 	knownConfidences = []string{"certain", "probable", "possible"}
 	rowKeys          = []string{"class", "languages", "confidence", "rule", "retains", "retains_kinds", "mechanism"}
 )
@@ -96,11 +95,11 @@ func TestExemptionsDocumentShape(t *testing.T) {
 			seen[c.Class] = true
 
 			if len(c.Languages) == 0 {
-				t.Errorf("class %q languages = %v, want at least one of %v", c.Class, c.Languages, knownLanguages)
+				t.Errorf("class %q languages = %v, want at least one of %v", c.Class, c.Languages, contractLanguages())
 			}
 			for _, lang := range c.Languages {
-				if !slices.Contains(knownLanguages, lang) {
-					t.Errorf("class %q names language %q, want one of %v", c.Class, lang, knownLanguages)
+				if !slices.Contains(contractLanguages(), lang) {
+					t.Errorf("class %q names language %q, want one of %v", c.Class, lang, contractLanguages())
 				}
 			}
 			if dup := slices.Compact(slices.Sorted(slices.Values(c.Languages))); len(dup) != len(c.Languages) {

@@ -233,7 +233,6 @@ func enumAt(schema map[string]any, p string) []string {
 
 func TestCorpusDocument(t *testing.T) {
 	doc := loadCorpus(t)
-	kinds := loadKinds(t)
 
 	t.Run("version", func(t *testing.T) {
 		m := semverPattern.FindStringSubmatch(doc.CorpusVersion)
@@ -250,8 +249,8 @@ func TestCorpusDocument(t *testing.T) {
 		if !maps.Equal(doc.Layout.Renderings, want) {
 			t.Errorf("layout.renderings = %v, want %v, the layout this suite walks", doc.Layout.Renderings, want)
 		}
-		if got := slices.Sorted(maps.Keys(doc.Layout.Renderings)); !slices.Equal(got, kinds.Languages) {
-			t.Errorf("layout.renderings languages = %v, want %s languages %v", got, kindsPath, kinds.Languages)
+		if got := slices.Sorted(maps.Keys(doc.Layout.Renderings)); !slices.Equal(got, contractLanguages()) {
+			t.Errorf("layout.renderings languages = %v, want %s languages %v", got, languagesPath, contractLanguages())
 		}
 		gotPaths := []string{doc.Layout.FixtureDirectory, doc.Layout.ExpectationFile, doc.Layout.ManifestFile, doc.Layout.TargetDirectory, doc.Layout.ConsumerDirectory, doc.Layout.DependencyDirectory, doc.Layout.InstalledDirectory}
 		wantPaths := []string{fixturesDir + "/<name>/", corpus.ExpectFile, corpus.ManifestFile, corpus.TargetDir + "/", "<consumer>/", "<dependency>/", corpus.InstalledDir + "/"}
@@ -490,7 +489,7 @@ func TestExpectSchemaEnumsAreTheContractVocabularies(t *testing.T) {
 		at   string
 		want []string
 	}{
-		{name: "languages", at: "properties/languages/items", want: kinds.Languages},
+		{name: "languages", at: "properties/languages/items", want: contractLanguages()},
 		{name: "confidence", at: "properties/expect/items/properties/confidence", want: kinds.ReachabilityClasses},
 		{name: "reachability_class", at: "properties/expect/items/properties/reachability_class", want: kinds.ReachabilityClasses},
 		{name: "fixability", at: "properties/expect/items/properties/fixability", want: kinds.Fixabilities},

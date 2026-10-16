@@ -13,8 +13,15 @@ import (
 
 const configSchemaPath = "contract/config.schema.json"
 
-// ownerVocabulary is the closed set of x-owner values the schema's description declares.
-var ownerVocabulary = []string{"product", "analyzer", "orchestrator", "go-analyzer", "ts-analyzer"}
+// ownerVocabulary is the closed set of x-owner values the schema's description declares:
+// product, analyzer, orchestrator and the analyzer of each language contract/languages.json lists.
+func ownerVocabulary() []string {
+	owners := []string{"product", "analyzer", "orchestrator"}
+	for _, language := range contractLanguages() {
+		owners = append(owners, language+"-analyzer")
+	}
+	return owners
+}
 
 // schemaTypes is the set of JSON Schema type names a subschema may declare.
 var schemaTypes = []string{"object", "array", "string", "boolean", "integer", "number"}
@@ -187,8 +194,9 @@ func TestConfigSchema_TargetKindIsRequiredWithNoDefault(t *testing.T) {
 }
 
 // TestConfigSchema_TargetKindIsOneKindOrOnePerLanguage pins the two shapes of the target kind:
-// a string of the two kinds, and an object naming every language the vocabulary declares,
-// each member required and a kind, with no default anywhere, because a kind is never defaulted.
+// a string of the two kinds, and an object naming every language contract/languages.json marks
+// takes_target_kind, each member required and a kind, with no default anywhere, because a kind
+// is never defaulted.
 func TestConfigSchema_TargetKindIsOneKindOrOnePerLanguage(t *testing.T) {
 	kind := lookupKey(t, walkSchema(loadConfigSchema(t)), "target.kind")
 	branches := branchesOf(kind.node)
@@ -201,16 +209,23 @@ func TestConfigSchema_TargetKindIsOneKindOrOnePerLanguage(t *testing.T) {
 	if one["type"] != "string" || !slices.Equal(stringSlice(one["enum"]), kinds) {
 		t.Errorf("schema[target.kind].oneOf[0] = %v, want a string of %q", one, kinds)
 	}
-	languages := loadKinds(t).Languages
+	var registry languagesDocument
+	strictDecode(t, languagesPath, &registry)
+	var languages []string
+	for _, row := range registry.Languages {
+		if row.TakesTargetKind {
+			languages = append(languages, row.Language)
+		}
+	}
 	members, _ := perLanguage["properties"].(schemaNode)
 	if perLanguage["type"] != "object" || perLanguage["additionalProperties"] != false {
 		t.Errorf("schema[target.kind].oneOf[1] type = %v, additionalProperties = %v, want a closed object", perLanguage["type"], perLanguage["additionalProperties"])
 	}
 	if got := slices.Sorted(maps.Keys(members)); !slices.Equal(got, slices.Sorted(slices.Values(languages))) {
-		t.Errorf("schema[target.kind].oneOf[1] members = %q, want the languages contract/kinds.json declares, %q", got, languages)
+		t.Errorf("schema[target.kind].oneOf[1] members = %q, want the languages that take a target kind, %q", got, languages)
 	}
 	if got := stringSlice(perLanguage["required"]); !slices.Equal(got, languages) {
-		t.Errorf("schema[target.kind].oneOf[1].required = %q, want every language, in the order contract/kinds.json lists them, %q", got, languages)
+		t.Errorf("schema[target.kind].oneOf[1].required = %q, want every language that takes a target kind, in the order contract/languages.json lists them, %q", got, languages)
 	}
 	for _, language := range languages {
 		member, _ := members[language].(schemaNode)
@@ -246,8 +261,8 @@ func TestConfigSchema_EveryKeyCarriesOwnerAndDescription(t *testing.T) {
 			continue
 		}
 		t.Run(key.path, func(t *testing.T) {
-			if owner, _ := key.node["x-owner"].(string); !slices.Contains(ownerVocabulary, owner) {
-				t.Errorf("schema[%s].x-owner = %v, want one of %v", key.path, key.node["x-owner"], ownerVocabulary)
+			if owner, _ := key.node["x-owner"].(string); !slices.Contains(ownerVocabulary(), owner) {
+				t.Errorf("schema[%s].x-owner = %v, want one of %v", key.path, key.node["x-owner"], ownerVocabulary())
 			}
 			if desc, _ := key.node["description"].(string); desc == "" {
 				t.Errorf("schema[%s].description = %v, want a non-empty sentence", key.path, key.node["description"])

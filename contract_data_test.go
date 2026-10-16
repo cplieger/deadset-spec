@@ -45,6 +45,7 @@ type languagesDocument struct {
 type languageRow struct {
 	IdentitySource       map[string]string `json:"identity_source"`
 	Language             string            `json:"language"`
+	Name                 string            `json:"name"`
 	Kind                 string            `json:"kind"`
 	Scheme               string            `json:"scheme"`
 	Runner               string            `json:"runner"`
@@ -58,16 +59,13 @@ type languageRow struct {
 	TakesTargetKind      bool              `json:"takes_target_kind"`
 }
 
-// TestLanguagesAreTheVocabularysLanguages pins languages.json to the language
-// vocabulary of kinds.json and each row's own closed values: every language a
-// kind can name has one row, and a row that reads a program from source files
-// alone names the companions that tell its tree apart.
-func TestLanguagesAreTheVocabularysLanguages(t *testing.T) {
+// TestEveryLanguageRowHoldsItsClosedValues pins each languages.json row to its
+// own closed values: a row that reads a program from source files alone names
+// the companions that tell its tree apart.
+func TestEveryLanguageRowHoldsItsClosedValues(t *testing.T) {
 	var doc languagesDocument
 	strictDecode(t, languagesPath, &doc)
-	var ids []string
 	for _, row := range doc.Languages {
-		ids = append(ids, row.Language)
 		t.Run(row.Language, func(t *testing.T) {
 			if row.Kind != "analyzed" && row.Kind != "schema" {
 				t.Errorf("%s kind = %q, want analyzed or schema", row.Language, row.Kind)
@@ -84,13 +82,13 @@ func TestLanguagesAreTheVocabularysLanguages(t *testing.T) {
 			if row.ProgramWithoutMarker && len(row.Companions) == 0 {
 				t.Errorf("%s reads a program without a marker and names no companion", row.Language)
 			}
+			if row.Name == "" {
+				t.Errorf("%s name is empty, want how a sentence names the language", row.Language)
+			}
 			if row.IdentitySource["file"] == "" || row.IdentitySource["field"] == "" {
 				t.Errorf("%s identity_source = %v, want a file and a field", row.Language, row.IdentitySource)
 			}
 		})
-	}
-	if want := loadKinds(t).Languages; !slices.Equal(ids, want) {
-		t.Errorf("%s languages = %v, want the vocabulary's %v", languagesPath, ids, want)
 	}
 }
 

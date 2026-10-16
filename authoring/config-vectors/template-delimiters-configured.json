@@ -1,0 +1,17 @@
+{
+  "target": {
+    "kind": "library"
+  },
+  "analysis": {
+    "template_dirs": ["templates"],
+    "template_delimiters": {
+      "left": "[[",
+      "right": "]]"
+    }
+  },
+  "provenance": {
+    "target.kind": "repository: repository.json",
+    "analysis.template_dirs": "repository: repository.json",
+    "analysis.template_delimiters": "repository: repository.json"
+  }
+}

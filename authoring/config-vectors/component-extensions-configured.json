@@ -1,0 +1,12 @@
+{
+  "target": {
+    "kind": "application"
+  },
+  "ts": {
+    "component_extensions": [".vue", ".html"]
+  },
+  "provenance": {
+    "target.kind": "repository: repository.json",
+    "ts.component_extensions": "repository: repository.json"
+  }
+}

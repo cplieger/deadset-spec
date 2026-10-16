@@ -1,26 +1,36 @@
 {
   "contract_version": "8.0.0",
-  "target": { "kind": "library" },
+  "target": {
+    "kind": "library"
+  },
   "analysis": {
     "languages": [],
     "min_confidence": "possible",
     "generated_files": "include",
     "consumer_tests": "test",
     "configurations": [],
-    "matrix": { "complete": false },
+    "matrix": {
+      "complete": false
+    },
     "template_dirs": [],
-    "template_delimiters": { "left": "{{", "right": "}}" }
+    "template_delimiters": {
+      "left": "{{",
+      "right": "}}"
+    }
   },
-  "consumers": { "complete": false },
+  "consumers": {
+    "complete": false
+  },
   "roots": {
-    "patterns": [
-      "go://example.com/app#Catalog.*",
-      "go://example.com/app/internal/*#*",
-      "ts://@example/app/src/generated/*.ts#*"
-    ]
+    "patterns": ["go://example.com/app#Catalog.*", "go://example.com/app/internal/*#*", "ts://@example/app/src/generated/*.ts#*"]
   },
-  "severity": { "DS1201": "warn", "DS1501": "allow" },
-  "exemptions": { "disabled": [] },
+  "severity": {
+    "DS1201": "warn",
+    "DS1501": "allow"
+  },
+  "exemptions": {
+    "disabled": []
+  },
   "reporters": {
     "formats": ["text"],
     "sort": "position",
@@ -30,8 +40,16 @@
   },
   "providers": {
     "analyzers": [
-      { "name": "deadset-go", "languages": ["go"], "command": "deadset-go" },
-      { "name": "deadset-ts", "languages": ["ts"], "command": "deadset-ts" }
+      {
+        "name": "deadset-go",
+        "languages": ["go"],
+        "command": "deadset-go"
+      },
+      {
+        "name": "deadset-ts",
+        "languages": ["ts"],
+        "command": "deadset-ts"
+      }
     ]
   },
   "go": {},

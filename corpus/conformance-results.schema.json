@@ -28,7 +28,7 @@
           "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(-[0-9A-Za-z.-]+)?(\\+[0-9A-Za-z.-]+)?$"
         },
         "language": {
-          "description": "The language whose renderings the runner loaded, drawn from the languages field of contract/kinds.json. A product claiming more than one language runs the corpus once per language and writes one results document per run, so every fixture appears at most once here.",
+          "description": "The language whose renderings the runner loaded, drawn from the languages contract/languages.json lists. A product claiming more than one language runs the corpus once per language and writes one results document per run, so every fixture appears at most once here.",
           "type": "string",
           "enum": ["go", "ts"]
         }

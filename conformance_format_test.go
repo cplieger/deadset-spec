@@ -220,7 +220,7 @@ func TestConformanceResultVocabulary(t *testing.T) {
 		{name: "fixture_result", at: fixtureRowPath + "/properties/result", want: append(slices.Clone(resultValues), "pending")},
 		{name: "expectation_result", at: expectationRowPath + "/properties/result", want: resultValues},
 		{name: "document_result", at: "properties/result", want: []string{"pass", "fail"}},
-		{name: "language", at: "properties/product/properties/language", want: kinds.Languages},
+		{name: "language", at: "properties/product/properties/language", want: contractLanguages()},
 		{name: "confidence", at: answerPath + "/properties/confidence", want: kinds.ReachabilityClasses},
 		{name: "reachability_class", at: answerPath + "/properties/reachability_class", want: kinds.ReachabilityClasses},
 		{name: "fixability", at: answerPath + "/properties/fixability", want: kinds.Fixabilities},

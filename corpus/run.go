@@ -18,7 +18,6 @@ import (
 	"strings"
 	"sync"
 
-	spec "github.com/cplieger/deadset-spec/v8"
 	"github.com/cplieger/deadset-spec/v8/vocab"
 )
 
@@ -452,25 +451,12 @@ func configuredDeclarations(expect *Expectation, section map[string]any) {
 	}
 }
 
-// hasRootsComplete reports whether the configuration schema gives the language a
+// hasRootsComplete reports whether the configuration gives the language a
 // roots_complete key, the key a closed-world roots fact sets.
-var hasRootsComplete = func() func(string) bool {
-	keys := sync.OnceValue(func() map[string]bool {
-		held := map[string]bool{}
-		schema, err := readSchema(spec.Contract, "contract/config.schema.json")
-		if err != nil {
-			return held
-		}
-		properties, _ := schema["properties"].(map[string]any)
-		for language, section := range properties {
-			if object, ok := section.(map[string]any); ok && objectAt(object, "properties/roots_complete") != nil {
-				held[language] = true
-			}
-		}
-		return held
-	})
-	return func(language string) bool { return keys()[language] }
-}()
+func hasRootsComplete(language string) bool {
+	_, declared := vocab.ConfigKeyOf(vocab.Key(language + ".roots_complete"))
+	return declared
+}
 
 // declaredMatrix is the platform configurations a manifest's identifiers name:
 // the operating system, the architecture and any tags joined by hyphens.

@@ -1,10 +1,12 @@
 // Package vocab is the Contract's closed vocabularies as Go values: the issue
 // kinds and their families, the symbol kinds and the subject each names, the
 // exemption classes, the evidence that lowers a finding's class, the exit codes,
-// the setup-failure classes and the versions. A product compiles them in rather
-// than reading the documents at run time. vocab_gen.go is written by deadset-gen
-// from contract/*.json and corpus/corpus.json, and a freshness test fails when
-// a document moves and nobody regenerated.
+// the setup-failure classes, the versions, the language registry and the keys of
+// the configuration. A product compiles them in rather than reading the
+// documents at run time. vocab_gen.go and config_gen.go are written by
+// deadset-gen from contract/*.json, authoring/config.schema.json and
+// corpus/corpus.json, and a freshness test fails when a document moves and
+// nobody regenerated.
 package vocab
 
 import (

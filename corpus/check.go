@@ -509,16 +509,20 @@ func checkSetupFailure(expect *Expectation) []error {
 }
 
 // contractVocabularies reads the closed value sets the generated vocabulary
-// holds: the codes a severity may name, the classes, the exemption classes, the
-// symbol kinds and the fixabilities of each code.
+// holds: the codes a severity may name, those of the configuration's severity
+// keys that name one kind, the classes, the exemption classes, the symbol kinds
+// and the fixabilities of each code.
 func (env *environment) contractVocabularies() {
 	env.fixabilities = map[string][]string{}
+	severity, _ := vocab.ConfigKeyOf(vocab.KeySeverity)
+	for _, key := range severity.Values {
+		if len(key) != vocab.FamilyKeyLength {
+			env.settable = append(env.settable, key)
+		}
+	}
 	kinds := vocab.Kinds()
 	for i := range kinds {
 		code := string(kinds[i].Code)
-		if !kinds[i].Fixed {
-			env.settable = append(env.settable, code)
-		}
 		env.fixabilities[code] = append(env.fixabilities[code], string(kinds[i].Fixability))
 		for _, f := range kinds[i].FindingFixabilities {
 			env.fixabilities[code] = append(env.fixabilities[code], string(f))

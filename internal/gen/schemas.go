@@ -20,31 +20,30 @@ const (
 	presenceRequired  = "required"
 )
 
-// configSchema writes the published configuration schema: every key declared
+// expandedConfig is the configuration schema's source with every key declared
 // inline, because each product walks it by key path, from a source that states a
 // repeated sub-schema once under $defs.
-func configSchema(fsys fs.FS, out map[string][]byte) error {
+func expandedConfig(fsys fs.FS) (*value, error) {
 	src, err := readValue(fsys, configSource)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defs := src.get("$defs")
 	if defs == nil {
-		return fmt.Errorf("%s: no $defs", configSource)
+		return nil, fmt.Errorf("%s: no $defs", configSource)
 	}
 	used := map[string]bool{}
 	expanded, err := expand(src, defs, used, nil)
 	if err != nil {
-		return fmt.Errorf("%s: %w", configSource, err)
+		return nil, fmt.Errorf("%s: %w", configSource, err)
 	}
 	for _, name := range defs.keys {
 		if !used[name] {
-			return fmt.Errorf("%s: $defs/%s is referenced nowhere", configSource, name)
+			return nil, fmt.Errorf("%s: $defs/%s is referenced nowhere", configSource, name)
 		}
 	}
 	drop(expanded, "$defs")
-	out[configPublished] = encode(expanded)
-	return nil
+	return expanded, nil
 }
 
 // expand returns v with every {"$ref": "#/$defs/x", ...} replaced by the
