@@ -97,17 +97,12 @@ func runCorpus(ctx context.Context, args []string, stdout, stderr io.Writer) int
 	}
 	options := corpus.Options{Fixtures: fixtures, Jobs: *jobs}
 	if *gapsFile != "" {
-		data, err := os.ReadFile(*gapsFile)
+		gaps, err := readGaps(*gapsFile)
 		if err != nil {
 			fmt.Fprintln(stderr, "deadset-corpus:", err)
 			return 2
 		}
-		var gaps corpus.Gaps
-		if err := corpus.DecodeStrict(data, &gaps); err != nil {
-			fmt.Fprintf(stderr, "deadset-corpus: %s: %v\n", *gapsFile, err)
-			return 2
-		}
-		options.Gaps = gaps.Gaps
+		options.Gaps = gaps
 	}
 	results, err := corpus.Run(ctx, spec.Corpus, corpus.Analyzer{Command: set.Args(), Language: *language}, options)
 	if err != nil {
@@ -137,6 +132,18 @@ func runCorpus(ctx context.Context, args []string, stdout, stderr io.Writer) int
 		return 1
 	}
 	return 0
+}
+
+func readGaps(path string) ([]corpus.GapRow, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	var gaps corpus.Gaps
+	if err := corpus.DecodeStrict(data, &gaps); err != nil {
+		return nil, fmt.Errorf("%s: %w", path, err)
+	}
+	return gaps.Gaps, nil
 }
 
 func agree(args []string, stdout, stderr io.Writer) int {
