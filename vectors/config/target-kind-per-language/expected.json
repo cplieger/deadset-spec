@@ -1,20 +1,36 @@
 {
   "contract_version": "8.0.0",
-  "target": { "kind": { "go": "application", "ts": "library" } },
+  "target": {
+    "kind": {
+      "go": "application",
+      "ts": "library"
+    }
+  },
   "analysis": {
     "languages": [],
     "min_confidence": "probable",
     "generated_files": "exclude",
     "consumer_tests": "test",
     "configurations": [],
-    "matrix": { "complete": false },
+    "matrix": {
+      "complete": false
+    },
     "template_dirs": [],
-    "template_delimiters": { "left": "{{", "right": "}}" }
+    "template_delimiters": {
+      "left": "{{",
+      "right": "}}"
+    }
   },
-  "consumers": { "complete": false },
-  "roots": { "patterns": [] },
+  "consumers": {
+    "complete": false
+  },
+  "roots": {
+    "patterns": []
+  },
   "severity": {},
-  "exemptions": { "disabled": [] },
+  "exemptions": {
+    "disabled": []
+  },
   "reporters": {
     "formats": ["text"],
     "sort": "position",
@@ -24,8 +40,16 @@
   },
   "providers": {
     "analyzers": [
-      { "name": "deadset-go", "languages": ["go"], "command": "deadset-go" },
-      { "name": "deadset-ts", "languages": ["ts"], "command": "deadset-ts" }
+      {
+        "name": "deadset-go",
+        "languages": ["go"],
+        "command": "deadset-go"
+      },
+      {
+        "name": "deadset-ts",
+        "languages": ["ts"],
+        "command": "deadset-ts"
+      }
     ]
   },
   "go": {},

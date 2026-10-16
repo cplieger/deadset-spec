@@ -1,9 +1,10 @@
 {
-  "description": "The languages the suite analyzes, one row each, read by the orchestrator and by the analyzer of each language alike, so detection, discovery, identity and invocation decide from one row. kind is analyzed for a language a program is compiled from and schema for a language whose definitions generated code of another language carries. runner names how the orchestrator obtains the language's report: process, an analyzer the provider list names, run as a process with a scope document and a configuration; in-process, a reader the orchestrator holds. A language is in scope for a target when the tree holds one of its markers, or, where program_without_marker is true, one of its source extensions together with one of its companions; a file under a skipped directory, a directory whose name starts with a full stop, or, where skips_underscored is true, a directory whose name starts with an underscore, puts no language in scope. identity_source names the file whose declared name identifies a module of the language, and workspace_files the files that list a workspace's members. takes_target_kind says whether the language's analysis reads target.kind.",
+  "description": "The languages the suite analyzes, one row each, read by the orchestrator and by the analyzer of each language alike, so detection, discovery, identity and invocation decide from one row. kind is analyzed for a language a program is compiled from and schema for a language whose definitions generated code of another language carries. runner names how the orchestrator obtains the language's report: process, an analyzer the provider list names, run as a process with a scope document and a configuration; in-process, a reader the orchestrator holds. A language is in scope for a target when the tree holds one of its markers, or, where program_without_marker is true, one of its source extensions together with one of its companions; a file under a skipped directory, a directory whose name starts with a full stop, or, where skips_underscored is true, a directory whose name starts with an underscore, puts no language in scope. identity_source names the file whose declared name identifies a module of the language, and workspace_files the files that list a workspace's members. takes_target_kind says whether the language's analysis reads target.kind, and so whether target.kind written per language names it. name is how a sentence names the language.",
   "skipped_directories": ["node_modules", "testdata", "vendor"],
   "languages": [
     {
       "language": "go",
+      "name": "Go",
       "kind": "analyzed",
       "scheme": "go",
       "runner": "process",
@@ -19,6 +20,7 @@
     },
     {
       "language": "ts",
+      "name": "TypeScript",
       "kind": "analyzed",
       "scheme": "ts",
       "runner": "process",

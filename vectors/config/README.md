@@ -10,7 +10,7 @@ One case per directory, named for what it establishes. A case holds the document
 | `repository.json` | the repository configuration, the `deadset.json` at the target root; absent when the case has none |
 | `central.json` | the central configuration the invocation names; absent when the case has none |
 | `flags.json` | the settings a command-line flag supplied, each key one setting's dotted path; absent when the case passes none |
-| `expected.json` | the resolved configuration the run prints |
+| `expected.json` | the resolved configuration the run prints, generated (below) |
 | `expected-error.json` | the exit code the run returns and the key or field its message names |
 
 A case carries exactly one of `expected.json` and `expected-error.json`.
@@ -20,6 +20,8 @@ To run a case, place `repository.json` at the target root as the repository conf
 ## What a resolved configuration holds
 
 `expected.json` names every key [`config.schema.json`](../../contract/config.schema.json) declares, in that schema's key order, each carrying the value resolution produced; the resolved `severity` object names its codes in ascending order. `contract_version` is the Contract version the product implements, which is the version a case that declares it declares. The closed key list admits no key of its own for commentary, so a case's documents carry none and `case.json` holds what the case establishes.
+
+`deadset-gen` writes each `expected.json` from [`authoring/config-vectors/<case>.json`](../../authoring/config-vectors), which states only what the case decides: the value of each setting a source supplies and its `provenance` entry, in the resolved configuration's own shape. Every other key takes the default [`settings.json`](../../contract/settings.json) gives it and the provenance `default`, so a key the closed key list gains reaches every case when the files are generated again. A case whose `repository.json` names every key states `x-input` instead: an object is that input's own `provenance` member and every setting the case does not name comes from the repository at its default, and a case name reads that case's `expected.json` back as the input. Both files of such a case are generated.
 
 `provenance` carries one entry per setting: one for each key that holds a value, and one per code the resolved `severity` object names, or the key `severity` alone when that object is empty. A section holds no value of its own and has no entry. An entry's value is `default`, or `repository`, `central` or `flag` followed by a colon, a space and the source that supplied the value, which in these cases is the case's own file name or the flag.
 

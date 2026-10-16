@@ -17,7 +17,7 @@
       "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$"
     },
     "language": {
-      "description": "The language of the analysis that produced the finding, drawn from the languages field of contract/kinds.json. A finding a merge emits for a declared cross-language edge carries the language of the side whose every evaluation is absent, and of the provides side where both sides are.",
+      "description": "The language of the analysis that produced the finding, drawn from the languages contract/languages.json lists. A finding a merge emits for a declared cross-language edge carries the language of the side whose every evaluation is absent, and of the provides side where both sides are.",
       "type": "string",
       "enum": ["go", "ts"]
     },

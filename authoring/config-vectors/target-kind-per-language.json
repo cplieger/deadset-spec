@@ -1,0 +1,11 @@
+{
+  "target": {
+    "kind": {
+      "go": "application",
+      "ts": "library"
+    }
+  },
+  "provenance": {
+    "target.kind": "repository: repository.json"
+  }
+}

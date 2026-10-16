@@ -32,7 +32,7 @@
       }
     },
     "languages": {
-      "description": "The languages the analyzer claims, drawn from the languages field of kinds.json.",
+      "description": "The languages the analyzer claims, drawn from the languages languages.json lists.",
       "type": "array",
       "minItems": 1,
       "uniqueItems": true,

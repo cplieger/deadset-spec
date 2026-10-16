@@ -1,9 +1,10 @@
 // Package gen writes every file of this module that is derived from the
 // Contract's data: the published configuration schema expanded from its
-// authoring source, the per-code branches of the finding schema, the
-// reference pages under docs/, the vocab package's data and the report package's
-// document types. A freshness test regenerates and compares, so a
-// derived file never drifts from the data it is derived from.
+// authoring source, the configuration key table derived from it and the
+// configuration vectors' resolved configurations, the per-code branches of the
+// finding schema, the reference pages under docs/, the vocab package's data and
+// the report package's document types. A freshness test regenerates and
+// compares, so a derived file never drifts from the data it is derived from.
 package gen
 
 import (
@@ -18,7 +19,7 @@ import (
 func Generate(fsys fs.FS) (map[string][]byte, error) {
 	out := map[string][]byte{}
 	steps := []func(fs.FS, map[string][]byte) error{
-		configSchema,
+		configuration,
 		findingSchema,
 		docsPages,
 		readmeCounts,

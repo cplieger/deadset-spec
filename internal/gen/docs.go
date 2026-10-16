@@ -77,7 +77,6 @@ type docsData struct {
 
 type kindsDoc struct {
 	Prefix              string          `json:"prefix"`
-	Languages           []string        `json:"languages"`
 	Severities          []string        `json:"severities"`
 	ReachabilityClasses []string        `json:"reachability_classes"`
 	Fixabilities        []string        `json:"fixabilities"`
@@ -179,7 +178,7 @@ func loadDocsData(fsys fs.FS) (*docsData, error) {
 		{into: &d.Kinds, path: kindsPath},
 		{into: &ranges, path: kindsPath},
 		{into: &guide, path: "authoring/kinds-guide.json"},
-		{into: &d.Exemptions, path: "contract/exemptions.json"},
+		{into: &d.Exemptions, path: exemptionsPath},
 		{into: &d.Exits, path: "contract/exit-codes.json"},
 		{into: &d.Confidence, path: "contract/confidence.json"},
 	}

@@ -638,17 +638,23 @@ func claimedKinds(inputs []mergeInput, trace mergeTrace) (map[string]string, err
 	return claims, nil
 }
 
-// contractLanguages is the language vocabulary in the order contract/kinds.json lists it,
+// contractLanguages is the language vocabulary in the order contract/languages.json lists it,
 // which is the order report.schema.json lists the members of language_kinds in.
 func contractLanguages() []string {
 	var doc struct {
-		Languages []string `json:"languages"`
+		Languages []struct {
+			Language string `json:"language"`
+		} `json:"languages"`
 	}
-	data, err := fs.ReadFile(spec.Contract, "contract/kinds.json")
+	data, err := fs.ReadFile(spec.Contract, languagesPath)
 	if err != nil || json.Unmarshal(data, &doc) != nil {
 		return nil
 	}
-	return doc.Languages
+	ids := make([]string, 0, len(doc.Languages))
+	for _, row := range doc.Languages {
+		ids = append(ids, row.Language)
+	}
+	return ids
 }
 
 // mergedTarget is the target of the merged report: the inputs' root and identity, and the

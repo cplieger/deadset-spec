@@ -21,7 +21,7 @@ The reference borrows the shape of a URL so that a reader sees a language, a loc
 
 Six rules hold in both languages.
 
-1. **The language prefix is the namespace.** `go` covers Go; `ts` covers TypeScript and JavaScript, because one analyzer covers both and `kinds.json` names its language `ts`. The prefix is lowercase and is followed by `://`. A third language joins by adding a prefix and a section to this page, and nothing else changes: an edge pairs two references and names no language in its own shape.
+1. **The language prefix is the namespace.** `go` covers Go; `ts` covers TypeScript and JavaScript, because one analyzer covers both and [`languages.json`](../languages.json) names its language `ts`. The prefix is lowercase and is followed by `://`. A third language joins by adding a prefix and a section to this page, and nothing else changes: an edge pairs two references and names no language in its own shape.
 2. **The first `#` splits the scope from the fragment.** The scope never contains `#`; the fragment may, in a TypeScript private name.
 3. **An empty fragment names the scope itself**: the Go package, or the TypeScript module. The `#` is still written, so that a scope is never mistaken for a symbol: without it, the scope's last element reads as a symbol of that name.
 4. **No CR and no LF, anywhere.** A reference is a field of a text line, one half of an LF-separated hash input ([`sarif.md`](sarif.md), `deadsetSymbolRef/v1`) and a JSON string, and each of those needs the guarantee. A TypeScript name that contains either is quoted and escaped.

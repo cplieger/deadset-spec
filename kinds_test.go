@@ -37,7 +37,6 @@ var (
 // absent field is distinguishable from a false one.
 type kindsDocument struct {
 	Prefix              string        `json:"prefix"`
-	Languages           []string      `json:"languages"`
 	Severities          []string      `json:"severities"`
 	ReachabilityClasses []string      `json:"reachability_classes"`
 	Fixabilities        []string      `json:"fixabilities"`
@@ -309,8 +308,8 @@ func TestKindsEveryLiveRowIsCompleteAndInVocabulary(t *testing.T) {
 				t.Errorf("Kind(%s).fixability = %q, want one of %v", k.Code, k.Fixability, doc.Fixabilities)
 			}
 			for _, lang := range k.Languages {
-				if !slices.Contains(doc.Languages, lang) {
-					t.Errorf("Kind(%s).languages contains %q, want only %v", k.Code, lang, doc.Languages)
+				if !slices.Contains(contractLanguages(), lang) {
+					t.Errorf("Kind(%s).languages contains %q, want only %v, the languages %s lists", k.Code, lang, contractLanguages(), languagesPath)
 				}
 			}
 			for _, from := range k.DerivedFrom {
@@ -447,10 +446,10 @@ func TestKindsIntraFunctionRowsNameOverlapPerLanguage(t *testing.T) {
 				return
 			}
 			group++
-			if got := slices.Sorted(maps.Keys(k.Overlap)); !slices.Equal(got, doc.Languages) {
-				t.Fatalf("Kind(%s).overlap languages = %v, want %v", k.Code, got, doc.Languages)
+			if got := slices.Sorted(maps.Keys(k.Overlap)); !slices.Equal(got, contractLanguages()) {
+				t.Fatalf("Kind(%s).overlap languages = %v, want %v", k.Code, got, contractLanguages())
 			}
-			for _, lang := range doc.Languages {
+			for _, lang := range contractLanguages() {
 				checkOverlapList(t, k, lang)
 			}
 		})

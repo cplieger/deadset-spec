@@ -52,7 +52,7 @@
           "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(-[0-9A-Za-z.-]+)?(\\+[0-9A-Za-z.-]+)?$"
         },
         "languages": {
-          "description": "The languages the product analyzed in this run, drawn from the languages field of kinds.json. An analyzer names the languages it claims; a merge names the union of the languages its input reports named.",
+          "description": "The languages the product analyzed in this run, drawn from the languages languages.json lists. An analyzer names the languages it claims; a merge names the union of the languages its input reports named.",
           "type": "array",
           "minItems": 1,
           "uniqueItems": true,

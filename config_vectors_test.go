@@ -1035,7 +1035,7 @@ func targetKindRefusal(raw json.RawMessage, languages, kinds []string) (string, 
 // case refusing it on that key names the first fault of its highest-ranked source.
 func TestConfigVectorTargetKindCasesNameTheFaultTheKeyOrders(t *testing.T) {
 	kinds := []string{"application", "library"}
-	languages := loadKinds(t).Languages
+	languages := contractLanguages()
 	checked := 0
 	for _, dir := range vectorCaseDirs(t, spec.Vectors, "config") {
 		var refusal configVectorError

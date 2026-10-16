@@ -1,0 +1,27 @@
+{
+  "target": {
+    "kind": "application"
+  },
+  "analysis": {
+    "languages": ["ts"],
+    "configurations": [
+      {
+        "id": "tsconfig.json",
+        "project": "tsconfig.json"
+      },
+      {
+        "id": "packages/app/tsconfig.json",
+        "project": "packages/app/tsconfig.json"
+      }
+    ],
+    "matrix": {
+      "complete": true
+    }
+  },
+  "provenance": {
+    "target.kind": "repository: repository.json",
+    "analysis.languages": "repository: repository.json",
+    "analysis.configurations": "repository: repository.json",
+    "analysis.matrix.complete": "repository: repository.json"
+  }
+}
