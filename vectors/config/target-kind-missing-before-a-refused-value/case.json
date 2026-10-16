@@ -1,6 +1,7 @@
 {
   "name": "target-kind-missing-before-a-refused-value",
   "description": "A repository configuration naming the TypeScript code with a value that is not a kind and leaving the Go code out. The language left out is the fault the refusal names first, ahead of the refused value.",
+  "products": ["deadset", "deadset-go"],
   "covers": [
     "target-kind-missing-before-a-refused-value"
   ]

@@ -204,3 +204,41 @@ func TestFirstRefusalReadsAnAlternativeWithTheNodesItApplies(t *testing.T) {
 		})
 	}
 }
+
+func TestFirstRefusalExplainsTheOneOfThatRefusedTheValue(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name       string
+		referenced string
+		refusals   int
+		want       string
+	}{
+		{"both refuse, the referenced first", `{"type": "number", "minimum": 10}`, 2, "minimum"},
+		{"the referenced holds, the node's own refuses", `{"type": "number", "minimum": 0}`, 1, "maximum"},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			schema, err := CompileBytes("value", []byte(`{
+				"$ref": "#/$defs/referenced",
+				"oneOf": [{"type": "number", "maximum": 0}, {"type": "string"}],
+				"$defs": {"referenced": {"oneOf": [`+tc.referenced+`, {"type": "string"}]}}
+			}`))
+			if err != nil {
+				t.Fatalf("Setup: CompileBytes = %v", err)
+			}
+			value, err := Decode([]byte(`3`))
+			if err != nil {
+				t.Fatalf("Setup: Decode = %v", err)
+			}
+			found := schema.CheckValue(value)
+			if len(found) != tc.refusals || found[0].Keyword != oneOfKeyword {
+				t.Fatalf("Setup: CheckValue(3) = %+v, want %d oneOf refusals", found, tc.refusals)
+			}
+			if got := schema.FirstRefusal(value); got == nil || got.Keyword != tc.want {
+				t.Errorf("FirstRefusal(3) = %+v, want the %s refusal explaining CheckValue's first oneOf", got, tc.want)
+			}
+		})
+	}
+}

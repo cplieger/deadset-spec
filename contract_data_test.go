@@ -3,6 +3,7 @@ package spec_test
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io/fs"
 	"path"
 	"regexp"
@@ -12,6 +13,7 @@ import (
 	"testing"
 
 	spec "github.com/cplieger/deadset-spec/v8"
+	"github.com/cplieger/deadset-spec/v8/vocab"
 )
 
 const (
@@ -171,6 +173,33 @@ func TestCLIOptionsNameDeclaredSettingsAndExitCodes(t *testing.T) {
 			if !codes[code] {
 				t.Errorf("verb %q ends with %d, a code %s does not declare", v.Verb, code, exitCodesPath)
 			}
+		}
+	}
+}
+
+// TestAnalyzerVerbsGiveEachLanguageItsOptionList holds vocab.AnalyzerVerbs to
+// cli.json: per language, the verbs whose option lists name it, in order, each
+// with that language's list.
+func TestAnalyzerVerbsGiveEachLanguageItsOptionList(t *testing.T) {
+	var doc cliDocument
+	strictDecode(t, cliPath, &doc)
+	for _, language := range vocab.Languages() {
+		var want []string
+		for _, v := range doc.AnalyzerVerbs {
+			var byLanguage map[string][]string
+			if err := json.Unmarshal(v.Options, &byLanguage); err != nil {
+				t.Fatalf("Setup: analyzer verb %q options = %s, want a list per language: %v", v.Verb, v.Options, err)
+			}
+			if options, served := byLanguage[string(language)]; served {
+				want = append(want, fmt.Sprintf("%s %s %v %q", v.Verb, v.Stdout, v.ExitCodes, options))
+			}
+		}
+		var got []string
+		for _, v := range vocab.AnalyzerVerbs(language) {
+			got = append(got, fmt.Sprintf("%s %s %v %q", v.Name, v.Stdout, v.ExitCodes, v.Options))
+		}
+		if !slices.Equal(got, want) {
+			t.Errorf("vocab.AnalyzerVerbs(%s) =\n%s\nwant cli.json's\n%s", language, strings.Join(got, "\n"), strings.Join(want, "\n"))
 		}
 	}
 }

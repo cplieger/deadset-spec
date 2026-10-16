@@ -1,6 +1,7 @@
 {
   "name": "target-kind-language-value-refused",
   "description": "A repository configuration naming the kind of each language, the TypeScript code with a value that is neither application nor library. The run is refused naming the TypeScript member.",
+  "products": ["deadset", "deadset-ts"],
   "covers": [
     "target-kind-language-value-refused"
   ]

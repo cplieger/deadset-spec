@@ -241,10 +241,14 @@ func (n *node) checkApplicators(v any, at string, found *[]Error) {
 	}
 	if n.oneOf != nil {
 		if matched := countMatching(n.oneOf, v, at); matched != 1 {
-			*found = append(*found, Error{
+			refused := Error{
 				Keyword: oneOfKeyword, Pointer: at,
 				Reason: fmt.Sprintf("the value matches %d of the alternatives, want exactly one", matched),
-			})
+			}
+			if matched == 0 {
+				refused.oneOf = n
+			}
+			*found = append(*found, refused)
 		}
 	}
 	if n.not != nil && n.not.matches(v, at) {

@@ -746,32 +746,53 @@ var setupClasses = []SetupClass{
 	{Name: SetupNoProgram, Languages: []Language{Go, TS}},
 }
 
+// The kinds of value an option takes.
+const (
+	OptionValuePath    OptionValue = "path"
+	OptionValueName    OptionValue = "name"
+	OptionValueList    OptionValue = "list"
+	OptionValueSwitch  OptionValue = "switch"
+	OptionValueInteger OptionValue = "integer"
+	OptionValueSymbol  OptionValue = "symbol"
+)
+
 var options = []Option{
-	{Name: "target", Value: "path", Setting: "", Summary: "The target root; the working directory where absent.", Repeatable: false},
-	{Name: "scope", Value: "path", Setting: "", Summary: "The scope document naming the target and its consumers, read before the configuration.", Repeatable: false},
-	{Name: "config", Value: "path", Setting: "", Summary: "The configuration document an orchestrator writes for this analyzer, read in place of the repository configuration.", Repeatable: false},
-	{Name: "central", Value: "path", Setting: "", Summary: "The central configuration, resolved below the repository configuration.", Repeatable: false},
-	{Name: "report", Value: "path", Setting: "", Summary: "The path the JSON report is written to.", Repeatable: false},
-	{Name: "run-dir", Value: "path", Setting: "", Summary: "The directory the orchestrator writes each analyzer's configuration, scope and report into; a fresh directory where absent.", Repeatable: false},
-	{Name: "format", Value: "name", Setting: "", Summary: "One rendering written beside the report, named by its format.", Repeatable: true},
-	{Name: "formats", Value: "list", Setting: "reporters.formats", Summary: "The renderings the run writes, comma-separated.", Repeatable: false},
-	{Name: "template", Value: "path", Setting: "", Summary: "The template the template format renders, read and parsed before any analysis.", Repeatable: false},
-	{Name: "baseline-write", Value: "path", Setting: "", Summary: "The baseline the run writes from its own findings.", Repeatable: false},
-	{Name: "exit-code", Value: "switch", Setting: "", Summary: "on, the default, puts the verdict in the exit code; off exits 0 after any complete run.", Repeatable: false},
-	{Name: "languages", Value: "list", Setting: "analysis.languages", Summary: "The languages to analyze, comma-separated, in place of detection.", Repeatable: false},
-	{Name: "min-confidence", Value: "name", Setting: "analysis.min_confidence", Summary: "The minimum confidence a reported finding carries.", Repeatable: false},
-	{Name: "sort", Value: "name", Setting: "reporters.sort", Summary: "The order the renderings list findings in.", Repeatable: false},
-	{Name: "cascade", Value: "name", Setting: "reporters.cascade", Summary: "How much of a dead component the renderings list.", Repeatable: false},
-	{Name: "max-findings", Value: "integer", Setting: "reporters.max_findings", Summary: "The most findings the report lists, 0 for every finding.", Repeatable: false},
-	{Name: "fail-on", Value: "name", Setting: "reporters.fail_on", Summary: "The lowest severity that fails the run.", Repeatable: false},
-	{Name: "why", Value: "symbol", Setting: "", Summary: "The symbol to explain.", Repeatable: false},
-	{Name: "why-live", Value: "symbol", Setting: "", Summary: "The symbol to explain, asked why it is live.", Repeatable: false},
-	{Name: "why-not", Value: "symbol", Setting: "", Summary: "The symbol to explain, asked why it is not reported.", Repeatable: false},
-	{Name: "mode", Value: "name", Setting: "", Summary: "The reference mode whose exemption records are listed: the analysis mode where absent, plain for every record.", Repeatable: false},
+	{Name: "target", Value: OptionValuePath, Setting: "", Summary: "The target root; the working directory where absent.", Repeatable: false},
+	{Name: "scope", Value: OptionValuePath, Setting: "", Summary: "The scope document naming the target and its consumers, read before the configuration.", Repeatable: false},
+	{Name: "config", Value: OptionValuePath, Setting: "", Summary: "The configuration document an orchestrator writes for this analyzer, read in place of the repository configuration.", Repeatable: false},
+	{Name: "central", Value: OptionValuePath, Setting: "", Summary: "The central configuration, resolved below the repository configuration.", Repeatable: false},
+	{Name: "report", Value: OptionValuePath, Setting: "", Summary: "The path the JSON report is written to.", Repeatable: false},
+	{Name: "run-dir", Value: OptionValuePath, Setting: "", Summary: "The directory the orchestrator writes each analyzer's configuration, scope and report into; a fresh directory where absent.", Repeatable: false},
+	{Name: "format", Value: OptionValueName, Setting: "", Summary: "One rendering written beside the report, named by its format.", Repeatable: true},
+	{Name: "formats", Value: OptionValueList, Setting: "reporters.formats", Summary: "The renderings the run writes, comma-separated.", Repeatable: false},
+	{Name: "template", Value: OptionValuePath, Setting: "", Summary: "The template the template format renders, read and parsed before any analysis.", Repeatable: false},
+	{Name: "baseline-write", Value: OptionValuePath, Setting: "", Summary: "The baseline the run writes from its own findings.", Repeatable: false},
+	{Name: "exit-code", Value: OptionValueSwitch, Setting: "", Summary: "on, the default, puts the verdict in the exit code; off exits 0 after any complete run.", Repeatable: false},
+	{Name: "languages", Value: OptionValueList, Setting: "analysis.languages", Summary: "The languages to analyze, comma-separated, in place of detection.", Repeatable: false},
+	{Name: "min-confidence", Value: OptionValueName, Setting: "analysis.min_confidence", Summary: "The minimum confidence a reported finding carries.", Repeatable: false},
+	{Name: "sort", Value: OptionValueName, Setting: "reporters.sort", Summary: "The order the renderings list findings in.", Repeatable: false},
+	{Name: "cascade", Value: OptionValueName, Setting: "reporters.cascade", Summary: "How much of a dead component the renderings list.", Repeatable: false},
+	{Name: "max-findings", Value: OptionValueInteger, Setting: "reporters.max_findings", Summary: "The most findings the report lists, 0 for every finding.", Repeatable: false},
+	{Name: "fail-on", Value: OptionValueName, Setting: "reporters.fail_on", Summary: "The lowest severity that fails the run.", Repeatable: false},
+	{Name: "why", Value: OptionValueSymbol, Setting: "", Summary: "The symbol to explain.", Repeatable: false},
+	{Name: "why-live", Value: OptionValueSymbol, Setting: "", Summary: "The symbol to explain, asked why it is live.", Repeatable: false},
+	{Name: "why-not", Value: OptionValueSymbol, Setting: "", Summary: "The symbol to explain, asked why it is not reported.", Repeatable: false},
+	{Name: "mode", Value: OptionValueName, Setting: "", Summary: "The reference mode whose exemption records are listed: the analysis mode where absent, plain for every record.", Repeatable: false},
 }
 
 var orchestratorVerbs = []Verb{
-	{Name: "analyze", Summary: "Analyze every language in scope and write the merged report.", Stdout: "renderings", Options: []string{"target", "scope", "central", "run-dir", "template", "exit-code", "languages", "min-confidence", "formats", "fail-on"}, ExitCodes: []int{0, 1, 2, 3, 4}},
-	{Name: "print-config", Summary: "Print the resolved configuration with the provenance of every setting.", Stdout: "configuration", Options: []string{"target", "central", "languages", "min-confidence", "formats", "fail-on"}, ExitCodes: []int{0, 2, 3}},
-	{Name: "version", Summary: "Print the product's version and the Contract version it implements.", Stdout: "version", Options: []string{}, ExitCodes: []int{0, 2}},
+	{Name: "analyze", Summary: "Analyze every language in scope and write the merged report.", Stdout: "renderings", ExitCodes: []int{0, 1, 2, 3, 4}, Options: []string{"target", "scope", "central", "run-dir", "template", "exit-code", "languages", "min-confidence", "formats", "fail-on"}},
+	{Name: "print-config", Summary: "Print the resolved configuration with the provenance of every setting.", Stdout: "configuration", ExitCodes: []int{0, 2, 3}, Options: []string{"target", "central", "languages", "min-confidence", "formats", "fail-on"}},
+	{Name: "version", Summary: "Print the product's version and the Contract version it implements.", Stdout: "version", ExitCodes: []int{0, 2}, Options: []string{}},
+}
+
+var analyzerVerbs = []analyzerVerb{
+	{Verb: Verb{Name: "analyze", Summary: "Analyze the target and write the report.", Stdout: "nothing", ExitCodes: []int{0, 1, 2, 3, 4}}, Options: map[Language][]string{Go: []string{"target", "config", "central", "scope", "report", "format", "template", "baseline-write", "exit-code", "min-confidence", "sort", "cascade", "max-findings", "fail-on"}, TS: []string{"target", "config", "central", "scope", "report", "format", "template", "baseline-write", "exit-code", "min-confidence", "sort", "cascade", "max-findings", "fail-on"}}},
+	{Verb: Verb{Name: "explain", Summary: "Say why one symbol is or is not reported, from the analysis a report would be built from.", Stdout: "explanation", ExitCodes: []int{0, 2, 3}}, Options: map[Language][]string{Go: []string{"target", "scope", "config", "central", "min-confidence", "cascade", "why", "why-live", "why-not"}, TS: []string{"target", "config", "central", "scope", "why", "why-live", "why-not", "min-confidence", "sort", "cascade", "max-findings", "fail-on"}}},
+	{Verb: Verb{Name: "print-config", Summary: "Print the resolved configuration with the provenance of every setting.", Stdout: "configuration", ExitCodes: []int{0, 2, 3}}, Options: map[Language][]string{Go: []string{"target", "config", "central", "min-confidence"}, TS: []string{"target", "config", "central", "scope", "min-confidence", "sort", "cascade", "max-findings", "fail-on"}}},
+	{Verb: Verb{Name: "print-roots", Summary: "Print the root set, each root with its kind.", Stdout: "roots", ExitCodes: []int{0, 2, 3}}, Options: map[Language][]string{Go: []string{"target", "config", "central", "min-confidence"}, TS: []string{"target", "config", "central", "scope", "min-confidence", "sort", "cascade", "max-findings", "fail-on"}}},
+	{Verb: Verb{Name: "print-retained", Summary: "Print every symbol an exemption held back, with its position and the classes that held it.", Stdout: "retained", ExitCodes: []int{0, 2, 3}}, Options: map[Language][]string{Go: []string{"target", "config", "central", "scope", "min-confidence", "mode"}, TS: []string{"target", "config", "central", "scope", "min-confidence", "sort", "cascade", "max-findings", "fail-on"}}},
+	{Verb: Verb{Name: "describe", Summary: "Print the build's capabilities as one JSON object, an instance of contract/describe.schema.json.", Stdout: "description", ExitCodes: []int{0, 2}}, Options: map[Language][]string{Go: []string{}, TS: []string{}}},
+	{Verb: Verb{Name: "version", Summary: "Print the product's version and the Contract version it implements.", Stdout: "version", ExitCodes: []int{0, 2}}, Options: map[Language][]string{Go: []string{}, TS: []string{}}},
+	{Verb: Verb{Name: "print-projects", Summary: "Print the compiler configurations the run would analyze, each with its origin.", Stdout: "projects", ExitCodes: []int{0, 2, 3}}, Options: map[Language][]string{TS: []string{"target", "config", "central", "scope", "min-confidence", "sort", "cascade", "max-findings", "fail-on"}}},
 }

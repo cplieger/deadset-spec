@@ -253,6 +253,7 @@ type configKey struct {
 	readBy      []string
 	delivered   []string
 	values      []string
+	choices     []string // the enum of a value schema that lists its own
 	perLanguage []string
 	required    bool
 }
@@ -393,6 +394,9 @@ func (c *configContext) describeValue(node *value, row *configKey) error {
 	row.vocabulary = node.get("items").get("x-enum").str()
 	if row.vocabulary == "" {
 		row.vocabulary = node.get("propertyNames").get("x-enum").str()
+	}
+	if node.get("x-enum") == nil {
+		row.choices = node.get("enum").strs()
 	}
 	perLanguage, err := c.fill(node)
 	if err != nil {
@@ -551,6 +555,12 @@ func (c *configContext) configVocab(rows []configKey, maxBytes *value) ([]byte, 
 	w.f("}\n\n// The keys of the closed configuration key list, by their dotted paths.\nconst (\n")
 	for i := range rows {
 		w.f("%s Key = %q\n", c.keyIdent(rows[i].key), rows[i].key)
+	}
+	w.f(")\n\n// The choices of each setting whose value schema lists them itself.\nconst (\n")
+	for i := range rows {
+		for _, choice := range rows[i].choices {
+			w.f("%s%s Choice = %q\n", strings.TrimPrefix(c.keyIdent(rows[i].key), "Key"), ident(choice), choice)
+		}
 	}
 	w.f(")\n\nvar configKeys = []ConfigKey{\n")
 	for i := range rows {

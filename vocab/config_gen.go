@@ -85,6 +85,18 @@ const (
 	KeyProvenance                 Key = "provenance"
 )
 
+// The choices of each setting whose value schema lists them itself.
+const (
+	AnalysisGeneratedFilesExclude   Choice = "exclude"
+	AnalysisGeneratedFilesInclude   Choice = "include"
+	AnalysisConsumerTestsTest       Choice = "test"
+	AnalysisConsumerTestsProduction Choice = "production"
+	ReportersSortPosition           Choice = "position"
+	ReportersSortSize               Choice = "size"
+	ReportersCascadeRoots           Choice = "roots"
+	ReportersCascadeFull            Choice = "full"
+)
+
 var configKeys = []ConfigKey{
 	{
 		Key:       KeyContractVersion,

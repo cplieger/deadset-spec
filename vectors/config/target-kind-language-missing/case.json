@@ -1,6 +1,7 @@
 {
   "name": "target-kind-language-missing",
   "description": "A repository configuration naming the kind of the Go code alone. A target kind written per language names every language, because a kind has no default, so the run is refused naming the TypeScript member.",
+  "products": ["deadset", "deadset-ts"],
   "covers": [
     "target-kind-language-missing"
   ]

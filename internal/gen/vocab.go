@@ -57,8 +57,12 @@ type (
 			Role  string          `json:"role"`
 			Verbs json.RawMessage `json:"verbs"`
 		} `json:"products"`
+		AnalyzerVerbs []struct {
+			Options map[string][]string `json:"options"`
+			verbRow
+		} `json:"analyzer_verbs"`
 	}
-	orchestratorVerb struct {
+	verbRow struct {
 		Verb      string   `json:"verb"`
 		Summary   string   `json:"summary"`
 		Stdout    string   `json:"stdout"`
@@ -286,32 +290,55 @@ func (d *vocabDocs) exitRows(w *writer) {
 	w.f("}\n")
 }
 
-// commandLine writes cli.json's options and the orchestrator's verbs.
+// commandLine writes cli.json's options, the kinds of value they take, the
+// orchestrator's verbs and the analyzers' verbs.
 func (d *vocabDocs) commandLine(w *writer) error {
-	w.f("\nvar options = []Option{\n")
+	var kinds []string
 	for _, o := range d.cli.Options {
-		w.f("{Name: %q, Value: %q, Setting: %q, Summary: %q, Repeatable: %t},\n", o.Option, o.Value, o.Setting, o.Summary, o.Repeatable)
+		if !slices.Contains(kinds, o.Value) {
+			kinds = append(kinds, o.Value)
+		}
+	}
+	w.f("\n// The kinds of value an option takes.\nconst (\n")
+	for _, kind := range kinds {
+		w.f("OptionValue%s OptionValue = %q\n", ident(kind), kind)
+	}
+	w.f(")\n\nvar options = []Option{\n")
+	for _, o := range d.cli.Options {
+		w.f("{Name: %q, Value: OptionValue%s, Setting: %q, Summary: %q, Repeatable: %t},\n", o.Option, ident(o.Value), o.Setting, o.Summary, o.Repeatable)
 	}
 	w.f("}\n\nvar orchestratorVerbs = []Verb{\n")
 	for _, p := range d.cli.Products {
 		if p.Role != "orchestrator" {
 			continue
 		}
-		var verbs []orchestratorVerb
+		var verbs []verbRow
 		if err := json.Unmarshal(p.Verbs, &verbs); err != nil {
 			return fmt.Errorf("contract/cli.json: the orchestrator's verbs: %w", err)
 		}
 		for _, v := range verbs {
-			codes := make([]string, len(v.ExitCodes))
-			for i, code := range v.ExitCodes {
-				codes[i] = strconv.Itoa(code)
-			}
-			w.f("{Name: %q, Summary: %q, Stdout: %q, Options: %s, ExitCodes: []int{%s}},\n",
-				v.Verb, v.Summary, v.Stdout, goStrings(v.Options), strings.Join(codes, ", "))
+			w.f("{%s, Options: %s},\n", v.common(), goStrings(v.Options))
 		}
+	}
+	w.f("}\n\nvar analyzerVerbs = []analyzerVerb{\n")
+	for _, v := range d.cli.AnalyzerVerbs {
+		w.f("{Verb: Verb{%s}, Options: map[Language][]string{", v.common())
+		for _, l := range sortedKeys(v.Options) {
+			w.f("%s: %s, ", languageIdent(l), goStrings(v.Options[l]))
+		}
+		w.f("}},\n")
 	}
 	w.f("}\n")
 	return nil
+}
+
+// common is the members of a Verb literal every row of cli.json gives alike.
+func (v *verbRow) common() string {
+	codes := make([]string, len(v.ExitCodes))
+	for i, code := range v.ExitCodes {
+		codes[i] = strconv.Itoa(code)
+	}
+	return fmt.Sprintf("Name: %q, Summary: %q, Stdout: %q, ExitCodes: []int{%s}", v.Verb, v.Summary, v.Stdout, strings.Join(codes, ", "))
 }
 
 // writeConsts writes one typed constant per value of a closed list, and the

@@ -6,7 +6,7 @@ One case per directory, named for what it establishes. A case holds the document
 
 | File | What it holds |
 | --- | --- |
-| `case.json` | the case's name, what it establishes, and the aspects it covers |
+| `case.json` | the case's name, what it establishes, the aspects it covers, and the products it applies to where it does not apply to every product |
 | `repository.json` | the repository configuration, the `deadset.json` at the target root; absent when the case has none |
 | `central.json` | the central configuration the invocation names; absent when the case has none |
 | `flags.json` | the settings a command-line flag supplied, each key one setting's dotted path; absent when the case passes none |
@@ -24,6 +24,10 @@ To run a case, place `repository.json` at the target root as the repository conf
 `deadset-gen` writes each `expected.json` from [`authoring/config-vectors/<case>.json`](../../authoring/config-vectors), which states only what the case decides: the value of each setting a source supplies and its `provenance` entry, in the resolved configuration's own shape. Every other key takes the default [`settings.json`](../../contract/settings.json) gives it and the provenance `default`, so a key the closed key list gains reaches every case when the files are generated again. A case whose `repository.json` names every key states `x-input` instead: an object is that input's own `provenance` member and every setting the case does not name comes from the repository at its default, and a case name reads that case's `expected.json` back as the input. Both files of such a case are generated.
 
 `provenance` carries one entry per setting: one for each key that holds a value, and one per code the resolved `severity` object names, or the key `severity` alone when that object is empty. A section holds no value of its own and has no entry. An entry's value is `default`, or `repository`, `central` or `flag` followed by a colon, a space and the source that supplied the value, which in these cases is the case's own file name or the flag.
+
+## Which products run a case
+
+A case applies to every product unless its `case.json` lists `products`, the products whose run of the case has the outcome it states. The orchestrator checks the whole document; an analyzer checks and resolves only what its own language's analysis reads, the keys [`settings.json`](../../contract/settings.json) `read_by` names its language for and, of a key written per language, its own member, and accepts every other key unread. So a refusal of a key only another product reads lists the products that read it, and an analyzer compares a resolved case on the keys its language reads alone: those keys of `expected.json`, a key written per language narrowed to its own member, and their `provenance` entries.
 
 ## How the cases resolve
 
