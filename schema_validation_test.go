@@ -171,7 +171,8 @@ func validationProblems(schemaPath string, document []byte) ([]validationProblem
 
 // leafProblems walks a detailed output into one problem per unit that carries
 // an error, which is the unit that names the keyword the instance failed and
-// the location it failed at.
+// the location it failed at. A member name a propertyNames schema refuses has
+// no pointer of its own, so its problem is located at the object holding it.
 func leafProblems(unit *jsonschema.OutputUnit) []validationProblem {
 	var problems []validationProblem
 	if unit.Error != nil {
@@ -182,9 +183,37 @@ func leafProblems(unit *jsonschema.OutputUnit) []validationProblem {
 		})
 	}
 	for i := range unit.Errors {
-		problems = append(problems, leafProblems(&unit.Errors[i])...)
+		inner := leafProblems(&unit.Errors[i])
+		if strings.HasSuffix(unit.KeywordLocation, "/propertyNames") {
+			at := propertyNamesObject(unit.KeywordLocation)
+			for j := range inner {
+				inner[j].InstanceLocation = at
+			}
+		}
+		problems = append(problems, inner...)
 	}
 	return problems
+}
+
+// propertyNamesObject is the pointer of the object a propertyNames keyword
+// applies to, read off the keyword location. The validator's own instance
+// location for a propertyNames error is overwritten by whichever sibling it
+// visits next (santhosh-tekuri/jsonschema#276), so it is not used. Every
+// propertyNames in these schemas is reached through properties alone; any
+// other path yields a location no row names, so the test fails visibly.
+func propertyNamesObject(keywordLocation string) string {
+	tokens := strings.Split(keywordLocation, "/")[1:]
+	var at strings.Builder
+	for i := 0; i < len(tokens); i += 2 {
+		if tokens[i] == "propertyNames" {
+			return at.String()
+		}
+		if tokens[i] != "properties" || i+1 == len(tokens) {
+			break
+		}
+		at.WriteString("/" + tokens[i+1])
+	}
+	return "unlocated:" + keywordLocation
 }
 
 // validationErrors returns one line per violation of the embedded schema at

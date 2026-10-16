@@ -1,0 +1,625 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "deadset conformance expectation file",
+  "description": "The language-neutral expectation file of one conformance fixture, expect.json. It names what an analyzer must report and what it must not report, per issue kind and per exemption class, and it binds to each language rendering through one thing only: the fixture-local logical name in each expectation's symbol field, which the rendering's manifest, fixture.json, maps to a file and a line. No field of an expectation names a language; the fixture-level languages array is the one place a language appears, and it names which renderings exist rather than what any of them contains. The expectation list is exhaustive for the target: a finding on a position no expectation resolves to fails the analyzer.",
+  "type": "object",
+  "additionalProperties": false,
+  "if": { "required": ["setup_failure"] },
+  "then": { "properties": { "expect": { "maxItems": 0 } } },
+  "else": { "properties": { "expect": { "minItems": 1 } } },
+  "required": ["name", "description", "languages", "target_kind", "expect"],
+  "properties": {
+    "name": {
+      "description": "The fixture's name, equal to the name of the directory that holds it: lowercase words joined by single hyphens.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$"
+    },
+    "description": {
+      "description": "One or two sentences on what the fixture pins: the behavior that must be reported and the behavior that must not.",
+      "type": "string",
+      "minLength": 1
+    },
+    "pending": {
+      "description": "Present on a fixture whose expectations state a rule of the Contract no product implements yet, naming the rule by its id on the analysis pages and what the products must change. A runner answers a pending fixture as it answers any other and reports its result as pending rather than as a pass or a failure, so a product neither fails on it nor declares a gap for it. The member is removed when the rule lands, and a fixture without it that a product fails is a failure of that product.",
+      "type": "string",
+      "pattern": "^[^\\r\\n]+$"
+    },
+    "rules": {
+      "description": "The rules of the analysis pages the fixture pins, each by its id. A rule of a page that is not one language's own, which is every page but the references page of each language, is followed by every language, and once a fixture outside pending cites it, at least one fixture listing every language cites it, so the corpus pins its parity. A fixture lists no language the cited rule's page does not cover.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "description": "One rule id: a page name, a full stop and the rule's number.",
+        "type": "string",
+        "pattern": "^[a-z][a-z-]*\\.[0-9]+$"
+      }
+    },
+    "languages": {
+      "description": "The languages the fixture has a rendering for, drawn from the languages contract/languages.json lists. Every expectation applies to every rendering listed, so every logical name must resolve through every rendering's manifest. An analyzer answers the fixture only when its language is listed.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "x-enum": "languages"
+      }
+    },
+    "target_kind": {
+      "description": "The target kind the runner configures for the analysis, which decides the reachability class of every finding. It has no default, as the configuration key it feeds has none. It takes the two shapes target.kind takes in contract/config.schema.json, one kind for every language or an object naming the kind of each, and the runner writes it into target.kind as the fixture writes it, so a fixture of one language can name another kind for the language it does not render and pin that an analyzer reads its own language's.",
+      "oneOf": [
+        {
+          "description": "One kind for every language.",
+          "type": "string",
+          "x-enum": "target-kinds"
+        },
+        {
+          "description": "The kind of each language contract/languages.json marks takes_target_kind, every member required.",
+          "type": "object",
+          "additionalProperties": false,
+          "x-per-language": {
+            "when": "takes_target_kind",
+            "member": { "description": "The kind of the target's {name} code.", "type": "string", "x-enum": "target-kinds" }
+          }
+        }
+      ]
+    },
+    "consumers": {
+      "description": "The logical names of the consumers the runner loads beside the target, each rooted at the directory of that name at the rendering root. Absent or empty means the target is analyzed alone.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$"
+      }
+    },
+    "closed_world": {
+      "description": "The facts about the world the runner declares to the analyzer before analysing this fixture, drawn from the closed set of three below. consumers declares that every consumer of the target's published API is named by the consumers member above; matrix declares that the build matrix the rendering's manifest holds is every configuration the target builds; roots declares that the roots the analysis finds are every root the target has, which a TypeScript runner configures as ts.roots_complete: true, and a language whose analyzer carries no such key reads the fact as stated already. A runner sets the configuration key each named fact carries, consumers.complete for consumers and analysis.matrix.complete for matrix as contract/config.schema.json declares them, and leaves the key at its default for a fact the member does not name. Naming matrix also sets analysis.configurations from the identifiers the rendering's manifest declares, because a matrix a run derived is never a complete one. The member is optional and never empty, so a fixture that omits it is analyzed under the open world, where a kind whose precondition is a complete world reports nothing at any position outside a Go main package and an internal/ directory tree, which the language closes. It is the fixture's declaration rather than any expectation's, because the world is a property of the run the whole fixture is answered under.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": ["consumers", "matrix", "roots"]
+      }
+    },
+    "configured_roots": {
+      "description": "The configured roots the runner sets before analysing this fixture, one member per root: the member name is the fixture-local logical name an expectation names that root by, and the value is the entry the runner writes into roots.patterns, a stable symbol reference or a pattern over one as contract/config.schema.json declares that key's entries. A runner sets roots.patterns to the values and leaves the key at its default where the member is absent, so a fixture that omits it is answered under the roots the analysis marks itself. No rendering's manifest binds a name this member declares, because a configured root is a row of the configuration rather than a declaration of the target, and a name both documents carry is a defect: an expectation naming one is answered by the subject of the finding rather than by a position, since a finding about a configured root is positioned in the configuration document the runner wrote. A value spells one language's own scope and names, which is what a logical name exists to avoid, so the member is named only by a fixture that lists one language and every value carries that language as its prefix. It is the fixture's declaration rather than any expectation's, for the reason closed_world states: the configuration is a property of the run the whole fixture is answered under. The member is optional and never empty, because a member naming no root configures nothing.",
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+      },
+      "additionalProperties": {
+        "description": "One roots.patterns entry, spelled as the configuration document spells it.",
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "configured_declarations": {
+      "description": "The configured declarations the runner sets before analysing this fixture, one member per entry: the member name is the fixture-local logical name an expectation names that entry by, and the value names the configuration key the runner writes the entry into and the entry itself. A runner sets each key to the entries this member names under it, in ascending order of logical name compared bytewise, and leaves a key no member names at its default. An entry under ts.lifecycle_contracts.components or ts.lifecycle_contracts.bases is one lifecycle contract of its own: the runner writes one ts.lifecycle_contracts entry per such member, in the same order, holding that entry alone under the named list and the member's members as the contract's members. No rendering's manifest binds a name this member declares, and a name this member and configured_roots both declare, or this member and a manifest both carry, is a defect: an entry is a row of the configuration rather than a declaration of the target, so an expectation naming one is answered by the subject of the finding rather than by a position. An entry spells one language's own names, so the member is named only by a fixture that lists the language the key belongs to and no other. It is the fixture's declaration rather than any expectation's, for the reason closed_world states. The member is optional and never empty.",
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+      },
+      "additionalProperties": {
+        "description": "One configured declaration: the key that carries it, the entry the runner writes into that key and, for an entry of a lifecycle contract, the members that contract names.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["key", "entry"],
+        "if": {
+          "properties": { "key": { "enum": ["ts.lifecycle_contracts.components", "ts.lifecycle_contracts.bases"] } }
+        },
+        "then": { "required": ["members"] },
+        "else": { "not": { "required": ["members"] } },
+        "properties": {
+          "key": {
+            "description": "The configuration key the entry is written into, as its dotted path in contract/config.schema.json, the path through an entry of ts.lifecycle_contracts naming the list of that entry the declaration is written into.",
+            "type": "string",
+            "enum": ["ts.injection_registrations", "ts.serializers", "ts.lifecycle_contracts.components", "ts.lifecycle_contracts.bases"]
+          },
+          "members": {
+            "description": "The members of the lifecycle contract the runner writes the entry into, as the members list of an entry of ts.lifecycle_contracts spells them. Required for a key under ts.lifecycle_contracts and refused under any other key.",
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "entry": {
+            "description": "One entry of that key, in one of the shapes contract/config.schema.json declares for the key's entries, spelled as the configuration document spells it.",
+            "type": "object",
+            "minProperties": 1,
+            "additionalProperties": false,
+            "properties": {
+              "symbol": {
+                "description": "A symbol entry's stable symbol reference.",
+                "type": "string"
+              },
+              "module": {
+                "description": "A module entry's module specifier.",
+                "type": "string"
+              },
+              "name": {
+                "description": "A module entry's path from the module's exports.",
+                "type": "string"
+              },
+              "global": {
+                "description": "A global entry's path from the global scope.",
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "edge_evaluations": {
+      "description": "The edge evaluations the analyzer must publish for this fixture, exhaustive: one member per evaluation the report's edge_evaluations array holds, named by the edge's identifier and the side. The rendering's target carries the edges document, deadset-edges.json, which declares the edges, and the runner leaves it as it is. A side spells one language's own reference, so the member is named only by a fixture that lists one language. Absent means the report holds no edge evaluation. It is the fixture's declaration rather than any expectation's, because an evaluation is a record of the report rather than a finding at a position.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "description": "One evaluation: the edge, the side, the state, and for a dead side the logical name of the declaration the pending finding is about and that finding's code.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["edge", "side", "state"],
+        "if": { "properties": { "state": { "const": "dead" } } },
+        "then": { "required": ["symbol", "report"] },
+        "else": { "not": { "anyOf": [{ "required": ["symbol"] }, { "required": ["report"] }] } },
+        "properties": {
+          "edge": {
+            "description": "The identifier of the edge, as the edges document spells it.",
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_.-]+(/[A-Za-z0-9_.-]+)*$"
+          },
+          "side": {
+            "description": "The side of the edge the evaluation is about.",
+            "type": "string",
+            "enum": ["provides", "used_by"]
+          },
+          "state": {
+            "description": "The state the evaluation must carry.",
+            "type": "string",
+            "enum": ["live", "dead", "absent"]
+          },
+          "symbol": {
+            "description": "For a dead side, the fixture-local logical name of the declaration the pending finding is about, resolved through the rendering's manifest as an expectation's symbol is.",
+            "type": "string",
+            "pattern": "^[A-Za-z_][A-Za-z0-9_]*(\\.[A-Za-z_][A-Za-z0-9_]*)*$"
+          },
+          "report": {
+            "description": "For a dead side, the code of the pending finding, drawn from the code field of a live row in contract/kinds.json.",
+            "type": "string",
+            "pattern": "^DS[0-9]{4}$"
+          }
+        }
+      }
+    },
+    "min_confidence": {
+      "description": "The minimum confidence the runner sets in analysis.min_confidence before analysing this fixture, as contract/config.schema.json declares that key. A runner leaves the key at its default where the member is absent, so a fixture that omits it is answered under the default, which withholds the findings about a library's published API when the run holds no consumer information and the other findings grammar/analysis/confidence.md places at possible. It is the fixture's declaration rather than any expectation's, for the reason closed_world states.",
+      "type": "string",
+      "x-enum": "reachability-classes"
+    },
+    "severity": {
+      "description": "The severities the runner sets in the configuration's severity key before analysing this fixture, one member per code: the member name is the code of a live row in contract/kinds.json and the value is the severity the runner writes for it, as contract/config.schema.json declares that key. A runner leaves every code the member does not name at its default, so a fixture that omits it is answered under the default severities. It is what pins the rules contract/grammar/suppression.md states under a severity setting, a record dormant under allow on its code among them. It is the fixture's declaration rather than any expectation's, for the reason closed_world states. The member is optional and never empty.",
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "pattern": "^DS[0-9]{4}$"
+      },
+      "additionalProperties": {
+        "description": "The severity the runner writes for that code.",
+        "type": "string",
+        "x-enum": "severities"
+      }
+    },
+    "consumer_tests": {
+      "description": "How the runner counts a reference from a consumer's test file before analysing this fixture, the value it sets in analysis.consumer_tests as contract/config.schema.json declares that key. A runner leaves the key at its default, test, where the member is absent, so the member is named only by a fixture that names a consumer and that pins how a consumer's test file counts. It is the fixture's declaration rather than any expectation's, for the reason closed_world states.",
+      "type": "string",
+      "enum": ["test", "production"]
+    },
+    "entry_files": {
+      "description": "The patterns the runner sets in ts.entry_files before analysing this fixture, as contract/config.schema.json declares that key: glob patterns relative to the target root. A runner leaves the key at its default where the member is absent. A pattern spells the TypeScript rendering's own layout, so the member is named only by a fixture that lists the ts language alone. It is the fixture's declaration rather than any expectation's, for the reason closed_world states. The member is optional and never empty.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "disabled_conventions": {
+      "description": "The convention row names the runner sets in ts.disabled_conventions before analysing this fixture, as contract/config.schema.json declares that key. A runner leaves the key at its default where the member is absent. A row is data of the TypeScript analyzer that carries it, so the member is named only by a fixture that lists the ts language alone, and a fixture naming a row states the row it assumes the analyzer carries, as conventions_applied does. It is the fixture's declaration rather than any expectation's, for the reason closed_world states. The member is optional and never empty.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$"
+      }
+    },
+    "type_error_skips": {
+      "description": "The type errors the analyzer must list in the report's type_error_skips array, exhaustive: one logical name per entry, each mapped through the rendering's manifest to the file and the line of the error's position. A record the array holds that no name resolves to fails the analyzer, and a fixture that omits the member expects the array empty. The compiler's message is not compared, because it is the compiler's wording rather than the analysis's. The member is optional and never empty.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+      }
+    },
+    "notes": {
+      "description": "The notes the analyzer must list in the report's notes array, exhaustive: one entry per note, naming its kind and its path relative to the target root as contract/report.schema.json spells them. A note the array holds that no entry names fails the analyzer, and a fixture that omits the member expects the array empty. The note's message is not compared. A path spells one language's own layout, so the member is named only by a fixture that lists one language. The member is optional and never empty.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "path"],
+        "properties": {
+          "kind": {
+            "description": "The note's kind, drawn from the kind enumeration of a notes entry in contract/report.schema.json.",
+            "type": "string",
+            "enum": ["computed-load", "module-not-loaded", "published-package", "unmapped-entry"]
+          },
+          "path": {
+            "description": "The directory the note names, relative to the target root, as contract/report.schema.json spells a note's path: segments joined by /, none of them empty, . or .., so never absolute, with no leading ./ and no trailing /; no control character, U+0000 to U+001F or U+007F; every other character, a space, a backslash, which is no separator, a +, a $, a bracket, a parenthesis or one outside ASCII, written as it is; the target root itself is a single dot.",
+            "type": "string",
+            "pattern": "^(?:\\.|(?:[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.\\.[^/\\x00-\\x1f\\x7f]+)(?:/(?:[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.\\.[^/\\x00-\\x1f\\x7f]+))*)$"
+          }
+        }
+      }
+    },
+    "conventions_applied": {
+      "description": "The convention rows the analyzer must list in the report's conventions_applied array, exhaustive: one entry per row applied, naming the row, its enabling package, the version the installed manifest names and the declaring manifest relative to the target root, as contract/report.schema.json spells them. An entry the array holds that no entry here names fails the analyzer, and a fixture that omits the member expects the array empty. A row is data of the analyzer that carries it, so a fixture naming one states the row it assumes the analyzer carries: the name, the enabling package and a version in the row's range. The member is named only by a fixture that lists one language, and it is optional and never empty.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "package", "version", "manifest"],
+        "properties": {
+          "name": {
+            "description": "The row's name, as ts.disabled_conventions spells it.",
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$"
+          },
+          "package": {
+            "description": "The enabling package the row names.",
+            "type": "string",
+            "minLength": 1
+          },
+          "version": {
+            "description": "The enabling package's version as its installed manifest names it.",
+            "type": "string",
+            "minLength": 1
+          },
+          "manifest": {
+            "description": "The manifest that declares the enabling package, relative to the target root, in the path form of contract/finding.schema.json: segments joined by /, none of them empty, . or .., so never absolute, with no leading ./ and no trailing /; no control character, U+0000 to U+001F or U+007F; every other character, a space, a backslash, which is no separator, a +, a $, a bracket, a parenthesis or one outside ASCII, written as it is.",
+            "type": "string",
+            "pattern": "^(?:[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.\\.[^/\\x00-\\x1f\\x7f]+)(?:/(?:[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.\\.[^/\\x00-\\x1f\\x7f]+))*$"
+          }
+        }
+      }
+    },
+    "suppressions_in_effect": {
+      "description": "The value the report's totals.suppressions_in_effect must carry after the run over the fixture as written, the first phase of the runner, compared exactly. The second phase rewrites the ignore file and is not compared. A fixture that omits the member does not compare the count. It is the fixture's declaration rather than any expectation's, because the count is a total of the run rather than a finding at a position.",
+      "type": "integer",
+      "minimum": 0
+    },
+    "setup_failure": {
+      "description": "The setup failure the run must end with, in place of a report: the analyzer must exit with the failure code contract/exit-codes.json names, write no finding, and print on standard error a line that starts with \"setup failure: \", the class and \": \", and contains every string names lists. A fixture that carries the member carries an empty expect array, because a run that ends this way answers no expectation, and no other member that configures or answers a report. Under the class missing-consumer, every name that is also an entry of consumers is a consumer the renderings hold no directory for, and at least one name is. The member is optional.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["class", "names"],
+      "properties": {
+        "class": {
+          "description": "The class of the failure, drawn from the class field of contract/exit-codes.json's setup_failures.",
+          "type": "string",
+          "enum": ["missing-module", "incomplete-module-sum", "missing-consumer", "workspace-member-without-source", "convention-not-literal"]
+        },
+        "names": {
+          "description": "The strings the line on standard error contains: what is missing, spelled as the rendering spells it.",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "expect": {
+      "description": "One expectation per subject, exhaustive for the target. Each names a subject by its logical name and states what an analyzer must report there. The list is empty in a fixture whose run ends with a setup failure, and holds at least one expectation in every other fixture.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["symbol", "report"],
+        "properties": {
+          "symbol": {
+            "description": "The fixture-local logical name of the subject: a declaration, a member, a file, a dependency line or a suppression entry. It is the key into each rendering's manifest and is never a language spelling; the manifest says what each rendering declares under it. Dotted segments are allowed so a member can be named under its container.",
+            "type": "string",
+            "pattern": "^[A-Za-z_][A-Za-z0-9_]*(\\.[A-Za-z_][A-Za-z0-9_]*)*$"
+          },
+          "report": {
+            "description": "The code of the issue kind an analyzer must report at the subject's position, drawn from the code field of a live row in contract/kinds.json, or the literal none when the analyzer must report nothing there.",
+            "type": "string",
+            "pattern": "^(DS[0-9]{4}|none)$"
+          },
+          "symbol_kind": {
+            "description": "The kind of subject the reported finding must be about, drawn from the symbol.kind vocabulary of contract/finding.schema.json, which owns that vocabulary and states what each value names. It is what lets an expectation pin the subject half of that schema's rule on the liveness relation: a row naming a kind the rule lists as carrying no relation expects a finding with no liveness relation, and a row naming any other kind expects one. Optional on a reported subject, so a row that omits it states nothing about the subject's kind, and forbidden when report is none. The value names a subject rather than a language, and a fixture listing more than one rendering names a kind every listed language declares a subject for, because every expectation applies to every rendering.",
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$"
+          },
+          "confidence": {
+            "description": "The confidence the reported finding must carry, drawn from the reachability_classes field of contract/kinds.json. Required when report is a code, forbidden when it is none.",
+            "type": "string",
+            "x-enum": "reachability-classes"
+          },
+          "reachability_class": {
+            "description": "The reachability class the reported finding must carry, drawn from the reachability_classes field of contract/kinds.json. Optional on a reported subject, forbidden when report is none, and forbidden when report is DS9003, because that row is answered by a stale-suppression record and a record carries no reachability class.",
+            "type": "string",
+            "x-enum": "reachability-classes"
+          },
+          "liveness_relation": {
+            "description": "The liveness relation that must have produced the finding: reference-counting, where one reference from any declaration keeps a symbol live, or reachability, where only a path from a root does. Optional on a reported subject, forbidden when report is none, and forbidden when report is DS9003, because a stale-suppression record carries no liveness relation.",
+            "type": "string",
+            "enum": ["reference-counting", "reachability"]
+          },
+          "fixability": {
+            "description": "The fixability the reported finding must carry, drawn from the fixabilities field of contract/kinds.json, and one contract/kinds.json allows for the row's code: the code's fixability or a value its finding_fixabilities lists. Optional on a reported subject and compared value by value. It is forbidden where report is none, and where report is DS9003, because a stale-suppression record carries the fixability its code fixes. A finding in a generated file carries none under every kind, and a row names none only where none is the code's own fixability, so this member pins no finding in a generated file.",
+            "type": "string",
+            "x-enum": "fixabilities"
+          },
+          "configurations": {
+            "description": "The configurations the reported finding must name, by identifier, drawn from the build matrix the rendering's manifest declares and ordered as that matrix orders them. A finding holds in exactly the configurations in which its subject is declared, so a subject one configuration alone declares names that one and a subject every configuration declares names them all. Optional on a reported subject and forbidden when report is none, and forbidden when report is DS9003, because a stale-suppression record names no configuration; a fixture whose renderings declare no build matrix names none.",
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "retained_by": {
+            "description": "The exemption classes that hold the subject back, drawn from the class field of contract/exemptions.json. Allowed only when report is none, because a reported finding never carries a non-empty retained_by; the analyzer's retained-symbol listing must name exactly these classes at the subject's position.",
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$"
+            }
+          },
+          "details": {
+            "description": "The members of the reported finding's details the row pins, each named and shaped as the details object of contract/finding.schema.json declares it for the row's report code. Every member is optional and the row pins exactly the members it names, so a runner compares those and states nothing about the ones it omits; the object is never empty, because a details naming no member pins nothing. The member set is what a language-neutral expectation can state: a details member whose value is a position or a stable symbol reference spells one language's own names, which no field of an expectation does, so implementations, write_positions, entry and sides have no form here. name_literal is the exception: its value is one position, which a logical name the rendering's manifest binds spells in every rendering, so a row names it by that logical name. The arms below carry the rest under the codes whose details arm names each. A member named under a code whose arm does not carry it is refused rather than ignored, and details is forbidden altogether when report is none, because no finding is reported there whose details a row could pin. A member whose value one language alone spells, a build constraint or a dependency section, is named only by a fixture that lists that one language, for the reason symbol_kind states: every expectation applies to every rendering the fixture lists.",
+            "type": "object",
+            "additionalProperties": false,
+            "minProperties": 1,
+            "properties": {
+              "narrower_visibility": {
+                "description": "The widest scope that contains every reference to the symbol, so the visibility the references support: file, package or module. It is what distinguishes two narrowing findings whose subjects differ in nothing else.",
+                "type": "string",
+                "enum": ["file", "package", "module"]
+              },
+              "excluded_by": {
+                "description": "The build constraint that excluded the file, as the file spells it.",
+                "type": "string",
+                "minLength": 1
+              },
+              "dependency_class": {
+                "description": "The section that declares the dependency, which is the selector a stable symbol reference spells for the same subject.",
+                "type": "string",
+                "enum": ["require", "dependency", "dev-dependency", "peer-dependency"]
+              },
+              "replacement": {
+                "description": "The right-hand side of the replace directive the finding names, as the module file spells it.",
+                "type": "string",
+                "minLength": 1
+              },
+              "mechanism": {
+                "description": "Where the suppression record the finding reports lives: inline, ignore or baseline.",
+                "type": "string",
+                "enum": ["inline", "ignore", "baseline"]
+              },
+              "edge": {
+                "description": "The identifier of the declared cross-language edge the finding reports, as the edges document at the target root spells it.",
+                "type": "string",
+                "pattern": "^[A-Za-z0-9_.-]+(/[A-Za-z0-9_.-]+)*$"
+              },
+              "name_literal": {
+                "description": "The fixture-local logical name of the string literal whose position the finding's details.name_literal must carry, resolved through the rendering's manifest as an expectation's symbol is and compared by its file and its line. It is the one positional member a row spells, because the manifest gives the literal its own position in each rendering.",
+                "type": "string",
+                "pattern": "^[A-Za-z_][A-Za-z0-9_]*(\\.[A-Za-z_][A-Za-z0-9_]*)*$"
+              },
+              "overlap": {
+                "description": "The external linters or rules that report the same kind in the rendering's language, as the overlap field of the kind's row in contract/kinds.json lists them for that language.",
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "description": "One linter or rule of the kind's overlap list for this language.",
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          },
+          "component": {
+            "description": "The members of the reported finding's component the row pins, each named and shaped as the component object of contract/finding.schema.json declares it: whether the subject is a root member, how many symbols fall with the component and how many source lines its deletion removes. Every member is optional and the row pins exactly the members it names, so a runner compares those and states nothing about the ones it omits; the object is never empty, because a component naming no member pins nothing. The component's id is minted by the analyzer that reports it and its members list is a list of positioned symbols, so neither has a form here. symbol_count and deletable_lines count one rendering's own declarations and lines, which two renderings need not share, so a fixture that lists more than one language names neither, for the reason symbol_kind states: every expectation applies to every rendering the fixture lists. Forbidden when report is none, because no finding is reported there, and when report is DS9003, because a stale-suppression record carries no component.",
+            "type": "object",
+            "additionalProperties": false,
+            "minProperties": 1,
+            "properties": {
+              "root": {
+                "description": "Whether the subject is a root member of its component.",
+                "type": "boolean"
+              },
+              "symbol_count": {
+                "description": "The number of symbols that fall with the component.",
+                "type": "integer",
+                "minimum": 1
+              },
+              "deletable_lines": {
+                "description": "The number of source lines the deletion of the component removes.",
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        },
+        "if": {
+          "properties": {
+            "report": { "const": "none" }
+          }
+        },
+        "then": {
+          "not": {
+            "anyOf": [
+              { "required": ["symbol_kind"] },
+              { "required": ["confidence"] },
+              { "required": ["reachability_class"] },
+              { "required": ["liveness_relation"] },
+              { "required": ["fixability"] },
+              { "required": ["configurations"] },
+              { "required": ["details"] },
+              { "required": ["component"] }
+            ]
+          }
+        },
+        "else": {
+          "required": ["confidence"],
+          "not": { "required": ["retained_by"] }
+        },
+        "allOf": [
+          {
+            "if": {
+              "required": ["report"],
+              "properties": {
+                "report": { "enum": ["DS1501", "DS1502", "DS1503"] }
+              }
+            },
+            "else": {
+              "properties": {
+                "details": { "not": { "required": ["narrower_visibility"] } }
+              }
+            }
+          },
+          {
+            "if": {
+              "required": ["report"],
+              "properties": {
+                "report": { "const": "DS1601" }
+              }
+            },
+            "else": {
+              "properties": {
+                "details": { "not": { "required": ["excluded_by"] } }
+              }
+            }
+          },
+          {
+            "if": {
+              "required": ["report"],
+              "properties": {
+                "report": { "const": "DS1701" }
+              }
+            },
+            "else": {
+              "properties": {
+                "details": { "not": { "required": ["dependency_class"] } }
+              }
+            }
+          },
+          {
+            "if": {
+              "required": ["report"],
+              "properties": {
+                "report": { "const": "DS1702" }
+              }
+            },
+            "else": {
+              "properties": {
+                "details": { "not": { "required": ["replacement"] } }
+              }
+            }
+          },
+          {
+            "if": {
+              "required": ["report"],
+              "properties": {
+                "report": { "enum": ["DS9001", "DS9002", "DS9003"] }
+              }
+            },
+            "else": {
+              "properties": {
+                "details": { "not": { "required": ["mechanism"] } }
+              }
+            }
+          },
+          {
+            "if": {
+              "required": ["report"],
+              "properties": {
+                "report": { "const": "DS9003" }
+              }
+            },
+            "then": {
+              "not": {
+                "anyOf": [
+                  { "required": ["reachability_class"] },
+                  { "required": ["liveness_relation"] },
+                  { "required": ["fixability"] },
+                  { "required": ["configurations"] },
+                  { "required": ["component"] }
+                ]
+              }
+            }
+          },
+          {
+            "if": {
+              "required": ["report"],
+              "properties": {
+                "report": { "const": "DS9005" }
+              }
+            },
+            "else": {
+              "properties": {
+                "details": { "not": { "required": ["edge"] } }
+              }
+            }
+          },
+          {
+            "if": {
+              "required": ["report"],
+              "properties": {
+                "report": { "enum": ["DS1001", "DS1002", "DS1102", "DS1104", "DS1501", "DS1502", "DS1101"] }
+              }
+            },
+            "else": {
+              "properties": {
+                "details": { "not": { "required": ["name_literal"] } }
+              }
+            }
+          },
+          {
+            "if": {
+              "required": ["report"],
+              "properties": {
+                "report": { "enum": ["DS1401", "DS1402", "DS1403", "DS1405", "DS1404", "DS1406"] }
+              }
+            },
+            "else": {
+              "properties": {
+                "details": { "not": { "required": ["overlap"] } }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

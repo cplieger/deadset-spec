@@ -4,26 +4,7 @@
   "description": "One report per analyzer invocation, and one report per merge over analyzer reports. The document is strict JSON, decoded by each language's standard library with a closed key list: a key this schema does not declare fails the decode. Every member is required and every array is present even when empty, so a reader never distinguishes an absent array from an empty one. Field order is the order this schema lists the properties in, and every array is ordered by the canonical key grammar/merge.md defines, so two runs over an unchanged tree write the same bytes and no timestamp, duration or host detail appears anywhere in the document. The finding object is declared once, in finding.schema.json, and referenced from the two places a finding appears: findings and the finding an edge evaluation carries. That reference, and the one to the positioned symbol a components entry lists, are the cross-file references in this contract, because a finding is one document with one owner. A report an analyzer writes names that analyzer in analyzer; a report a merge writes names the merging product there, carries merged_from with one entry per input report, and holds no edge evaluation whose state is dead.",
   "type": "object",
   "additionalProperties": false,
-  "required": [
-    "schema_version",
-    "contract_version",
-    "analyzer",
-    "target",
-    "configurations",
-    "configurations_not_built",
-    "consumers",
-    "findings",
-    "edge_evaluations",
-    "stale_suppressions",
-    "declared_gaps",
-    "excluded_by_cgo",
-    "test_file_rules",
-    "type_error_skips",
-    "notes",
-    "unanswered_questions",
-    "conventions_applied",
-    "totals"
-  ],
+  "required": ["schema_version", "contract_version", "analyzer", "target", "configurations", "configurations_not_built", "consumers", "findings", "edge_evaluations", "stale_suppressions", "declared_gaps", "excluded_by_cgo", "test_file_rules", "type_error_skips", "notes", "unanswered_questions", "conventions_applied", "totals"],
   "properties": {
     "schema_version": {
       "description": "The version of this schema the document is written to. A merge admits a report whose schema_version is in the range the caller accepts and refuses one that is not, naming both; contract.json's schema_versions lists every value this contract version admits.",
@@ -138,14 +119,18 @@
       "required": ["kind", "root", "identity"],
       "if": {
         "properties": {
-          "kind": { "const": "mixed" }
+          "kind": {
+            "const": "mixed"
+          }
         }
       },
       "then": {
         "required": ["language_kinds"]
       },
       "else": {
-        "not": { "required": ["language_kinds"] }
+        "not": {
+          "required": ["language_kinds"]
+        }
       },
       "properties": {
         "kind": {
@@ -393,7 +378,9 @@
         "description": "The finding object, declared once in finding.schema.json and referenced rather than restated, with one further constraint that holds only here: a reported finding carries an empty retained_by, because a symbol an exemption held back is not reported. The same object with a populated retained_by is what a retained-symbol listing writes, which is not a findings array.",
         "$ref": "finding.schema.json",
         "properties": {
-          "retained_by": { "maxItems": 0 }
+          "retained_by": {
+            "maxItems": 0
+          }
         }
       }
     },
@@ -414,7 +401,9 @@
             "description": "Every symbol of the component, in the canonical order contract/grammar/merge.md fixes.",
             "type": "array",
             "uniqueItems": true,
-            "items": { "$ref": "finding.schema.json#/$defs/positioned_symbol" }
+            "items": {
+              "$ref": "finding.schema.json#/$defs/positioned_symbol"
+            }
           }
         }
       }
@@ -458,14 +447,18 @@
         },
         "if": {
           "properties": {
-            "state": { "const": "dead" }
+            "state": {
+              "const": "dead"
+            }
           }
         },
         "then": {
           "required": ["finding"]
         },
         "else": {
-          "not": { "required": ["finding"] }
+          "not": {
+            "required": ["finding"]
+          }
         }
       }
     },
@@ -662,10 +655,58 @@
         "additionalProperties": false,
         "required": ["kind", "path", "message"],
         "allOf": [
-          {"if": {"properties": {"kind": {"const": "published-package"}}}, "then": {"required": ["key"]}},
-          {"if": {"properties": {"kind": {"const": "unmapped-entry"}}}, "then": {"required": ["key"]}},
-          {"if": {"properties": {"kind": {"const": "module-not-loaded"}}}, "then": {"not": {"required": ["key"]}}},
-          {"if": {"properties": {"kind": {"const": "computed-load"}}}, "then": {"not": {"required": ["key"]}}}
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "published-package"
+                }
+              }
+            },
+            "then": {
+              "required": ["key"]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "unmapped-entry"
+                }
+              }
+            },
+            "then": {
+              "required": ["key"]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "module-not-loaded"
+                }
+              }
+            },
+            "then": {
+              "not": {
+                "required": ["key"]
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "computed-load"
+                }
+              }
+            },
+            "then": {
+              "not": {
+                "required": ["key"]
+              }
+            }
+          }
         ],
         "properties": {
           "kind": {
@@ -755,17 +796,7 @@
       "description": "The counts a summary line prints, so a reader compares them without counting records. A merge recomputes each of them over the merged arrays, except the counts grammar/merge.md sums over the input reports because no merged array holds what they count.",
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "findings",
-        "by_severity",
-        "deletable_lines",
-        "suppressions_in_effect",
-        "reasons_recorded",
-        "stale_suppressions",
-        "pending",
-        "omitted",
-        "withheld"
-      ],
+      "required": ["findings", "by_severity", "deletable_lines", "suppressions_in_effect", "reasons_recorded", "stale_suppressions", "pending", "omitted", "withheld"],
       "properties": {
         "findings": {
           "description": "How many findings the report holds, which equals the length of findings plus omitted.",
@@ -829,11 +860,7 @@
           "description": "How many findings analysis.min_confidence withheld, per confidence: each finding this run does not report because its confidence is below the minimum, counted once at the confidence this run assigns it, so lowering the minimum to a level shows the findings counted at that level and every level above it. A finding a suppression would bind at that minimum is not counted, and neither is one whose severity is allow. Every count is 0 under the minimum possible. A merge sums each count over its input reports, because no merged array holds the findings counted.",
           "type": "object",
           "additionalProperties": false,
-          "required": [
-            "certain",
-            "probable",
-            "possible"
-          ],
+          "required": ["certain", "probable", "possible"],
           "properties": {
             "certain": {
               "description": "How many findings at the confidence certain the minimum withheld: always 0, because no minimum withholds a certain finding.",

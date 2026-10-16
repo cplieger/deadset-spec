@@ -4,9 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"io/fs"
+	"maps"
 	"os"
 	"regexp"
 	"slices"
+	"strconv"
 	"strings"
 	"testing"
 	"testing/fstest"
@@ -141,8 +143,9 @@ func settingsRowOf(t *testing.T, files map[string][]byte, key string) settingsRo
 // TestAPlantedConfigurationEditReachesEveryGeneratedTable proves one edit of the
 // Contract's data moves the generated files that carry it: a setting reaches the
 // key table, its Go handle and the configuration vectors, a language the
-// language constants, the per-language members, the delivery lists and the
-// published schema, a fixed kind the severity vocabulary.
+// language constants, the per-language members, the delivery lists and every
+// language list of every published schema, a fixed kind the severity vocabulary and
+// the key names the published configuration schema admits.
 func TestAPlantedConfigurationEditReachesEveryGeneratedTable(t *testing.T) {
 	t.Run("a setting", func(t *testing.T) {
 		inputs := generatorInputs(t)
@@ -192,10 +195,42 @@ func TestAPlantedConfigurationEditReachesEveryGeneratedTable(t *testing.T) {
 		if !regexp.MustCompile(`PY\s+Language = "py"`).Match(files["vocab/vocab_gen.go"]) {
 			t.Error("vocab/vocab_gen.go declares no PY, want the Language constant the generated tables name")
 		}
-		for _, want := range []string{`"enum": ["py", "go", "ts"]`, `"required": ["py", "go", "ts"]`, `"The kind of the target's Python code."`} {
-			if !bytes.Contains(files["contract/config.schema.json"], []byte(want)) {
-				t.Errorf("the published configuration schema holds no %s, want the new language written in", want)
+		for _, path := range []string{"contract/config.schema.json", "contract/report.schema.json", "corpus/expect.schema.json"} {
+			if want := `"The kind of the target's Python code."`; !bytes.Contains(files[path], []byte(want)) {
+				t.Errorf("the published %s holds no %s, want the new language's member written in", path, want)
 			}
+		}
+		wantLists := map[string][]string{
+			"contract/config.schema.json": {
+				"/properties/analysis/properties/languages/items/enum",
+				"/properties/providers/properties/analyzers/items/oneOf/0/properties/languages/items/enum",
+				"/properties/providers/properties/analyzers/items/oneOf/1/properties/languages/items/enum",
+				"/properties/target/properties/kind/oneOf/1/required",
+			},
+			"contract/describe.schema.json":          {"/properties/languages/items/enum"},
+			"contract/finding.schema.json":           {"/properties/language/enum"},
+			"contract/report.schema.json":            {"/properties/analyzer/properties/languages/items/enum"},
+			"corpus/conformance-results.schema.json": {"/properties/product/properties/language/enum"},
+			"corpus/expect.schema.json":              {"/properties/languages/items/enum", "/properties/target_kind/oneOf/1/required"},
+		}
+		languages := []string{"py", "go", "ts"}
+		for _, path := range gen.Paths(files) {
+			if !strings.HasSuffix(path, ".schema.json") {
+				continue
+			}
+			lists := languageLists(t, path, files[path], languages)
+			if got, want := slices.Sorted(maps.Keys(lists)), wantLists[path]; !slices.Equal(got, want) {
+				t.Errorf("the published %s holds language lists at %q, want them at %q", path, got, want)
+			}
+			for pointer, got := range lists {
+				if !slices.Equal(got, languages) {
+					t.Errorf("the published %s holds %q at %s, want every language %q", path, got, pointer, languages)
+				}
+			}
+			delete(wantLists, path)
+		}
+		if missing := slices.Sorted(maps.Keys(wantLists)); len(missing) > 0 {
+			t.Errorf("the generator writes no %q, want every published schema that carries a language list", missing)
 		}
 	})
 	t.Run("a fixed kind", func(t *testing.T) {
@@ -212,7 +247,65 @@ func TestAPlantedConfigurationEditReachesEveryGeneratedTable(t *testing.T) {
 		if !slices.Contains(got, "DS1002") {
 			t.Errorf("severity values = %q, want DS1002, a kind the Contract still leaves configurable", got)
 		}
+		var schema struct {
+			Properties struct {
+				Severity struct {
+					PropertyNames struct {
+						Enum []string `json:"enum"`
+					} `json:"propertyNames"`
+				} `json:"severity"`
+			} `json:"properties"`
+		}
+		if err := json.Unmarshal(files["contract/config.schema.json"], &schema); err != nil {
+			t.Fatalf("decoding the generated contract/config.schema.json = %v", err)
+		}
+		if names := schema.Properties.Severity.PropertyNames.Enum; !slices.Equal(names, got) {
+			t.Errorf("the published severity key names = %q, want the severity vocabulary %q", names, got)
+		}
 	})
+}
+
+// languageLists returns, by JSON pointer, every enum and required list of the
+// schema doc that names two or more of languages. A list naming one language is
+// a condition on that language, not a copy of the vocabulary.
+func languageLists(t *testing.T, path string, doc []byte, languages []string) map[string][]string {
+	t.Helper()
+	var root any
+	if err := json.Unmarshal(doc, &root); err != nil {
+		t.Fatalf("decoding the generated %s = %v", path, err)
+	}
+	escape := strings.NewReplacer("~", "~0", "/", "~1")
+	lists := map[string][]string{}
+	var walk func(v any, pointer string)
+	walk = func(v any, pointer string) {
+		switch v := v.(type) {
+		case map[string]any:
+			for name, member := range v {
+				at := pointer + "/" + escape.Replace(name)
+				if items, ok := member.([]any); ok && (name == "enum" || name == "required") {
+					values := make([]string, 0, len(items))
+					named := 0
+					for _, item := range items {
+						s, _ := item.(string)
+						values = append(values, s)
+						if slices.Contains(languages, s) {
+							named++
+						}
+					}
+					if named >= 2 {
+						lists[at] = values
+					}
+				}
+				walk(member, at)
+			}
+		case []any:
+			for i, item := range v {
+				walk(item, pointer+"/"+strconv.Itoa(i))
+			}
+		}
+	}
+	walk(root, "")
+	return lists
 }
 
 // TestAPlantedConfigurationDefectFailsGeneration proves each configuration
@@ -226,7 +319,7 @@ func TestAPlantedConfigurationDefectFailsGeneration(t *testing.T) {
 		{name: "a delivery list written by hand", path: schema, old: `"x-delivered": false`, planted: `"x-delivered": ["go"]`, want: "x-delivered is"},
 		{name: "a section kept by the orchestrator", path: schema, old: `"x-owner": "go-analyzer",`, planted: `"x-owner": "go-analyzer", "x-delivered": false,`, want: "x-delivered on a section"},
 		{name: "an unknown value list", path: schema, old: `"x-enum": "severities"`, planted: `"x-enum": "planted"`, want: `x-enum "planted"`},
-		{name: "an unknown vocabulary", path: schema, old: `"x-vocabulary": "exemption-classes"`, planted: `"x-vocabulary": "planted"`, want: `x-vocabulary "planted"`},
+		{name: "an added value the list holds", path: "authoring/report.schema.json", old: `"enum": ["mixed"]`, planted: `"enum": ["library"]`, want: `repeats "library"`},
 		{name: "a per-language column that is none", path: schema, old: `"when": "takes_target_kind"`, planted: `"when": "kind"`, want: `when "kind"`},
 		{name: "an option naming no setting", path: "contract/cli.json", old: `"setting": "reporters.sort"`, planted: `"setting": "reporters.sorts"`, want: `"reporters.sorts", which is no setting`},
 		{name: "a language column the registry lacks", path: "contract/languages.json", old: `"language": "go",`, planted: `"language": "go", "planted": true,`, want: `unknown field "planted"`},

@@ -1,0 +1,4 @@
+{
+  "contract_version": "8.0.0",
+  "severity": { "DS9003": "allow" }
+}

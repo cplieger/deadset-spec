@@ -37,8 +37,8 @@
         "description": "The exemption classes that hold a subject back from being reported."
       },
       "symbol_kind": {
-        "file": "contract/finding.schema.json",
-        "field": "properties.symbol.properties.kind.enum",
+        "file": "contract/kinds.json",
+        "field": "symbol_kinds",
         "description": "The kind of subject a reported finding is about, which is what decides whether that finding carries a liveness relation."
       },
       "details": {
@@ -72,8 +72,8 @@
         "description": "The classes of setup failure a run may end with, which the expectation file's setup_failure member names."
       },
       "languages": {
-        "file": "contract/kinds.json",
-        "field": "languages",
+        "file": "contract/languages.json",
+        "field": "languages[].language",
         "description": "The languages a fixture has a rendering for. This is the one place a fixture names a language; no field of an expectation does."
       }
     }

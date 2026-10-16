@@ -81,6 +81,7 @@ type kindsDoc struct {
 	ReachabilityClasses []string        `json:"reachability_classes"`
 	Fixabilities        []string        `json:"fixabilities"`
 	Subjects            []string        `json:"subjects"`
+	TargetKinds         []string        `json:"target_kinds"`
 	SymbolKinds         json.RawMessage `json:"symbol_kinds"`
 	Ranges              []rangeRow      `json:"ranges"`
 	Kinds               []kindDoc       `json:"kinds"`

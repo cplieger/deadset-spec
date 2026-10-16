@@ -2,6 +2,13 @@
   "description": "One row per document under examples/negatives/. Each document is a refused instance: it violates exactly one constraint of the schema the row names, and every other constraint of that schema holds, so a validator that reports a violation at a second instance location is reporting a defect in the document rather than in the constraint under test. file is the document's name in this directory; schema is the path of the schema the document is validated against, relative to the root of this repository; constraint is the JSON Schema keyword that refuses the document; instance_path is the JSON Pointer (RFC 6901) of the value the constraint refuses, which is the empty string when the value is the whole document; violates says in one sentence what the document does wrong. Every document in this directory has exactly one row here, and every row names a document that is present.",
   "negatives": [
     {
+      "file": "analysis-language-unknown.json",
+      "schema": "contract/config.schema.json",
+      "constraint": "enum",
+      "instance_path": "/analysis/languages/1",
+      "violates": "the languages to analyze name one contract/languages.json does not list, and an analysis names only a language the suite analyzes"
+    },
+    {
       "file": "analyzer-conformance-absent.json",
       "schema": "contract/report.schema.json",
       "constraint": "required",
@@ -56,6 +63,13 @@
       "constraint": "not",
       "instance_path": "/edge_evaluations/0",
       "violates": "the evaluation reports the live state and still carries a pending finding"
+    },
+    {
+      "file": "exemption-class-unknown.json",
+      "schema": "contract/config.schema.json",
+      "constraint": "enum",
+      "instance_path": "/exemptions/disabled/1",
+      "violates": "an exemption class is switched off by a name contract/exemptions.json does not declare, so the switch names no class"
     },
     {
       "file": "finding-details-missing-for-code.json",
@@ -224,6 +238,13 @@
       "constraint": "type",
       "instance_path": "/workspace",
       "violates": "the workspace member is a Boolean rather than the path of a workspace file"
+    },
+    {
+      "file": "severity-key-of-a-fixed-kind.json",
+      "schema": "contract/config.schema.json",
+      "constraint": "propertyNames",
+      "instance_path": "/severity",
+      "violates": "a severity is set for a kind whose severity the Contract fixes, and only a kind the Contract leaves configurable takes one"
     },
     {
       "file": "stale-suppression-code-not-ds1703.json",
