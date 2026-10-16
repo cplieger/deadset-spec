@@ -1,6 +1,5 @@
 {
   "description": "A report lists findings in the bytewise order of their paths' UTF-8 encoding: a path holding U+FF5E sorts before one holding U+1F600, whose encoding starts with a higher byte, though the latter's UTF-16 code unit is lower.",
-  "pending": "the one bytewise comparator: the TypeScript analyzer orders by UTF-16 code units.",
   "products": [
     "deadset-ts"
   ],
