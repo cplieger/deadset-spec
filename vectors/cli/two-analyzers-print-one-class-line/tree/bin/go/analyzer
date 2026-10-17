@@ -1,0 +1,6 @@
+#!/bin/sh
+if [ "$1" = describe ]; then
+	exec cat "$(dirname "$0")/describe.json"
+fi
+echo 'setup failure: missing-module: main.go:3: example.com/target/gen names a module nothing provides; run go generate' >&2
+exit 3

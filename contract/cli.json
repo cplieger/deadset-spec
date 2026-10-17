@@ -251,7 +251,7 @@
           "arguments": [],
           "options": [],
           "stdout": "version",
-          "exit_codes": [0, 2]
+          "exit_codes": [0, 2, 3]
         }
       ]
     },

@@ -1,0 +1,26 @@
+{
+  "description": "A run whose two analyzers end with exit code 3 prints exactly one class line, that of the analyzer first in the provider list, and every other failure line both analyzers printed, the first analyzer's further failures included, on a line of its own with no group prefix.",
+  "products": [
+    "deadset"
+  ],
+  "rename": {
+    "go.mod.txt": "go.mod",
+    "main.go.txt": "main.go"
+  },
+  "executables": [
+    "bin/go/analyzer",
+    "bin/ts/analyzer"
+  ],
+  "argv": [
+    "analyze",
+    "--target=@TARGET@"
+  ],
+  "expect": {
+    "exit": 3,
+    "stderr_contains": [
+      "setup failure: missing-module: src/a.ts:1: ",
+      "\nmissing-module: src/a.ts:2: ",
+      "\nmissing-module: main.go:3: "
+    ]
+  }
+}

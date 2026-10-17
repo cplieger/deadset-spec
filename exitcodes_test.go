@@ -11,6 +11,7 @@ import (
 	"testing"
 
 	"github.com/cplieger/deadset-spec/v8"
+	"github.com/cplieger/deadset-spec/v8/vocab"
 )
 
 const (
@@ -222,5 +223,35 @@ func TestExitCodesPrefixNamesTheGroup(t *testing.T) {
 		if !bytes.Contains(page, []byte("starts with `"+strings.TrimSuffix(group.Prefix, " ")+"`, a space, the class")) {
 			t.Errorf("%s states no line that starts with %q, want the line of the %s group", setupFailuresPagePath, group.Prefix, name)
 		}
+	}
+}
+
+// The generated vocabulary lists every class of both groups as the table does, in its order,
+// each setup class with its languages and each run class with its products, so a product reads
+// the group of a class it meets from the vocabulary alone.
+func TestExitCodesFailureClassesAreTheGeneratedVocabulary(t *testing.T) {
+	t.Parallel()
+
+	table := mustLoadExitCodes(t)
+	var setup, run []string
+	for _, c := range vocab.SetupClasses() {
+		languages := make([]string, len(c.Languages))
+		for i, language := range c.Languages {
+			languages[i] = string(language)
+		}
+		setup = append(setup, c.Name+" "+strings.Join(languages, ","))
+	}
+	for _, c := range vocab.RunClasses() {
+		run = append(run, c.Name+" "+strings.Join(c.Products, ","))
+	}
+	var wantSetup, wantRun []string
+	for _, c := range table.FailureClasses.Setup.Classes {
+		wantSetup = append(wantSetup, c.Class+" "+strings.Join(c.Languages, ","))
+	}
+	for _, c := range table.FailureClasses.Run.Classes {
+		wantRun = append(wantRun, c.Class+" "+strings.Join(c.Products, ","))
+	}
+	if !slices.Equal(setup, wantSetup) || !slices.Equal(run, wantRun) {
+		t.Errorf("vocab.SetupClasses() = %q and vocab.RunClasses() = %q, want %q and %q", setup, run, wantSetup, wantRun)
 	}
 }

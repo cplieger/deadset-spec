@@ -40,7 +40,8 @@ type (
 			Run struct {
 				Prefix  string `json:"prefix"`
 				Classes []struct {
-					Class string `json:"class"`
+					Class    string   `json:"class"`
+					Products []string `json:"products"`
 				} `json:"classes"`
 			} `json:"run"`
 		} `json:"failure_classes"`
@@ -302,6 +303,10 @@ func (d *vocabDocs) exitRows(w *writer) {
 	w.f("// RunFailurePrefix opens the line of standard error naming one run failure.\nconst RunFailurePrefix = %q\n\nvar setupClasses = []SetupClass{\n", runs.Prefix)
 	for _, s := range setup.Classes {
 		w.f("{Name: Setup%s, Languages: %s},\n", ident(s.Class), goConsts("Language", s.Languages, languageIdent))
+	}
+	w.f("}\n\nvar runClasses = []RunClass{\n")
+	for _, r := range runs.Classes {
+		w.f("{Name: Run%s, Products: %s},\n", ident(r.Class), goStrings(r.Products))
 	}
 	w.f("}\n")
 }
