@@ -709,7 +709,7 @@
         ],
         "properties": {
           "kind": {
-            "description": "What the note is about, from a closed set. computed-load: a TypeScript load by a computed path the analysis cannot resolve, which grammar/analysis/notes.md defines. module-not-loaded: a Go module below the target root that the run dropped because it does not load, which grammar/analysis/notes.md defines. published-package: a package of an application that no other package of the target imports and that outside programs may import, which grammar/analysis/notes.md defines. unmapped-entry: a manifest entry that reads back to no source file of the target, which grammar/analysis/notes.md defines.",
+            "description": "What the note is about, from a closed set. computed-load: a TypeScript load by a computed path the analysis cannot resolve, which grammar/analysis/notes.md defines. module-not-loaded: a Go module below the target root that the run dropped because it does not load, or one the workspace listing the target lists outside it whose go.mod the go command reads and the analysis cannot, which grammar/analysis/notes.md defines. published-package: a package of an application that no other package of the target imports and that outside programs may import, which grammar/analysis/notes.md defines. unmapped-entry: a manifest entry that reads back to no source file of the target, which grammar/analysis/notes.md defines.",
             "type": "string",
             "enum": ["computed-load", "module-not-loaded", "published-package", "unmapped-entry"]
           },
