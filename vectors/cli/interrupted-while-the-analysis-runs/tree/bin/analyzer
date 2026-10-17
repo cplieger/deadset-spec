@@ -1,0 +1,6 @@
+#!/bin/sh
+if [ "$1" = describe ]; then
+	exec cat "$(dirname "$0")/describe.json"
+fi
+touch "@TARGET@/started"
+exec sleep 60

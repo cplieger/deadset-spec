@@ -1,0 +1,22 @@
+{
+  "description": "A provider entry whose command runs but whose describe verb prints no document the describe schema admits names an analyzer the run does not admit: the run ends with exit code 3 and the run failure unadmitted-analyzer naming the entry, before any analysis.",
+  "pending": "the run-failure line: deadset prints the refusal with no run-failure prefix or class.",
+  "products": [
+    "deadset"
+  ],
+  "rename": {
+    "go.mod.txt": "go.mod",
+    "main.go.txt": "main.go"
+  },
+  "argv": [
+    "analyze",
+    "--target=@TARGET@"
+  ],
+  "expect": {
+    "exit": 3,
+    "stderr_contains": [
+      "run failure: unadmitted-analyzer: ",
+      "deadset-go"
+    ]
+  }
+}

@@ -308,13 +308,13 @@
       "minimum": 0
     },
     "setup_failure": {
-      "description": "The setup failure the run must end with, in place of a report: the analyzer must exit with the failure code contract/exit-codes.json names, write no finding, and print on standard error a line that starts with \"setup failure: \", the class and \": \", and contains every string names lists. A fixture that carries the member carries an empty expect array, because a run that ends this way answers no expectation, and no other member that configures or answers a report. Under the class missing-consumer, every name that is also an entry of consumers is a consumer the renderings hold no directory for, and at least one name is. The member is optional.",
+      "description": "The setup failure the run must end with, in place of a report: the analyzer must exit with the failure code contract/exit-codes.json names, write no finding, and print on standard error exactly one class line, which starts with \"setup failure: \", the class and \": \", and contains every string names lists. A fixture that carries the member carries an empty expect array, because a run that ends this way answers no expectation, and no other member that configures or answers a report. Under the class missing-consumer, every name that is also an entry of consumers is a consumer the renderings hold no directory for, and at least one name is. The member is optional.",
       "type": "object",
       "additionalProperties": false,
       "required": ["class", "names"],
       "properties": {
         "class": {
-          "description": "The class of the failure, drawn from the class field of contract/exit-codes.json's setup_failures.",
+          "description": "The class of the failure, drawn from the class field of the setup group of contract/exit-codes.json's failure_classes.",
           "type": "string",
           "enum": ["missing-module", "incomplete-module-sum", "missing-consumer", "workspace-member-without-source", "convention-not-literal"]
         },

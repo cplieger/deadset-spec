@@ -732,10 +732,26 @@ const (
 	SetupWorkspaceMemberWithoutSource = "workspace-member-without-source"
 	SetupConventionNotLiteral         = "convention-not-literal"
 	SetupNoProgram                    = "no-program"
+	SetupUnreadableDocument           = "unreadable-document"
+)
+
+// The run-failure classes.
+const (
+	RunUnwrittenOutput    = "unwritten-output"
+	RunUnreportablePath   = "unreportable-path"
+	RunMemoryExhausted    = "memory-exhausted"
+	RunMissingAnalyzer    = "missing-analyzer"
+	RunUnadmittedAnalyzer = "unadmitted-analyzer"
+	RunUnresolvedEdge     = "unresolved-edge"
+	RunInterruptedRun     = "interrupted-run"
+	RunProductFault       = "product-fault"
 )
 
 // SetupFailurePrefix opens the line of standard error naming one setup failure.
 const SetupFailurePrefix = "setup failure: "
+
+// RunFailurePrefix opens the line of standard error naming one run failure.
+const RunFailurePrefix = "run failure: "
 
 var setupClasses = []SetupClass{
 	{Name: SetupMissingModule, Languages: []Language{Go, TS}},
@@ -744,6 +760,7 @@ var setupClasses = []SetupClass{
 	{Name: SetupWorkspaceMemberWithoutSource, Languages: []Language{TS}},
 	{Name: SetupConventionNotLiteral, Languages: []Language{TS}},
 	{Name: SetupNoProgram, Languages: []Language{Go, TS}},
+	{Name: SetupUnreadableDocument, Languages: []Language{Go, TS}},
 }
 
 // The kinds of value an option takes.
@@ -792,7 +809,7 @@ var analyzerVerbs = []analyzerVerb{
 	{Verb: Verb{Name: "print-config", Summary: "Print the resolved configuration with the provenance of every setting.", Stdout: "configuration", ExitCodes: []int{0, 2, 3}}, Options: map[Language][]string{Go: []string{"target", "config", "central", "min-confidence"}, TS: []string{"target", "config", "central", "scope", "min-confidence", "sort", "cascade", "max-findings", "fail-on"}}},
 	{Verb: Verb{Name: "print-roots", Summary: "Print the root set, each root with its kind.", Stdout: "roots", ExitCodes: []int{0, 2, 3}}, Options: map[Language][]string{Go: []string{"target", "config", "central", "min-confidence"}, TS: []string{"target", "config", "central", "scope", "min-confidence", "sort", "cascade", "max-findings", "fail-on"}}},
 	{Verb: Verb{Name: "print-retained", Summary: "Print every symbol an exemption held back, with its position and the classes that held it.", Stdout: "retained", ExitCodes: []int{0, 2, 3}}, Options: map[Language][]string{Go: []string{"target", "config", "central", "scope", "min-confidence", "mode"}, TS: []string{"target", "config", "central", "scope", "min-confidence", "sort", "cascade", "max-findings", "fail-on"}}},
-	{Verb: Verb{Name: "describe", Summary: "Print the build's capabilities as one JSON object, an instance of contract/describe.schema.json.", Stdout: "description", ExitCodes: []int{0, 2}}, Options: map[Language][]string{Go: []string{}, TS: []string{}}},
-	{Verb: Verb{Name: "version", Summary: "Print the product's version and the Contract version it implements.", Stdout: "version", ExitCodes: []int{0, 2}}, Options: map[Language][]string{Go: []string{}, TS: []string{}}},
+	{Verb: Verb{Name: "describe", Summary: "Print the build's capabilities as one JSON object, an instance of contract/describe.schema.json.", Stdout: "description", ExitCodes: []int{0, 2, 3}}, Options: map[Language][]string{Go: []string{}, TS: []string{}}},
+	{Verb: Verb{Name: "version", Summary: "Print the product's version and the Contract version it implements.", Stdout: "version", ExitCodes: []int{0, 2, 3}}, Options: map[Language][]string{Go: []string{}, TS: []string{}}},
 	{Verb: Verb{Name: "print-projects", Summary: "Print the compiler configurations the run would analyze, each with its origin.", Stdout: "projects", ExitCodes: []int{0, 2, 3}}, Options: map[Language][]string{TS: []string{"target", "config", "central", "scope", "min-confidence", "sort", "cascade", "max-findings", "fail-on"}}},
 }

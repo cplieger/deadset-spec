@@ -1,12 +1,14 @@
 package corpus
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"slices"
 	"strings"
 	"testing"
 	"testing/fstest"
+	"time"
 
 	spec "github.com/cplieger/deadset-spec/v8"
 )
@@ -304,5 +306,68 @@ func TestRunCasesHoldsEachRunToItsOutcome(t *testing.T) {
 	silent := Analyzer{Command: []string{"/bin/sh", "-c", "exit 0", "sh"}}
 	if got, err := RunCases(t.Context(), vectors, "p", silent); err != nil || got[0].Result != Fail || !strings.Contains(got[0].Message, "exit 0, want 2") {
 		t.Errorf("RunCases(an analyzer exiting 0) = %+v, %v, want the case failed on its exit", got, err)
+	}
+}
+
+func TestRunCasesGivesTheRunTheCaseEnvironment(t *testing.T) {
+	vectors := fstest.MapFS{
+		"vectors/cli/env/case.json": {Data: []byte(`{"description": "d", "products": ["p"], "argv": ["x"], "env": {"CASE_DIR": "@TARGET@"},
+			"expect": {"exit": 3}}`)},
+		"vectors/cli/env/tree/a": {Data: []byte("a\n")},
+	}
+	reading := Analyzer{Command: []string{"/bin/sh", "-c", `[ "$CASE_DIR" = "$PWD" ] && echo "run failure: product-fault: f" >&2 && exit 3; exit 9`, "sh"}}
+	got, err := RunCases(t.Context(), vectors, "p", reading)
+	if err != nil || len(got) != 1 || got[0].Result != Pass {
+		t.Errorf("RunCases(a case setting CASE_DIR to @TARGET@) = %+v, %v, want the run to see the target directory", got, err)
+	}
+}
+
+func TestRunCasesHoldsARunEndingWithTheFailureCodeToOneClassLine(t *testing.T) {
+	vectors := fstest.MapFS{
+		"vectors/cli/ended/case.json": {Data: []byte(`{"description": "d", "products": ["p"], "argv": ["x"], "expect": {"exit": 3}}`)},
+		"vectors/cli/ended/tree/a":    {Data: []byte("a\n")},
+	}
+	for _, tc := range []struct {
+		name, stderr string
+		want         string
+	}{
+		{name: "one class line and a further failure", stderr: `setup failure: missing-module: a\nmissing-module: b`, want: Pass},
+		{name: "a run class line", stderr: `run failure: product-fault: a`, want: Pass},
+		{name: "two class lines", stderr: `setup failure: missing-module: a\nsetup failure: missing-module: b`, want: Fail},
+		{name: "no class line", stderr: `deadset-go: a`, want: Fail},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			ending := Analyzer{Command: []string{"/bin/sh", "-c", `printf '` + tc.stderr + `\n' >&2; exit 3`, "sh"}}
+			got, err := RunCases(t.Context(), vectors, "p", ending)
+			if err != nil || len(got) != 1 || got[0].Result != tc.want {
+				t.Errorf("RunCases(an exit 3 printing %q) = %+v, %v, want %s", tc.stderr, got, err, tc.want)
+			}
+		})
+	}
+}
+
+func TestSetupFailureDifferenceHoldsTheRunToOneClassLine(t *testing.T) {
+	want := &SetupFailure{Class: "missing-module", Names: []string{"gen"}}
+	if got := setupFailureDifference(want, 3, "setup failure: missing-module: gen\nmissing-module: other\n", 0); got != "" {
+		t.Errorf("setupFailureDifference(one class line and a further failure) = %q, want \"\"", got)
+	}
+	got := setupFailureDifference(want, 3, "setup failure: missing-module: gen\nsetup failure: missing-module: other\n", 0)
+	if !strings.Contains(got, "want exactly one class line, got 2") {
+		t.Errorf("setupFailureDifference(two class lines) = %q, want the second class line refused", got)
+	}
+}
+
+func TestRunCasesRunsTheTreeExecutablesAndInterruptsAtTheMarker(t *testing.T) {
+	ctx, cancel := context.WithTimeout(t.Context(), time.Minute)
+	defer cancel()
+	vectors := fstest.MapFS{
+		"vectors/cli/stub/case.json": {Data: []byte(`{"description": "d", "products": ["p"], "argv": ["x"], "executables": ["bin/stub"],
+			"interrupt": "@TARGET@/started", "expect": {"exit": 4}}`)},
+		"vectors/cli/stub/tree/bin/stub": {Data: []byte("#!/bin/sh\ntouch \"$PWD/started\"\n")},
+	}
+	waiting := Analyzer{Command: []string{"/bin/sh", "-c", `trap 'exit 4' INT; ./bin/stub || exit 9; while :; do sleep 0.05; done`, "sh"}}
+	got, err := RunCases(ctx, vectors, "p", waiting)
+	if err != nil || len(got) != 1 || got[0].Result != Pass {
+		t.Errorf("RunCases(an executable stub writing the interrupt marker) = %+v, %v, want the run interrupted at the marker", got, err)
 	}
 }

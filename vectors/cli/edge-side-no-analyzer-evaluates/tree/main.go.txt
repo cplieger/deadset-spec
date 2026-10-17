@@ -1,0 +1,8 @@
+package main
+
+// ServerEvent is sent to the web client.
+type ServerEvent struct {
+	Kind string
+}
+
+func main() {}

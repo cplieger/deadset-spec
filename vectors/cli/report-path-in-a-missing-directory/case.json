@@ -1,0 +1,23 @@
+{
+  "description": "A report path whose directory does not exist is a document the run cannot write: the run ends with exit code 3 and the run failure unwritten-output naming the path, and no report is written.",
+  "products": [
+    "deadset-ts"
+  ],
+  "rename": {
+    "go.mod.txt": "go.mod",
+    "main.go.txt": "main.go"
+  },
+  "argv": [
+    "analyze",
+    "--target=@TARGET@",
+    "--report=@OUT@/absent/report.json"
+  ],
+  "expect": {
+    "exit": 3,
+    "stderr_contains": [
+      "run failure: unwritten-output: ",
+      "absent/report.json"
+    ],
+    "report": "absent"
+  }
+}

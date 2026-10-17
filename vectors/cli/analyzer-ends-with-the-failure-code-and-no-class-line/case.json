@@ -1,0 +1,25 @@
+{
+  "description": "An admitted analyzer whose analysis ends with exit code 3 and prints no class line is a fault of that analyzer: the run ends with exit code 3 and the run failure product-fault naming the analyzer, and no merged report is written.",
+  "pending": "the run-failure line: deadset prints the analyzer's exit with no run-failure prefix or class.",
+  "products": [
+    "deadset"
+  ],
+  "rename": {
+    "go.mod.txt": "go.mod",
+    "main.go.txt": "main.go"
+  },
+  "executables": [
+    "bin/analyzer"
+  ],
+  "argv": [
+    "analyze",
+    "--target=@TARGET@"
+  ],
+  "expect": {
+    "exit": 3,
+    "stderr_contains": [
+      "run failure: product-fault: ",
+      "deadset-go"
+    ]
+  }
+}

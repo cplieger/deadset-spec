@@ -8,16 +8,28 @@
 | `{{.code}}` | `{{.name}}` | {{.meaning}} |
 {{- end}}
 
-## Setup failures
+## Failure classes
 
-A run that ends with code 3 because the project does not provide something prints one line per failure on standard error that starts with `setup failure:`, a space, the class, a colon and a space, then names what is missing and the fix.
+Every run that ends with code 3 prints exactly one class line on standard error, for the first failure that ended it. The line starts with its group's prefix, then the class, a colon and a space, and then names what fails and the fix. Each further failure follows on a line of its own that holds its class, a colon, a space, what fails and the fix, with no group prefix.
+{{with .Exits.failure_classes.setup}}
+### Setup failures
+
+{{.meaning}} Each line has the form `{{.prefix}}<class>: <detail>`.
 
 | Class | Languages | Meaning | Fix |
 | --- | --- | --- | --- |
-{{- range .Exits.setup_failures}}
+{{- range .classes}}
 | `{{.class}}` | {{range $i, $l := .languages}}{{if $i}}, {{end}}`{{$l}}`{{end}} | {{.meaning}} | {{.fix}} |
 {{- end}}
+{{- end}}
+{{with .Exits.failure_classes.run}}
+### Run failures
 
-## Memory
+{{.meaning}} Each line has the form `{{.prefix}}<class>: <detail>`.
 
-{{.Exits.memory_exhaustion}}
+| Class | Products | Meaning | Fix |
+| --- | --- | --- | --- |
+{{- range .classes}}
+| `{{.class}}` | {{range $i, $p := .products}}{{if $i}}, {{end}}`{{$p}}`{{end}} | {{.meaning}} | {{.fix}} |
+{{- end}}
+{{- end}}

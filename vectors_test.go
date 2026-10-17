@@ -155,7 +155,8 @@ func TestVectorCasesReproduceFromTheirInputs(t *testing.T) {
 
 // cliCaseProblems holds one command-line case to its layout: a case.json that
 // decodes strictly, names products the Contract's command-line surface lists and
-// an exit code of the table, and a tree holding every file it renames.
+// an exit code of the table, and a tree holding every file it renames or makes
+// executable, each describe document of which a run of this contract admits.
 func cliCaseProblems(t *testing.T, fsys fs.FS, dir string) []string {
 	t.Helper()
 	at := path.Join("vectors/cli", dir)
@@ -186,6 +187,58 @@ func cliCaseProblems(t *testing.T, fsys fs.FS, dir string) []string {
 	for from := range c.Rename {
 		if _, err := fs.Stat(fsys, path.Join(at, "tree", from)); err != nil {
 			problems = append(problems, "renames "+from+", which the tree does not hold")
+		}
+	}
+	tree := path.Join(at, "tree")
+	held := map[string]bool{}
+	walkErr := fs.WalkDir(fsys, tree, func(p string, d fs.DirEntry, err error) error {
+		if err != nil || d.IsDir() {
+			return err
+		}
+		rel := strings.TrimPrefix(p, tree+"/")
+		if to, ok := c.Rename[rel]; ok {
+			rel = to
+		}
+		held[rel] = true
+		if path.Base(rel) == "describe.json" {
+			problems = append(problems, describedProblems(t, fsys, p)...)
+		}
+		return nil
+	})
+	if walkErr != nil {
+		problems = append(problems, walkErr.Error())
+	}
+	for _, file := range c.Executables {
+		if !held[file] {
+			problems = append(problems, "makes "+file+" executable, which the tree does not hold")
+		}
+	}
+	return problems
+}
+
+// describedProblems holds a describe document a case's stub analyzer prints to
+// the describe schema and to the report schema versions this contract accepts,
+// so a stub stays admitted when the contract moves.
+func describedProblems(t *testing.T, fsys fs.FS, file string) []string {
+	t.Helper()
+	data, err := fs.ReadFile(fsys, file)
+	if err != nil {
+		return []string{err.Error()}
+	}
+	var problems []string
+	for _, line := range validationErrors(describeSchemaPath, data) {
+		problems = append(problems, file+": "+line)
+	}
+	var described struct {
+		SchemaVersionsAccepted []string `json:"schema_versions_accepted"`
+	}
+	if err := json.Unmarshal(data, &described); err != nil {
+		return append(problems, file+": "+err.Error())
+	}
+	accepted := loadContract(t).SchemaVersions
+	for _, version := range described.SchemaVersionsAccepted {
+		if !slices.Contains(accepted, version) {
+			problems = append(problems, file+": reads the schema version "+version+", which contract/contract.json does not list")
 		}
 	}
 	return problems

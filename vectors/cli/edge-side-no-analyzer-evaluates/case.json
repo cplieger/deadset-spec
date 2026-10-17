@@ -1,0 +1,22 @@
+{
+  "description": "A Go declaration only an edge's TypeScript side would use is a pending finding, and with no TypeScript in scope no analyzer of the run evaluates that side: the merge ends the run with exit code 3 and the run failure unresolved-edge naming the edge, and no merged report is written.",
+  "pending": "the run-failure line: deadset prints the unresolved edge with no run-failure prefix or class.",
+  "products": [
+    "deadset"
+  ],
+  "rename": {
+    "go.mod.txt": "go.mod",
+    "main.go.txt": "main.go"
+  },
+  "argv": [
+    "analyze",
+    "--target=@TARGET@"
+  ],
+  "expect": {
+    "exit": 3,
+    "stderr_contains": [
+      "run failure: unresolved-edge: ",
+      "wire/ServerEvent"
+    ]
+  }
+}

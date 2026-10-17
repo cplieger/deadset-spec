@@ -1,0 +1,19 @@
+{
+  "description": "A run that two imports of missing modules end prints exactly one class line, the setup failure missing-module naming the first import, and names the second import on a line of its own that holds the class with no group prefix, before any report is written.",
+  "products": [
+    "deadset-ts"
+  ],
+  "argv": [
+    "analyze",
+    "--target=@TARGET@",
+    "--report=@OUT@/report.json"
+  ],
+  "expect": {
+    "exit": 3,
+    "stderr_contains": [
+      "setup failure: missing-module: src/a.ts:1: ",
+      "\nmissing-module: src/a.ts:2: "
+    ],
+    "report": "absent"
+  }
+}

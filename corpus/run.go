@@ -17,6 +17,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/cplieger/deadset-spec/v8/suppress"
 	"github.com/cplieger/deadset-spec/v8/vocab"
@@ -137,7 +138,7 @@ func selectFixtures(fsys fs.FS, doc *Document, language string, named []string) 
 
 // describe reads the product's name and version from its describe verb.
 func describe(ctx context.Context, analyzer Analyzer) (*GapProduct, error) {
-	out, stderr, code, err := invoke(ctx, analyzer, "", "describe")
+	out, stderr, code, err := invoke(ctx, analyzer, "", "", "describe")
 	if err != nil {
 		return nil, err
 	}
@@ -155,15 +156,25 @@ func describe(ctx context.Context, analyzer Analyzer) (*GapProduct, error) {
 }
 
 // invoke runs one verb of the analyzer in dir and returns its standard output,
-// its standard error and its exit code; err is a failure to run it at all.
-func invoke(ctx context.Context, analyzer Analyzer, dir string, args ...string) (stdout []byte, stderr string, code int, err error) {
+// its standard error and its exit code; err is a failure to run it at all. A
+// non-empty interrupt is a path: once a file is there, the run is sent an
+// interrupt.
+func invoke(ctx context.Context, analyzer Analyzer, dir, interrupt string, args ...string) (stdout []byte, stderr string, code int, err error) {
 	argv := append(slices.Clone(analyzer.Command[1:]), args...)
 	cmd := exec.CommandContext(ctx, analyzer.Command[0], argv...) //nolint:gosec // the analyzer under test, named by its caller
 	cmd.Dir = dir
 	cmd.Env = append(os.Environ(), analyzer.Env...)
 	var out, errOut bytes.Buffer
 	cmd.Stdout, cmd.Stderr = &out, &errOut
-	runErr := cmd.Run()
+	if err := cmd.Start(); err != nil {
+		return nil, "", 0, fmt.Errorf("run %s: %w", analyzer.Command[0], err)
+	}
+	stop := make(chan struct{})
+	if interrupt != "" {
+		go interruptOnce(cmd.Process, interrupt, stop)
+	}
+	runErr := cmd.Wait()
+	close(stop)
 	if exit, exited := errors.AsType[*exec.ExitError](runErr); exited {
 		return out.Bytes(), errOut.String(), exit.ExitCode(), nil
 	}
@@ -171,6 +182,35 @@ func invoke(ctx context.Context, analyzer Analyzer, dir string, args ...string) 
 		return nil, "", 0, fmt.Errorf("run %s: %w", analyzer.Command[0], runErr)
 	}
 	return out.Bytes(), errOut.String(), 0, nil
+}
+
+// interruptOnce sends process an interrupt once a file is at marker, unless stop
+// closes first.
+func interruptOnce(process *os.Process, marker string, stop <-chan struct{}) {
+	tick := time.NewTicker(10 * time.Millisecond)
+	defer tick.Stop()
+	for {
+		select {
+		case <-stop:
+			return
+		case <-tick.C:
+			if _, err := os.Stat(marker); err == nil {
+				_ = process.Signal(os.Interrupt) // a run that already ended is not interrupted
+				return
+			}
+		}
+	}
+}
+
+// classLines counts the lines of stderr a group prefix of failure_classes opens.
+func classLines(stderr string) int {
+	n := 0
+	for line := range strings.SplitSeq(stderr, "\n") {
+		if strings.HasPrefix(line, vocab.SetupFailurePrefix) || strings.HasPrefix(line, vocab.RunFailurePrefix) {
+			n++
+		}
+	}
+	return n
 }
 
 type runner struct {
@@ -519,7 +559,7 @@ func (r *runner) analyze(ctx context.Context, at *scratch, phase string, withRet
 	if !withRetained {
 		return held, nil
 	}
-	out, stderr, code, err := invoke(ctx, r.analyzer, at.dir, append([]string{"print-retained"}, at.options()...)...)
+	out, stderr, code, err := invoke(ctx, r.analyzer, at.dir, "", append([]string{"print-retained"}, at.options()...)...)
 	if err != nil {
 		return nil, err
 	}
@@ -536,7 +576,7 @@ func (r *runner) analyze(ctx context.Context, at *scratch, phase string, withRet
 // report schema.
 func (r *runner) report(ctx context.Context, at *scratch, phase string, into *wireReport) error {
 	name := filepath.Join(at.dir, phase+".report.json")
-	_, stderr, code, err := invoke(ctx, r.analyzer, at.dir, append([]string{"analyze"}, append(at.options(), "--report="+name)...)...)
+	_, stderr, code, err := invoke(ctx, r.analyzer, at.dir, "", append([]string{"analyze"}, append(at.options(), "--report="+name)...)...)
 	if err != nil {
 		return err
 	}
@@ -598,7 +638,7 @@ func positionSite(position string) (Site, error) {
 // setupFixture answers a fixture whose run must end with a setup failure.
 func (r *runner) setupFixture(ctx context.Context, at *scratch, name string, want *SetupFailure) (FixtureResult, error) {
 	report := filepath.Join(at.dir, "first.report.json")
-	_, stderr, code, err := invoke(ctx, r.analyzer, at.dir, append([]string{"analyze"}, append(at.options(), "--report="+report)...)...)
+	_, stderr, code, err := invoke(ctx, r.analyzer, at.dir, "", append([]string{"analyze"}, append(at.options(), "--report="+report)...)...)
 	if err != nil {
 		return FixtureResult{}, err
 	}
@@ -635,6 +675,9 @@ func setupFailureDifference(want *SetupFailure, code int, stderr string, finding
 	}
 	if findings > 0 {
 		held = append(held, fmt.Sprintf("want no finding, got %d", findings))
+	}
+	if n := classLines(stderr); n != 1 {
+		held = append(held, fmt.Sprintf("want exactly one class line, got %d", n))
 	}
 	if !named {
 		quoted, _ := json.Marshal(strings.TrimSpace(stderr)) //nolint:errchkjson // a string

@@ -1,5 +1,5 @@
 {
-  "description": "The exit codes every analyzer and the orchestrator return, so that one gate reads every product the same way. Codes 2 and 3 end a run before any verdict exists and print no finding list. Codes 4, 1 and 0 are verdicts about a complete report, and when more than one verdict condition holds the highest code wins: a pending finding outranks findings and stale suppressions, because an unmerged report cannot be read as an answer at all, and those outrank a clean result. A finding fails a run when its severity is at or above reporters.fail_on, deny by default, so under the default a finding whose severity is warn never fails a run. Every run that ends with code 3 for want of something the project provides names a setup failure: a run that ends with code 3 for a setup failure prints, for each failure, one line on standard error that starts with \"setup failure: \", the failure's class from setup_failures and \": \", and goes on to name what is missing and the fix that class names; a run that ends with code 3 because the analysis needs more memory than the machine makes available prints the line memory_exhaustion states. Each setup failure lists the languages whose analysis can end with it, so a product implements the classes of its own languages.",
+  "description": "The exit codes every analyzer and the orchestrator return, so that one gate reads every product the same way. Codes 2 and 3 end a run before any verdict exists and print no finding list. Codes 4, 1 and 0 are verdicts about a complete report, and when more than one verdict condition holds the highest code wins: a pending finding outranks findings and stale suppressions, because an unmerged report cannot be read as an answer at all, and those outrank a clean result. A finding fails a run when its severity is at or above reporters.fail_on, deny by default, so under the default a finding whose severity is warn never fails a run. Every run that ends with code 3 prints exactly one class line on standard error, the line of the first failure that ended it in the order the product finds them: the line starts with the prefix of the class's group in failure_classes, then the class and \": \", and goes on to name what fails and the fix that class names. Each further failure that ended the run follows on a line of its own that holds its class, \": \" and what fails and the fix, with no group prefix, so a reader finds the class of the run in the one line a prefix opens and every cause to fix in the lines below it. A class of the setup group names a cause in the project, and a class of the run group a cause in the environment the run meets or in a product itself, so the prefix tells the user where the fix lies. An orchestrator whose analyzers ended with code 3 prints the class line of the first of them in the order of the provider list as its own, and every other failure line they printed, the first analyzer's further failures included, without its group prefix as a further failure. Each setup class lists the languages whose analysis can end with it, and each run class the products whose run can end with it, so a product implements the setup classes of its own languages and the run classes that name it.",
   "exit_codes": [
     {
       "code": 0,
@@ -19,7 +19,7 @@
     {
       "code": 3,
       "name": "failure",
-      "meaning": "A file a configuration document names cannot be read, the run holds no program to analyze, a setup failure stops the analysis of a declared configuration or of every configuration the analysis derived, the analysis needs more memory than the machine makes available, a declared consumer or a declared build configuration failed to load, an analyzer could not be found, described or admitted, an acquired artifact's digest did not match, a pending finding met no other side at the merge, or a requested rendering could not be produced, in which case the report is already written and the rendering is not. A type error in source the program holds is none of these: it skips the function holding it, as grammar/analysis/program.md states, and the exit code follows the findings. The errors are printed and no finding list is, so a partial result is never read as a clean tree."
+      "meaning": "The run cannot answer, for a cause a class of failure_classes names. A setup failure is a cause in the project: the run holds no program to analyze, a setup failure stops the analysis of a declared configuration or of every configuration the analysis derived, a declared consumer or a declared build configuration failed to load, or a document the target holds at its root cannot be read. A run failure is a cause in the environment or in a product: a document the run was asked to write cannot be produced or written, in which case a rendering that is not produced leaves the report already written, a path the report must name has no spelling the report admits, the analysis needs more memory than the machine makes available, an analyzer could not be found, started, described or admitted, an acquired artifact's digest did not match, a pending finding met no other side at the merge, the run was interrupted, or a product failed for a cause in itself. A type error in source the program holds is none of these: it skips the function holding it, as grammar/analysis/program.md states, and the exit code follows the findings. The errors are printed, the one class line among them, and no finding list is, so a partial result is never read as a clean tree."
     },
     {
       "code": 4,
@@ -27,44 +27,108 @@
       "meaning": "The report holds at least one pending finding, a finding whose cross-language edge the other side has not evaluated, and the count of pending findings is named. A report with this code is an input to a merge, not an answer."
     }
   ],
-  "setup_failures": [
-    {
-      "class": "missing-module",
-      "languages": ["go", "ts"],
-      "meaning": "An import names a module the project expects to exist and nothing provides it: code a generator writes that was not generated, a package that was not built, or a declared dependency that was not installed.",
-      "fix": "Name the import and the file that writes it, and tell the user to run the generator, the build or the install that provides the module."
+  "failure_classes": {
+    "setup": {
+      "prefix": "setup failure: ",
+      "meaning": "A cause in the project: a file or a component the analysis needs and the project does not provide, or a document the target holds at its root that the analysis cannot read, as grammar/analysis/setup-failures.md states. The fix is to the project.",
+      "classes": [
+        {
+          "class": "missing-module",
+          "languages": ["go", "ts"],
+          "meaning": "An import names a module the project expects to exist and nothing provides it: code a generator writes that was not generated, a package that was not built, or a declared dependency that was not installed.",
+          "fix": "Name the import and the file that writes it, and tell the user to run the generator, the build or the install that provides the module."
+        },
+        {
+          "class": "incomplete-module-sum",
+          "languages": ["go"],
+          "meaning": "The module sum file lacks a checksum the build of the target or of a declared consumer needs.",
+          "fix": "Name the module and tell the user to run go mod tidy in the module that requires it."
+        },
+        {
+          "class": "missing-consumer",
+          "languages": ["go", "ts"],
+          "meaning": "A declared consumer is absent from the path the scope names for it, or its own dependencies are not installed.",
+          "fix": "Name the consumer and tell the user to check it out at that path and install its dependencies."
+        },
+        {
+          "class": "workspace-member-without-source",
+          "languages": ["ts"],
+          "meaning": "An import resolves to a member of the workspace, and neither the file the default resolution reaches nor the member's manifest entry read back through its emit mappings is a source file of the member.",
+          "fix": "Name the member, the subpath, the importing file and the targets the member's manifest names, and tell the user to build the member, or to give its compiler configuration an output and a root directory that map the target to its source."
+        },
+        {
+          "class": "convention-not-literal",
+          "languages": ["ts"],
+          "meaning": "A convention row applies and the configuration property that moves one of its directories is not a literal in the framework configuration file.",
+          "fix": "Name the file and the property, and tell the user to write the property as a literal, or to disable the row in ts.disabled_conventions and name the files in ts.entry_files."
+        },
+        {
+          "class": "no-program",
+          "languages": ["go", "ts"],
+          "meaning": "The target holds no program of a language the run analyzes: no module, package or compiler configuration the language reads a program from.",
+          "fix": "Name the target root and the files the language reads a program from, and tell the user to run from the directory that holds them or to name the languages to analyze."
+        },
+        {
+          "class": "unreadable-document",
+          "languages": ["go", "ts"],
+          "meaning": "A document the analysis reads at the target root, the ignore file, the baseline or the edges document, is present and cannot be read: its name resolves outside the target root or to anything but a regular file, or the read fails.",
+          "fix": "Name the document and why it cannot be read, and tell the user to make it a regular file inside the target root that the run can read, or to remove it."
+        }
+      ]
     },
-    {
-      "class": "incomplete-module-sum",
-      "languages": ["go"],
-      "meaning": "The module sum file lacks a checksum the build of the target or of a declared consumer needs.",
-      "fix": "Name the module and tell the user to run go mod tidy in the module that requires it."
-    },
-    {
-      "class": "missing-consumer",
-      "languages": ["go", "ts"],
-      "meaning": "A declared consumer is absent from the path the scope names for it, or its own dependencies are not installed.",
-      "fix": "Name the consumer and tell the user to check it out at that path and install its dependencies."
-    },
-    {
-      "class": "workspace-member-without-source",
-      "languages": ["ts"],
-      "meaning": "An import resolves to a member of the workspace, and neither the file the default resolution reaches nor the member's manifest entry read back through its emit mappings is a source file of the member.",
-      "fix": "Name the member, the subpath, the importing file and the targets the member's manifest names, and tell the user to build the member, or to give its compiler configuration an output and a root directory that map the target to its source."
-    },
-    {
-      "class": "convention-not-literal",
-      "languages": ["ts"],
-      "meaning": "A convention row applies and the configuration property that moves one of its directories is not a literal in the framework configuration file.",
-      "fix": "Name the file and the property, and tell the user to write the property as a literal, or to disable the row in ts.disabled_conventions and name the files in ts.entry_files."
-    },
-    {
-      "class": "no-program",
-      "languages": ["go", "ts"],
-      "meaning": "The target holds no program of a language the run analyzes: no module, package or compiler configuration the language reads a program from.",
-      "fix": "Name the target root and the files the language reads a program from, and tell the user to run from the directory that holds them or to name the languages to analyze."
+    "run": {
+      "prefix": "run failure: ",
+      "meaning": "A cause in the environment the run meets or in a product itself: an output the run cannot write, an invocation whose paths the report cannot name, a machine without the memory the analysis needs, an analyzer the orchestrator cannot find, admit or merge, a run interrupted before it ends, or a fault of a product. The fix is to the invocation, the machine or the installed products.",
+      "classes": [
+        {
+          "class": "unwritten-output",
+          "products": ["deadset", "deadset-go", "deadset-ts"],
+          "meaning": "A document the run was asked to write cannot be produced or written: the run directory, the report, a rendering beside it, the baseline, a baseline whose rows of another language cannot be read back to be kept, or the answer a verb writes to standard output. A rendering that cannot be produced or written leaves the report already written.",
+          "fix": "Name the document and why it cannot be written, and tell the user to name a path the run can write, to correct the template that renders it, or to repair the rows of the baseline the run would keep."
+        },
+        {
+          "class": "unreportable-path",
+          "products": ["deadset-go", "deadset-ts"],
+          "meaning": "A path the report must name has no spelling the report admits: the target lies outside the directory the run was invoked from, or a configuration the run opens lies outside the target.",
+          "fix": "Name the path and the directory it must lie below, and tell the user to run from a directory that holds the target, or to analyze a target that holds the configuration."
+        },
+        {
+          "class": "memory-exhausted",
+          "products": ["deadset-go"],
+          "meaning": "The analysis needs more memory than the machine makes available. The run ends before it writes a report.",
+          "fix": "Open with \"at least N GB were needed, M GB are available\", where N is the memory the analysis was about to need when it stopped, rounded up, and M is the memory the machine made available to it, rounded down, each a decimal number with at most one digit after the point, so N is greater than M, and tell the user to run on a machine with more memory or to narrow the scope."
+        },
+        {
+          "class": "missing-analyzer",
+          "products": ["deadset"],
+          "meaning": "The command a provider entry names resolves to no executable on the local filesystem, or the executable does not start.",
+          "fix": "Name the provider entry and its command, and tell the user to install the analyzer or to correct the command."
+        },
+        {
+          "class": "unadmitted-analyzer",
+          "products": ["deadset"],
+          "meaning": "An analyzer the run would run is not admitted: its describe verb fails or prints no document the describe schema admits, the description names another analyzer, does not claim every language the run hands it, reads no report schema version the run accepts or records no conformance pass, or an acquired artifact's digest does not match the digest its provider entry names.",
+          "fix": "Name the analyzer and the check it fails, and tell the user to install a release of it the run admits."
+        },
+        {
+          "class": "unresolved-edge",
+          "products": ["deadset"],
+          "meaning": "A pending finding met no evaluation of its edge's other side at the merge, because no analyzer of the run evaluated that side.",
+          "fix": "Name the edge and the side no analyzer evaluated, and tell the user to run the analyzer of that side's language or to remove the edge from the edges document."
+        },
+        {
+          "class": "interrupted-run",
+          "products": ["deadset", "deadset-go"],
+          "meaning": "The run received an interrupt or a termination signal before it produced an answer, and stopped every stage and analyzer it was running.",
+          "fix": "Name the signal that stopped the run, and tell the user to run it again without interrupting it."
+        },
+        {
+          "class": "product-fault",
+          "products": ["deadset", "deadset-go", "deadset-ts"],
+          "meaning": "A product fails for a cause in itself: it cannot read its own version, a report it built breaks the report schema or holds a finding it refuses, its loader returns an incomplete result, the merge refuses an analyzer's report at admission, an analyzer ends with code 3 and prints no class line, or the product meets an error none of its classes names.",
+          "fix": "Name the product and the fault, and tell the user to reinstall the product, and to report the fault to its maintainers where a reinstalled product fails the same way."
+        }
+      ]
     }
-  ],
-  "setup_failure_prefix": "setup failure: ",
-  "memory_exhaustion": "A run that needs more memory than the machine makes available ends with code 3 before it writes a report and prints one line on standard error: \"memory exhausted: at least N GB were needed, M GB are available\", where N is the memory the analysis was about to need when it stopped, rounded up, and M is the memory the machine made available to it, rounded down, each a decimal number with at most one digit after the point, so N is greater than M."
+  }
 }

@@ -1,0 +1,21 @@
+{
+  "description": "An ignore file at the target root that is a directory is a document the run cannot read: nothing is read from it, and the run ends with exit code 3 and the setup failure unreadable-document naming it, before any report is written.",
+  "products": [
+    "deadset-ts"
+  ],
+  "rename": {
+    "deadset-ignore.json.d/README.txt": "deadset-ignore.json/README.txt"
+  },
+  "argv": [
+    "analyze",
+    "--target=@TARGET@",
+    "--report=@OUT@/report.json"
+  ],
+  "expect": {
+    "exit": 3,
+    "stderr_contains": [
+      "setup failure: unreadable-document: deadset-ignore.json"
+    ],
+    "report": "absent"
+  }
+}

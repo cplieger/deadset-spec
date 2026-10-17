@@ -1,0 +1,3 @@
+#!/bin/sh
+touch "@TARGET@/started"
+exec sleep 60
