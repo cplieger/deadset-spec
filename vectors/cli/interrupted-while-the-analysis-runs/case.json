@@ -1,8 +1,7 @@
 {
-  "description": "A run sent an interrupt while its analysis runs stops the analysis and ends with exit code 3 and the run failure interrupted-run, before any report is written: deadset while its analyzer runs, deadset-go while the toolchain loads the target's packages.",
-  "pending": "the run-failure line: deadset-go and deadset print the cancellation with no run-failure prefix or class.",
+  "description": "A run sent an interrupt while the toolchain loads the target's packages stops the analysis and ends with exit code 3 and the run failure interrupted-run, before any report is written.",
+  "pending": "the run-failure line: deadset-go prints the cancellation with no run-failure prefix or class.",
   "products": [
-    "deadset",
     "deadset-go"
   ],
   "rename": {
@@ -10,7 +9,6 @@
     "main.go.txt": "main.go"
   },
   "executables": [
-    "bin/analyzer",
     "bin/go"
   ],
   "env": {
@@ -19,15 +17,9 @@
   "interrupt": "@TARGET@/started",
   "argv": [
     "analyze",
-    "--target=@TARGET@"
+    "--target=@TARGET@",
+    "--report=@OUT@/report.json"
   ],
-  "argv_by_product": {
-    "deadset-go": [
-      "analyze",
-      "--target=@TARGET@",
-      "--report=@OUT@/report.json"
-    ]
-  },
   "expect": {
     "exit": 3,
     "stderr_contains": [

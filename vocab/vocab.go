@@ -275,6 +275,22 @@ func SetupClasses() []SetupClass {
 	return held
 }
 
+// RunClass is one class of run failure: what in the environment or in a
+// product ends the run, and the products whose run can end with it.
+type RunClass struct {
+	Name     string
+	Products []string
+}
+
+// RunClasses returns every run-failure class, in the vocabulary's order.
+func RunClasses() []RunClass {
+	held := slices.Clone(runClasses)
+	for i := range held {
+		held[i].Products = slices.Clone(held[i].Products)
+	}
+	return held
+}
+
 // SchemaVersions returns every report schema version the Contract admits, in
 // ascending order; [SchemaVersion] is the last.
 func SchemaVersions() []string {

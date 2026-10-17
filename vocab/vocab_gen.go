@@ -763,6 +763,17 @@ var setupClasses = []SetupClass{
 	{Name: SetupUnreadableDocument, Languages: []Language{Go, TS}},
 }
 
+var runClasses = []RunClass{
+	{Name: RunUnwrittenOutput, Products: []string{"deadset", "deadset-go", "deadset-ts"}},
+	{Name: RunUnreportablePath, Products: []string{"deadset-go", "deadset-ts"}},
+	{Name: RunMemoryExhausted, Products: []string{"deadset-go"}},
+	{Name: RunMissingAnalyzer, Products: []string{"deadset"}},
+	{Name: RunUnadmittedAnalyzer, Products: []string{"deadset"}},
+	{Name: RunUnresolvedEdge, Products: []string{"deadset"}},
+	{Name: RunInterruptedRun, Products: []string{"deadset", "deadset-go"}},
+	{Name: RunProductFault, Products: []string{"deadset", "deadset-go", "deadset-ts"}},
+}
+
 // The kinds of value an option takes.
 const (
 	OptionValuePath    OptionValue = "path"
@@ -800,7 +811,7 @@ var options = []Option{
 var orchestratorVerbs = []Verb{
 	{Name: "analyze", Summary: "Analyze every language in scope and write the merged report.", Stdout: "renderings", ExitCodes: []int{0, 1, 2, 3, 4}, Options: []string{"target", "scope", "central", "run-dir", "template", "exit-code", "languages", "min-confidence", "formats", "fail-on"}},
 	{Name: "print-config", Summary: "Print the resolved configuration with the provenance of every setting.", Stdout: "configuration", ExitCodes: []int{0, 2, 3}, Options: []string{"target", "central", "languages", "min-confidence", "formats", "fail-on"}},
-	{Name: "version", Summary: "Print the product's version and the Contract version it implements.", Stdout: "version", ExitCodes: []int{0, 2}, Options: []string{}},
+	{Name: "version", Summary: "Print the product's version and the Contract version it implements.", Stdout: "version", ExitCodes: []int{0, 2, 3}, Options: []string{}},
 }
 
 var analyzerVerbs = []analyzerVerb{

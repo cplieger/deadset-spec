@@ -1,0 +1,25 @@
+{
+  "description": "An analyzer whose analysis exits with code 1 and writes no report is a fault of that analyzer, and every line it printed, whichever verb printed it, opens with its name, so the run ends with exit code 3 and exactly one class line, that of the run failure product-fault, even where a line the analyzer printed opens with a group prefix.",
+  "products": [
+    "deadset"
+  ],
+  "rename": {
+    "go.mod.txt": "go.mod",
+    "main.go.txt": "main.go"
+  },
+  "executables": [
+    "bin/analyzer"
+  ],
+  "argv": [
+    "analyze",
+    "--target=@TARGET@"
+  ],
+  "expect": {
+    "exit": 3,
+    "stderr_contains": [
+      "run failure: product-fault: analyzer deadset-go",
+      "\ndeadset-go: setup failure: missing-module: a line describe printed\n",
+      "\ndeadset-go: run failure: run failure: product-fault: a line the analysis printed\ndeadset-go: \n"
+    ]
+  }
+}

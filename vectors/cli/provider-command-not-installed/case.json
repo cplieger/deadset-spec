@@ -1,6 +1,5 @@
 {
   "description": "A provider entry whose command resolves to no executable names an analyzer the run cannot find: the run ends with exit code 3 and the run failure missing-analyzer naming the entry, before any analyzer runs.",
-  "pending": "the run-failure line: deadset prints the failure with no run-failure prefix or class.",
   "products": [
     "deadset"
   ],

@@ -1,0 +1,8 @@
+#!/bin/sh
+if [ "$1" = describe ]; then
+	echo 'setup failure: missing-module: a line describe printed' >&2
+	exec cat "$(dirname "$0")/describe.json"
+fi
+echo 'run failure: run failure: product-fault: a line the analysis printed' >&2
+echo >&2
+exit 1

@@ -1,0 +1,25 @@
+{
+  "description": "A run sent an interrupt while an analyzer runs stops the analyzer and ends with exit code 3 and the run failure interrupted-run naming the signal, before any merged report is written.",
+  "products": [
+    "deadset"
+  ],
+  "rename": {
+    "go.mod.txt": "go.mod",
+    "main.go.txt": "main.go"
+  },
+  "executables": [
+    "bin/analyzer"
+  ],
+  "interrupt": "@TARGET@/started",
+  "argv": [
+    "analyze",
+    "--target=@TARGET@"
+  ],
+  "expect": {
+    "exit": 3,
+    "stderr_contains": [
+      "run failure: interrupted-run: ",
+      "interrupt"
+    ]
+  }
+}
