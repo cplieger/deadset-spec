@@ -5,11 +5,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/fs"
+	"maps"
 	"os"
 	"path"
 	"path/filepath"
 	"slices"
 	"strings"
+
+	"github.com/cplieger/deadset-spec/v8/vocab"
 )
 
 // casesDir is where the command-line vectors live in the spec module's vectors,
@@ -24,10 +27,13 @@ const (
 type Case struct {
 	ArgvByProduct map[string][]string `json:"argv_by_product"`
 	Rename        map[string]string   `json:"rename"`
+	Env           map[string]string   `json:"env"`
 	Description   string              `json:"description"`
 	Pending       string              `json:"pending"`
+	Interrupt     string              `json:"interrupt"`
 	Products      []string            `json:"products"`
 	Argv          []string            `json:"argv"`
+	Executables   []string            `json:"executables"`
 	Expect        CaseOutcome         `json:"expect"`
 }
 
@@ -124,7 +130,7 @@ func runOnce(ctx context.Context, vectors fs.FS, name string, c *Case, argv []st
 	if mkErr := os.MkdirAll(out, 0o750); mkErr != nil {
 		return "", mkErr
 	}
-	if copyErr := copyTree(vectors, path.Join(casesDir, name, "tree"), target, c.Rename); copyErr != nil {
+	if copyErr := copyTree(vectors, path.Join(casesDir, name, "tree"), target, c); copyErr != nil {
 		return "", copyErr
 	}
 	replace := strings.NewReplacer("@TARGET@", target, "@OUT@", out)
@@ -136,16 +142,20 @@ func runOnce(ctx context.Context, vectors fs.FS, name string, c *Case, argv []st
 			report = file
 		}
 	}
-	_, stderr, code, err := invoke(ctx, analyzer, target, args...)
+	analyzer.Env = slices.Clone(analyzer.Env)
+	for _, name := range slices.Sorted(maps.Keys(c.Env)) {
+		analyzer.Env = append(analyzer.Env, name+"="+replace.Replace(c.Env[name]))
+	}
+	_, stderr, code, err := invoke(ctx, analyzer, target, replace.Replace(c.Interrupt), args...)
 	if err != nil {
 		return "", err
 	}
 	return outcomeDifference(&c.Expect, code, stderr, report), nil
 }
 
-// copyTree copies a case's tree to dir, naming each file its rename gives it and
-// writing @TARGET@ in its text as dir.
-func copyTree(vectors fs.FS, root, dir string, rename map[string]string) error {
+// copyTree copies a case's tree to dir, naming each file its rename gives it,
+// writing @TARGET@ in its text as dir and making each of its executables one.
+func copyTree(vectors fs.FS, root, dir string, c *Case) error {
 	replace := strings.NewReplacer("@TARGET@", dir)
 	return fs.WalkDir(vectors, root, func(p string, d fs.DirEntry, err error) error {
 		if err != nil || d.IsDir() {
@@ -156,14 +166,18 @@ func copyTree(vectors fs.FS, root, dir string, rename map[string]string) error {
 			return err
 		}
 		rel := strings.TrimPrefix(p, root+"/")
-		if renamed, ok := rename[rel]; ok {
+		if renamed, ok := c.Rename[rel]; ok {
 			rel = renamed
+		}
+		mode := os.FileMode(0o600)
+		if slices.Contains(c.Executables, rel) {
+			mode = 0o700
 		}
 		file := filepath.Join(dir, filepath.FromSlash(rel))
 		if err := os.MkdirAll(filepath.Dir(file), 0o750); err != nil {
 			return err
 		}
-		return os.WriteFile(file, []byte(replace.Replace(string(data))), 0o600)
+		return os.WriteFile(file, []byte(replace.Replace(string(data))), mode)
 	})
 }
 
@@ -172,6 +186,9 @@ func outcomeDifference(want *CaseOutcome, code int, stderr, report string) strin
 	var held []string
 	if code != want.Exit {
 		held = append(held, fmt.Sprintf("exit %d, want %d (stderr %q)", code, want.Exit, strings.TrimSpace(stderr)))
+	}
+	if n := classLines(stderr); code == vocab.ExitFailure && n != 1 {
+		held = append(held, fmt.Sprintf("exit %d with %d class lines, want exactly one (stderr %q)", code, n, strings.TrimSpace(stderr)))
 	}
 	for _, text := range want.StderrContains {
 		if !strings.Contains(stderr, text) {

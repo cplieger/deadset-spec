@@ -3,6 +3,7 @@ package spec_test
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io/fs"
 	"regexp"
 	"slices"
@@ -25,20 +26,35 @@ type exitCode struct {
 }
 
 type exitCodeTable struct {
-	Description      string         `json:"description"`
-	MemoryExhaustion string         `json:"memory_exhaustion"`
-	SetupPrefix      string         `json:"setup_failure_prefix"`
-	ExitCodes        []exitCode     `json:"exit_codes"`
-	SetupFailures    []setupFailure `json:"setup_failures"`
+	Description    string     `json:"description"`
+	ExitCodes      []exitCode `json:"exit_codes"`
+	FailureClasses struct {
+		Setup failureGroup `json:"setup"`
+		Run   failureGroup `json:"run"`
+	} `json:"failure_classes"`
 }
 
-// setupFailure is one class of the setup failures code 3 names: what is missing and the fix the
-// line on standard error states.
-type setupFailure struct {
+// failureGroup is one group of the classes code 3 names: the prefix its lines open with, where
+// its causes lie, and its classes.
+type failureGroup struct {
+	Prefix  string         `json:"prefix"`
+	Meaning string         `json:"meaning"`
+	Classes []failureClass `json:"classes"`
+}
+
+// failureClass is one class of failure code 3 names: what fails and the fix the line on standard
+// error states, and the languages (a setup class) or the products (a run class) that end with it.
+type failureClass struct {
 	Class     string   `json:"class"`
 	Meaning   string   `json:"meaning"`
 	Fix       string   `json:"fix"`
 	Languages []string `json:"languages"`
+	Products  []string `json:"products"`
+}
+
+// groups is each group of the failure classes under its name, the word its prefix opens with.
+func (table *exitCodeTable) groups() map[string]*failureGroup {
+	return map[string]*failureGroup{"setup": &table.FailureClasses.Setup, "run": &table.FailureClasses.Run}
 }
 
 // mustLoadExitCodes refuses unknown fields, so a key the table gains fails
@@ -101,38 +117,64 @@ func TestExitCodesEachCarryADistinctMeaning(t *testing.T) {
 	}
 }
 
-// setupFailureClass is the spelling of a setup failure's class: lowercase words joined by single
-// hyphens, the token the line on standard error carries after "setup failure: ".
-var setupFailureClass = regexp.MustCompile(`^[a-z][a-z0-9]*(-[a-z0-9]+)*$`)
+// failureClassSpelling is the spelling of a failure's class: lowercase words joined by single
+// hyphens, the token the line on standard error carries after its group's prefix.
+var failureClassSpelling = regexp.MustCompile(`^[a-z][a-z0-9]*(-[a-z0-9]+)*$`)
 
-func TestExitCodesSetupFailuresAreDistinctClassesWithAFix(t *testing.T) {
+func TestExitCodesFailureClassesAreDistinctClassesWithAFix(t *testing.T) {
 	table := mustLoadExitCodes(t)
-	if len(table.SetupFailures) == 0 {
-		t.Fatalf("%s setup_failures is empty, want the classes code 3 names", exitCodesPath)
+	products := map[string]bool{}
+	for _, product := range cliProducts(t) {
+		products[product] = true
 	}
-	seen := map[string]bool{}
-	for i, row := range table.SetupFailures {
-		if !setupFailureClass.MatchString(row.Class) {
-			t.Errorf("%s setup_failures[%d].class = %q, want lowercase words joined by hyphens", exitCodesPath, i, row.Class)
+	seen := map[string]string{}
+	for name, group := range table.groups() {
+		if len(group.Classes) == 0 || strings.TrimSpace(group.Meaning) == "" {
+			t.Errorf("%s failure_classes.%s holds %d classes and meaning %q, want classes and a meaning", exitCodesPath, name, len(group.Classes), group.Meaning)
 		}
-		if seen[row.Class] {
-			t.Errorf("%s setup_failures[%d].class = %q, want a class no other row carries", exitCodesPath, i, row.Class)
-		}
-		seen[row.Class] = true
-		if strings.TrimSpace(row.Meaning) == "" || strings.TrimSpace(row.Fix) == "" {
-			t.Errorf("%s setup_failures[%d] (%s) meaning = %q, fix = %q, want both non-empty", exitCodesPath, i, row.Class, row.Meaning, row.Fix)
+		for i, row := range group.Classes {
+			where := fmt.Sprintf("%s failure_classes.%s.classes[%d] (%s)", exitCodesPath, name, i, row.Class)
+			if !failureClassSpelling.MatchString(row.Class) {
+				t.Errorf("%s class = %q, want lowercase words joined by hyphens", where, row.Class)
+			}
+			if other, ok := seen[row.Class]; ok {
+				t.Errorf("%s class is also a class of the %s group, want a class no other row of either group carries", where, other)
+			}
+			seen[row.Class] = name
+			if strings.TrimSpace(row.Meaning) == "" || strings.TrimSpace(row.Fix) == "" {
+				t.Errorf("%s meaning = %q, fix = %q, want both non-empty", where, row.Meaning, row.Fix)
+			}
+			switch name {
+			case "setup":
+				if len(row.Languages) == 0 || len(row.Products) != 0 {
+					t.Errorf("%s languages = %v, products = %v, want the languages whose analysis ends with it and no products", where, row.Languages, row.Products)
+				}
+			case "run":
+				if len(row.Products) == 0 || len(row.Languages) != 0 {
+					t.Errorf("%s products = %v, languages = %v, want the products whose run ends with it and no languages", where, row.Products, row.Languages)
+				}
+				for _, product := range row.Products {
+					if !products[product] {
+						t.Errorf("%s names the product %q, which contract/cli.json does not", where, product)
+					}
+				}
+			}
 		}
 	}
 }
 
-// memoryExhaustedLine is the line the memory_exhaustion member quotes, with N and M as the
-// placeholders the member defines.
-const memoryExhaustedLine = `"memory exhausted: at least N GB were needed, M GB are available"`
+// memoryExhaustedDetail is the text the memory-exhausted class's line opens its detail with, with
+// N and M as the placeholders the class's fix defines.
+const memoryExhaustedDetail = `"at least N GB were needed, M GB are available"`
 
 func TestExitCodesStateTheMemoryExhaustionLine(t *testing.T) {
 	table := mustLoadExitCodes(t)
-	if !strings.Contains(table.MemoryExhaustion, memoryExhaustedLine) {
-		t.Errorf("%s memory_exhaustion = %q, want it to quote %s", exitCodesPath, table.MemoryExhaustion, memoryExhaustedLine)
+	i := slices.IndexFunc(table.FailureClasses.Run.Classes, func(row failureClass) bool { return row.Class == "memory-exhausted" })
+	if i < 0 {
+		t.Fatalf("%s failure_classes.run holds no memory-exhausted class", exitCodesPath)
+	}
+	if fix := table.FailureClasses.Run.Classes[i].Fix; !strings.Contains(fix, memoryExhaustedDetail) {
+		t.Errorf("%s memory-exhausted fix = %q, want it to quote %s", exitCodesPath, fix, memoryExhaustedDetail)
 	}
 	for _, row := range table.ExitCodes {
 		if row.Code == 3 && !strings.Contains(row.Meaning, "more memory than the machine makes available") {
@@ -154,7 +196,7 @@ func TestExitCodesSetupFailureClassesAreTheOnesTheAnalysisPageStates(t *testing.
 	for _, m := range regexp.MustCompile("`setup failure: ([a-z0-9-]+)`").FindAllSubmatch(page, -1) {
 		stated[string(m[1])] = true
 	}
-	for _, row := range table.SetupFailures {
+	for _, row := range table.FailureClasses.Setup.Classes {
 		if !stated[row.Class] {
 			t.Errorf("%s states no `setup failure: %s`, want every class of %s", setupFailuresPagePath, row.Class, exitCodesPath)
 		}
@@ -165,11 +207,20 @@ func TestExitCodesSetupFailureClassesAreTheOnesTheAnalysisPageStates(t *testing.
 	}
 }
 
-// TestExitCodesStateTheSetupFailurePrefix pins the prefix the products read from the data to the
-// line the description states.
-func TestExitCodesStateTheSetupFailurePrefix(t *testing.T) {
+// TestExitCodesPrefixNamesTheGroup pins each group's prefix, the text the products read from the
+// data, to the group it names, and the page rule that states each group's line to that prefix.
+func TestExitCodesPrefixNamesTheGroup(t *testing.T) {
 	table := mustLoadExitCodes(t)
-	if table.SetupPrefix == "" || !strings.Contains(table.Description, `starts with "`+table.SetupPrefix+`"`) {
-		t.Errorf("%s setup_failure_prefix = %q, want the prefix the description quotes", exitCodesPath, table.SetupPrefix)
+	page, err := fs.ReadFile(spec.Contract, setupFailuresPagePath)
+	if err != nil {
+		t.Fatalf("Setup: fs.ReadFile(Contract, %q): %v", setupFailuresPagePath, err)
+	}
+	for name, group := range table.groups() {
+		if want := name + " failure: "; group.Prefix != want {
+			t.Errorf("%s failure_classes.%s.prefix = %q, want %q, the prefix naming its group", exitCodesPath, name, group.Prefix, want)
+		}
+		if !bytes.Contains(page, []byte("starts with `"+strings.TrimSuffix(group.Prefix, " ")+"`, a space, the class")) {
+			t.Errorf("%s states no line that starts with %q, want the line of the %s group", setupFailuresPagePath, group.Prefix, name)
+		}
 	}
 }

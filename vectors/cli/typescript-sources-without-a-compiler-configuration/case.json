@@ -1,16 +1,25 @@
 {
-  "description": "A tree holding TypeScript sources and a manifest but no compiler configuration puts no language in scope, because TypeScript is in scope by a marker alone: the run holds no program and ends with exit code 3 and the setup failure no-program.",
+  "description": "A tree holding TypeScript sources and a manifest but no compiler configuration puts no language in scope, because TypeScript is in scope by a marker alone: the run holds no program and ends with exit code 3 and the setup failure no-program, whether deadset or the TypeScript analyzer alone runs it.",
   "products": [
-    "deadset"
+    "deadset",
+    "deadset-ts"
   ],
   "argv": [
     "analyze",
     "--target=@TARGET@"
   ],
+  "argv_by_product": {
+    "deadset-ts": [
+      "analyze",
+      "--target=@TARGET@",
+      "--report=@OUT@/report.json"
+    ]
+  },
   "expect": {
     "exit": 3,
     "stderr_contains": [
       "setup failure: no-program"
-    ]
+    ],
+    "report": "absent"
   }
 }

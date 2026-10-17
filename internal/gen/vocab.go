@@ -25,15 +25,25 @@ type (
 		} `json:"exemptions"`
 	}
 	exitCodesDoc struct {
-		SetupFailurePrefix string `json:"setup_failure_prefix"`
-		ExitCodes          []struct {
+		ExitCodes []struct {
 			Name string `json:"name"`
 			Code int    `json:"code"`
 		} `json:"exit_codes"`
-		SetupFailures []struct {
-			Class     string   `json:"class"`
-			Languages []string `json:"languages"`
-		} `json:"setup_failures"`
+		FailureClasses struct {
+			Setup struct {
+				Prefix  string `json:"prefix"`
+				Classes []struct {
+					Class     string   `json:"class"`
+					Languages []string `json:"languages"`
+				} `json:"classes"`
+			} `json:"setup"`
+			Run struct {
+				Prefix  string `json:"prefix"`
+				Classes []struct {
+					Class string `json:"class"`
+				} `json:"classes"`
+			} `json:"run"`
+		} `json:"failure_classes"`
 	}
 	contractDoc struct {
 		ContractVersion string   `json:"contract_version"`
@@ -273,18 +283,24 @@ func (d *vocabDocs) exemptionRows(w *writer) {
 	w.f("}\n\n")
 }
 
-// exitRows writes the exit codes and the setup-failure classes.
+// exitRows writes the exit codes and the failure classes of both groups.
 func (d *vocabDocs) exitRows(w *writer) {
+	setup, runs := &d.exits.FailureClasses.Setup, &d.exits.FailureClasses.Run
 	w.f("// The exit codes a product ends with.\nconst (\n")
 	for _, e := range d.exits.ExitCodes {
 		w.f("Exit%s = %d\n", ident(e.Name), e.Code)
 	}
 	w.f(")\n\n// The setup-failure classes.\nconst (\n")
-	for _, s := range d.exits.SetupFailures {
+	for _, s := range setup.Classes {
 		w.f("Setup%s = %q\n", ident(s.Class), s.Class)
 	}
-	w.f(")\n\n// SetupFailurePrefix opens the line of standard error naming one setup failure.\nconst SetupFailurePrefix = %q\n\nvar setupClasses = []SetupClass{\n", d.exits.SetupFailurePrefix)
-	for _, s := range d.exits.SetupFailures {
+	w.f(")\n\n// The run-failure classes.\nconst (\n")
+	for _, r := range runs.Classes {
+		w.f("Run%s = %q\n", ident(r.Class), r.Class)
+	}
+	w.f(")\n\n// SetupFailurePrefix opens the line of standard error naming one setup failure.\nconst SetupFailurePrefix = %q\n\n", setup.Prefix)
+	w.f("// RunFailurePrefix opens the line of standard error naming one run failure.\nconst RunFailurePrefix = %q\n\nvar setupClasses = []SetupClass{\n", runs.Prefix)
+	for _, s := range setup.Classes {
 		w.f("{Name: Setup%s, Languages: %s},\n", ident(s.Class), goConsts("Language", s.Languages, languageIdent))
 	}
 	w.f("}\n")

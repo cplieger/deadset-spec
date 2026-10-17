@@ -200,7 +200,7 @@
         "ts": []
       },
       "stdout": "description",
-      "exit_codes": [0, 2]
+      "exit_codes": [0, 2, 3]
     },
     {
       "verb": "version",
@@ -211,7 +211,7 @@
         "ts": []
       },
       "stdout": "version",
-      "exit_codes": [0, 2]
+      "exit_codes": [0, 2, 3]
     },
     {
       "verb": "print-projects",

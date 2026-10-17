@@ -17,5 +17,5 @@ Each family of rules is one page, and each rule is a numbered paragraph cited by
 | [Convention rows](analysis/conventions.md) | Convention rows |
 | [Confidence](analysis/confidence.md) | Confidence |
 | [Fixability](analysis/fixability.md) | Fixability, Positional members |
-| [Setup failures](analysis/setup-failures.md) | Setup failures |
+| [Setup failures](analysis/setup-failures.md) | Setup failures, Run failures |
 | [Notes](analysis/notes.md) | Notes |

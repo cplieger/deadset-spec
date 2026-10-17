@@ -2,29 +2,42 @@
 
 Each case is one invocation of a product's command line over a small tree, and the outcome it must have. A case holds `case.json` and `tree/`, the files of the target. The runner copies `tree/` to a fresh directory, replaces `@TARGET@` in the arguments and in the text of the tree's files with that directory and `@OUT@` with a fresh output directory, runs each product `products` names with `argv` (or its own entry of `argv_by_product`) from the target directory, and compares:
 
-- `exit`: the exit code.
+- `exit`: the exit code. A run that ends with exit code 3 must also print exactly one class line on standard error, a line a group prefix of `failure_classes` in `contract/exit-codes.json` opens.
 - `stderr_contains`: strings standard error holds.
 - `report`: `valid` when the report file must exist and be an instance of `contract/report.schema.json`, `absent` when no report may be written.
 - `finding_paths`: the paths of the report's findings, in order.
 - `finding_symbols`: the names of the report's findings' symbols, in order.
+- `env`: environment variables the run is given beside the runner's own, `@TARGET@` and `@OUT@` replaced in their values.
 - `rename`: tree files the runner renames before the run, for a file this module cannot embed under its own name: a `go.mod`, which makes its directory another module, a Go source file, which would be a package of this module, a name Go does not embed, or a document the module's own checks would refuse.
 - `repeat`: how many times the invocation runs, each run giving the same outcome.
+- `executables`: tree files, named as the run sees them, that the runner makes executable, such as a stub analyzer a provider entry names. A `describe.json` in the tree is the document such a stub prints, and the module's checks hold it to the describe schema and to the report schema versions `contract/contract.json` lists.
+- `interrupt`: a path, `@TARGET@` and `@OUT@` replaced: once a file is there, the runner sends the run an interrupt, so a stub that writes the file while the run waits on it interrupts the run at a known point.
 
 A case with `pending` states a rule no product implements yet, named by the reason; the runner reports its result as pending, as the corpus does for a pending fixture. `deadset-corpus cases --product=NAME -- PRODUCT` runs every case naming a product.
 
 | Case | What it pins |
 | --- | --- |
+| `analyzer-ends-with-the-failure-code-and-no-class-line` | An admitted analyzer whose analysis ends with exit code 3 and prints no class line is a fault of that analyzer: the run ends with exit code 3 and the run failure product-fault naming the analyzer. |
 | `cascade-full-edge-evaluation` | An analyzer's report under reporters.cascade full is an instance of the report schema: a finding an edge evaluation carries lists no component members, and its component is listed in the report's components. |
 | `edge-identifier-written-twice-refused` | The edges document keys each edge by its identifier, so an identifier written twice is a key written twice: the run ends with the usage code 2 before any analysis, the edges document named, as contract/edges.schema.json states. |
+| `edge-side-no-analyzer-evaluates` | A Go declaration only an edge's TypeScript side would use is a pending finding, and with no TypeScript in scope no analyzer evaluates that side: the merge ends the run with exit code 3 and the run failure unresolved-edge naming the edge. |
 | `findings-ordered-bytewise-above-the-basic-plane` | A report lists findings in the bytewise order of their paths' UTF-8 encoding: a path holding U+FF5E sorts before one holding U+1F600, whose encoding starts with a higher byte, though the latter's UTF-16 code unit is lower. |
 | `go-work-reader-under-a-scope-document` | A module of the target's workspace is a reader of the target whatever source names the target: a function the workspace's other module calls is live with or without a scope document, and a function nothing calls is reported. |
+| `interrupted-while-the-analysis-runs` | A run sent an interrupt while its analysis runs ends with exit code 3 and the run failure interrupted-run, before any report is written. |
 | `malformed-ignore-document` | An ignore file that is not a JSON document is a refused document: the run ends with the usage code 2, as suppression.md's refusals table states, in every analyzer. |
+| `memory-exhausted-under-a-memory-limit` | A run whose memory limit is below what the analysis needs ends with exit code 3 and the run failure memory-exhausted, naming the memory needed and the memory available, before any report is written. |
+| `provider-command-not-an-analyzer` | A provider command that runs but describes no analyzer is not admitted: the run ends with exit code 3 and the run failure unadmitted-analyzer naming the entry, before any analysis. |
+| `provider-command-not-installed` | A provider command that resolves to no executable names an analyzer the run cannot find: the run ends with exit code 3 and the run failure missing-analyzer naming the entry. |
+| `report-path-in-a-missing-directory` | A report path whose directory does not exist is a document the run cannot write: the run ends with exit code 3 and the run failure unwritten-output naming the path, and no report is written. |
+| `target-outside-the-invoked-directory` | A target outside the directory the run was invoked from has no spelling a report admits: the run ends with exit code 3 and the run failure unreportable-path, and no report is written. |
 | `template-refusal-names-the-first-definition` | A template refused for its definitions names the first definition in the order the text writes them, whatever order a product holds them in, so two runs of one template print one refusal. |
 | `third-scheme-entry-read-unchecked` | An ignore entry of a scheme no analyzer of the run implements is read unchecked: it binds nothing, is reported under no code, and the run ends as it would without it. |
+| `two-missing-modules-print-one-class-line` | A run that two imports of missing modules end prints exactly one class line, the setup failure missing-module naming the first import, and the second import on a line of its own with no group prefix. |
 | `typescript-configuration-under-a-dot-directory` | A compiler configuration in a directory whose name starts with a full stop puts TypeScript in scope, because the TypeScript row of languages.json skips only node_modules and .git, the directories its analyzer's discovery leaves unread: the run then needs an analyzer claiming ts, and a provider list naming only the Go analyzer is refused with the usage code 2. |
 | `typescript-configuration-under-testdata` | A compiler configuration under a testdata directory puts TypeScript in scope, because only the Go row of languages.json skips testdata: the run then needs an analyzer claiming ts, and a provider list naming only the Go analyzer is refused with the usage code 2. |
 | `typescript-sources-without-a-compiler-configuration` | A tree holding TypeScript sources and a manifest but no compiler configuration puts no language in scope, because TypeScript is in scope by a marker alone: the run holds no program and ends with exit code 3 and the setup failure no-program. |
 | `unknown-exemption-class-refused-at-configuration` | exemptions.disabled admits only the classes of contract/exemptions.json, and the check is a configuration check: print-config refuses a class the vocabulary does not hold with the usage code 2, as analyze does. |
+| `unreadable-ignore-document` | An ignore file at the target root that is a directory is a document the run cannot read: nothing is read from it, and the run ends with exit code 3 and the setup failure unreadable-document naming it, before any report is written. |
 | `unreadable-named-configuration` | A configuration file the invocation names that cannot be read ends the run with the usage code 2, the file named, before any analysis. |
 | `unreadable-named-scope-document` | A scope document the invocation names that cannot be read ends the run with the usage code 2, the file named, before any analysis. |
 | `usage-names-the-verbs-of-the-command-line` | A verb the orchestrator's row of cli.json does not name is refused with the usage code 2, and the usage text names every verb of that row with its summary. |
