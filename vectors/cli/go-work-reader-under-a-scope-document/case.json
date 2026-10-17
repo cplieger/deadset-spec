@@ -1,6 +1,5 @@
 {
   "description": "A module of the target's workspace is a reader of the target whatever source names the target: a function the workspace's other module calls is live with or without a scope document, and a function nothing calls is reported.",
-  "pending": "the topology rule of the Go modules of a target: the Go analyzer counts a go.work reader only when no scope document names the target.",
   "products": [
     "deadset-go"
   ],
