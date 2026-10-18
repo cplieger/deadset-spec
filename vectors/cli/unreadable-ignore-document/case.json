@@ -2,10 +2,13 @@
   "description": "An ignore file at the target root that is a directory is a document the run cannot read: nothing is read from it, and the run ends with exit code 3 and the setup failure unreadable-document naming it, before any report is written.",
   "products": [
     "deadset",
+    "deadset-go",
     "deadset-ts"
   ],
   "rename": {
-    "deadset-ignore.json.d/README.txt": "deadset-ignore.json/README.txt"
+    "deadset-ignore.json.d/README.txt": "deadset-ignore.json/README.txt",
+    "go.mod.txt": "go.mod",
+    "main.go.txt": "main.go"
   },
   "argv": [
     "analyze",
@@ -13,6 +16,11 @@
   ],
   "argv_by_product": {
     "deadset-ts": [
+      "analyze",
+      "--target=@TARGET@",
+      "--report=@OUT@/report.json"
+    ],
+    "deadset-go": [
       "analyze",
       "--target=@TARGET@",
       "--report=@OUT@/report.json"

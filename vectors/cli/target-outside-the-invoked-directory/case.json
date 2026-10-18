@@ -1,6 +1,7 @@
 {
   "description": "A report names its target relative to the directory the run was invoked from, so a target outside that directory has no spelling the report admits: the run ends with exit code 3 and the run failure unreportable-path, and no report is written.",
   "products": [
+    "deadset-go",
     "deadset-ts"
   ],
   "rename": {
@@ -13,6 +14,14 @@
     "--config=@TARGET@/deadset.json",
     "--report=@OUT@/report.json"
   ],
+  "argv_by_product": {
+    "deadset-go": [
+      "analyze",
+      "--target=..",
+      "--config=@TARGET@/deadset.json",
+      "--report=@OUT@/report.json"
+    ]
+  },
   "expect": {
     "exit": 3,
     "stderr_contains": [

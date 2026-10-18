@@ -1,0 +1,22 @@
+{
+  "description": "A configured root whose text before :// names another language is accepted unread: the Go analysis matches only the roots of its own language and those whose text before :// holds a wildcard, so it reports the Go root that names nothing and no root of another language.",
+  "products": [
+    "deadset-go"
+  ],
+  "rename": {
+    "go.mod.txt": "go.mod",
+    "main.go.txt": "main.go"
+  },
+  "argv": [
+    "analyze",
+    "--target=@TARGET@",
+    "--report=@OUT@/report.json"
+  ],
+  "expect": {
+    "exit": 1,
+    "report": "valid",
+    "finding_symbols": [
+      "go://example.com/app#absent"
+    ]
+  }
+}
