@@ -1,5 +1,5 @@
 {
-  "description": "A tree holding TypeScript sources and a manifest but no compiler configuration puts no language in scope, because TypeScript is in scope by a marker alone: the run holds no program and ends with exit code 3 and the setup failure no-program, whether deadset or the TypeScript analyzer alone runs it.",
+  "description": "A tree holding TypeScript sources and a manifest but no compiler configuration puts no language in scope, because a TypeScript source puts TypeScript in scope only beside a marker, the TypeScript row of languages.json listing as its extensions only those of the JavaScript files its analyzer forms a program from: the run holds no program and ends with exit code 3 and the setup failure no-program, whether deadset or the TypeScript analyzer alone runs it.",
   "products": [
     "deadset",
     "deadset-ts"

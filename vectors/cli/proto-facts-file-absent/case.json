@@ -1,5 +1,6 @@
 {
   "description": "An analyzer handed --facts that writes its report and no facts document is a fault of that analyzer, read fail-closed like a missing report: the run ends with exit code 3 and the run failure product-fault naming the analyzer, and no merged report is written.",
+  "pending": "the Protocol Buffers schema reader inside deadset, which reads the .proto files and joins the analyzers' binding facts; no deadset release carries it yet.",
   "products": [
     "deadset"
   ],

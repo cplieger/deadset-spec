@@ -1,5 +1,6 @@
 {
   "description": "With proto in scope the run asks every analyzer for facts, so an analyzer whose describe document names no facts version written is not admitted: the run ends with exit code 3 and the run failure unadmitted-analyzer naming the entry, before any analysis.",
+  "pending": "the Protocol Buffers schema reader inside deadset, which reads the .proto files and joins the analyzers' binding facts; no deadset release carries it yet.",
   "products": [
     "deadset"
   ],

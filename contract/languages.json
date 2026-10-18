@@ -1,5 +1,5 @@
 {
-  "description": "The languages the suite analyzes, one row each, read by the orchestrator and by the analyzer of each language alike, so detection, discovery, identity and invocation decide from one row. kind is analyzed for a language a program is compiled from and schema for a language whose definitions generated code of another language carries. runner names how the orchestrator obtains the language's report: process, an analyzer the provider list names, run as a process with a scope document and a configuration; in-process, a reader the orchestrator holds. A language is in scope for a target when the tree holds one of its markers, or, where program_without_marker is true, one of its source extensions together with one of its companions where it names any. Markers, companions and skipped_directories are patterns matched against a file's or a directory's name alone, as Go's path.Match matches them. A file below a directory one of a row's skipped_directories matches puts that row's language in no scope; the target root itself, and a directory a scope document names, are read whatever their names. Each row skips the directories its analyzer's own discovery leaves unread, so a language is detected exactly where its analyzer finds a program. identity_source names the file whose declared name identifies a module of the language: go.mod is the one governing the module's directory, at it or the nearest directory above it, as the go command reads it, and package.json is the one in the module's directory. A row of kind schema names no identity_source, because a schema language declares no module, so it identifies none. The orchestrator names every module it hands an analyzer by the identity source of the first row, in this document's order, of a language the run loads the module in whose file names it, and names a target that several languages load and no such file names \".\". workspace_files names the files that list a workspace's members. takes_target_kind says whether the language's analysis reads target.kind, and so whether target.kind written per language names it. name is how a sentence names the language.",
+  "description": "The languages the suite analyzes, one row each, read by the orchestrator and by the analyzer of each language alike, so detection, discovery, identity and invocation decide from one row. kind is analyzed for a language a program is compiled from and schema for a language whose definitions generated code of another language carries. runner names how the orchestrator obtains the language's report: process, an analyzer the provider list names, run as a process with a scope document and a configuration; in-process, a reader the orchestrator holds. A language is in scope for a target when the tree holds one of its markers, or a file whose extension is one of its extensions and whose name none of its skipped_files matches. extensions lists the extensions of the files the language's analyzer forms a program from without a marker, and is empty for a language only a marker puts in scope. Markers, skipped_files and skipped_directories are patterns matched against a file's or a directory's name alone, as Go's path.Match matches them. A file below a directory one of a row's skipped_directories matches puts that row's language in no scope; the target root itself, and a directory a scope document names, are read whatever their names. Each row skips the directories and the files its analyzer's own discovery leaves unread by their names, so a language is detected wherever its analyzer finds a program. The analyzer's discovery still decides whether the target holds a program, because an analyzer also leaves a file out for what the file holds or what another file says of it, as the TypeScript analyzer leaves out a JavaScript file git ignores, one below a build's output directory and one minified by its line lengths. So in a run whose analysis.languages names no language, an analyzer that ends with exit code 3 and the setup failure no-program as its one failure found none of the languages the orchestrator handed it: the orchestrator leaves that analyzer out of the run, and with it every language it was handed that no analyzer the run keeps was handed, shows every line the analyzer printed opened by its name, and names on standard error the languages left out or, where it leaves none out, that the run goes on without that analyzer. The run is then planned as the census without the languages left out. A declared consumer every language of which is left out is left out with them and named on the line that names them, since no analyzer the run keeps reads it; a run whose analysis.languages names the language analyzes it, as below. An analyzer the run keeps that this plan names a module for otherwise is run again with the scope document so named, and any failure of that run ends the run as a failure of its first run would, with the class line it printed, since its first run found a program. The orchestrator merges the reports of the analyzers it keeps, each from its last run. Where every analyzer of the run ends so, none is left out, and the run ends with that failure. A language analysis.languages names is analyzed whatever its analyzer finds, so its no-program ends the run. identity_source names the file whose declared name identifies a module of the language: go.mod is the one governing the module's directory, at it or the nearest directory above it, as the go command reads it, and package.json is the one in the module's directory. A row of kind schema names no identity_source, because a schema language declares no module, so it identifies none. The orchestrator names every module it hands an analyzer by the identity source of the first row, in this document's order, of a language the run loads the module in whose file names it, and names a target that several languages load and no such file names \".\". workspace_files names the files that list a workspace's members. takes_target_kind says whether the language's analysis reads target.kind, and so whether target.kind written per language names it. name is how a sentence names the language.",
   "languages": [
     {
       "language": "go",
@@ -10,8 +10,7 @@
       "analyzer": "deadset-go",
       "markers": ["go.mod"],
       "extensions": [".go"],
-      "companions": [],
-      "program_without_marker": true,
+      "skipped_files": ["_*", ".*"],
       "skipped_directories": ["node_modules", "testdata", "vendor", ".*", "_*"],
       "identity_source": { "file": "go.mod", "field": "module" },
       "workspace_files": ["go.work"],
@@ -25,9 +24,8 @@
       "runner": "process",
       "analyzer": "deadset-ts",
       "markers": ["tsconfig*.json", "jsconfig*.json"],
-      "extensions": [".ts", ".tsx", ".mts", ".cts"],
-      "companions": ["package.json"],
-      "program_without_marker": false,
+      "extensions": [".js", ".jsx", ".mjs", ".cjs"],
+      "skipped_files": ["*.min.js", "*.min.cjs", "*.min.mjs"],
       "skipped_directories": ["node_modules", ".git"],
       "identity_source": { "file": "package.json", "field": "name" },
       "workspace_files": ["package.json", "pnpm-workspace.yaml"],
@@ -42,8 +40,7 @@
       "analyzer": "deadset-proto",
       "markers": ["buf.yaml", "buf.work.yaml"],
       "extensions": [".proto"],
-      "companions": [],
-      "program_without_marker": true,
+      "skipped_files": [],
       "skipped_directories": ["node_modules", "vendor", ".*"],
       "workspace_files": [],
       "takes_target_kind": false

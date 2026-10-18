@@ -1,0 +1,35 @@
+{
+  "description": "Two provider entries claim Go over a target whose Go module sits below its root and whose only JavaScript file is one git ignores, and the TypeScript analyzer ends with the setup failure no-program as its one failure: the run leaves TypeScript out and runs both Go analyzers again without the id \".\" that two languages gave the target, and where one of them ends that second run with the setup failure no-program, the run ends with exit code 3 and that analyzer's own class line, its other lines shown under its name, though the other reports, and no merged report is written, as languages.json states.",
+  "products": [
+    "deadset"
+  ],
+  "rename": {
+    "services/api/go.mod.txt": "services/api/go.mod",
+    "services/api/main.go.txt": "services/api/main.go",
+    "gitignore.txt": ".gitignore"
+  },
+  "executables": [
+    "bin/go/analyzer",
+    "bin/other/analyzer",
+    "bin/ts/analyzer"
+  ],
+  "report_file": "@OUT@/run/report.json",
+  "argv": [
+    "analyze",
+    "--target=@TARGET@",
+    "--run-dir=@OUT@/run"
+  ],
+  "expect": {
+    "exit": 3,
+    "report": "absent",
+    "stderr_contains": [
+      "deadset-go: loading the narrowed scope\n",
+      "\nsetup failure: no-program: the target holds no package this build loads"
+    ],
+    "files_contain": {
+      "@OUT@/run/rerun/report.other-go.json": [
+        "\"identity\": \"example.com/api\""
+      ]
+    }
+  }
+}

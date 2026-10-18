@@ -1,0 +1,29 @@
+{
+  "target": {
+    "kind": "application"
+  },
+  "analysis": {
+    "languages": [
+      "go",
+      "ts"
+    ]
+  },
+  "providers": {
+    "analyzers": [
+      {
+        "name": "deadset-ts",
+        "command": "@TARGET@/bin/ts/analyzer",
+        "languages": [
+          "ts"
+        ]
+      },
+      {
+        "name": "deadset-go",
+        "command": "@TARGET@/bin/go/analyzer",
+        "languages": [
+          "go"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "description": "A tree whose only JavaScript files sit in a directory the TypeScript row of languages.json skips, or carry a name one of its skipped_files patterns matches, puts no language in scope, because its analyzer forms no program from such files: the run holds no program and ends with exit code 3 and the setup failure no-program, whether deadset or the TypeScript analyzer alone runs it.",
+  "products": [
+    "deadset",
+    "deadset-ts"
+  ],
+  "rename": {
+    "nm/left-pad/index.js": "node_modules/left-pad/index.js"
+  },
+  "argv": [
+    "analyze",
+    "--target=@TARGET@"
+  ],
+  "argv_by_product": {
+    "deadset-ts": [
+      "analyze",
+      "--target=@TARGET@",
+      "--report=@OUT@/report.json"
+    ]
+  },
+  "expect": {
+    "exit": 3,
+    "stderr_contains": [
+      "setup failure: no-program"
+    ],
+    "report": "absent"
+  }
+}

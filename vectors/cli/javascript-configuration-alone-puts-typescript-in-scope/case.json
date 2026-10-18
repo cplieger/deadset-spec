@@ -1,0 +1,16 @@
+{
+  "description": "A tree whose only compiler configuration is a jsconfig.json puts TypeScript in scope, because jsconfig*.json is a marker of the TypeScript row of languages.json: the run then needs an analyzer claiming ts, and an empty provider list is refused with the usage code 2.",
+  "products": [
+    "deadset"
+  ],
+  "argv": [
+    "analyze",
+    "--target=@TARGET@"
+  ],
+  "expect": {
+    "exit": 2,
+    "stderr_contains": [
+      "claiming \"ts\", in scope"
+    ]
+  }
+}

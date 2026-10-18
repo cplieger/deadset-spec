@@ -1,0 +1,17 @@
+#!/bin/sh
+dir=$(dirname "$0")
+scope='' report=''
+if [ "$1" = describe ]; then
+	exec cat "$dir/describe.json"
+fi
+for arg in "$@"; do
+	case $arg in
+	--scope=*) scope=${arg#--scope=} ;;
+	--report=*) report=${arg#--report=} ;;
+	esac
+done
+# As the Go analyzer does, name the target by the id the scope hands it, else
+# by the module its load finds.
+id=$(sed -n 's/^    "id": "\(.*\)",$/\1/p' "$scope" | head -n 1)
+sed "s|\"identity\": \"IDENTITY\"|\"identity\": \"${id:-example.com/api}\"|" "$dir/report.json" >"$report"
+exit 0

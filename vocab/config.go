@@ -106,30 +106,29 @@ type IdentitySource struct {
 }
 
 // LanguageRow is one language of the suite, its members those of its
-// contract/languages.json row. Markers, Companions and SkippedDirectories are
+// contract/languages.json row. Markers, SkippedFiles and SkippedDirectories are
 // path.Match patterns over a name alone.
 type LanguageRow struct {
-	IdentitySource       IdentitySource
-	Language             Language
-	Name                 string
-	Kind                 string
-	Scheme               string
-	Runner               string
-	Analyzer             string
-	Markers              []string
-	Extensions           []string
-	Companions           []string
-	SkippedDirectories   []string
-	WorkspaceFiles       []string
-	ProgramWithoutMarker bool
-	TakesTargetKind      bool
+	IdentitySource     IdentitySource
+	Language           Language
+	Name               string
+	Kind               string
+	Scheme             string
+	Runner             string
+	Analyzer           string
+	Markers            []string
+	Extensions         []string
+	SkippedFiles       []string
+	SkippedDirectories []string
+	WorkspaceFiles     []string
+	TakesTargetKind    bool
 }
 
 func (l *LanguageRow) clone() LanguageRow {
 	held := *l
 	held.Markers = slices.Clone(l.Markers)
 	held.Extensions = slices.Clone(l.Extensions)
-	held.Companions = slices.Clone(l.Companions)
+	held.SkippedFiles = slices.Clone(l.SkippedFiles)
 	held.SkippedDirectories = slices.Clone(l.SkippedDirectories)
 	held.WorkspaceFiles = slices.Clone(l.WorkspaceFiles)
 	return held
@@ -163,14 +162,11 @@ func (l *LanguageRow) Skips(dir string) bool { return matchesAny(l.SkippedDirect
 // Marks reports whether a file of that name puts the language in scope alone.
 func (l *LanguageRow) Marks(file string) bool { return matchesAny(l.Markers, file) }
 
-// Accompanies reports whether a file of that name is one of the language's
-// companions.
-func (l *LanguageRow) Accompanies(file string) bool { return matchesAny(l.Companions, file) }
-
-// Sources reports whether a file of that name is a source file of the
-// language, by its extension.
+// Sources reports whether a file of that name puts the language in scope
+// without a marker: its extension is one of the row's and none of the row's
+// skipped files matches it.
 func (l *LanguageRow) Sources(file string) bool {
-	return slices.Contains(l.Extensions, path.Ext(file))
+	return slices.Contains(l.Extensions, path.Ext(file)) && !matchesAny(l.SkippedFiles, file)
 }
 
 // matchesAny reports whether a name matches one of the patterns; a pattern
