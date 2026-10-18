@@ -1,0 +1,30 @@
+{
+  "name": "proto-rpc-called-from-ts",
+  "description": "A Connect client that createClient builds from a protobuf-es v2 service constant calls an RPC through the method the constant's type names, so the call keeps that RPC's consumer live, and the service constant with it, while the RPC no client calls is unreferenced.",
+  "rules": ["bindings.6", "bindings.16", "references-ts.28"],
+  "pending": "bindings.16: deadset-ts reads a call through a createClient client as a read of the service constant's method member (J7).",
+  "languages": ["ts"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "facts": [
+    {
+      "symbol": "PingService",
+      "role": "consumer",
+      "schema": "proto://v1#PingService",
+      "state": "live"
+    },
+    {
+      "symbol": "PingService.ping",
+      "role": "consumer",
+      "schema": "proto://v1#PingService.Ping",
+      "state": "live"
+    },
+    {
+      "symbol": "PingService.fail",
+      "role": "consumer",
+      "schema": "proto://v1#PingService.Fail",
+      "state": "unreferenced"
+    }
+  ],
+  "expect": []
+}

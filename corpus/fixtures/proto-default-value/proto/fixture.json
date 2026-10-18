@@ -1,0 +1,14 @@
+{
+  "symbols": {
+    "Status.STATUS_UNSPECIFIED": {
+      "file": "target/v1/status.proto",
+      "line": 6,
+      "ref": "proto://v1#Status.STATUS_UNSPECIFIED"
+    },
+    "Status.STATUS_OK": {
+      "file": "target/v1/status.proto",
+      "line": 7,
+      "ref": "proto://v1#Status.STATUS_OK"
+    }
+  }
+}

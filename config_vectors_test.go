@@ -17,6 +17,7 @@ import (
 
 	"github.com/cplieger/deadset-spec/v8"
 	"github.com/cplieger/deadset-spec/v8/corpus"
+	"github.com/cplieger/deadset-spec/v8/document"
 	"github.com/cplieger/deadset-spec/v8/vocab"
 )
 
@@ -41,7 +42,9 @@ var configVectorAspects = []string{
 	"member-written-as-null",
 	"missing-target-kind",
 	"provenance-on-input",
+	"provider-claims-schema-language-refused",
 	"provider-name-duplicated",
+	"provider-named-like-in-process-reader-refused",
 	"quoted-key-with-a-dot",
 	"resolved-configuration-round-trip",
 	"severity-key-names-no-kind",
@@ -686,6 +689,35 @@ func TestConfigVectorComponentExtensionCaseHoldsAnExtensionThePatternRefuses(t *
 	}
 }
 
+// TestConfigVectorProviderSchemaRowCasesAreRefusedByTheSchema pins the input each case exists
+// for: a provider entry whose first refusal by the published configuration schema is at the value
+// the refusal names.
+func TestConfigVectorProviderSchemaRowCasesAreRefusedByTheSchema(t *testing.T) {
+	for aspect, pointer := range map[string]string{
+		"provider-claims-schema-language-refused":       "/providers/analyzers/0/languages/0",
+		"provider-named-like-in-process-reader-refused": "/providers/analyzers/0/name",
+	} {
+		t.Run(aspect, func(t *testing.T) {
+			dir := caseCovering(t, aspect)
+			data, ok := readVectorFile(t, dir, vectorRepositoryFile)
+			if !ok {
+				t.Fatalf("Setup: %s/%s/%s is absent", configVectorsDir, dir, vectorRepositoryFile)
+			}
+			schema, err := document.Compile(spec.Contract, "contract/config.schema.json")
+			if err != nil {
+				t.Fatalf("Setup: compile the configuration schema: %v", err)
+			}
+			value, err := document.Decode(data)
+			if err != nil {
+				t.Fatalf("Setup: decode %s: %v", dir, err)
+			}
+			if got := schema.FirstRefusal(value); got == nil || got.Pointer != pointer {
+				t.Errorf("FirstRefusal(%s) = %v, want a refusal at %q", dir, got, pointer)
+			}
+		})
+	}
+}
+
 // TestConfigVectorProviderNameCaseHoldsOneNameTwice pins the input the case exists for: a
 // provider list the schema admits whose entries repeat one name, so only the unique-name rule
 // refuses it, and a refusal naming the entry that repeats the name.
@@ -1045,7 +1077,7 @@ func targetKindRefusal(raw json.RawMessage, languages, kinds []string) (string, 
 // case refusing it on that key names the first fault of its highest-ranked source.
 func TestConfigVectorTargetKindCasesNameTheFaultTheKeyOrders(t *testing.T) {
 	kinds := []string{"application", "library"}
-	languages := contractLanguages()
+	languages := targetKindLanguages()
 	checked := 0
 	for _, dir := range vectorCaseDirs(t, spec.Vectors, "config") {
 		var refusal configVectorError
@@ -1089,12 +1121,26 @@ func TestConfigVectorTargetKindCasesNameTheFaultTheKeyOrders(t *testing.T) {
 	}
 }
 
+// targetKindLanguages are the languages whose contract/languages.json row takes a
+// target kind, in the registry's order.
+func targetKindLanguages() []string {
+	var languages []string
+	for _, row := range vocab.LanguageRows() {
+		if row.TakesTargetKind {
+			languages = append(languages, string(row.Language))
+		}
+	}
+	return languages
+}
+
 // vectorProducts are the products a case may name: the orchestrator and the
-// analyzer of every language contract/languages.json lists.
+// analyzer of every language contract/languages.json runs as a process.
 func vectorProducts() []string {
 	products := []string{"deadset"}
 	for _, row := range vocab.LanguageRows() {
-		products = append(products, row.Analyzer)
+		if row.Runner == "process" {
+			products = append(products, row.Analyzer)
+		}
 	}
 	return products
 }

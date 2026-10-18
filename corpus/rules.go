@@ -26,8 +26,12 @@ var (
 var ruleIDPattern = regexp.MustCompile(`\*\*([a-z][a-z-]*\.\d+)\*\*`)
 
 // Rules maps each rule id the analysis pages state to the languages that follow
-// it: the language of a references-<language> page, every language otherwise.
+// it: the language of a references-<language> page, the schema languages for
+// schemas.md, and the analyzed languages for every other page.
 type Rules map[string][]string
+
+// schemaPage is the page whose rules the readers of the schema languages follow.
+const schemaPage = "schemas"
 
 // ReadRules reads the rule ids of every analysis page of the Contract.
 func ReadRules() (Rules, error) {
@@ -36,9 +40,10 @@ func ReadRules() (Rules, error) {
 	if err != nil {
 		return nil, err
 	}
-	var all []string
-	for _, language := range vocab.Languages() {
-		all = append(all, string(language))
+	byKind := map[string][]string{}
+	rows := vocab.LanguageRows()
+	for i := range rows {
+		byKind[rows[i].Kind] = append(byKind[rows[i].Kind], string(rows[i].Language))
 	}
 	rules := Rules{}
 	for _, entry := range entries {
@@ -50,10 +55,7 @@ func ReadRules() (Rules, error) {
 		if err != nil {
 			return nil, err
 		}
-		languages := all
-		if language, own := strings.CutPrefix(page, "references-"); own {
-			languages = []string{language}
-		}
+		languages := pageLanguages(page, byKind)
 		for _, match := range ruleIDPattern.FindAllStringSubmatch(string(data), -1) {
 			if id := match[1]; strings.HasPrefix(id, page+".") {
 				rules[id] = languages
@@ -105,4 +107,16 @@ func followedBy(expect *Expectation, id string, languages []string) []error {
 		}
 	}
 	return errs
+}
+
+// pageLanguages is the languages that follow the rules of one page, given the
+// languages of each row kind.
+func pageLanguages(page string, byKind map[string][]string) []string {
+	if language, own := strings.CutPrefix(page, "references-"); own {
+		return []string{language}
+	}
+	if page == schemaPage {
+		return byKind["schema"]
+	}
+	return byKind["analyzed"]
 }

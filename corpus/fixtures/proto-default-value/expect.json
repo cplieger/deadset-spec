@@ -1,0 +1,24 @@
+{
+  "name": "proto-default-value",
+  "description": "The first value of an open enum is the value of every unset field of its type and is live under schema-default-value; the enum's other values are published as any declaration.",
+  "rules": ["schemas.8"],
+  "languages": ["proto"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "facts": [
+    {
+      "symbol": "Status.STATUS_UNSPECIFIED",
+      "role": "schema",
+      "schema": "proto://v1#Status.STATUS_UNSPECIFIED",
+      "state": "live"
+    },
+    {
+      "symbol": "Status.STATUS_OK",
+      "role": "schema",
+      "schema": "proto://v1#Status.STATUS_OK",
+      "state": "dead",
+      "report": "DS1803"
+    }
+  ],
+  "expect": []
+}

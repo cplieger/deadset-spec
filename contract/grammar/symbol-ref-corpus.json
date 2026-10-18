@@ -1025,5 +1025,180 @@
     "form": "parameter",
     "accepted": false,
     "reason": "A parameter ends the reference; no component follows it."
+  },
+  {
+    "input": "ts://@example/app/gen/v1/service_pb.ts#Backrest.getConfig",
+    "language": "ts",
+    "form": "literal-member",
+    "accepted": true,
+    "reason": "A property of the object type literal that is the type argument of a module-level const's declared type.",
+    "example": "export const Backrest: GenService<{ getConfig: { methodKind: \"unary\"; input: typeof GetConfigRequestSchema; output: typeof ConfigSchema } }> = serviceDesc(file_v1_service, 0);"
+  },
+  {
+    "input": "ts://@example/app/gen/eliza_connect.ts#ElizaService.methods.say",
+    "language": "ts",
+    "form": "literal-member",
+    "accepted": true,
+    "reason": "A property of a nested object literal initialising a module-level const, spelled through each literal.",
+    "example": "export const ElizaService = { typeName: \"connectrpc.eliza.v1.ElizaService\", methods: { say: { name: \"Say\" } } } as const;"
+  },
+  {
+    "input": "ts://@example/app/gen/config_pb.ts#RetentionPolicy.policy.'policyKeepLastN':case",
+    "language": "ts",
+    "form": "case-constituent",
+    "accepted": true,
+    "reason": "A union constituent discriminated by a string literal: the property's reference, the literal quoted, and the :case selector.",
+    "example": "policy: { value: number; case: \"policyKeepLastN\" } | { case: undefined; value?: undefined };"
+  },
+  {
+    "input": "ts://@example/app/gen/config_pb.ts#RetentionPolicy.policy.policyKeepLastN:case",
+    "language": "ts",
+    "form": "case-constituent",
+    "accepted": false,
+    "reason": "The discriminant literal is always quoted before :case; a bare one is no spelling."
+  },
+  {
+    "input": "ts://@example/app/gen/config_pb.ts#RetentionPolicy.policy.\"policyKeepLastN\":case",
+    "language": "ts",
+    "form": "case-constituent",
+    "accepted": false,
+    "reason": "A quoted component takes single quotes, never double."
+  },
+  {
+    "input": "ts://@example/app/gen/config_pb.ts#'policyKeepLastN':case",
+    "language": "ts",
+    "form": "case-constituent",
+    "accepted": false,
+    "reason": "A constituent follows the property whose union it belongs to; it never opens a fragment."
+  },
+  {
+    "input": "proto://v1#BackupRequest",
+    "language": "proto",
+    "form": "message",
+    "accepted": true,
+    "reason": "A message at file level, scoped by the package its file declares.",
+    "example": "message BackupRequest {"
+  },
+  {
+    "input": "proto://v1#RetentionPolicy.TimeBucketedCounts",
+    "language": "proto",
+    "form": "message",
+    "accepted": true,
+    "reason": "A nested message, spelled through its containing message.",
+    "example": "message TimeBucketedCounts {"
+  },
+  {
+    "input": "proto://.#Ping",
+    "language": "proto",
+    "form": "message",
+    "accepted": true,
+    "reason": "A file with no package statement is scoped by a single dot.",
+    "example": "message Ping {}"
+  },
+  {
+    "input": "proto://google.api#HttpRule",
+    "language": "proto",
+    "form": "message",
+    "accepted": true,
+    "reason": "A dotted package is the scope as the package statement spells it.",
+    "example": "message HttpRule {"
+  },
+  {
+    "input": "proto://v1#DoRepoTaskRequest.Task",
+    "language": "proto",
+    "form": "enum",
+    "accepted": true,
+    "reason": "An enum nested in a message.",
+    "example": "enum Task {"
+  },
+  {
+    "input": "proto://v1#BackupRequest.dry_run",
+    "language": "proto",
+    "form": "field",
+    "accepted": true,
+    "reason": "A field of its message, spelled by its declared name.",
+    "example": "bool dry_run = 2;"
+  },
+  {
+    "input": "proto://v1#RetentionPolicy.policy_keep_last_n",
+    "language": "proto",
+    "form": "field",
+    "accepted": true,
+    "reason": "A oneof member is a field of its message; the oneof has no component.",
+    "example": "int32 policy_keep_last_n = 10;"
+  },
+  {
+    "input": "proto://v1#DoRepoTaskRequest.Task.TASK_PRUNE",
+    "language": "proto",
+    "form": "enum-member",
+    "accepted": true,
+    "reason": "An enum value is spelled inside its enum, not beside it.",
+    "example": "TASK_PRUNE = 2;"
+  },
+  {
+    "input": "proto://v1#Backrest",
+    "language": "proto",
+    "form": "service",
+    "accepted": true,
+    "reason": "A service at file level.",
+    "example": "service Backrest {"
+  },
+  {
+    "input": "proto://v1#Backrest.GetConfig",
+    "language": "proto",
+    "form": "rpc",
+    "accepted": true,
+    "reason": "An RPC of its service.",
+    "example": "rpc GetConfig(google.protobuf.Empty) returns (Config) {}"
+  },
+  {
+    "input": "proto://v1#v1/service.proto:file",
+    "language": "proto",
+    "form": "file",
+    "accepted": true,
+    "reason": "A schema file is its import path with the :file selector, scoped by its package.",
+    "example": "package v1;"
+  },
+  {
+    "input": "proto://v1#.BackupRequest",
+    "language": "proto",
+    "form": "message",
+    "accepted": false,
+    "reason": "The fragment never starts with a dot; a leading dot is protoc's fully-qualified spelling, not a reference."
+  },
+  {
+    "input": "proto://v1#BackupRequest.2",
+    "language": "proto",
+    "form": "field",
+    "accepted": false,
+    "reason": "A field is named, never numbered."
+  },
+  {
+    "input": "proto://v1#BackupRequest/dry_run",
+    "language": "proto",
+    "form": "field",
+    "accepted": false,
+    "reason": "A slash is no member separator."
+  },
+  {
+    "input": "proto://v1#v1/service.proto",
+    "language": "proto",
+    "form": "file",
+    "accepted": false,
+    "reason": "A schema file carries the :file selector."
+  },
+  {
+    "input": "proto://v1.#BackupRequest",
+    "language": "proto",
+    "form": "message",
+    "accepted": false,
+    "reason": "A package never ends with a dot."
+  },
+  {
+    "input": "proto://v1#Backrest.Get-Config",
+    "language": "proto",
+    "form": "rpc",
+    "accepted": false,
+    "reason": "A Protocol Buffers identifier holds letters, digits and underscores only."
   }
 ]

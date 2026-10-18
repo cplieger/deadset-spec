@@ -1,0 +1,31 @@
+{
+  "description": "The reader reads every configured root string with no language prefix and every proto:// one. An unprefixed root string matching no symbol is reported by the Go analyzer and by the reader, so the merged report carries both findings; a proto:// root holds the schema field it names live, so the reader holds no finding for it, the Go analyzer's finding for it is dropped and the field is not promoted.",
+  "products": [
+    "deadset"
+  ],
+  "rename": {
+    "go.mod.txt": "go.mod",
+    "main.go.txt": "main.go"
+  },
+  "executables": [
+    "bin/analyzer"
+  ],
+  "report_file": "@OUT@/run/report.json",
+  "argv": [
+    "analyze",
+    "--target=@TARGET@",
+    "--run-dir=@OUT@/run"
+  ],
+  "expect": {
+    "exit": 1,
+    "report": "valid",
+    "finding_paths": [
+      "deadset.json",
+      "deadset.json"
+    ],
+    "finding_symbols": [
+      "*NoSuchSymbol*",
+      "*NoSuchSymbol*"
+    ]
+  }
+}

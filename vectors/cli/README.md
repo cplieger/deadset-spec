@@ -4,13 +4,16 @@ Each case is one invocation of a product's command line over a small tree, and t
 
 - `exit`: the exit code. A run that ends with exit code 3 must also print exactly one class line on standard error, a line a group prefix of `failure_classes` in `contract/exit-codes.json` opens.
 - `stderr_contains`: strings standard error holds.
+- `stdout_contains`: strings standard output holds.
 - `report`: `valid` when the report file must exist and be an instance of `contract/report.schema.json`, `absent` when no report may be written.
 - `finding_paths`: the paths of the report's findings, in order.
 - `finding_symbols`: the names of the report's findings' symbols, in order.
+- `files_contain`: files the run writes, `@TARGET@` and `@OUT@` replaced in their names, each with the strings it holds.
+- `report_file`: the report the run writes when its arguments name none by `--report`, `@OUT@` replaced, as the orchestrator's merged report under its run directory.
 - `env`: environment variables the run is given beside the runner's own, `@TARGET@` and `@OUT@` replaced in their values.
 - `rename`: tree files the runner renames before the run, for a file this module cannot embed under its own name: a `go.mod`, which makes its directory another module, a Go source file, which would be a package of this module, a name Go does not embed, or a document the module's own checks would refuse.
 - `repeat`: how many times the invocation runs, each run giving the same outcome.
-- `executables`: tree files, named as the run sees them, that the runner makes executable, such as a stub analyzer a provider entry names. A `describe.json` in the tree is the document such a stub prints, and the module's checks hold it to the describe schema and to the report schema versions `contract/contract.json` lists.
+- `executables`: tree files, named as the run sees them, that the runner makes executable, such as a stub analyzer a provider entry names. A `describe.json` in the tree is the document such a stub prints, and the module's checks hold it to the describe schema and to the report schema versions `contract/contract.json` lists. A `report.json` under `bin/` and a file named `*.facts.json` are documents such a stub writes, held to the report schema and to the facts schema and its rules.
 - `interrupt`: a path, `@TARGET@` and `@OUT@` replaced: once a file is there, the runner sends the run an interrupt, so a stub that writes the file while the run waits on it interrupts the run at a known point.
 
 A case with `pending` states a rule no product implements yet, named by the reason; the runner reports its result as pending, as the corpus does for a pending fixture. `deadset-corpus cases --product=NAME -- PRODUCT` runs every case naming a product.
@@ -28,6 +31,14 @@ A case with `pending` states a rule no product implements yet, named by the reas
 | `interrupted-while-the-analysis-runs` | A run sent an interrupt while the toolchain loads the target's packages ends with exit code 3 and the run failure interrupted-run, before any report is written. |
 | `malformed-ignore-document` | An ignore file that is not a JSON document is a refused document: the run ends with the usage code 2, as suppression.md's refusals table states, in every analyzer. |
 | `memory-exhausted-under-a-memory-limit` | A run whose memory limit is below what the analysis needs ends with exit code 3 and the run failure memory-exhausted, naming the memory needed and the memory available, before any report is written. |
+| `proto-analyzer-without-facts` | With proto in scope every analyzer is asked for facts, so an analyzer whose describe document names no facts version written is not admitted: the run ends with exit code 3 and the run failure unadmitted-analyzer naming the entry. |
+| `proto-facts-file-absent` | An analyzer handed --facts that writes its report and no facts document is a fault of that analyzer: the run ends with exit code 3 and the run failure product-fault naming it, and no merged report is written. |
+| `proto-facts-requested-only-with-proto` | An analyzer is handed --facts only when a schema language is in scope: a Go target holding no schema file runs its analyzer without the option and ends as it would without facts. |
+| `proto-findings-render` | A promoted schema finding renders like every finding: its text line opens with its position in the .proto file, and the SARIF rendering names the file and the rule. |
+| `proto-library-binding-withheld` | A schema field whose only Go binding reads `unreferenced`, in a library: the library binding lowers its finding to `possible`, below the default `analysis.min_confidence`, so the merge withholds it and counts it in the merged `withheld` totals. |
+| `proto-schema-only-target` | A target holding only schema files plans no analyzer, and a provider list no entry of which claims proto is no refusal: the run ends with exit code 0, its merged target carries no kind, and an unbound-schema note names the schema file. |
+| `proto-unmatched-root-in-a-central-configuration` | An unmatched root declared in a central configuration inside the target is reported in that document by the Go analyzer and by the reader alike, so both findings carry its target-relative path rather than the repository configuration's. |
+| `proto-unmatched-root-beside-the-reader` | The reader reads every configured root string with no language prefix and every `proto://` one. An unprefixed root that matches no symbol is reported by the Go analyzer and by the reader, so the merged report carries both findings; a `proto://` root holds the schema field it names live, so the field is not promoted and the Go analyzer's finding for that root is dropped. |
 | `provider-command-not-an-analyzer` | A provider command that runs but describes no analyzer is not admitted: the run ends with exit code 3 and the run failure unadmitted-analyzer naming the entry, before any analysis. |
 | `provider-command-not-installed` | A provider command that resolves to no executable names an analyzer the run cannot find: the run ends with exit code 3 and the run failure missing-analyzer naming the entry. |
 | `report-path-in-a-missing-directory` | A report path whose directory does not exist is a document the run cannot write: the run ends with exit code 3 and the run failure unwritten-output naming the path, and no report is written. |

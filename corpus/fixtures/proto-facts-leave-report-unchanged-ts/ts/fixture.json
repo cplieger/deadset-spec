@@ -1,0 +1,9 @@
+{
+  "symbols": {
+    "Legacy": {
+      "file": "target/src/legacy/v1/legacy_pb.ts",
+      "line": 12,
+      "ref": "ts://@example/target/src/legacy/v1/legacy_pb.ts#Legacy"
+    }
+  }
+}

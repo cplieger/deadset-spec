@@ -1,0 +1,10 @@
+{
+  "description": "An edge whose provides side is a schema field.",
+  "edges": {
+    "wire/ping-number": {
+      "because": "generated",
+      "provides": "proto://v1#Ping.number",
+      "used_by": "ts://@example/web/src/ping.ts#readNumber"
+    }
+  }
+}

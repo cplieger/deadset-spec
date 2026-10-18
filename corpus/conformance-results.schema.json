@@ -30,7 +30,7 @@
         "language": {
           "description": "The language whose renderings the runner loaded, drawn from the languages contract/languages.json lists. A product claiming more than one language runs the corpus once per language and writes one results document per run, so every fixture appears at most once here.",
           "type": "string",
-          "enum": ["go", "ts"]
+          "enum": ["go", "ts", "proto"]
         }
       }
     },

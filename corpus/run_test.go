@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"os"
+	"path/filepath"
 	"slices"
 	"strings"
 	"testing"
@@ -309,6 +311,42 @@ func TestRunCasesHoldsEachRunToItsOutcome(t *testing.T) {
 	}
 }
 
+func TestRunCasesHoldsTheOutputAndTheFilesTheRunWrites(t *testing.T) {
+	vectors := fstest.MapFS{
+		"vectors/cli/written/case.json": {Data: []byte(`{"description": "d", "products": ["p"], "argv": ["x", "--run-dir=@OUT@"],
+			"report_file": "@OUT@/report.json",
+			"expect": {"exit": 0, "report": "absent", "stdout_contains": ["a.proto:6:3: "], "files_contain": {"@OUT@/report.sarif": ["\"uri\": \"a.proto\""]}}}`)},
+		"vectors/cli/written/tree/a": {Data: []byte("a\n")},
+	}
+	for _, tc := range []struct {
+		name, script string
+		want         []string
+	}{
+		{name: "every member held", script: `echo 'a.proto:6:3: deny DS1802'; echo '"uri": "a.proto"' > "${2#--run-dir=}/report.sarif"`},
+		{name: "the line absent", script: `echo '"uri": "a.proto"' > "${2#--run-dir=}/report.sarif"`, want: []string{`stdout "" holds no "a.proto:6:3: "`}},
+		{name: "the file absent", script: `echo 'a.proto:6:3: deny DS1802'`, want: []string{"no report.sarif"}},
+		{
+			name: "the report written", script: `echo 'a.proto:6:3: deny DS1802'; echo '"uri": "a.proto"' > "${2#--run-dir=}/report.sarif"; echo '{}' > "${2#--run-dir=}/report.json"`,
+			want: []string{"a report was written, want none"},
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			got, err := RunCases(t.Context(), vectors, "p", Analyzer{Command: []string{"/bin/sh", "-c", tc.script, "sh"}})
+			if err != nil || len(got) != 1 {
+				t.Fatalf("RunCases = %+v, %v, want one result", got, err)
+			}
+			if tc.want == nil && got[0].Result != Pass {
+				t.Errorf("RunCases(%s) = %+v, want a pass", tc.name, got[0])
+			}
+			for _, text := range tc.want {
+				if got[0].Result != Fail || !strings.Contains(got[0].Message, text) {
+					t.Errorf("RunCases(%s) = %+v, want a failure naming %q", tc.name, got[0], text)
+				}
+			}
+		})
+	}
+}
+
 func TestRunCasesGivesTheRunTheCaseEnvironment(t *testing.T) {
 	vectors := fstest.MapFS{
 		"vectors/cli/env/case.json": {Data: []byte(`{"description": "d", "products": ["p"], "argv": ["x"], "env": {"CASE_DIR": "@TARGET@"},
@@ -369,5 +407,96 @@ func TestRunCasesRunsTheTreeExecutablesAndInterruptsAtTheMarker(t *testing.T) {
 	got, err := RunCases(ctx, vectors, "p", waiting)
 	if err != nil || len(got) != 1 || got[0].Result != Pass {
 		t.Errorf("RunCases(an executable stub writing the interrupt marker) = %+v, %v, want the run interrupted at the marker", got, err)
+	}
+}
+
+// readerFixture is a one-language proto fixture whose facts entries the
+// published reader examples answer.
+func readerFixture() *Fixture {
+	manifest := `{"symbols": {
+		"PingRequest": {"file": "target/proto/v1/service.proto", "line": 5, "ref": "proto://v1#PingRequest"},
+		"PingRequest.trace_hint": {"file": "target/proto/v1/service.proto", "line": 12, "ref": "proto://v1#PingRequest.trace_hint"}}}`
+	fixture := &Fixture{Name: "reader", Renderings: map[string]*Rendering{"proto": {Language: "proto", Files: map[string][]byte{
+		ManifestFile:                    []byte(manifest),
+		"target/proto/v1/service.proto": []byte(strings.Repeat("// line\n", 14)),
+	}}}}
+	fixture.Expect = Expectation{
+		Name: "reader", Languages: []string{"proto"},
+		Notes: []Note{{Kind: "unresolved-import", Path: "proto/v1/service.proto"}},
+		Facts: []FactRow{
+			{
+				Symbol: "PingRequest", Role: "schema", Schema: "proto://v1#PingRequest", State: "live",
+				Members: []string{"proto://v1#PingRequest.trace_hint", "proto://v1#PingRequest.number"},
+			},
+			{Symbol: "PingRequest.trace_hint", Role: "schema", Schema: "proto://v1#PingRequest.trace_hint", State: "dead", Report: "DS1802"},
+		},
+	}
+	if err := json.Unmarshal(fixture.Renderings["proto"].Files[ManifestFile], &fixture.Renderings["proto"].Manifest); err != nil {
+		panic(err)
+	}
+	return fixture
+}
+
+// TestRunAnswersAnInProcessProductAndHandsEveryProductFacts holds the runner to
+// both forms of a product: an in-process one answers a fixture through the
+// files a process writes, and a fixture naming facts entries hands each form
+// --facts and answers the entries from the document written there.
+func TestRunAnswersAnInProcessProductAndHandsEveryProductFacts(t *testing.T) {
+	reportDoc, err := spec.Examples.ReadFile("examples/reports/proto-reader.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	factsDoc, err := spec.Examples.ReadFile("examples/facts/proto-reader.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var asked []string
+	withoutFacts := reportDoc
+	inProcess := func(_ context.Context, _ string, args []string) ([]byte, string, int) {
+		asked = append(asked, args...)
+		written := withoutFacts
+		if slices.ContainsFunc(args, func(arg string) bool { return strings.HasPrefix(arg, "--facts=") }) {
+			written = reportDoc
+		}
+		for _, arg := range args {
+			if name, ok := strings.CutPrefix(arg, "--report="); ok {
+				_ = os.WriteFile(name, written, 0o600)
+			}
+			if name, ok := strings.CutPrefix(arg, "--facts="); ok {
+				_ = os.WriteFile(name, factsDoc, 0o600)
+			}
+		}
+		return nil, "", 0
+	}
+	r := &runner{analyzer: Analyzer{Language: "proto", InProcess: inProcess}, rows: map[string]bool{}}
+	if got := r.answerFixture(t.Context(), readerFixture()); got.Result != Pass {
+		t.Errorf("answerFixture(an in-process reader) = %+v, want a pass", got)
+	}
+	if !slices.ContainsFunc(asked, func(arg string) bool { return strings.HasPrefix(arg, "--facts=") }) {
+		t.Errorf("the in-process analysis was invoked with %q, want --facts", asked)
+	}
+	withoutFacts = append(slices.Clone(reportDoc), ' ')
+	if got := r.answerFixture(t.Context(), readerFixture()); got.Result != Fail || !strings.Contains(got.Message, "differs from the one written without it") {
+		t.Errorf("answerFixture(a report --facts changes) = %+v, want a failure naming the difference", got)
+	}
+
+	dir := t.TempDir()
+	reportPath, factsPath := filepath.Join(dir, "report.json"), filepath.Join(dir, "facts.json")
+	if err := os.WriteFile(reportPath, reportDoc, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(factsPath, factsDoc, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	script := `for a; do case $a in --report=*) cp "$R" "${a#--report=}";; --facts=*) cp "$F" "${a#--facts=}";; esac; done`
+	process := Analyzer{Language: "proto", Env: []string{"R=" + reportPath, "F=" + factsPath}, Command: []string{"/bin/sh", "-c", script, "sh"}}
+	r.analyzer = process
+	if got := r.answerFixture(t.Context(), readerFixture()); got.Result != Pass {
+		t.Errorf("answerFixture(a process handed --facts) = %+v, want a pass", got)
+	}
+	differing := readerFixture()
+	differing.Expect.Facts[1].Report = "DS1801"
+	if got := r.answerFixture(t.Context(), differing); got.Result != Fail || !strings.Contains(got.Message, "finding want DS1801") {
+		t.Errorf("answerFixture(a facts entry the document answers otherwise) = %+v, want a failure naming the finding", got)
 	}
 }

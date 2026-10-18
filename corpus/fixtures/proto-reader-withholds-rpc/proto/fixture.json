@@ -1,0 +1,10 @@
+{
+  "symbols": {
+    "PingService": { "file": "target/v1/ping.proto", "line": 9, "ref": "proto://v1#PingService" },
+    "PingService.Ping": {
+      "file": "target/v1/ping.proto",
+      "line": 10,
+      "ref": "proto://v1#PingService.Ping"
+    }
+  }
+}

@@ -5,6 +5,54 @@
   "type": "object",
   "additionalProperties": false,
   "required": ["schema_version", "contract_version", "analyzer", "target", "configurations", "configurations_not_built", "consumers", "findings", "edge_evaluations", "stale_suppressions", "declared_gaps", "excluded_by_cgo", "test_file_rules", "type_error_skips", "notes", "unanswered_questions", "conventions_applied", "totals"],
+  "allOf": [
+    {
+      "if": {
+        "required": ["analyzer"],
+        "properties": {
+          "analyzer": {
+            "required": ["languages"],
+            "properties": {
+              "languages": {
+                "items": {
+                  "enum": ["proto"]
+                }
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "configurations": {
+            "maxItems": 0
+          },
+          "target": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": ["kind"]
+                },
+                {
+                  "required": ["language_kinds"]
+                }
+              ]
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "configurations": {
+            "minItems": 1
+          },
+          "target": {
+            "required": ["kind"]
+          }
+        }
+      }
+    }
+  ],
   "properties": {
     "schema_version": {
       "description": "The version of this schema the document is written to. A merge admits a report whose schema_version is in the range the caller accepts and refuses one that is not, naming both; contract.json's schema_versions lists every value this contract version admits.",
@@ -39,7 +87,7 @@
           "uniqueItems": true,
           "items": {
             "type": "string",
-            "enum": ["go", "ts"]
+            "enum": ["go", "ts", "proto"]
           }
         },
         "schema_versions_accepted": {
@@ -113,11 +161,12 @@
       }
     },
     "target": {
-      "description": "What was analyzed. One target per report: a merged report names the root and the identity every report it merged names, and the kind each of those reports gives each language it covers.",
+      "description": "What was analyzed. One target per report: a merged report names the root and the identity every report it merged names, and the kind each of those reports gives each language it covers. A report whose analyzer.languages are all schema languages, rows of kind schema in contract/languages.json, carries neither kind nor language_kinds, because a schema language takes no target kind; every other report carries kind.",
       "type": "object",
       "additionalProperties": false,
-      "required": ["kind", "root", "identity"],
+      "required": ["root", "identity"],
       "if": {
+        "required": ["kind"],
         "properties": {
           "kind": {
             "const": "mixed"
@@ -134,12 +183,12 @@
       },
       "properties": {
         "kind": {
-          "description": "The target kind the configuration resolved, for the languages this report covers, the languages analyzer.languages names: application, whose every caller is in the analyzed graph, or library, whose published API has callers outside it, where every one of those languages has that kind, and mixed where they do not, language_kinds then naming the kind of each. A report of one language therefore carries that language's kind, whichever shape the configuration wrote it in. The configuration declares it and the analysis never infers it.",
+          "description": "The target kind the configuration resolved, for the kind-taking languages this report covers, the languages analyzer.languages names whose row of contract/languages.json takes a target kind: application, whose every caller is in the analyzed graph, or library, whose published API has callers outside it, where every one of those languages has that kind, and mixed where they do not, language_kinds then naming the kind of each. A report of one kind-taking language therefore carries that language's kind, whichever shape the configuration wrote it in, and a report covering no kind-taking language carries no kind. The configuration declares it and the analysis never infers it.",
           "type": "string",
           "enum": ["application", "library", "mixed"]
         },
         "language_kinds": {
-          "description": "The kind of each language this report covers, present exactly when kind is mixed: one member per language analyzer.languages names and no other, so its members are not all one kind, written in the order this schema lists them as every member of a report is.",
+          "description": "The kind of each kind-taking language this report covers, present exactly when kind is mixed: one member per language analyzer.languages names whose row takes a target kind, and no other, so its members are not all one kind, written in the order this schema lists them as every member of a report is.",
           "type": "object",
           "additionalProperties": false,
           "minProperties": 2,
@@ -169,9 +218,8 @@
       }
     },
     "configurations": {
-      "description": "The build matrix the analysis ran, one entry per configuration, ordered by id compared bytewise. An entry takes one of two shapes, the shape of the thing that decides what the analyzed language builds: a platform, which is an operating system and an architecture with the build tags in effect, or a project, which is one compiler configuration file. An entry carries one shape or the other and never a member of both, so a reader tells the two apart by the members present. How the entries combine into one answer is grammar/analysis/matrix.md's: a symbol is reported only when it is dead in every entry, and each finding names the configurations in which it holds. A configuration the analysis derived and could not build is named by configurations_not_built rather than here, so this array is the matrix the analysis ran.",
+      "description": "The build matrix the analysis ran, one entry per configuration, ordered by id compared bytewise. An entry takes one of two shapes, the shape of the thing that decides what the analyzed language builds: a platform, which is an operating system and an architecture with the build tags in effect, or a project, which is one compiler configuration file. An entry carries one shape or the other and never a member of both, so a reader tells the two apart by the members present. How the entries combine into one answer is grammar/analysis/matrix.md's: a symbol is reported only when it is dead in every entry, and each finding names the configurations in which it holds. A configuration the analysis derived and could not build is named by configurations_not_built rather than here, so this array is the matrix the analysis ran. A report of schema languages alone runs no build matrix and lists none; every other report lists at least one.",
       "type": "array",
-      "minItems": 1,
       "uniqueItems": true,
       "items": {
         "description": "One configuration of the matrix the analysis ran, in exactly one of the two shapes the array admits.",
@@ -705,23 +753,87 @@
                 "required": ["key"]
               }
             }
+          },
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "unbound-schema"
+                }
+              }
+            },
+            "then": {
+              "required": ["key"]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "unresolved-import"
+                }
+              }
+            },
+            "then": {
+              "required": ["key"]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "generation-config-unread"
+                }
+              }
+            },
+            "then": {
+              "required": ["key"]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "binding-unsupported"
+                }
+              }
+            },
+            "then": {
+              "not": {
+                "required": ["key"]
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "schema-unparsed"
+                }
+              }
+            },
+            "then": {
+              "not": {
+                "required": ["key"]
+              }
+            }
           }
         ],
         "properties": {
           "kind": {
-            "description": "What the note is about, from a closed set. computed-load: a TypeScript load by a computed path the analysis cannot resolve, which grammar/analysis/notes.md defines. module-not-loaded: a Go module below the target root that the run dropped because it does not load, or one the workspace listing the target lists outside it whose go.mod the go command reads and the analysis cannot, which grammar/analysis/notes.md defines. published-package: a package of an application that no other package of the target imports and that outside programs may import, which grammar/analysis/notes.md defines. unmapped-entry: a manifest entry that reads back to no source file of the target, which grammar/analysis/notes.md defines.",
+            "description": "What the note is about, from a closed set. computed-load: a TypeScript load by a computed path the analysis cannot resolve, which grammar/analysis/notes.md defines. module-not-loaded: a Go module below the target root that the run dropped because it does not load, or one the workspace listing the target lists outside it whose go.mod the go command reads and the analysis cannot, which grammar/analysis/notes.md defines. published-package: a package of an application that no other package of the target imports and that outside programs may import, which grammar/analysis/notes.md defines. unmapped-entry: a manifest entry that reads back to no source file of the target, which grammar/analysis/notes.md defines. binding-unsupported: a generated file whose generator row is unsupported, which grammar/merge.md defines. generation-config-unread: a generation or module configuration outside the subset the schema reader reads, which grammar/analysis/schemas.md defines. schema-unparsed: a schema file that does not parse, link or validate, which grammar/analysis/schemas.md defines. unbound-schema: a schema file whose every dead declaration no analyzed language binds, which grammar/merge.md defines. unresolved-import: an import of a schema file that names no file of the import roots, which grammar/analysis/schemas.md defines.",
             "type": "string",
-            "enum": ["computed-load", "module-not-loaded", "published-package", "unmapped-entry"]
+            "enum": ["binding-unsupported", "computed-load", "generation-config-unread", "module-not-loaded", "published-package", "schema-unparsed", "unbound-schema", "unmapped-entry", "unresolved-import"]
           },
           "path": {
-            "description": "The directory the note is about, relative to the target root, in the path form: segments joined by /, none of them empty, . or .., so never absolute, with no leading ./ and no trailing /; no control character, U+0000 to U+001F or U+007F; every other character, a space, a backslash, which is no separator, a +, a $, a bracket, a parenthesis or one outside ASCII, written as it is; the target root itself is a single dot, so a note about the package at the root names it as .",
+            "description": "The file or the directory the note is about, relative to the target root, in the path form: segments joined by /, none of them empty, . or .., so never absolute, with no leading ./ and no trailing /; no control character, U+0000 to U+001F or U+007F; every other character, a space, a backslash, which is no separator, a +, a $, a bracket, a parenthesis or one outside ASCII, written as it is; the target root itself is a single dot, so a note about the package at the root names it as .",
             "type": "string",
             "pattern": "^(?:\\.|(?:[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.\\.[^/\\x00-\\x1f\\x7f]+)(?:/(?:[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.\\.[^/\\x00-\\x1f\\x7f]+))*)$"
           },
           "key": {
-            "description": "The configuration key that settles the note, as a dotted path of contract/config.schema.json: present on a published-package and an unmapped-entry note, and absent on a computed-load and a module-not-loaded note, which no key settles.",
+            "description": "The configuration key that settles the note, as a dotted path of contract/config.schema.json: present on a published-package, an unmapped-entry, an unbound-schema, an unresolved-import and a generation-config-unread note, and absent on a computed-load, a module-not-loaded, a binding-unsupported and a schema-unparsed note, which no key settles.",
             "type": "string",
-            "enum": ["roots.patterns", "ts.entry_files"]
+            "enum": ["proto.import_paths", "proto.plugins", "roots.patterns", "ts.entry_files"]
           },
           "message": {
             "description": "The note in words, on one line and never empty, naming what the analysis could not tell and the key that tells it where one does.",
@@ -856,7 +968,7 @@
           "minimum": 0
         },
         "withheld": {
-          "description": "How many findings analysis.min_confidence withheld, per confidence: each finding this run does not report because its confidence is below the minimum, counted once at the confidence this run assigns it, so lowering the minimum to a level shows the findings counted at that level and every level above it. A finding a suppression would bind at that minimum is not counted, and neither is one whose severity is allow. Every count is 0 under the minimum possible. A merge sums each count over its input reports, because no merged array holds the findings counted.",
+          "description": "How many findings analysis.min_confidence withheld, per confidence: each finding this run does not report because its confidence is below the minimum, counted once at the confidence this run assigns it, so lowering the minimum to a level shows the findings counted at that level and every level above it. A finding a suppression would bind at that minimum is not counted, and neither is one whose severity is allow. Every count is 0 under the minimum possible. A merge sums each count over its input reports, because no merged array holds the findings counted, and adds the findings binding rule 3 withholds: a schema finding the bindings lower below the minimum and every finding that withheld record keeps from promotion, each counted at the highest confidence below the minimum whose minimum shows it (contract/grammar/merge.md, binding rule 3).",
           "type": "object",
           "additionalProperties": false,
           "required": ["certain", "probable", "possible"],

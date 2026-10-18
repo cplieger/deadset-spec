@@ -113,6 +113,12 @@
     ],
     "roots_complete": false
   },
+  "proto": {
+    "closed": false,
+    "plugins": [],
+    "import_paths": [],
+    "vendored_paths": []
+  },
   "provenance": {
     "target.kind": "flag: --target-kind",
     "analysis.min_confidence": "central: central.json",

@@ -1,0 +1,54 @@
+{
+  "name": "proto-implementer-carries-helper",
+  "description": "A dead implementer carries the finding of each hand-written declaration only its own search reaches: the helper the handler alone calls is no finding of the report, and the implementer record's carried list holds it, in the implementer's component.",
+  "rules": [
+    "bindings.17",
+    "references-go.10"
+  ],
+  "pending": "bindings.17: deadset-go searches from each dead implementer and publishes the findings only that search reaches as carried (GO5).",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "facts": [
+    {
+      "symbol": "PingServiceServer",
+      "role": "consumer",
+      "schema": "proto://v1#PingService",
+      "state": "unreferenced"
+    },
+    {
+      "symbol": "PingServiceClient",
+      "role": "consumer",
+      "schema": "proto://v1#PingService",
+      "state": "unreferenced"
+    },
+    {
+      "symbol": "NewPingServiceClient",
+      "role": "consumer",
+      "schema": "proto://v1#PingService",
+      "state": "unreferenced"
+    },
+    {
+      "symbol": "GrpcClient.Ping",
+      "role": "consumer",
+      "schema": "proto://v1#PingService.Ping",
+      "state": "unreferenced"
+    },
+    {
+      "symbol": "server.Ping",
+      "role": "implementer",
+      "schema": "proto://v1#PingService.Ping",
+      "state": "dead",
+      "report": "DS1101",
+      "carried": [
+        {
+          "symbol": "doubled",
+          "report": "DS1002"
+        }
+      ]
+    }
+  ],
+  "expect": []
+}

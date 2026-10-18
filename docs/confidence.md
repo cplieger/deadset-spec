@@ -16,3 +16,10 @@ The evidence that lowers a finding's reachability class, generated from `contrac
 | `possible-class` | `possible` | `go`, `ts` | [`confidence.23`](../contract/grammar/analysis/confidence.md) | A member that only records of exemption classes whose confidence is possible hold. |
 | `roots-incomplete` | `probable` | `ts` | [`confidence.25`](../contract/grammar/analysis/confidence.md) | A TypeScript declaration found dead under reachability alone, or a file only dead code imports, while ts.roots_complete is not true. |
 | `computed-load` | `probable` | `ts` | [`confidence.26`](../contract/grammar/analysis/confidence.md) | A finding the roots cap applies to, in a configuration that compiles a load by a computed path. |
+| `schema-operation-default` | `possible` | `proto` | [`schemas.10`](../contract/grammar/analysis/schemas.md) | A schema service or operation, whose callers may run in programs the run does not analyze. |
+| `http-exposure` | `possible` | `proto` | [`schemas.11`](../contract/grammar/analysis/schemas.md) | A schema declaration a service reaches that the generation configuration exposes over HTTP. |
+| `descriptor-exposure` | `possible` | `proto` | [`schemas.12`](../contract/grammar/analysis/schemas.md) | A schema declaration a consumer binding of which carries the descriptor-exposure cap. |
+| `persistence` | `possible` | `proto` | [`schemas.13`](../contract/grammar/analysis/schemas.md) | A schema field or enum value a consumer binding of which carries the persistence cap. |
+| `explicit-json-name` | `possible` | `proto` | [`schemas.14`](../contract/grammar/analysis/schemas.md) | A schema field or enum value that states its JSON name. |
+| `generation-config-unknown` | `possible` | `proto` | [`schemas.15`](../contract/grammar/analysis/schemas.md) | A schema declaration whose generation the run cannot account for in full. |
+| `library-language` | `possible` | `proto` | [`schemas.16`](../contract/grammar/analysis/schemas.md) | A schema declaration a language whose target kind is library binds. |

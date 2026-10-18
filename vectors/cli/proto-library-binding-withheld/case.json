@@ -1,0 +1,29 @@
+{
+  "description": "A schema field the reader publishes dead at probable whose only Go binding reads unreferenced, in a library: the library binding lowers its finding to possible, below the default analysis.min_confidence, so the merge withholds it, reports no finding and counts it in the merged report's withheld totals.",
+  "products": [
+    "deadset"
+  ],
+  "rename": {
+    "go.mod.txt": "go.mod",
+    "main.go.txt": "main.go"
+  },
+  "executables": [
+    "bin/analyzer"
+  ],
+  "report_file": "@OUT@/run/report.json",
+  "argv": [
+    "analyze",
+    "--target=@TARGET@",
+    "--run-dir=@OUT@/run"
+  ],
+  "expect": {
+    "exit": 0,
+    "report": "valid",
+    "finding_symbols": [],
+    "files_contain": {
+      "@OUT@/run/report.json": [
+        "\"possible\": 1"
+      ]
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "name": "proto-go-group-field-by-number",
+  "description": "A group field and a DELIMITED field bind by their number, because the struct tag's name names the message type rather than the field: the proto2 group Result is the field result of Search, and the edition 2023 field filter of Query, encoded as a group, is the field filter. The group's own message is a consumer of its declaration too.",
+  "rules": ["bindings.6", "references-go.9"],
+  "pending": "references-go.9: deadset-go binds a group or DELIMITED field by its tag's number, never its name (GO3b).",
+  "languages": ["go"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "facts": [
+    {
+      "symbol": "Search.result",
+      "role": "consumer",
+      "schema": "proto://v1#Search.result"
+    },
+    {
+      "symbol": "SearchResult",
+      "role": "consumer",
+      "schema": "proto://v1#Search.Result"
+    },
+    {
+      "symbol": "Query.filter",
+      "role": "consumer",
+      "schema": "proto://v1#Query.filter"
+    }
+  ],
+  "expect": []
+}

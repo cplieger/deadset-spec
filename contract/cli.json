@@ -32,6 +32,12 @@
       "summary": "The path the JSON report is written to."
     },
     {
+      "option": "facts",
+      "value": "path",
+      "repeatable": false,
+      "summary": "The path the facts document is written to, after the report; absent, the analyzer writes none and the report is the one it writes with it."
+    },
+    {
       "option": "run-dir",
       "value": "path",
       "repeatable": false,
@@ -141,8 +147,8 @@
       "summary": "Analyze the target and write the report.",
       "arguments": [],
       "options": {
-        "go": ["target", "config", "central", "scope", "report", "format", "template", "baseline-write", "exit-code", "min-confidence", "sort", "cascade", "max-findings", "fail-on"],
-        "ts": ["target", "config", "central", "scope", "report", "format", "template", "baseline-write", "exit-code", "min-confidence", "sort", "cascade", "max-findings", "fail-on"]
+        "go": ["target", "config", "central", "scope", "report", "facts", "format", "template", "baseline-write", "exit-code", "min-confidence", "sort", "cascade", "max-findings", "fail-on"],
+        "ts": ["target", "config", "central", "scope", "report", "facts", "format", "template", "baseline-write", "exit-code", "min-confidence", "sort", "cascade", "max-findings", "fail-on"]
       },
       "stdout": "nothing",
       "exit_codes": [0, 1, 2, 3, 4]

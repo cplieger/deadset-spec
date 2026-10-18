@@ -6,7 +6,7 @@
   "additionalProperties": false,
   "if": { "required": ["setup_failure"] },
   "then": { "properties": { "expect": { "maxItems": 0 } } },
-  "else": { "properties": { "expect": { "minItems": 1 } } },
+  "else": { "anyOf": [{ "properties": { "expect": { "minItems": 1 } } }, { "required": ["facts"] }, { "required": ["generated"] }] },
   "required": ["name", "description", "languages", "target_kind", "expect"],
   "properties": {
     "name": {
@@ -193,6 +193,169 @@
         }
       }
     },
+    "facts": {
+      "description": "The binding records the analyzer must publish in its facts document, which the runner asks for with --facts whenever the fixture names this member. Each entry names one record by its role and its symbol, a logical name every rendering's manifest binds to a position and to the reference that rendering spells for the subject, and states what the record must carry; a member the entry omits is one the record must not carry, but for generated_file, whose omission names the file the subject is declared in, and a record the document holds that no entry names is not compared. The member is optional and never empty, and a fixture that names it may hold no expectation, because a schema reader's pending findings are records of its facts document rather than findings of its report.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "description": "One binding record, named by its role and its subject.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["symbol", "role"],
+        "if": { "required": ["absent"] },
+        "then": { "propertyNames": { "enum": ["symbol", "role", "absent", "languages"] } },
+        "else": {
+          "allOf": [
+            {
+              "if": { "properties": { "role": { "const": "fallback" } } },
+              "then": { "not": { "required": ["schema"] } },
+              "else": { "required": ["schema"] }
+            },
+            {
+              "if": { "properties": { "state": { "const": "dead" } }, "required": ["state"] },
+              "then": { "required": ["report"] },
+              "else": { "not": { "required": ["report"] } }
+            },
+            {
+              "if": { "properties": { "role": { "enum": ["schema", "implementer"] } } },
+              "then": { "not": { "required": ["generated_file"] } }
+            },
+            {
+              "if": { "properties": { "role": { "const": "fallback" } } },
+              "then": { "required": ["scope"] },
+              "else": { "not": { "required": ["scope"] } }
+            },
+            {
+              "if": { "properties": { "role": { "const": "implementer" } } },
+              "else": { "not": { "required": ["carried"] } }
+            }
+          ]
+        },
+        "properties": {
+          "symbol": {
+            "description": "The fixture-local logical name of the record's subject, the declaration its symbol names, resolved through each rendering's manifest to its position and its reference.",
+            "type": "string",
+            "pattern": "^[A-Za-z_][A-Za-z0-9_]*(\\.[A-Za-z_][A-Za-z0-9_]*)*$"
+          },
+          "role": {
+            "description": "The record's role, as contract/facts.schema.json names it.",
+            "type": "string",
+            "enum": ["schema", "consumer", "implementer", "fallback"]
+          },
+          "schema": {
+            "description": "The schema declaration the record binds, spelled as contract/grammar/symbol-ref.md spells a Protocol Buffers declaration, the same in every rendering; absent on a fallback.",
+            "x-inline": "authoring/facts.schema.json#/$defs/proto_declaration"
+          },
+          "state": {
+            "description": "The state the record must carry; absent where it must carry none, as a record of a document written with evaluated false.",
+            "type": "string",
+            "enum": ["live", "dead", "unreferenced"]
+          },
+          "report": {
+            "description": "For a dead record, the code of its pending finding, which sits at the symbol's position.",
+            "type": "string",
+            "pattern": "^DS[0-9]{4}$"
+          },
+          "via": {
+            "description": "The logical names of the implementer records the record's via must name, in any order.",
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Za-z_][A-Za-z0-9_]*(\\.[A-Za-z_][A-Za-z0-9_]*)*$"
+            }
+          },
+          "cap": {
+            "description": "The cap the record must carry.",
+            "type": "string",
+            "enum": ["persistence", "descriptor-exposure"]
+          },
+          "generated_file": {
+            "description": "For a consumer or a fallback, the fixture path of the generated entry the record must name, as a manifest names a file; absent, the file the record's subject is declared in. Never on a schema or an implementer record, which names none.",
+            "type": "string",
+            "pattern": "^target/[^/]"
+          },
+          "scope": {
+            "description": "For a fallback, and required on one, the scope the record must carry.",
+            "type": "string",
+            "enum": ["all", "types"]
+          },
+          "uses": {"description": "For a schema record, the declarations its uses must list, in any order; absent where it must list none.", "type": "array", "uniqueItems": true, "items": {"x-inline": "authoring/facts.schema.json#/$defs/proto_declaration"}},
+          "members": {"description": "For a schema record, the declarations its members must list, in any order; absent where it must list none.", "type": "array", "uniqueItems": true, "items": {"x-inline": "authoring/facts.schema.json#/$defs/proto_declaration"}},
+          "carried": {
+            "description": "For a dead implementer, the findings its carried list must hold, in any order, each at its subject's position; absent where it must hold none.",
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["symbol", "report"],
+              "properties": {
+                "symbol": {
+                  "description": "The logical name of the finding's subject.",
+                  "type": "string",
+                  "pattern": "^[A-Za-z_][A-Za-z0-9_]*(\\.[A-Za-z_][A-Za-z0-9_]*)*$"
+                },
+                "report": { "description": "The finding's code.", "type": "string", "pattern": "^DS[0-9]{4}$" }
+              }
+            }
+          },
+          "absent": {
+            "description": "Present, and true, on an entry stating that the document holds no record of its role and its subject, which then names no member beside its symbol, its role and its languages.",
+            "const": true
+          },
+          "languages": {
+            "description": "The languages whose renderings the entry applies to, each one the fixture lists; absent, the entry applies to every rendering. A record two analyzers publish with different members, as a field one language reads and the other does not, is named by one entry per language, and no two entries applying to one rendering name the same role and symbol.",
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "x-enum": "languages" }
+          }
+        }
+      }
+    },
+    "generated": {
+      "description": "The generated entries the analyzer's facts document must list, exhaustive: one entry per entry of the document's generated array, compared member by member, which the runner asks for with --facts whenever the fixture names this member. An entry the array holds that no entry names fails the analyzer, and a fixture that omits the member does not compare the array. A path spells one language's own layout, so the member is named only by a fixture that lists one language. The member is optional and never empty, and a fixture that names it may hold no other expectation.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "description": "One generated entry, as contract/facts.schema.json spells it.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "line", "evidence", "detail"],
+        "properties": {
+          "path": {
+            "description": "The generated file, relative to the target root.",
+            "type": "string",
+            "pattern": "^(?:[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.\\.[^/\\x00-\\x1f\\x7f]+)(?:/(?:[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.\\.[^/\\x00-\\x1f\\x7f]+))*$"
+          },
+          "line": { "description": "The line the entry must name.", "type": "integer", "minimum": 1 },
+          "evidence": { "description": "The evidence the entry must name.", "type": "string", "enum": ["header", "tag", "notice", "convention"] },
+          "detail": { "description": "The detail the entry must name.", "type": "string", "minLength": 1 },
+          "generator": {
+            "description": "The generator the entry must name; absent where it must name none.",
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["row"],
+            "properties": {
+              "row": { "description": "The contract/generators.json row the entry must name.", "type": "string", "x-enum": "generator-rows" },
+              "version": { "description": "The version the entry must name; absent where it must name none.", "type": "string", "minLength": 1 }
+            }
+          },
+          "schema_files": {
+            "description": "The schema files the entry must name, in the order the facts document writes them; present exactly with generator.",
+            "type": "array",
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^(?:[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.\\.[^/\\x00-\\x1f\\x7f]+)(?:/(?:[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.\\.[^/\\x00-\\x1f\\x7f]+))*$", "allOf": [{ "pattern": "\\.proto$" }] }
+          }
+        },
+        "if": { "required": ["generator"] },
+        "then": { "required": ["schema_files"] },
+        "else": { "not": { "required": ["schema_files"] } }
+      }
+    },
     "min_confidence": {
       "description": "The minimum confidence the runner sets in analysis.min_confidence before analysing this fixture, as contract/config.schema.json declares that key. A runner leaves the key at its default where the member is absent, so a fixture that omits it is answered under the default, which withholds the findings about a library's published API when the run holds no consumer information and the other findings grammar/analysis/confidence.md places at possible. It is the fixture's declaration rather than any expectation's, for the reason closed_world states.",
       "type": "string",
@@ -226,6 +389,7 @@
         "minLength": 1
       }
     },
+    "import_paths": {"description": "The import roots the runner writes as the language section's import_paths key, each relative to the target root, so a fixture can name a root the rendering does not hold. The member is optional and never empty.", "type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
     "disabled_conventions": {
       "description": "The convention row names the runner sets in ts.disabled_conventions before analysing this fixture, as contract/config.schema.json declares that key. A runner leaves the key at its default where the member is absent. A row is data of the TypeScript analyzer that carries it, so the member is named only by a fixture that lists the ts language alone, and a fixture naming a row states the row it assumes the analyzer carries, as conventions_applied does. It is the fixture's declaration rather than any expectation's, for the reason closed_world states. The member is optional and never empty.",
       "type": "array",
@@ -259,10 +423,10 @@
           "kind": {
             "description": "The note's kind, drawn from the kind enumeration of a notes entry in contract/report.schema.json.",
             "type": "string",
-            "enum": ["computed-load", "module-not-loaded", "published-package", "unmapped-entry"]
+            "enum": ["computed-load", "generation-config-unread", "module-not-loaded", "published-package", "schema-unparsed", "unmapped-entry", "unresolved-import"]
           },
           "path": {
-            "description": "The directory the note names, relative to the target root, as contract/report.schema.json spells a note's path: segments joined by /, none of them empty, . or .., so never absolute, with no leading ./ and no trailing /; no control character, U+0000 to U+001F or U+007F; every other character, a space, a backslash, which is no separator, a +, a $, a bracket, a parenthesis or one outside ASCII, written as it is; the target root itself is a single dot.",
+            "description": "The file or the directory the note names, relative to the target root, as contract/report.schema.json spells a note's path: segments joined by /, none of them empty, . or .., so never absolute, with no leading ./ and no trailing /; no control character, U+0000 to U+001F or U+007F; every other character, a space, a backslash, which is no separator, a +, a $, a bracket, a parenthesis or one outside ASCII, written as it is; the target root itself is a single dot.",
             "type": "string",
             "pattern": "^(?:\\.|(?:[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.\\.[^/\\x00-\\x1f\\x7f]+)(?:/(?:[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.\\.[^/\\x00-\\x1f\\x7f]+))*)$"
           }
@@ -316,7 +480,14 @@
         "class": {
           "description": "The class of the failure, drawn from the class field of the setup group of contract/exit-codes.json's failure_classes.",
           "type": "string",
-          "enum": ["missing-module", "incomplete-module-sum", "missing-consumer", "workspace-member-without-source", "convention-not-literal"]
+          "enum": [
+            "missing-module",
+            "incomplete-module-sum",
+            "missing-consumer",
+            "workspace-member-without-source",
+            "convention-not-literal",
+            "missing-import-path"
+          ]
         },
         "names": {
           "description": "The strings the line on standard error contains: what is missing, spelled as the rendering spells it.",
@@ -331,7 +502,7 @@
       }
     },
     "expect": {
-      "description": "One expectation per subject, exhaustive for the target. Each names a subject by its logical name and states what an analyzer must report there. The list is empty in a fixture whose run ends with a setup failure, and holds at least one expectation in every other fixture.",
+      "description": "One expectation per subject, exhaustive for the target. Each names a subject by its logical name and states what an analyzer must report there. The list is empty in a fixture whose run ends with a setup failure, and holds at least one expectation in every other fixture but one that names facts.",
       "type": "array",
       "items": {
         "type": "object",

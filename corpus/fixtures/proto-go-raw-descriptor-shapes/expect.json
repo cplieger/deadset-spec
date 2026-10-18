@@ -1,0 +1,42 @@
+{
+  "name": "proto-go-raw-descriptor-shapes",
+  "description": "A protoc-gen-go file binds each message and field through the serialized file descriptor it embeds, which three releases write in three shapes: a byte slice composite literal (v1.36.3), a string conversion of one (v1.36.5) and a string constant (v1.36.11). Every message and field of each file is a consumer of its declaration.",
+  "rules": ["bindings.6", "references-go.9"],
+  "pending": "references-go.9: deadset-go decodes the raw descriptor in each of its three shapes and publishes the consumer records (GO3b).",
+  "languages": ["go"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "facts": [
+    {
+      "symbol": "Alpha",
+      "role": "consumer",
+      "schema": "proto://v1#Alpha"
+    },
+    {
+      "symbol": "Alpha.value",
+      "role": "consumer",
+      "schema": "proto://v1#Alpha.value"
+    },
+    {
+      "symbol": "Beta",
+      "role": "consumer",
+      "schema": "proto://v1#Beta"
+    },
+    {
+      "symbol": "Beta.value",
+      "role": "consumer",
+      "schema": "proto://v1#Beta.value"
+    },
+    {
+      "symbol": "Gamma",
+      "role": "consumer",
+      "schema": "proto://v1#Gamma"
+    },
+    {
+      "symbol": "Gamma.value",
+      "role": "consumer",
+      "schema": "proto://v1#Gamma.value"
+    }
+  ],
+  "expect": []
+}

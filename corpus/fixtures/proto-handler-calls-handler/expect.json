@@ -1,0 +1,34 @@
+{
+  "name": "proto-handler-calls-handler",
+  "description": "A handler only another handler calls is a dead implementer whose via names the caller, because it survives exactly when the caller does, and the request field it reads is live with via naming both, because the search from either reaches it.",
+  "rules": ["bindings.17", "bindings.16", "references-go.10"],
+  "pending": "bindings.17: deadset-go publishes via on a dead implementer another implementer's search reaches (GO5).",
+  "languages": ["go"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "facts": [
+    {
+      "symbol": "GetConfigRequest.name",
+      "role": "consumer",
+      "schema": "proto://v1#GetConfigRequest.name",
+      "state": "live",
+      "via": ["server.GetConfig", "server.GetConfigV1"]
+    },
+    {
+      "symbol": "server.GetConfig",
+      "role": "implementer",
+      "schema": "proto://v1#ConfigService.GetConfig",
+      "state": "dead",
+      "report": "DS1101",
+      "via": ["server.GetConfigV1"]
+    },
+    {
+      "symbol": "server.GetConfigV1",
+      "role": "implementer",
+      "schema": "proto://v1#ConfigService.GetConfigV1",
+      "state": "dead",
+      "report": "DS1101"
+    }
+  ],
+  "expect": []
+}

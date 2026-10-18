@@ -1,0 +1,32 @@
+{
+  "description": "An unmatched root declared in a central configuration inside the target is reported in that document by the Go analyzer and by the reader alike, so both findings carry its target-relative path rather than the repository configuration's, which the target does not hold.",
+  "products": [
+    "deadset"
+  ],
+  "rename": {
+    "go.mod.txt": "go.mod",
+    "main.go.txt": "main.go"
+  },
+  "executables": [
+    "bin/analyzer"
+  ],
+  "report_file": "@OUT@/run/report.json",
+  "argv": [
+    "analyze",
+    "--target=@TARGET@",
+    "--central=@TARGET@/sub/other.json",
+    "--run-dir=@OUT@/run"
+  ],
+  "expect": {
+    "exit": 1,
+    "report": "valid",
+    "finding_paths": [
+      "sub/other.json",
+      "sub/other.json"
+    ],
+    "finding_symbols": [
+      "*NoSuchSymbol*",
+      "*NoSuchSymbol*"
+    ]
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "target": {
+    "kind": "application"
+  },
+  "roots": {
+    "patterns": [
+      "*NoSuchSymbol*",
+      "proto://v1#PingRequest.number"
+    ]
+  },
+  "proto": {
+    "plugins": [
+      "protoc-gen-go"
+    ],
+    "import_paths": [
+      "proto"
+    ]
+  },
+  "providers": {
+    "analyzers": [
+      {
+        "name": "deadset-go",
+        "command": "@TARGET@/bin/analyzer",
+        "languages": [
+          "go"
+        ]
+      }
+    ]
+  }
+}

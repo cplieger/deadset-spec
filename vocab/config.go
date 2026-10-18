@@ -180,3 +180,28 @@ func matchesAny(patterns []string, name string) bool {
 		return err == nil && matched
 	})
 }
+
+// GeneratorRow is one generator of contract/generators.json. VersionMin and
+// VersionMax are empty where the row names no bound.
+type GeneratorRow struct {
+	ID            string
+	Plugin        string
+	Language      Language
+	Header        string
+	RuntimeImport string
+	Cell          string
+	VersionMin    string
+	VersionMax    string
+	Major         int
+}
+
+// GeneratorRows returns every generator row in document order, the order a
+// generated file is matched in.
+func GeneratorRows() []GeneratorRow { return slices.Clone(generatorRows) }
+
+// ProtoPlugins returns every name proto.plugins admits.
+func ProtoPlugins() []string { return slices.Clone(protoPlugins) }
+
+// HTTPExposurePlugins returns the plugins whose presence in a generation
+// configuration exposes a service over HTTP.
+func HTTPExposurePlugins() []string { return slices.Clone(httpExposurePlugins) }

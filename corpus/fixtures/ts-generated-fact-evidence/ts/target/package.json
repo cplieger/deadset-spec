@@ -1,0 +1,10 @@
+{
+  "name": "@example/target",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./pages/index.ts",
+  "devDependencies": {
+    "nuxt": "4.999.0"
+  }
+}

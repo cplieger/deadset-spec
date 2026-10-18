@@ -1,0 +1,58 @@
+{
+  "facts_version": "1.0.0",
+  "analyzer": {
+    "name": "deadset-proto",
+    "version": "2.0.0"
+  },
+  "language": "proto",
+  "evaluated": true,
+  "generated": [],
+  "bindings": [
+    {
+      "role": "schema",
+      "symbol": "proto://v1#PingService.Ping",
+      "schema_file": "v1/service.proto",
+      "schema": "proto://v1#PingService.Ping",
+      "state": "dead",
+      "finding": {
+        "code": "DS1805",
+        "kind": "uncalled-schema-operation",
+        "language": "proto",
+        "position": {
+          "path": "proto/v1/service.proto",
+          "line": 12,
+          "column": 3,
+          "end_line": 12
+        },
+        "symbol": {
+          "ref": "proto://v1#PingService.Ping",
+          "kind": "rpc",
+          "name": "PingService.Ping",
+          "parent": "proto://v1#PingService",
+          "exported": true,
+          "size_lines": 1
+        },
+        "reachability_class": "possible",
+        "confidence": "possible",
+        "liveness_relation": "reference-counting",
+        "test_only": false,
+        "generated": false,
+        "component": {
+          "id": "deadset-proto/c-1",
+          "root": true,
+          "symbol_count": 1,
+          "deletable_lines": 1
+        },
+        "retained_by": [],
+        "configurations": [],
+        "consumers_loaded": [],
+        "fixability": "manual",
+        "severity": "warn",
+        "message": "schema operation is called by no binding in any analyzed language",
+        "details": {}
+      },
+      "uses": [],
+      "members": []
+    }
+  ]
+}

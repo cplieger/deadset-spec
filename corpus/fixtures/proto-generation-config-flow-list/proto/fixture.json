@@ -1,0 +1,6 @@
+{
+  "symbols": {
+    "A": { "file": "target/a/v1/a.proto", "line": 5, "ref": "proto://a.v1#A" },
+    "B": { "file": "target/b/v1/b.proto", "line": 5, "ref": "proto://b.v1#B" }
+  }
+}

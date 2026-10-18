@@ -1,0 +1,17 @@
+{
+  "name": "@bufbuild/protobuf",
+  "version": "2.16.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts"
+    },
+    "./codegenv2": {
+      "types": "./codegenv2.d.ts"
+    },
+    "./wire": {
+      "types": "./wire.d.ts"
+    }
+  }
+}

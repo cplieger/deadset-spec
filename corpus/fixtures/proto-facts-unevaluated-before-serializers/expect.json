@@ -1,0 +1,22 @@
+{
+  "name": "proto-facts-unevaluated-before-serializers",
+  "description": "An analyzer that runs the carrier sweep before every rule that can change a published state applies writes evaluated false, so its consumer records carry no state: the field hand code reads and the field it only writes are both published without one, and the merge reads each live.",
+  "rules": ["bindings.10"],
+  "pending": "bindings.10: deadset-go and deadset-ts run the carrier sweep and keep evaluated false until the serializer rules apply (GO4, J6); the packets that write evaluated true (GO5, J7) replace this expectation.",
+  "languages": ["go", "ts"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "facts": [
+    {
+      "symbol": "PingRequest.number",
+      "role": "consumer",
+      "schema": "proto://v1#PingRequest.number"
+    },
+    {
+      "symbol": "PingRequest.text",
+      "role": "consumer",
+      "schema": "proto://v1#PingRequest.text"
+    }
+  ],
+  "expect": []
+}

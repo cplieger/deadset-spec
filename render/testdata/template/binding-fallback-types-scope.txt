@@ -1,0 +1,5 @@
+analyzer deadset-go 2.0.0
+analyzer deadset-proto 2.0.0
+analyzer deadset-ts 2.0.0
+proto/v1/service.proto:12:3 DS1805 uncalled-schema-operation warn deadset-proto
+1 findings, 0 stale, 0 omitted

@@ -1,0 +1,5 @@
+{
+  "symbols": {
+    "Good": { "file": "target/v1/good.proto", "line": 5, "ref": "proto://v1#Good" }
+  }
+}

@@ -289,8 +289,8 @@ func TestKindsRetiredCodesAreNotReassigned(t *testing.T) {
 
 func TestKindsEveryLiveRowIsCompleteAndInVocabulary(t *testing.T) {
 	doc := loadKinds(t)
-	if got := len(doc.Kinds); got != 33 {
-		t.Errorf("len(Kinds(%s)) = %d, want 33", kindsPath, got)
+	if got := len(doc.Kinds); got != 38 {
+		t.Errorf("len(Kinds(%s)) = %d, want 38", kindsPath, got)
 	}
 	for _, k := range doc.Kinds {
 		t.Run(k.Code, func(t *testing.T) {
@@ -446,8 +446,8 @@ func TestKindsIntraFunctionRowsNameOverlapPerLanguage(t *testing.T) {
 				return
 			}
 			group++
-			if got := slices.Sorted(maps.Keys(k.Overlap)); !slices.Equal(got, contractLanguages()) {
-				t.Fatalf("Kind(%s).overlap languages = %v, want %v", k.Code, got, contractLanguages())
+			if got, want := slices.Sorted(maps.Keys(k.Overlap)), slices.Sorted(slices.Values(contractLanguages())); !slices.Equal(got, want) {
+				t.Fatalf("Kind(%s).overlap languages = %v, want %v", k.Code, got, want)
 			}
 			for _, lang := range contractLanguages() {
 				checkOverlapList(t, k, lang)

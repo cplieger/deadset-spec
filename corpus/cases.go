@@ -31,6 +31,7 @@ type Case struct {
 	Description   string              `json:"description"`
 	Pending       string              `json:"pending"`
 	Interrupt     string              `json:"interrupt"`
+	ReportFile    string              `json:"report_file"`
 	Products      []string            `json:"products"`
 	Argv          []string            `json:"argv"`
 	Executables   []string            `json:"executables"`
@@ -40,12 +41,14 @@ type Case struct {
 // CaseOutcome is what a case's run must end with; a member it omits is not
 // compared.
 type CaseOutcome struct {
-	Report         string   `json:"report"`
-	StderrContains []string `json:"stderr_contains"`
-	FindingPaths   []string `json:"finding_paths"`
-	FindingSymbols []string `json:"finding_symbols"`
-	Exit           int      `json:"exit"`
-	Repeat         int      `json:"repeat"`
+	FilesContain   map[string][]string `json:"files_contain"`
+	Report         string              `json:"report"`
+	StdoutContains []string            `json:"stdout_contains"`
+	StderrContains []string            `json:"stderr_contains"`
+	FindingPaths   []string            `json:"finding_paths"`
+	FindingSymbols []string            `json:"finding_symbols"`
+	Exit           int                 `json:"exit"`
+	Repeat         int                 `json:"repeat"`
 }
 
 // CaseResult is one case's result for one product: pass, fail or pending, and
@@ -135,7 +138,7 @@ func runOnce(ctx context.Context, vectors fs.FS, name string, c *Case, argv []st
 	}
 	replace := strings.NewReplacer("@TARGET@", target, "@OUT@", out)
 	args := make([]string, len(argv))
-	report := ""
+	report := replace.Replace(c.ReportFile)
 	for i, arg := range argv {
 		args[i] = replace.Replace(arg)
 		if file, ok := strings.CutPrefix(args[i], "--report="); ok {
@@ -146,11 +149,15 @@ func runOnce(ctx context.Context, vectors fs.FS, name string, c *Case, argv []st
 	for _, name := range slices.Sorted(maps.Keys(c.Env)) {
 		analyzer.Env = append(analyzer.Env, name+"="+replace.Replace(c.Env[name]))
 	}
-	_, stderr, code, err := invoke(ctx, analyzer, target, replace.Replace(c.Interrupt), args...)
+	stdout, stderr, code, err := invoke(ctx, analyzer, target, replace.Replace(c.Interrupt), args...)
 	if err != nil {
 		return "", err
 	}
-	return outcomeDifference(&c.Expect, code, stderr, report), nil
+	held := outcomeDifference(&c.Expect, code, string(stdout), stderr, report)
+	for _, name := range slices.Sorted(maps.Keys(c.Expect.FilesContain)) {
+		held = append(held, contentDifference(replace.Replace(name), c.Expect.FilesContain[name])...)
+	}
+	return strings.Join(held, "; "), nil
 }
 
 // copyTree copies a case's tree to dir, naming each file its rename gives it,
@@ -181,8 +188,8 @@ func copyTree(vectors fs.FS, root, dir string, c *Case) error {
 	})
 }
 
-// outcomeDifference is every way one run departs from the outcome, in one line.
-func outcomeDifference(want *CaseOutcome, code int, stderr, report string) string {
+// outcomeDifference is every way one run departs from the outcome.
+func outcomeDifference(want *CaseOutcome, code int, stdout, stderr, report string) []string {
 	var held []string
 	if code != want.Exit {
 		held = append(held, fmt.Sprintf("exit %d, want %d (stderr %q)", code, want.Exit, strings.TrimSpace(stderr)))
@@ -195,10 +202,31 @@ func outcomeDifference(want *CaseOutcome, code int, stderr, report string) strin
 			held = append(held, fmt.Sprintf("stderr %q holds no %q", strings.TrimSpace(stderr), text))
 		}
 	}
+	for _, text := range want.StdoutContains {
+		if !strings.Contains(stdout, text) {
+			held = append(held, fmt.Sprintf("stdout %q holds no %q", strings.TrimSpace(stdout), text))
+		}
+	}
 	if report != "" {
 		held = append(held, reportDifference(want, report)...)
 	}
-	return strings.Join(held, "; ")
+	return held
+}
+
+// contentDifference is every string a file the run writes must hold and does
+// not, or the file's absence.
+func contentDifference(file string, texts []string) []string {
+	data, err := os.ReadFile(file)
+	if err != nil {
+		return []string{fmt.Sprintf("no %s: %v", filepath.Base(file), err)}
+	}
+	var held []string
+	for _, text := range texts {
+		if !strings.Contains(string(data), text) {
+			held = append(held, fmt.Sprintf("%s holds no %q", filepath.Base(file), text))
+		}
+	}
+	return held
 }
 
 // reportDifference holds the report file the invocation names to the outcome:

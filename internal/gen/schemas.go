@@ -164,6 +164,7 @@ var filledSchemas = map[string]string{
 	"authoring/report.schema.json":              "contract/report.schema.json",
 	"authoring/conformance-results.schema.json": "corpus/conformance-results.schema.json",
 	"authoring/expect.schema.json":              "corpus/expect.schema.json",
+	"authoring/facts.schema.json":               "contract/facts.schema.json",
 }
 
 // publishedSchemas writes each of filledSchemas from its source.

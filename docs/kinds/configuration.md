@@ -4,10 +4,10 @@ A suppression, root, declaration or edge deadset was given no longer matches any
 
 | Code | Name | Languages | Default | Severity | Fixability |
 | --- | --- | --- | --- | --- | --- |
-| `DS9001` | `suppression-without-reason` | `go`, `ts` | `on` | `deny` | `none` |
-| `DS9002` | `unscoped-ignore-entry` | `go`, `ts` | `on` | `deny` | `none` |
-| `DS9003` | `stale-suppression` | `go`, `ts` | `on` | `deny`, fixed | `none` |
-| `DS9004` | `unmatched-root` | `go`, `ts` | `on` | `deny`, fixed | `none` |
+| `DS9001` | `suppression-without-reason` | `go`, `ts`, `proto` | `on` | `deny` | `none` |
+| `DS9002` | `unscoped-ignore-entry` | `go`, `ts`, `proto` | `on` | `deny` | `none` |
+| `DS9003` | `stale-suppression` | `go`, `ts`, `proto` | `on` | `deny`, fixed | `none` |
+| `DS9004` | `unmatched-root` | `go`, `ts`, `proto` | `on` | `deny`, fixed | `none` |
 | `DS9005` | `stale-cross-language-edge` | `go`, `ts` | `on` | `deny` | `none` |
 | `DS9006` | `unmatched-configured-declaration` | `ts` | `on` | `deny`, fixed | `none` |
 

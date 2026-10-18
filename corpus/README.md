@@ -14,6 +14,6 @@ Each directory under `fixtures/` is one fixture: an `expect.json` file and one r
 
 The `corpus` Go package of this module is the one runner and checker, and `cmd/deadset-corpus` puts them on the command line:
 
-- `deadset-corpus run --language=LANG --gaps=conformance.json -- ANALYZER` answers every fixture rendered in the language through the analyzer's `analyze` and `print-retained` verbs and writes the results document.
+- `deadset-corpus run --language=LANG --gaps=conformance.json -- ANALYZER` answers every fixture rendered in the language through the analyzer's `analyze` and `print-retained` verbs, and the facts document `analyze --facts` writes where the fixture names `facts`, and writes the results document. A product linked into its caller, as deadset's schema reader is, is answered through `corpus.Run` with an in-process `Analyzer` instead.
 - `deadset-corpus check` holds every fixture to the format, the vocabularies and the rule-coverage rule above.
 - `deadset-corpus agree FIRST SECOND` compares two analyzers' results on the expectations both answer.

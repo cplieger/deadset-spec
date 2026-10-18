@@ -22,6 +22,9 @@
     "type-member": "declaration",
     "interface-method": "declaration",
     "enum-member": "declaration",
+    "message": "declaration",
+    "service": "declaration",
+    "rpc": "declaration",
     "satisfaction-assertion": "declaration",
     "type-parameter": "declaration",
     "parameter": "part",
@@ -118,8 +121,8 @@
       "family": "schemas",
       "title": "Schemas",
       "question": "A schema definition nothing generated from it uses.",
-      "status": "reserved",
-      "description": "Reserved for the schema languages: messages and types, fields, enum values, and services and their methods."
+      "status": "live",
+      "description": "Schema declarations no generated code in any analyzed language uses: messages and enums, fields, enum values, services and their operations."
     },
     {
       "start": "DS9000",
@@ -380,7 +383,8 @@
       "fixed": false,
       "overlap": {
         "go": ["revive unused-parameter", "gopls unusedparams", "unparam"],
-        "ts": ["tsc --noUnusedParameters", "@typescript-eslint/no-unused-vars"]
+        "ts": ["tsc --noUnusedParameters", "@typescript-eslint/no-unused-vars"],
+        "proto": ["not applicable"]
       }
     },
     {
@@ -401,7 +405,8 @@
       "fixed": false,
       "overlap": {
         "go": ["revive unused-receiver"],
-        "ts": ["not applicable"]
+        "ts": ["not applicable"],
+        "proto": ["not applicable"]
       }
     },
     {
@@ -422,7 +427,8 @@
       "fixed": false,
       "overlap": {
         "go": ["unparam"],
-        "ts": ["none known"]
+        "ts": ["none known"],
+        "proto": ["not applicable"]
       }
     },
     {
@@ -444,7 +450,8 @@
       "fixed": false,
       "overlap": {
         "go": ["ineffassign", "wastedassign", "staticcheck SA4006"],
-        "ts": ["eslint no-useless-assignment", "@typescript-eslint/no-unused-vars"]
+        "ts": ["eslint no-useless-assignment", "@typescript-eslint/no-unused-vars"],
+        "proto": ["not applicable"]
       }
     },
     {
@@ -464,7 +471,8 @@
       "fixed": false,
       "overlap": {
         "go": ["go vet unreachable"],
-        "ts": ["tsc allowUnreachableCode", "eslint no-unreachable"]
+        "ts": ["tsc allowUnreachableCode", "eslint no-unreachable"],
+        "proto": ["not applicable"]
       }
     },
     {
@@ -484,7 +492,8 @@
       "fixed": false,
       "overlap": {
         "go": ["staticcheck SA4020"],
-        "ts": ["none known"]
+        "ts": ["none known"],
+        "proto": ["not applicable"]
       }
     },
     {
@@ -606,9 +615,74 @@
       "fixed": false
     },
     {
+      "code": "DS1801",
+      "name": "unused-schema-type",
+      "languages": ["proto"],
+      "subject": "declaration",
+      "holds_live": false,
+      "rule": "A schema message or enum that no binding in any analyzed language references, that no live schema declaration uses, and none of whose members is live.",
+      "default_enabled": true,
+      "default_severity": "deny",
+      "max_class": "certain",
+      "fixability": "deletable",
+      "fixed": false
+    },
+    {
+      "code": "DS1802",
+      "name": "unread-schema-field",
+      "languages": ["proto"],
+      "subject": "declaration",
+      "holds_live": false,
+      "rule": "A schema field that no binding of it reads in any analyzed language: a field, a oneof member, a map field, a group field or an extension. A write is no read, because a field only written carries information no reader receives. Generated transport's encoding of it is no read, and a hand-code serializer's encoding is.",
+      "default_enabled": true,
+      "default_severity": "deny",
+      "max_class": "certain",
+      "fixability": "manual",
+      "fixed": false
+    },
+    {
+      "code": "DS1803",
+      "name": "unused-schema-enum-value",
+      "languages": ["proto"],
+      "subject": "declaration",
+      "holds_live": false,
+      "rule": "A schema enum value that no binding names, of an enum whose name conversion no hand code reaches. A value that shares its number with another is never reported.",
+      "default_enabled": true,
+      "default_severity": "deny",
+      "max_class": "certain",
+      "fixability": "manual",
+      "fixed": false
+    },
+    {
+      "code": "DS1804",
+      "name": "unused-schema-service",
+      "languages": ["proto"],
+      "subject": "declaration",
+      "holds_live": false,
+      "rule": "A schema service none of whose operations any client binding calls and none of whose service bindings hand code uses other than through a registration form. Its operations fall with it.",
+      "default_enabled": true,
+      "default_severity": "deny",
+      "max_class": "certain",
+      "fixability": "manual",
+      "fixed": false
+    },
+    {
+      "code": "DS1805",
+      "name": "uncalled-schema-operation",
+      "languages": ["proto"],
+      "subject": "declaration",
+      "holds_live": false,
+      "rule": "A schema operation that no client binding in any analyzed language calls. Each hand-written method implementing it that nothing else keeps falls in this finding's component, under the code its own references select.",
+      "default_enabled": true,
+      "default_severity": "warn",
+      "max_class": "certain",
+      "fixability": "manual",
+      "fixed": false
+    },
+    {
       "code": "DS9001",
       "name": "suppression-without-reason",
-      "languages": ["go", "ts"],
+      "languages": ["go", "ts", "proto"],
       "subject": "record",
       "holds_live": false,
       "rule": "A suppression that carries no reason, in any of the three documents: an inline directive, an ignore-file entry or a baseline row. For the ignore file and the baseline, an entry or a row whose reason field is absent, empty or whitespace only is refused and reported rather than matched.",
@@ -625,7 +699,7 @@
     {
       "code": "DS9002",
       "name": "unscoped-ignore-entry",
-      "languages": ["go", "ts"],
+      "languages": ["go", "ts", "proto"],
       "subject": "record",
       "holds_live": false,
       "rule": "An ignore-file entry or a baseline row that names a symbol and no file path. The entry is reported rather than matched, so a bare name cannot mask a match anywhere else in the project. The inline directive is scoped by its position and cannot be unscoped.",
@@ -642,7 +716,7 @@
     {
       "code": "DS9003",
       "name": "stale-suppression",
-      "languages": ["go", "ts"],
+      "languages": ["go", "ts", "proto"],
       "subject": "record",
       "holds_live": false,
       "rule": "A suppression record that is stale, as grammar/suppression.md defines it, at either mechanism and in the baseline alike. The run exits with the findings code when at least one is reported. The kind is fixed on at deny: no flag, no severity setting and no per-mechanism exception reduces it below a finding, and a configuration naming this code under a severity key is an unimplemented key.",
@@ -659,7 +733,7 @@
     {
       "code": "DS9004",
       "name": "unmatched-root",
-      "languages": ["go", "ts"],
+      "languages": ["go", "ts", "proto"],
       "subject": "record",
       "holds_live": false,
       "rule": "A configured root that matches no symbol, or a configured root pattern that matches no symbol. A root set nobody checks silently changes every result, so a stale one is a finding. The kind is fixed on at deny: no flag, no severity setting and no exception reduces it below a finding, and a configuration naming this code under a severity key is an unimplemented key.",

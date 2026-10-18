@@ -1,0 +1,13 @@
+{
+  "name": "proto-missing-import-path",
+  "description": "A directory proto.import_paths names that does not exist in the target ends the run with the missing-import-path setup failure naming it, before any finding exists.",
+  "rules": ["schemas.3"],
+  "languages": ["proto"],
+  "target_kind": "application",
+  "import_paths": ["protos"],
+  "setup_failure": {
+    "class": "missing-import-path",
+    "names": ["protos"]
+  },
+  "expect": []
+}

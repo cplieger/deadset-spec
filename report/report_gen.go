@@ -56,10 +56,15 @@ type NoteKind string
 
 // The values of NoteKind.
 const (
-	NoteKindComputedLoad     NoteKind = "computed-load"
-	NoteKindModuleNotLoaded  NoteKind = "module-not-loaded"
-	NoteKindPublishedPackage NoteKind = "published-package"
-	NoteKindUnmappedEntry    NoteKind = "unmapped-entry"
+	NoteKindBindingUnsupported     NoteKind = "binding-unsupported"
+	NoteKindComputedLoad           NoteKind = "computed-load"
+	NoteKindGenerationConfigUnread NoteKind = "generation-config-unread"
+	NoteKindModuleNotLoaded        NoteKind = "module-not-loaded"
+	NoteKindPublishedPackage       NoteKind = "published-package"
+	NoteKindSchemaUnparsed         NoteKind = "schema-unparsed"
+	NoteKindUnboundSchema          NoteKind = "unbound-schema"
+	NoteKindUnmappedEntry          NoteKind = "unmapped-entry"
+	NoteKindUnresolvedImport       NoteKind = "unresolved-import"
 )
 
 // Conformance is the object at report.schema.json#/properties/analyzer/properties/conformance.
@@ -116,7 +121,7 @@ type InputReport struct {
 
 // Target is the object at report.schema.json#/properties/target.
 type Target struct {
-	Kind          TargetKind                    `json:"kind"`
+	Kind          TargetKind                    `json:"kind,omitzero"`
 	LanguageKinds map[vocab.Language]TargetKind `json:"language_kinds,omitzero"`
 	Root          string                        `json:"root"`
 	Identity      string                        `json:"identity"`

@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+package v1;
+
+enum Status {
+  STATUS_UNSPECIFIED = 0;
+  STATUS_OK = 1;
+}

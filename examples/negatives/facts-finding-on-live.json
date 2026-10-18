@@ -1,0 +1,104 @@
+{
+  "facts_version": "1.0.0",
+  "analyzer": {
+    "name": "deadset-proto",
+    "version": "2.0.0"
+  },
+  "language": "proto",
+  "evaluated": true,
+  "generated": [],
+  "bindings": [
+    {
+      "role": "schema",
+      "symbol": "proto://v1#PingRequest",
+      "schema_file": "v1/service.proto",
+      "schema": "proto://v1#PingRequest",
+      "state": "live",
+      "uses": [],
+      "members": ["proto://v1#PingRequest.number", "proto://v1#PingRequest.trace_hint"],
+      "finding": {
+        "code": "DS1802",
+        "kind": "unread-schema-field",
+        "language": "proto",
+        "position": {
+          "path": "proto/v1/service.proto",
+          "line": 12,
+          "column": 3,
+          "end_line": 12
+        },
+        "symbol": {
+          "ref": "proto://v1#PingRequest.trace_hint",
+          "kind": "field",
+          "name": "PingRequest.trace_hint",
+          "parent": "proto://v1#PingRequest",
+          "exported": true,
+          "size_lines": 1
+        },
+        "reachability_class": "probable",
+        "confidence": "probable",
+        "liveness_relation": "reference-counting",
+        "test_only": false,
+        "generated": false,
+        "component": {
+          "id": "deadset-proto/c-1",
+          "root": true,
+          "symbol_count": 1,
+          "deletable_lines": 1
+        },
+        "retained_by": [],
+        "configurations": [],
+        "consumers_loaded": [],
+        "fixability": "manual",
+        "severity": "deny",
+        "message": "schema field is read by no binding in any analyzed language",
+        "details": {}
+      }
+    },
+    {
+      "role": "schema",
+      "symbol": "proto://v1#PingRequest.trace_hint",
+      "schema_file": "v1/service.proto",
+      "schema": "proto://v1#PingRequest.trace_hint",
+      "state": "dead",
+      "uses": [],
+      "members": [],
+      "finding": {
+        "code": "DS1802",
+        "kind": "unread-schema-field",
+        "language": "proto",
+        "position": {
+          "path": "proto/v1/service.proto",
+          "line": 12,
+          "column": 3,
+          "end_line": 12
+        },
+        "symbol": {
+          "ref": "proto://v1#PingRequest.trace_hint",
+          "kind": "field",
+          "name": "PingRequest.trace_hint",
+          "parent": "proto://v1#PingRequest",
+          "exported": true,
+          "size_lines": 1
+        },
+        "reachability_class": "probable",
+        "confidence": "probable",
+        "liveness_relation": "reference-counting",
+        "test_only": false,
+        "generated": false,
+        "component": {
+          "id": "deadset-proto/c-1",
+          "root": true,
+          "symbol_count": 1,
+          "deletable_lines": 1
+        },
+        "retained_by": [],
+        "configurations": [],
+        "consumers_loaded": [],
+        "fixability": "manual",
+        "severity": "deny",
+        "message": "schema field is read by no binding in any analyzed language",
+        "details": {}
+      }
+    }
+  ]
+}

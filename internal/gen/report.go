@@ -13,6 +13,8 @@ const (
 	reportTypesPath   = "report/report_gen.go"
 	reportSchemaPath  = "contract/report.schema.json"
 	findingSchemaPath = "contract/finding.schema.json"
+	factsTypesPath    = "facts/facts_gen.go"
+	factsSchemaPath   = "contract/facts.schema.json"
 )
 
 // reportNames is the Go type of every schema location whose type is not the
@@ -23,7 +25,7 @@ const (
 var reportNames = map[string]string{
 	"report#":                     "Report",
 	"report#/properties/analyzer": "Analyzer",
-	"report#/properties/analyzer/properties/languages/items":                       "vocab.Language",
+	"report#/properties/analyzer/properties/languages/items":                       vocabLanguage,
 	"report#/properties/analyzer/properties/conformance":                           "Conformance",
 	"report#/properties/analyzer/properties/conformance/properties/result":         "enum Result",
 	"report#/properties/merged_from/items":                                         "InputReport",
@@ -38,7 +40,7 @@ var reportNames = map[string]string{
 	"report#/properties/components/items":                                          "ComponentListing",
 	"report#/properties/edge_evaluations/items":                                    "EdgeEvaluation",
 	"report#/properties/edge_evaluations/items/properties/side":                    "enum Side",
-	"report#/properties/edge_evaluations/items/properties/state":                   "enum State",
+	"report#/properties/edge_evaluations/items/properties/state":                   enumState,
 	"report#/properties/stale_suppressions/items":                                  "StaleSuppression",
 	"report#/properties/stale_suppressions/items/properties/code":                  vocabCode,
 	"report#/properties/stale_suppressions/items/properties/entry":                 "SuppressionEntry",
@@ -56,7 +58,7 @@ var reportNames = map[string]string{
 	"report#/properties/totals/properties/withheld":                                "Withheld",
 	"finding#":                                                            "Finding",
 	"finding#/properties/code":                                            vocabCode,
-	"finding#/properties/language":                                        "vocab.Language",
+	"finding#/properties/language":                                        vocabLanguage,
 	"finding#/properties/symbol":                                          "Symbol",
 	"finding#/properties/reachability_class":                              "vocab.Class",
 	"finding#/properties/confidence":                                      "vocab.Class",
@@ -69,19 +71,47 @@ var reportNames = map[string]string{
 	"finding#/properties/details/properties/entry/properties/code":        vocabCode,
 	"finding#/properties/details/properties/sides/items":                  "EdgeSide",
 	"finding#/properties/details/properties/sides/items/properties/side":  "enum Side",
-	"finding#/properties/details/properties/sides/items/properties/state": "enum State",
+	"finding#/properties/details/properties/sides/items/properties/state": enumState,
 	"finding#/$defs/position":                                             "Position",
 	"finding#/$defs/positioned_symbol":                                    "Positioned",
 }
 
+// factsNames is reportNames for the facts schema, whose embedded findings are
+// the report package's.
+var factsNames = map[string]string{
+	"facts#":                                      "Document",
+	"facts#/properties/analyzer":                  "Analyzer",
+	"facts#/properties/language":                  vocabLanguage,
+	"facts#/$defs/schema_file":                    jsonString,
+	"facts#/$defs/generated":                      "Generated",
+	"facts#/$defs/generated/properties/evidence":  "enum Evidence",
+	"facts#/$defs/generated/properties/generator": "Generator",
+	"facts#/$defs/binding":                        "Binding",
+	"facts#/$defs/binding/properties/role":        "enum Role",
+	"facts#/$defs/binding/properties/scope":       "enum Scope",
+	"facts#/$defs/binding/properties/state":       enumState,
+	"facts#/$defs/binding/properties/cap":         "enum Cap",
+	"finding#":                                    "report.Finding",
+}
+
 // vocabCode is the Go type of an issue-kind code.
-const vocabCode = "vocab.Code"
+// The type names more than one schema location takes, and the JSON types
+// whose names are the Go ones or that the generator reads.
+const (
+	vocabCode     = "vocab.Code"
+	vocabLanguage = "vocab.Language"
+	enumState     = "enum State"
+	jsonString    = "string"
+	jsonObject    = "object"
+)
 
 // initialisms are the member-name words a Go name spells in capitals.
 var initialisms = map[string]string{"id": "ID", "os": "OS"}
 
-// reportGen is one generation of the report package's types.
+// reportGen is one generation of a package's document types.
 type reportGen struct {
+	names   map[string]string
+	noun    string
 	docs    map[string]*value
 	structs []string
 	emitted map[string]bool
@@ -95,8 +125,44 @@ type reportGen struct {
 // its zero value, and one string type with its constants per closed
 // vocabulary the package owns.
 func reportTypes(fsys fs.FS, out map[string][]byte) error {
-	g := &reportGen{docs: map[string]*value{}, emitted: map[string]bool{}, enums: map[string][]string{}}
-	for doc, path := range map[string]string{"report": reportSchemaPath, "finding": findingSchemaPath} {
+	return documentTypes(fsys, out, &typesFile{
+		path:    reportTypesPath,
+		root:    "report",
+		names:   reportNames,
+		schemas: map[string]string{"report": reportSchemaPath, "finding": findingSchemaPath},
+		noun:    "the report schemas",
+		header:  "// Code generated by deadset-gen from contract/report.schema.json and contract/finding.schema.json. DO NOT EDIT.\n\npackage report\n\nimport \"github.com/cplieger/deadset-spec/v8/vocab\"\n\n",
+	})
+}
+
+// factsTypes writes the facts package's document types from the facts schema,
+// as reportTypes writes the report package's.
+func factsTypes(fsys fs.FS, out map[string][]byte) error {
+	return documentTypes(fsys, out, &typesFile{
+		path:    factsTypesPath,
+		root:    "facts",
+		names:   factsNames,
+		schemas: map[string]string{"facts": factsSchemaPath, "finding": findingSchemaPath},
+		noun:    "the facts schema",
+		header:  "// Code generated by deadset-gen from contract/facts.schema.json. DO NOT EDIT.\n\npackage facts\n\nimport (\n\t\"github.com/cplieger/deadset-spec/v8/report\"\n\t\"github.com/cplieger/deadset-spec/v8/vocab\"\n)\n\n",
+	})
+}
+
+// typesFile is one generated file of document types: the schemas it reads by
+// document name, the document its root type is, and the names of its types.
+type typesFile struct {
+	names   map[string]string
+	schemas map[string]string
+	path    string
+	root    string
+	noun    string
+	header  string
+}
+
+// documentTypes writes one typesFile.
+func documentTypes(fsys fs.FS, out map[string][]byte, file *typesFile) error {
+	g := &reportGen{names: file.names, noun: file.noun, docs: map[string]*value{}, emitted: map[string]bool{}, enums: map[string][]string{}}
+	for doc, path := range file.schemas {
 		data, held := out[path]
 		if !held {
 			var err error
@@ -110,12 +176,11 @@ func reportTypes(fsys fs.FS, out map[string][]byte) error {
 		}
 		g.docs[doc] = v
 	}
-	if _, err := g.typeOf("report", "", g.docs["report"], true); err != nil {
+	if _, err := g.typeOf(file.root, "", g.docs[file.root], true); err != nil {
 		return err
 	}
 	w := &writer{}
-	w.f("// Code generated by deadset-gen from contract/report.schema.json and contract/finding.schema.json. DO NOT EDIT.\n\n")
-	w.f("package report\n\nimport \"github.com/cplieger/deadset-spec/v8/vocab\"\n\n")
+	w.f("%s", file.header)
 	for _, name := range g.order {
 		g.writeEnum(w, name)
 	}
@@ -124,9 +189,9 @@ func reportTypes(fsys fs.FS, out map[string][]byte) error {
 	}
 	src, err := format.Source([]byte(w.b.String()))
 	if err != nil {
-		return fmt.Errorf("%s: %w", reportTypesPath, err)
+		return fmt.Errorf("%s: %w", file.path, err)
 	}
-	out[reportTypesPath] = src
+	out[file.path] = src
 	return nil
 }
 
@@ -136,7 +201,7 @@ func (g *reportGen) typeOf(doc, pointer string, s *value, required bool) (string
 	if ref := s.get("$ref").str(); ref != "" {
 		return g.refType(doc, ref, required)
 	}
-	named, isNamed := reportNames[doc+"#"+pointer]
+	named, isNamed := g.names[doc+"#"+pointer]
 	kind, name, _ := strings.Cut(named, " ")
 	switch {
 	case isNamed && kind == "enum":
@@ -144,20 +209,23 @@ func (g *reportGen) typeOf(doc, pointer string, s *value, required bool) (string
 	case isNamed && kind == "hand":
 		return name, nil
 	case isNamed && name == "":
-		if s.get("type").str() == "object" && !strings.Contains(named, ".") && !strings.HasPrefix(named, "map[") {
+		if s.get("type").str() == jsonObject && !strings.Contains(named, ".") && !strings.HasPrefix(named, "map[") {
 			return g.object(doc, pointer, s, named, required)
+		}
+		if s.get("type").str() == jsonObject && !required && !strings.HasPrefix(named, "map[") {
+			return "*" + named, nil
 		}
 		return named, nil
 	}
 	return scalarType(doc, pointer, s, required, g)
 }
 
-// scalarType is the Go type of a schema no row of reportNames names: a string,
+// scalarType is the Go type of a schema no row of the names table names: a string,
 // an integer, a boolean or an array of a named or scalar item.
 func scalarType(doc, pointer string, s *value, required bool, g *reportGen) (string, error) {
 	switch s.get("type").str() {
-	case "string":
-		return "string", nil
+	case jsonString:
+		return jsonString, nil
 	case "integer":
 		return "int", nil
 	case "boolean":
@@ -245,7 +313,7 @@ func (g *reportGen) enum(name string, values []string) (string, error) {
 
 // writeEnum writes one vocabulary's type and a constant per value.
 func (g *reportGen) writeEnum(w *writer, name string) {
-	w.f("// %s is a closed vocabulary of the report schemas.\ntype %s string\n\n// The values of %s.\nconst (\n", name, name, name)
+	w.f("// %s is a closed vocabulary of %s.\ntype %s string\n\n// The values of %s.\nconst (\n", name, g.noun, name, name)
 	for _, v := range g.enums[name] {
 		w.f("\t%s%s %s = %q\n", name, goName(strings.ReplaceAll(v, "-", "_")), name, v)
 	}

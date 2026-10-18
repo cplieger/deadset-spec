@@ -1,0 +1,31 @@
+{
+  "name": "proto-generation-config-flow-list",
+  "description": "A buf.gen.yaml is read in a subset of YAML: a flow sequence of scalars naming a plugin reads, and an anchor makes a generation-config-unread note naming the file, the module it configures read as though no generation configuration existed.",
+  "rules": ["schemas.17", "schemas.18"],
+  "languages": ["proto"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "notes": [
+    {
+      "kind": "generation-config-unread",
+      "path": "b/buf.gen.yaml"
+    }
+  ],
+  "facts": [
+    {
+      "symbol": "A",
+      "role": "schema",
+      "schema": "proto://a.v1#A",
+      "state": "dead",
+      "report": "DS1801"
+    },
+    {
+      "symbol": "B",
+      "role": "schema",
+      "schema": "proto://b.v1#B",
+      "state": "dead",
+      "report": "DS1801"
+    }
+  ],
+  "expect": []
+}

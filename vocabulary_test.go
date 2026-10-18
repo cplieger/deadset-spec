@@ -116,6 +116,20 @@ func liveCodeRange(start, end, family string) codeRange {
 	return codeRange{Start: start, End: end, Family: family, Title: "Planted", Question: "A planted question.", Description: "A planted range.", Status: "live"}
 }
 
+// plantReservedDS19 declares DS1900-DS1999 reserved, before the configuration
+// range, as the family a kind has not yet been assigned to.
+func plantReservedDS19(doc *kindsDocument) {
+	reserved := liveCodeRange("DS1900", "DS1999", "planted-reserved")
+	reserved.Status = "reserved"
+	i := slices.IndexFunc(doc.Ranges, func(r codeRange) bool { return r.Start == "DS9000" })
+	doc.Ranges = slices.Insert(doc.Ranges, i, reserved)
+}
+
+// rangeAt is the index of the range starting at start.
+func rangeAt(doc *kindsDocument, start string) int {
+	return slices.IndexFunc(doc.Ranges, func(r codeRange) bool { return r.Start == start })
+}
+
 func TestVocabularyCodeAssignmentRefusesAPlantedCode(t *testing.T) {
 	cases := []struct {
 		plant func(*kindsDocument)
@@ -173,10 +187,10 @@ func TestVocabularyRangeAssignmentRefusesAPlantedRange(t *testing.T) {
 		{
 			name: "a_range_running_backwards",
 			plant: func(doc *kindsDocument) {
-				i := slices.IndexFunc(doc.Ranges, func(r codeRange) bool { return r.Start == "DS1800" })
-				doc.Ranges[i].End = "DS1750"
+				plantReservedDS19(doc)
+				doc.Ranges[rangeAt(doc, "DS1900")].End = "DS1850"
 			},
-			want: []plantedRule{{sentinel: errRangeSpan, names: `"DS1800".."DS1750"`}},
+			want: []plantedRule{{sentinel: errRangeSpan, names: `"DS1900".."DS1850"`}},
 		},
 		{
 			name:  "a_live_row_outside_every_range",
@@ -218,11 +232,11 @@ func TestVocabularyRetirementRefusesAPlantedReassignment(t *testing.T) {
 		{
 			name: "a_live_row_inside_a_retired_range",
 			plant: func(doc *kindsDocument) {
-				i := slices.IndexFunc(doc.Ranges, func(r codeRange) bool { return r.Start == "DS1800" })
-				doc.Ranges[i].Status = "retired"
-				doc.Kinds = append(doc.Kinds, liveKindRow("DS1801", "planted-retired-range"))
+				plantReservedDS19(doc)
+				doc.Ranges[rangeAt(doc, "DS1900")].Status = "retired"
+				doc.Kinds = append(doc.Kinds, liveKindRow("DS1901", "planted-retired-range"))
 			},
-			want: []plantedRule{{sentinel: errLiveRowInRetiredRange, names: "DS1801"}},
+			want: []plantedRule{{sentinel: errLiveRowInRetiredRange, names: "DS1901"}},
 		},
 	}
 	for _, tc := range cases {
@@ -401,9 +415,9 @@ func TestVocabularySeverityKeysNameALiveKindOrFamily(t *testing.T) {
 	retireDS1010 := func(doc *kindsDocument) {
 		doc.Retired = append(doc.Retired, retiredKind{Code: "DS1010", Name: "planted-gone"})
 	}
-	retireDS18 := func(doc *kindsDocument) {
-		i := slices.IndexFunc(doc.Ranges, func(r codeRange) bool { return r.Start == "DS1800" })
-		doc.Ranges[i].Status = "retired"
+	retireDS19 := func(doc *kindsDocument) {
+		plantReservedDS19(doc)
+		doc.Ranges[rangeAt(doc, "DS1900")].Status = "retired"
 	}
 	cases := []struct {
 		plant  func(*kindsDocument)
@@ -427,14 +441,15 @@ func TestVocabularySeverityKeysNameALiveKindOrFamily(t *testing.T) {
 		},
 		{
 			name:   "a_retired_family_prefix",
-			plant:  retireDS18,
-			config: `{"target":{"kind":"library"},"severity":{"DS18":"allow"}}`,
-			want:   []plantedRule{{sentinel: errSeverityKeyRetired, names: "DS18"}},
+			plant:  retireDS19,
+			config: `{"target":{"kind":"library"},"severity":{"DS19":"allow"}}`,
+			want:   []plantedRule{{sentinel: errSeverityKeyRetired, names: "DS19"}},
 		},
 		{
 			name:   "a_reserved_family_prefix",
-			config: `{"target":{"kind":"library"},"severity":{"DS18":"allow"}}`,
-			want:   []plantedRule{{sentinel: errSeverityKeyUnknown, names: "DS18"}},
+			plant:  plantReservedDS19,
+			config: `{"target":{"kind":"library"},"severity":{"DS19":"allow"}}`,
+			want:   []plantedRule{{sentinel: errSeverityKeyUnknown, names: "DS19"}},
 		},
 		{
 			name:   "a_code_the_space_never_assigned",

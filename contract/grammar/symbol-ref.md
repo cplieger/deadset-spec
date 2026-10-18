@@ -15,17 +15,18 @@ Rendered, one per language:
 ```text
 go://example.com/app#Catalog.ResolveAlias
 ts://@example/app/src/features/tabs/index.ts#TabStrip.cachedLayout
+proto://v1#BackupRequest.dry_run
 ```
 
 The reference borrows the shape of a URL so that a reader sees a language, a location and a fragment at a glance. It is not a URL: no part of it is percent-encoded or decoded, no Unicode normalization is applied, a non-ASCII identifier travels as its UTF-8 bytes, and characters a URL fragment forbids, such as `[`, `<` and `'`, appear as they are. The corpus refuses `go://example.com/fixture#%C3%9Cnused` and accepts `go://example.com/fixture#Ünused` for this reason.
 
-Six rules hold in both languages.
+Six rules hold in every language.
 
-1. **The language prefix is the namespace.** `go` covers Go; `ts` covers TypeScript and JavaScript, because one analyzer covers both and [`languages.json`](../languages.json) names its language `ts`. The prefix is lowercase and is followed by `://`. A third language joins by adding a prefix and a section to this page, and nothing else changes: an edge pairs two references and names no language in its own shape.
+1. **The language prefix is the namespace.** `go` covers Go; `ts` covers TypeScript and JavaScript, because one analyzer covers both and [`languages.json`](../languages.json) names its language `ts`; `proto` covers Protocol Buffers, the schema language of that file's `proto` row. The prefix is lowercase and is followed by `://`. A third language joins by adding a prefix and a section to this page, and nothing else changes: an edge pairs two references and names no language in its own shape.
 2. **The first `#` splits the scope from the fragment.** The scope never contains `#`; the fragment may, in a TypeScript private name.
 3. **An empty fragment names the scope itself**: the Go package, or the TypeScript module. The `#` is still written, so that a scope is never mistaken for a symbol: without it, the scope's last element reads as a symbol of that name.
 4. **No CR and no LF, anywhere.** A reference is a field of a text line, one half of an LF-separated hash input ([`sarif.md`](sarif.md), `deadsetSymbolRef/v1`) and a JSON string, and each of those needs the guarantee. A TypeScript name that contains either is quoted and escaped.
-5. **No whitespace outside a quoted TypeScript component.** Go has no quoted component, so a Go reference contains no whitespace at all.
+5. **No whitespace outside a quoted TypeScript component.** Go and Protocol Buffers have no quoted component, so their references contain no whitespace at all.
 6. **Case is significant** everywhere and compared bytewise: `Catalog` and `catalog` are two symbols, a module path keeps the case its `go.mod` spells, and a selector is lowercase.
 
 ## What makes it stable
@@ -139,6 +140,14 @@ A name an import declaration binds is a symbol of its own file, distinct from th
 
 A name a module-level destructuring declaration binds is a module-level variable of its own, spelled by that name: `export const { useField, useForm } = createHooks()` declares `useField` and `useForm`.
 
+### A module-level constant's literal members
+
+A property of an object type literal that is a type argument of a module-level `const`'s declared type, and a property of an object literal that initialises a module-level `const`, is spelled as the variable's component, a dot and the property's component, recursively through nested literals of either kind: `ts://@example/app/gen/v1/service_pb.ts#Backrest.getConfig` for `export const Backrest: GenService<{ getConfig: { … } }>`, `ts://@example/app/gen/eliza_connect.ts#ElizaService.methods.say` for `export const ElizaService = { methods: { say: { … } } }`, and `ts://@example/app/gen/config_pb.ts#PhoneType.UNSPECIFIED` for `export const PhoneType = { UNSPECIFIED: 0 } as const`. The form is the member form below, so a reader sees a constant's literal member spelled as a class's. Where two such literals of one variable declare one name, the variable stands for both, as the type-alias constituent rule below states for an alias.
+
+### A discriminated union constituent
+
+An object type literal that is a constituent of a union that is the declared type of a property, where the union tells its constituents apart by one property whose type is a string literal type, is spelled as the property's reference, a dot, the discriminant's literal as a quoted component, and the selector `:case`: `ts://@example/app/gen/config_pb.ts#RetentionPolicy.policy.'policyKeepLastN':case` for `policy: { case: "policyKeepLastN"; value: number } | { case: undefined; value?: undefined }`. The literal is always quoted, whatever its spelling, so the constituent is never read as a member named by the literal, and the selector keeps the form apart from a quoted member name. A constituent whose discriminant is not a string literal type, such as `{ case: undefined }`, has no reference.
+
 ### Members
 
 A member is its container's component, a dot and its own component. The containers and their members:
@@ -190,6 +199,42 @@ The declared version range is the entry's value, not its identity, and never app
 
 As in Go, a spelling can parse and match nothing: `#Green` for an enum member written without its enum is syntactically a module-level reference, and `ts://src/wire.ts#X` is syntactically a module in a package named `src`. Both are reported by the self-check kinds when a document carries them.
 
+## Protocol Buffers
+
+```text
+proto://<package>#<fragment>
+```
+
+### The Protocol Buffers scope
+
+The scope is the package the schema file's `package` statement declares, `v1` or `google.api`, or a single dot when the file declares none. A package never starts with a dot, so the two cannot collide. The scope is the package and not the file, because generated code names a declaration by its package-qualified name and a binding written from it must spell the same reference ([`bindings.md`](analysis/bindings.md)).
+
+### Declarations
+
+The fragment is the chain of declarations from the package inward, joined by `.`, each spelled by its declared name: a message `BackupRequest`, a nested message `RetentionPolicy.TimeBucketedCounts`, a field `BackupRequest.dry_run`, an enum value `DoRepoTaskRequest.Task.TASK_PRUNE`, a service `Backrest`, an RPC `Backrest.GetConfig`, and an extension `foo` at file level or `Msg.foo` inside the message that declares it.
+
+```text
+proto://v1#BackupRequest.dry_run
+proto://v1#DoRepoTaskRequest.Task.TASK_PRUNE
+proto://v1#Backrest.GetConfig
+proto://.#Ping
+```
+
+- **An enum value is spelled inside its enum**, not by its protobuf full name, which places it beside the enum. The containment chain is what the grammar fixes in every language, and protoc refuses two siblings of one name.
+- **A oneof member is a field of its message**, `RetentionPolicy.policy_keep_last_n`, because oneof members share the message's scope. The oneof itself has no reference: its members carry the findings.
+- **A proto2 group is two declarations**, as protoc models it: its message `Msg.Result` and its field `Msg.result`.
+- **A field is named, never numbered**, so renaming a field changes its reference, as for every other declaration, and renumbering it does not.
+
+### A schema file
+
+A schema file is its import path followed by the `:file` selector, scoped by the package it declares: `proto://v1#v1/service.proto:file`. The import path is relative to the import root that resolves the file ([`schemas.md`](analysis/schemas.md), `schemas.3`), so a change of `proto.import_paths` or of a `buf.yaml` module root changes the reference.
+
+### Deliberately not representable in Protocol Buffers
+
+- **A map entry message**, which the compiler synthesises; the map field is the reference.
+- **A `reserved` range or name, and an option value.** Neither is a declaration.
+- **A oneof**, for the reason above.
+
 ## Patterns
 
 A configured root may be a pattern (`roots.patterns` in [`config.schema.json`](../config.schema.json)). Each entry is matched against the reference of every symbol the analysis enumerates: `*` matches any run of characters including the solidus, `?` matches exactly one character counted as a Unicode code point, no other character is special, and an entry holding neither wildcard matches only the symbol whose reference it spells exactly. A pattern that matches no symbol is a `DS9004`.
@@ -224,6 +269,9 @@ The expressions are written in the intersection of two dialects, RE2 as Go's `re
 | `TS_MEMBER` | `(?:TS_IDENT\|#TS_IDENT\|TS_QUOTED\|TS_COMPUTED)` | a component after a dot |
 | `TS_PACKAGE` | `(?:@[A-Za-z0-9._-]+/)?[A-Za-z0-9._-]+` | an npm package name, or `.` |
 | `TS_FILE` | `(?:[^/#\r\n]+/)*[^/#\r\n]+(?:(?:\.d)?\.[mc]?ts\|\.tsx\|\.[mc]?js\|\.jsx)` | a source path with its extension |
+| `PROTO_IDENT` | `[A-Za-z_][A-Za-z0-9_]*` | a Protocol Buffers identifier |
+| `PROTO_PACKAGE` | `(?:\.\|PROTO_IDENT(?:\.PROTO_IDENT)*)` | a package, or `.` |
+| `PROTO_PATH` | `(?:[^/#:\r\n]+/)*[^/#:\r\n]+\.proto` | a schema file's import path |
 
 ### One expression per form
 
@@ -243,15 +291,18 @@ Each row is anchored, `^` to `$`, and is the whole reference. The corpus names t
 | ts | `module-level`, `default-export` | `^ts://TS_PACKAGE/TS_FILE#TS_HEAD$` |
 | ts | `alias` | `^ts://TS_PACKAGE/TS_FILE#(?:TS_QUOTED\.)?TS_HEAD:alias$` |
 | ts | `import` | `^ts://TS_PACKAGE/TS_FILE#TS_HEAD:import$` |
-| ts | `class-member`, `private-member`, `interface-member`, `type-member`, `enum-member`, `namespace-member`, `computed-member` | `^ts://TS_PACKAGE/TS_FILE#TS_HEAD(?:\.TS_MEMBER)+$` |
+| ts | `class-member`, `private-member`, `interface-member`, `type-member`, `enum-member`, `namespace-member`, `computed-member`, `literal-member` | `^ts://TS_PACKAGE/TS_FILE#TS_HEAD(?:\.TS_MEMBER)+$` |
 | ts | `static-member` | `^ts://TS_PACKAGE/TS_FILE#TS_HEAD(?:\.TS_MEMBER)+:static$` |
+| ts | `case-constituent` | `^ts://TS_PACKAGE/TS_FILE#TS_HEAD(?:\.TS_MEMBER)+\.TS_QUOTED:case$` |
 | ts | `type-parameter` | `^ts://TS_PACKAGE/TS_FILE#TS_HEAD(?:\.TS_MEMBER)*(?::static)?<TS_IDENT>$` |
 | ts | `parameter` | `^ts://TS_PACKAGE/TS_FILE#(?:TS_HEAD(?:\.TS_MEMBER)*(?::static)?)?\(TS_IDENT\)$` |
 | ts | `dependency` | `^ts://TS_PACKAGE/(?:[^/#\r\n]+/)*package\.json#TS_PACKAGE:(?:dependency\|dev-dependency\|peer-dependency)$` |
+| proto | `message`, `enum`, `field`, `enum-member`, `service`, `rpc` | `^proto://PROTO_PACKAGE#PROTO_IDENT(?:\.PROTO_IDENT)*$` |
+| proto | `file` | `^proto://PROTO_PACKAGE#PROTO_PATH:file$` |
 
 ### Expanded
 
-The same seventeen expressions with every block substituted, one per line under its language and form, for copying into a test. Every line compiles under Go's `regexp` and under an ECMAScript `RegExp` with no flags.
+The same twenty expressions with every block substituted, one per line under its language and form, for copying into a test. Every line compiles under Go's `regexp` and under an ECMAScript `RegExp` with no flags.
 
 ```text
 go package
@@ -290,11 +341,14 @@ ts alias
 ts import
 ^ts://(?:@[A-Za-z0-9._-]+/)?[A-Za-z0-9._-]+/(?:[^/#\r\n]+/)*[^/#\r\n]+(?:(?:\.d)?\.[mc]?ts|\.tsx|\.[mc]?js|\.jsx)#(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*'):import$
 
-ts class-member, private-member, interface-member, type-member, enum-member, namespace-member, computed-member
+ts class-member, private-member, interface-member, type-member, enum-member, namespace-member, computed-member, literal-member
 ^ts://(?:@[A-Za-z0-9._-]+/)?[A-Za-z0-9._-]+/(?:[^/#\r\n]+/)*[^/#\r\n]+(?:(?:\.d)?\.[mc]?ts|\.tsx|\.[mc]?js|\.jsx)#(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*')(?:\.(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|#(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*'|\[[^\]\r\n\t ]+\]))+$
 
 ts static-member
 ^ts://(?:@[A-Za-z0-9._-]+/)?[A-Za-z0-9._-]+/(?:[^/#\r\n]+/)*[^/#\r\n]+(?:(?:\.d)?\.[mc]?ts|\.tsx|\.[mc]?js|\.jsx)#(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*')(?:\.(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|#(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*'|\[[^\]\r\n\t ]+\]))+:static$
+
+ts case-constituent
+^ts://(?:@[A-Za-z0-9._-]+/)?[A-Za-z0-9._-]+/(?:[^/#\r\n]+/)*[^/#\r\n]+(?:(?:\.d)?\.[mc]?ts|\.tsx|\.[mc]?js|\.jsx)#(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*')(?:\.(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|#(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*'|\[[^\]\r\n\t ]+\]))+\.'(?:[^'\\\r\n]|\\['\\nr])*':case$
 
 ts type-parameter
 ^ts://(?:@[A-Za-z0-9._-]+/)?[A-Za-z0-9._-]+/(?:[^/#\r\n]+/)*[^/#\r\n]+(?:(?:\.d)?\.[mc]?ts|\.tsx|\.[mc]?js|\.jsx)#(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*')(?:\.(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|#(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*'|\[[^\]\r\n\t ]+\]))*(?::static)?<(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*>$
@@ -304,13 +358,19 @@ ts parameter
 
 ts dependency
 ^ts://(?:@[A-Za-z0-9._-]+/)?[A-Za-z0-9._-]+/(?:[^/#\r\n]+/)*package\.json#(?:@[A-Za-z0-9._-]+/)?[A-Za-z0-9._-]+:(?:dependency|dev-dependency|peer-dependency)$
+
+proto message, enum, field, enum-member, service, rpc
+^proto://(?:\.|[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*)#[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*$
+
+proto file
+^proto://(?:\.|[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*)#(?:[^/#:\r\n]+/)*[^/#:\r\n]+\.proto:file$
 ```
 
 A reference is valid when it matches one of its language's expressions. A refused string in the corpus matches none of them.
 
 ## The corpus
 
-[`symbol-ref-corpus.json`](symbol-ref-corpus.json) is an array of cases. Each case carries the `input` string, its `language`, the `form` it takes or nearly takes, whether it is `accepted`, a `reason`, and for an accepted case an `example` of one or two source lines the reference denotes. Every form above has at least one accepted case, and every rule has a refused near-miss: the display name with its receiver star, a parameter carrying its type, a field written with a slash, a trailing dot, a parenthesized selector, a `#` or a `!` as a member separator, a double-quoted string, a Go bracket on a TypeScript type parameter, a percent-encoded identifier, a stray CR or LF, and a spelling in which the selector precedes its operand.
+[`symbol-ref-corpus.json`](symbol-ref-corpus.json) is an array of cases. Each case carries the `input` string, its `language`, the `form` it takes or nearly takes, whether it is `accepted`, a `reason`, and for an accepted case an `example` of one or two source lines the reference denotes. Every form above has at least one accepted case, and every rule has a refused near-miss: the display name with its receiver star, a parameter carrying its type, a field written with a slash, a trailing dot, a parenthesized selector, a `#` or a `!` as a member separator, a double-quoted string, a Go bracket on a TypeScript type parameter, an unquoted or double-quoted discriminant before `:case`, a leading dot or a field number in a Protocol Buffers fragment, a schema file with no `:file` selector, a package with a trailing dot, a percent-encoded identifier, a stray CR or LF, and a spelling in which the selector precedes its operand.
 
 ## What other documents fix
 

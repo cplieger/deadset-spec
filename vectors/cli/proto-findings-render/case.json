@@ -1,0 +1,40 @@
+{
+  "description": "A schema field the reader publishes dead and whose only Go binding reads unreferenced is promoted though the Go binding of its message is live, and it renders like every finding: the text line opens with its position in the .proto file, and the SARIF rendering written beside the merged report names the file and the rule.",
+  "products": [
+    "deadset"
+  ],
+  "rename": {
+    "go.mod.txt": "go.mod",
+    "main.go.txt": "main.go"
+  },
+  "executables": [
+    "bin/analyzer"
+  ],
+  "report_file": "@OUT@/run/report.json",
+  "argv": [
+    "analyze",
+    "--target=@TARGET@",
+    "--run-dir=@OUT@/run",
+    "--formats=text,sarif"
+  ],
+  "expect": {
+    "exit": 1,
+    "report": "valid",
+    "finding_paths": [
+      "proto/v1/service.proto"
+    ],
+    "finding_symbols": [
+      "PingRequest.number"
+    ],
+    "stdout_contains": [
+      "proto/v1/service.proto:6:3: ",
+      "DS1802"
+    ],
+    "files_contain": {
+      "@OUT@/run/report.json.sarif": [
+        "\"ruleId\": \"DS1802\"",
+        "\"uri\": \"proto/v1/service.proto\""
+      ]
+    }
+  }
+}

@@ -49,6 +49,25 @@ type (
 	contractDoc struct {
 		ContractVersion string   `json:"contract_version"`
 		SchemaVersions  []string `json:"schema_versions"`
+		FactsVersions   []string `json:"facts_versions"`
+	}
+	generatorsDoc struct {
+		PluginTokens        []string       `json:"plugin_tokens"`
+		HTTPExposurePlugins []string       `json:"http_exposure_plugins"`
+		Generators          []generatorDoc `json:"generators"`
+	}
+	generatorDoc struct {
+		Versions *struct {
+			Min string `json:"min"`
+			Max string `json:"max"`
+		} `json:"versions"`
+		ID            string `json:"id"`
+		Plugin        string `json:"plugin"`
+		Language      string `json:"language"`
+		Header        string `json:"header"`
+		RuntimeImport string `json:"runtime_import"`
+		Cell          string `json:"cell"`
+		Major         int    `json:"major"`
 	}
 	confidenceDoc struct {
 		Evidence []evidenceRow `json:"evidence"`
@@ -156,12 +175,14 @@ func vocabSource(fsys fs.FS, out map[string][]byte) error {
 
 // versions writes the versions, the languages and the closed value lists.
 func (d *vocabDocs) versions(w *writer) {
-	w.f("// The versions this module states: of the Contract, of the newest report schema it admits, and of the conformance corpus.\nconst (\n")
+	w.f("// The versions this module states: of the Contract, of the newest report schema it admits, of the facts document it writes, and of the conformance corpus.\nconst (\n")
 	w.f("ContractVersion = %q\n", d.contract.ContractVersion)
 	w.f("SchemaVersion = %q\n", d.contract.SchemaVersions[len(d.contract.SchemaVersions)-1])
+	w.f("FactsVersion = %q\n", d.contract.FactsVersions[len(d.contract.FactsVersions)-1])
 	w.f("CorpusVersion = %q\n", d.corpus.CorpusVersion)
 	w.f("Prefix = %q\n)\n\n", d.kinds.Prefix)
 	w.f("var schemaVersions = %s\n\n", goStrings(d.contract.SchemaVersions))
+	w.f("var factsVersions = %s\n\n", goStrings(d.contract.FactsVersions))
 	ids := make([]string, 0, len(d.languages.Languages))
 	w.f("// The languages the vocabularies name.\nconst (\n")
 	for i := range d.languages.Languages {
@@ -471,4 +492,31 @@ func sortedKeys[V any](m map[string]V) []string {
 	}
 	slices.Sort(keys)
 	return keys
+}
+
+const generatorsPath = "contract/generators.json"
+
+func (g *generatorsDoc) ids() []string {
+	ids := make([]string, 0, len(g.Generators))
+	for i := range g.Generators {
+		ids = append(ids, g.Generators[i].ID)
+	}
+	return ids
+}
+
+// plugins is every name proto.plugins admits: each row's plugin once, in row
+// order, then the tokens and the HTTP exposure plugins no row names.
+func (g *generatorsDoc) plugins() []string {
+	var names []string
+	for i := range g.Generators {
+		if !slices.Contains(names, g.Generators[i].Plugin) {
+			names = append(names, g.Generators[i].Plugin)
+		}
+	}
+	for _, name := range slices.Concat(g.HTTPExposurePlugins, g.PluginTokens) {
+		if !slices.Contains(names, name) {
+			names = append(names, name)
+		}
+	}
+	return names
 }

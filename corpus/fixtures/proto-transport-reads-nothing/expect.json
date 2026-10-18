@@ -1,0 +1,45 @@
+{
+  "name": "proto-transport-reads-nothing",
+  "description": "Generated transport reads nothing: a request sent through a gRPC client, a Connect client or a Connect-ES client is encoded by the runtime, so its fields stay unreferenced, while the client method each call selects is a live consumer of the RPC.",
+  "rules": ["bindings.13"],
+  "pending": "bindings.13: deadset-go and deadset-ts do not follow generated transport or a hand site passing a message to an RPC runtime (GO5, J7).",
+  "languages": ["go", "ts"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "facts": [
+    {
+      "symbol": "PingRequest.number",
+      "role": "consumer",
+      "schema": "proto://v1#PingRequest.number",
+      "state": "unreferenced"
+    },
+    {
+      "symbol": "PingRequest.text",
+      "role": "consumer",
+      "schema": "proto://v1#PingRequest.text",
+      "state": "unreferenced"
+    },
+    {
+      "symbol": "GrpcClient.Ping",
+      "role": "consumer",
+      "schema": "proto://v1#PingService.Ping",
+      "state": "live",
+      "languages": ["go"]
+    },
+    {
+      "symbol": "ConnectClient.Ping",
+      "role": "consumer",
+      "schema": "proto://v1#PingService.Ping",
+      "state": "live",
+      "languages": ["go"]
+    },
+    {
+      "symbol": "PingService.ping",
+      "role": "consumer",
+      "schema": "proto://v1#PingService.Ping",
+      "state": "live",
+      "languages": ["ts"]
+    }
+  ],
+  "expect": []
+}

@@ -1,0 +1,27 @@
+{
+  "name": "proto-declared-edge-proto-side",
+  "description": "A declared edge with a proto:// side is evaluated by the schema reader on that side as an analyzer evaluates its own: the field's record is dead, so the side is dead and carries the record's pending finding.",
+  "rules": ["schemas.22"],
+  "languages": ["proto"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "edge_evaluations": [
+    {
+      "edge": "wire/ping-number",
+      "side": "provides",
+      "state": "dead",
+      "symbol": "Ping.number",
+      "report": "DS1802"
+    }
+  ],
+  "facts": [
+    {
+      "symbol": "Ping.number",
+      "role": "schema",
+      "schema": "proto://v1#Ping.number",
+      "state": "dead",
+      "report": "DS1802"
+    }
+  ],
+  "expect": []
+}

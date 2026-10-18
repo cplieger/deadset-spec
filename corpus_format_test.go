@@ -245,12 +245,12 @@ func TestCorpusDocument(t *testing.T) {
 	})
 
 	t.Run("layout", func(t *testing.T) {
-		want := map[string]string{"go": "go.txtar", "ts": "ts/"}
+		want := map[string]string{"go": "go.txtar", "ts": "ts/", "proto": "proto/"}
 		if !maps.Equal(doc.Layout.Renderings, want) {
 			t.Errorf("layout.renderings = %v, want %v, the layout this suite walks", doc.Layout.Renderings, want)
 		}
-		if got := slices.Sorted(maps.Keys(doc.Layout.Renderings)); !slices.Equal(got, contractLanguages()) {
-			t.Errorf("layout.renderings languages = %v, want %s languages %v", got, languagesPath, contractLanguages())
+		if got, want := slices.Sorted(maps.Keys(doc.Layout.Renderings)), slices.Sorted(slices.Values(contractLanguages())); !slices.Equal(got, want) {
+			t.Errorf("layout.renderings languages = %v, want %s languages %v", got, languagesPath, want)
 		}
 		gotPaths := []string{doc.Layout.FixtureDirectory, doc.Layout.ExpectationFile, doc.Layout.ManifestFile, doc.Layout.TargetDirectory, doc.Layout.ConsumerDirectory, doc.Layout.DependencyDirectory, doc.Layout.InstalledDirectory}
 		wantPaths := []string{fixturesDir + "/<name>/", corpus.ExpectFile, corpus.ManifestFile, corpus.TargetDir + "/", "<consumer>/", "<dependency>/", corpus.InstalledDir + "/"}

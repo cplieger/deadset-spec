@@ -1,0 +1,5 @@
+analyzer deadset-go 2.0.0
+analyzer deadset-proto 2.0.0
+analyzer deadset-ts 2.0.0
+proto/v1/service.proto:6:3 DS1802 unread-schema-field deny deadset-proto
+1 findings, 0 stale, 0 omitted

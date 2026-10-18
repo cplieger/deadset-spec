@@ -98,6 +98,17 @@ func TestResolveExpectationsBinds(t *testing.T) {
 			want:     map[string]Site{"PlainDead": {File: "target/main.ts", Line: 12}},
 		},
 		{
+			name: "a_facts_entry_of_another_language_needs_no_manifest_name",
+			expect: Expectation{Languages: []string{"go", "ts"}, Facts: []FactRow{
+				{Symbol: "GoClient", Role: "consumer", Schema: "proto://v1#Svc.Ping", Languages: []string{"go"}},
+				{Symbol: "TsClient", Role: "consumer", Schema: "proto://v1#Svc.Ping", Languages: []string{"ts"}},
+			}},
+			manifest: Manifest{Symbols: map[string]ManifestPosition{
+				"GoClient": {File: "target/client.go", Line: line(4), Ref: "go://example.com/fixture#Client.Ping"},
+			}},
+			want: map[string]Site{"GoClient": {File: "target/client.go", Line: 4}},
+		},
+		{
 			name: "a_name_literal_two_rows_share",
 			expect: Expectation{Expect: []Row{
 				{Symbol: "Spelled", Report: "DS1002", Confidence: "possible", Details: &Details{NameLiteral: "SpelledLiteral"}},
@@ -117,7 +128,7 @@ func TestResolveExpectationsBinds(t *testing.T) {
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			got, err := Resolve(&tc.expect, &tc.manifest)
+			got, err := Resolve(&tc.expect, "go", &tc.manifest)
 			if err != nil {
 				t.Fatalf("resolveExpectations(%+v) error = %v, want nil", tc.expect.Expect, err)
 			}
@@ -295,10 +306,26 @@ func TestResolveExpectationsRefuses(t *testing.T) {
 			wantErr:    ErrSharedPosition,
 			wantSymbol: "SpelledLiteral",
 		},
+		{
+			name:       "a_facts_entry_whose_subject_has_no_ref",
+			expect:     Expectation{Facts: []FactRow{{Symbol: "Ping", Role: "schema", Schema: "proto://v1#Ping"}}},
+			manifest:   Manifest{Symbols: map[string]ManifestPosition{"Ping": {File: "target/v1/ping.proto", Line: line(3)}}},
+			wantErr:    ErrNoRef,
+			wantSymbol: "Ping",
+		},
+		{
+			name:   "a_ref_no_facts_entry_names",
+			expect: Expectation{Expect: []Row{{Symbol: "DeadExport", Report: "DS1001"}}},
+			manifest: Manifest{Symbols: map[string]ManifestPosition{
+				"DeadExport": {File: "target/dead.go", Line: line(5), Ref: "go://example.com/fixture#DeadExport"},
+			}},
+			wantErr:    ErrStrayRef,
+			wantSymbol: "DeadExport",
+		},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			got, err := Resolve(&tc.expect, &tc.manifest)
+			got, err := Resolve(&tc.expect, "go", &tc.manifest)
 			if !errors.Is(err, tc.wantErr) {
 				t.Fatalf("resolveExpectations(%s) error = %v, want %v", tc.name, err, tc.wantErr)
 			}
@@ -801,6 +828,8 @@ func TestCorpusRowsNameASubjectKindEveryListedLanguageDeclares(t *testing.T) {
 		{name: "a_typescript_subject_in_a_two_language_fixture", kind: "class", languages: []string{"go", "ts"}, wantMsg: `"class", a subject only ts declares`},
 		{name: "a_subject_of_either_language_in_a_two_language_fixture", kind: "function", languages: []string{"go", "ts"}},
 		{name: "a_subject_both_languages_name_in_a_two_language_fixture", kind: "enum-member", languages: []string{"go", "ts"}},
+		{name: "a_go_and_proto_subject_in_a_two_language_fixture", kind: "field", languages: []string{"go", "ts"}, wantMsg: `"field", a subject only go and proto declare`},
+		{name: "a_proto_subject_in_a_proto_fixture", kind: "message", languages: []string{"proto"}},
 	}
 	for _, tc := range planted {
 		t.Run("planted_"+tc.name, func(t *testing.T) {

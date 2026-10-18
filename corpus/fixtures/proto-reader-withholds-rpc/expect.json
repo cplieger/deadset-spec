@@ -1,0 +1,24 @@
+{
+  "name": "proto-reader-withholds-rpc",
+  "description": "Every service and every RPC is possible, which the default minimum confidence, probable, withholds at the source: the reader publishes the service and its RPC live, with their members and the types the RPC uses, so the default profile lists no RPC finding.",
+  "rules": ["schemas.10", "schemas.20", "schemas.2"],
+  "languages": ["proto"],
+  "target_kind": "application",
+  "facts": [
+    {
+      "symbol": "PingService",
+      "role": "schema",
+      "schema": "proto://v1#PingService",
+      "state": "live",
+      "members": ["proto://v1#PingService.Ping"]
+    },
+    {
+      "symbol": "PingService.Ping",
+      "role": "schema",
+      "schema": "proto://v1#PingService.Ping",
+      "state": "live",
+      "uses": ["proto://v1#PingRequest", "proto://v1#PingResponse"]
+    }
+  ],
+  "expect": []
+}

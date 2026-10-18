@@ -113,6 +113,12 @@
     ],
     "roots_complete": false
   },
+  "proto": {
+    "closed": false,
+    "plugins": [],
+    "import_paths": [],
+    "vendored_paths": []
+  },
   "provenance": {
     "contract_version": "repository: repository.json",
     "target.kind": "repository: repository.json",
@@ -142,6 +148,10 @@
     "ts.injection_registrations": "repository: repository.json",
     "ts.lifecycle_contracts": "repository: repository.json",
     "ts.serializers": "repository: repository.json",
-    "ts.roots_complete": "repository: repository.json"
+    "ts.roots_complete": "repository: repository.json",
+    "proto.closed": "repository: repository.json",
+    "proto.plugins": "repository: repository.json",
+    "proto.import_paths": "repository: repository.json",
+    "proto.vendored_paths": "repository: repository.json"
   }
 }

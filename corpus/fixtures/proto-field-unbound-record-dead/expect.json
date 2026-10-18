@@ -1,0 +1,26 @@
+{
+  "name": "proto-field-unbound-record-dead",
+  "description": "The schema reader publishes one schema record per declaration of a schema file, and a declaration no exemption, suppression or withholding holds is published dead with its pending finding: the message under DS1801 and its field under DS1802, each at its declaration, for the merge to decide against the bindings.",
+  "rules": ["schemas.1", "schemas.19"],
+  "languages": ["proto"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "facts": [
+    {
+      "symbol": "Ping",
+      "role": "schema",
+      "schema": "proto://v1#Ping",
+      "state": "dead",
+      "report": "DS1801",
+      "members": ["proto://v1#Ping.number"]
+    },
+    {
+      "symbol": "Ping.number",
+      "role": "schema",
+      "schema": "proto://v1#Ping.number",
+      "state": "dead",
+      "report": "DS1802"
+    }
+  ],
+  "expect": []
+}

@@ -1,0 +1,32 @@
+{
+  "name": "proto-protojson-unmarshal-caps",
+  "description": "Hand code decoding a message from ProtoJSON without discarding unknown fields gives every consumer of that message the persistence cap, whatever its state: the message, the field read after decoding and the field only the decoding writes. A message decoded with unknown fields discarded carries no cap.",
+  "rules": ["bindings.16"],
+  "pending": "bindings.16: deadset-go and deadset-ts publish cap persistence on the consumers of a message decoded from ProtoJSON keeping unknown fields (GO5, J7).",
+  "languages": ["go", "ts"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "facts": [
+    {
+      "symbol": "PingRequest.number",
+      "role": "consumer",
+      "schema": "proto://v1#PingRequest.number",
+      "state": "live",
+      "cap": "persistence"
+    },
+    {
+      "symbol": "PingRequest.text",
+      "role": "consumer",
+      "schema": "proto://v1#PingRequest.text",
+      "state": "unreferenced",
+      "cap": "persistence"
+    },
+    {
+      "symbol": "PingResponse.number",
+      "role": "consumer",
+      "schema": "proto://v1#PingResponse.number",
+      "state": "unreferenced"
+    }
+  ],
+  "expect": []
+}

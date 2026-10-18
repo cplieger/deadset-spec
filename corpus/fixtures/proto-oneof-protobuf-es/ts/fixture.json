@@ -1,0 +1,34 @@
+{
+  "symbols": {
+    "Outcome.ok": {
+      "file": "target/src/gen/v1/outcome_pb.ts",
+      "line": 22,
+      "ref": "ts://@example/target/src/gen/v1/outcome_pb.ts#Outcome.result.'ok':case"
+    },
+    "Outcome.error": {
+      "file": "target/src/gen/v1/outcome_pb.ts",
+      "line": 28,
+      "ref": "ts://@example/target/src/gen/v1/outcome_pb.ts#Outcome.result.'error':case"
+    },
+    "Outcome.pending": {
+      "file": "target/src/gen/v1/outcome_pb.ts",
+      "line": 34,
+      "ref": "ts://@example/target/src/gen/v1/outcome_pb.ts#Outcome.result.'pending':case"
+    },
+    "Outcome.skipped": {
+      "file": "target/src/gen/v1/outcome_pb.ts",
+      "line": 40,
+      "ref": "ts://@example/target/src/gen/v1/outcome_pb.ts#Outcome.result.'skipped':case"
+    },
+    "Probe.a": {
+      "file": "target/src/gen/v1/outcome_pb.ts",
+      "line": 63,
+      "ref": "ts://@example/target/src/gen/v1/outcome_pb.ts#Probe.value.'a':case"
+    },
+    "Probe.b": {
+      "file": "target/src/gen/v1/outcome_pb.ts",
+      "line": 69,
+      "ref": "ts://@example/target/src/gen/v1/outcome_pb.ts#Probe.value.'b':case"
+    }
+  }
+}

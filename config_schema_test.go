@@ -14,9 +14,9 @@ import (
 const configSchemaPath = "contract/config.schema.json"
 
 // ownerVocabulary is the closed set of x-owner values the schema's description declares:
-// product, analyzer, orchestrator and the analyzer of each language contract/languages.json lists.
+// product, analyzer, analysis, orchestrator and the analyzer of each language contract/languages.json lists.
 func ownerVocabulary() []string {
-	owners := []string{"product", "analyzer", "orchestrator"}
+	owners := []string{"product", "analyzer", "analysis", "orchestrator"}
 	for _, language := range contractLanguages() {
 		owners = append(owners, language+"-analyzer")
 	}

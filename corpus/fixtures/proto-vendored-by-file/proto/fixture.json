@@ -1,0 +1,10 @@
+{
+  "symbols": {
+    "FieldRules": {
+      "file": "target/validate/validate.proto",
+      "line": 5,
+      "ref": "proto://validate#FieldRules"
+    },
+    "Rule": { "file": "target/v1/rules.proto", "line": 5, "ref": "proto://validate#Rule" }
+  }
+}

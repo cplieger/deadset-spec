@@ -11,6 +11,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"slices"
+
+	"github.com/cplieger/deadset-spec/v8/facts"
 )
 
 // The paths of the corpus documents inside the spec module's corpus tree.
@@ -104,10 +107,13 @@ type Expectation struct {
 	Consumers              []string                         `json:"consumers"`
 	ClosedWorld            []string                         `json:"closed_world"`
 	EdgeEvaluations        []Evaluation                     `json:"edge_evaluations"`
+	Facts                  []FactRow                        `json:"facts"`
+	Generated              []facts.Generated                `json:"generated"`
 	TypeErrorSkips         []string                         `json:"type_error_skips"`
 	Notes                  []Note                           `json:"notes"`
 	ConventionsApplied     []Convention                     `json:"conventions_applied"`
 	EntryFiles             []string                         `json:"entry_files"`
+	ImportPaths            []string                         `json:"import_paths"`
 	DisabledConventions    []string                         `json:"disabled_conventions"`
 	Expect                 []Row                            `json:"expect"`
 }
@@ -171,6 +177,41 @@ type Evaluation struct {
 	State  string `json:"state"`
 	Symbol string `json:"symbol"`
 	Report string `json:"report"`
+}
+
+// FactRow is one facts entry: a binding record named by its role and by the
+// logical name of its subject. Unlike a Row, a member it omits is one the record
+// must not carry, but for GeneratedFile, whose omission on a consumer or a
+// fallback names the file its subject is declared in. An Absent entry states that
+// no such record exists, and an entry naming Languages applies to those
+// renderings alone.
+type FactRow struct {
+	Symbol        string        `json:"symbol"`
+	Role          string        `json:"role"`
+	Schema        string        `json:"schema"`
+	State         string        `json:"state"`
+	Report        string        `json:"report"`
+	Cap           string        `json:"cap"`
+	GeneratedFile string        `json:"generated_file"`
+	Scope         string        `json:"scope"`
+	Via           []string      `json:"via"`
+	Uses          []string      `json:"uses"`
+	Members       []string      `json:"members"`
+	Carried       []FactFinding `json:"carried"`
+	Languages     []string      `json:"languages"`
+	Absent        bool          `json:"absent"`
+}
+
+// FactFinding is one finding a dead implementer's carried list holds: its
+// subject's logical name and its code, at the subject's position.
+type FactFinding struct {
+	Symbol string `json:"symbol"`
+	Report string `json:"report"`
+}
+
+// appliesTo reports whether the entry is answered by the rendering of language.
+func (f *FactRow) appliesTo(language string) bool {
+	return len(f.Languages) == 0 || slices.Contains(f.Languages, language)
 }
 
 // Row is one expectation; a member it omits states nothing and is not compared.
@@ -266,11 +307,13 @@ type Manifest struct {
 	ConfigurationsNotBuilt []string                    `json:"configurations_not_built"`
 }
 
-// ManifestPosition is one logical name's file and line; Line is a pointer so an
+// ManifestPosition is one logical name's file and line, and the reference the
+// rendering spells for a subject a facts entry names; Line is a pointer so an
 // absent line is told apart from line zero.
 type ManifestPosition struct {
 	Line *int   `json:"line"`
 	File string `json:"file"`
+	Ref  string `json:"ref"`
 }
 
 // Site is one position as an expectation and a finding are compared at: a path

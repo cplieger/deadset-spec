@@ -1,0 +1,2 @@
+analyzer deadset-proto 2.0.0
+0 findings, 0 stale, 0 omitted

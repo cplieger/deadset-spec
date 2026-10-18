@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package v1;
+
+import "google/protobuf/descriptor.proto";
+
+extend google.protobuf.FieldOptions {
+  string label = 50000;
+  string unused_label = 50001;
+}
+
+message Ping {
+  int32 number = 1 [(v1.label) = "n"];
+}

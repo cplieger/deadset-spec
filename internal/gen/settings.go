@@ -72,6 +72,7 @@ type languagesDoc struct {
 type configContext struct {
 	options     map[string]string // a setting's path to the option that supplies it
 	contract    contractDoc
+	generators  generatorsDoc
 	exemptions  exemptionsDoc
 	languages   languagesDoc
 	kinds       kindsDoc
@@ -88,6 +89,7 @@ func loadConfigContext(fsys fs.FS) (*configContext, error) {
 	}
 	for name, into := range map[string]any{
 		kindsPath: &c.kinds, exemptionsPath: &c.exemptions, "contract/contract.json": &c.contract, cliPath: &cli,
+		generatorsPath: &c.generators,
 	} {
 		if err := decodeFile(fsys, name, into); err != nil {
 			return nil, err
@@ -135,10 +137,11 @@ func (c *configContext) languageIDs(keep func(*languageDoc) bool) []string {
 
 // readers is the languages whose analysis reads a key of one x-owner.
 func (c *configContext) readers(owner string) ([]string, error) {
+	analyzed := func(l *languageDoc) bool { return l.Kind == "analyzed" && l.Analyzer != "" }
 	switch owner {
-	case "product":
-		return c.languageIDs(nil), nil
-	case "analyzer":
+	case "product", "analyzer":
+		return c.languageIDs(analyzed), nil
+	case "analysis":
 		return c.languageIDs(func(l *languageDoc) bool { return l.Analyzer != "" }), nil
 	case "orchestrator":
 		return []string{}, nil
@@ -146,7 +149,7 @@ func (c *configContext) readers(owner string) ([]string, error) {
 	if id, ok := strings.CutSuffix(owner, ownerSuffix); ok && slices.Contains(c.languageIDs(nil), id) {
 		return []string{id}, nil
 	}
-	return nil, fmt.Errorf("x-owner %q is none of product, analyzer, orchestrator and <language>%s for a language of %s", owner, ownerSuffix, languagesPath)
+	return nil, fmt.Errorf("x-owner %q is none of product, analyzer, analysis, orchestrator and <language>%s for a language of %s", owner, ownerSuffix, languagesPath)
 }
 
 // valueList is the closed value list one x-enum names, from the Contract
@@ -174,7 +177,10 @@ func (c *configContext) valueList(name string) ([]string, error) {
 	case "severity-keys":
 		return c.severityKeys(), nil
 	}
-	return nil, fmt.Errorf("x-enum %q names no value list: languages, severities, reachability-classes, fixabilities, symbol-kinds, target-kinds, exemption-classes or severity-keys", name)
+	if held, ok := c.schemaValueList(name); ok {
+		return held, nil
+	}
+	return nil, fmt.Errorf("x-enum %q names no value list: languages, severities, reachability-classes, fixabilities, symbol-kinds, target-kinds, exemption-classes, severity-keys, facts-versions, generator-rows, proto-plugins, schema-languages, process-languages or in-process-analyzers", name)
 }
 
 // severityKeys is every key the severity object admits, ascending: the code of
@@ -371,12 +377,38 @@ func keptByOrchestrator(node *value, role string) (bool, error) {
 	return true, nil
 }
 
+// schemaValueList is the value lists of the facts document and the schema
+// languages, and false for a name that is none of them.
+func (c *configContext) schemaValueList(name string) ([]string, bool) {
+	switch name {
+	case "facts-versions":
+		return c.contract.FactsVersions, true
+	case "generator-rows":
+		return c.generators.ids(), true
+	case "proto-plugins":
+		return c.generators.plugins(), true
+	case "schema-languages":
+		return c.languageIDs(func(l *languageDoc) bool { return l.Kind == "schema" }), true
+	case "process-languages":
+		return c.languageIDs(func(l *languageDoc) bool { return l.Runner == "process" }), true
+	case "in-process-analyzers":
+		var names []string
+		for i := range c.languages.Languages {
+			if l := &c.languages.Languages[i]; l.Runner == "in-process" {
+				names = append(names, l.Analyzer)
+			}
+		}
+		return names, true
+	}
+	return nil, false
+}
+
 // roleOf is what one key of the closed key list is.
 func roleOf(node *value) string {
 	switch {
 	case isTrue(node.get("x-ignored-by-resolution")):
 		return roleIgnored
-	case node.get("type").str() != "object" || isTrue(node.get("x-setting")):
+	case node.get("type").str() != jsonObject || isTrue(node.get("x-setting")):
 		return roleSetting
 	case node.get("patternProperties") != nil:
 		return roleKeyed
@@ -552,7 +584,18 @@ func (c *configContext) configVocab(rows []configKey, maxBytes *value) ([]byte, 
 		w.f("IdentitySource: IdentitySource{File: %q, Field: %q},\nProgramWithoutMarker: %t,\nTakesTargetKind: %t,\n},\n",
 			l.IdentitySource.File, l.IdentitySource.Field, l.ProgramWithoutMarker, l.TakesTargetKind)
 	}
-	w.f("}\n\n// The keys of the closed configuration key list, by their dotted paths.\nconst (\n")
+	w.f("}\n\nvar generatorRows = []GeneratorRow{\n")
+	for i := range c.generators.Generators {
+		g := &c.generators.Generators[i]
+		var low, high string
+		if g.Versions != nil {
+			low, high = g.Versions.Min, g.Versions.Max
+		}
+		w.f("{ID: %q, Plugin: %q, Language: %s, Header: %q, RuntimeImport: %q, Cell: %q, VersionMin: %q, VersionMax: %q, Major: %d},\n",
+			g.ID, g.Plugin, languageIdent(g.Language), g.Header, g.RuntimeImport, g.Cell, low, high, g.Major)
+	}
+	w.f("}\n\nvar protoPlugins = %s\n\nvar httpExposurePlugins = %s\n", goStrings(c.generators.plugins()), goStrings(c.generators.HTTPExposurePlugins))
+	w.f("\n// The keys of the closed configuration key list, by their dotted paths.\nconst (\n")
 	for i := range rows {
 		w.f("%s Key = %q\n", c.keyIdent(rows[i].key), rows[i].key)
 	}

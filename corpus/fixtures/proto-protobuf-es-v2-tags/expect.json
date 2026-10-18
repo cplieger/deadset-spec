@@ -1,0 +1,37 @@
+{
+  "name": "proto-protobuf-es-v2-tags",
+  "description": "A protoc-gen-es v2 file binds each declaration through the @generated from tag of its comment: the message type and its Schema constant are consumers of the message, a field property of the field, whose tag carries a bracketed option list after its number, the service constant of the service and its method member of the RPC.",
+  "rules": ["bindings.6", "references-ts.28"],
+  "pending": "references-ts.28: deadset-ts binds protobuf-es v2 declarations by their @generated from tags (J4).",
+  "languages": ["ts"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "facts": [
+    {
+      "symbol": "PingRequest",
+      "role": "consumer",
+      "schema": "proto://v1#PingRequest"
+    },
+    {
+      "symbol": "PingRequestSchema",
+      "role": "consumer",
+      "schema": "proto://v1#PingRequest"
+    },
+    {
+      "symbol": "PingRequest.text",
+      "role": "consumer",
+      "schema": "proto://v1#PingRequest.text"
+    },
+    {
+      "symbol": "PingService",
+      "role": "consumer",
+      "schema": "proto://v1#PingService"
+    },
+    {
+      "symbol": "PingService.ping",
+      "role": "consumer",
+      "schema": "proto://v1#PingService.Ping"
+    }
+  ],
+  "expect": []
+}

@@ -1,0 +1,27 @@
+{
+  "description": "An analyzer handed --facts that writes its report and no facts document is a fault of that analyzer, read fail-closed like a missing report: the run ends with exit code 3 and the run failure product-fault naming the analyzer, and no merged report is written.",
+  "products": [
+    "deadset"
+  ],
+  "rename": {
+    "go.mod.txt": "go.mod",
+    "main.go.txt": "main.go"
+  },
+  "executables": [
+    "bin/analyzer"
+  ],
+  "report_file": "@OUT@/run/report.json",
+  "argv": [
+    "analyze",
+    "--target=@TARGET@",
+    "--run-dir=@OUT@/run"
+  ],
+  "expect": {
+    "exit": 3,
+    "stderr_contains": [
+      "run failure: product-fault: ",
+      "deadset-go"
+    ],
+    "report": "absent"
+  }
+}

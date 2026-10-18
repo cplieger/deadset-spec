@@ -85,16 +85,17 @@ func Check(fsys fs.FS) []error {
 // environment is what the fixture checks read from the Contract and the
 // expectation schema.
 type environment struct {
-	kindLanguages     map[string]string
-	fixabilities      map[string][]string
-	targetKinds       []string
-	livenessRelations []string
-	admittedDetails   []string
-	languages         []string
-	settable          []string
-	classes           []string
-	exemptions        []string
-	symbolKinds       []string
+	kindLanguages       map[string][]string
+	fixabilities        map[string][]string
+	targetKinds         []string
+	livenessRelations   []string
+	admittedDetails     []string
+	languages           []string
+	targetKindLanguages []string
+	settable            []string
+	classes             []string
+	exemptions          []string
+	symbolKinds         []string
 }
 
 func checkEnvironment(fsys fs.FS) (*environment, error) {
@@ -112,8 +113,12 @@ func checkEnvironment(fsys fs.FS) (*environment, error) {
 		livenessRelations: enumAt(schema, "properties/expect/items/properties/liveness_relation"),
 		admittedDetails:   slices.Sorted(maps.Keys(objectAt(schema, "properties/expect/items/properties/details/properties"))),
 	}
-	for _, language := range vocab.Languages() {
-		env.languages = append(env.languages, string(language))
+	rows := vocab.LanguageRows()
+	for i := range rows {
+		env.languages = append(env.languages, string(rows[i].Language))
+		if rows[i].TakesTargetKind {
+			env.targetKindLanguages = append(env.targetKindLanguages, string(rows[i].Language))
+		}
 	}
 	env.contractVocabularies()
 	for name, set := range map[string][]string{"target_kind": env.targetKinds, "liveness_relation": env.livenessRelations, "details": env.admittedDetails} {
@@ -172,7 +177,7 @@ func checkFixture(fsys fs.FS, doc *Document, env *environment, name string) (*Fi
 func checkExpectation(expect *Expectation, env *environment) []error {
 	errs := checkSetupFailure(expect)
 	errs = append(errs, checkVocabularies(expect, env)...)
-	errs = append(errs, checkConventionsLanguage(expect)...)
+	errs = append(errs, checkOneLanguageMembers(expect)...)
 	errs = append(errs, checkTypeScriptKeysLanguage(expect)...)
 	errs = append(errs, checkConsumerTestsNamesAConsumer(expect)...)
 	errs = append(errs, checkConfiguredRootsScope(expect)...)
@@ -221,7 +226,7 @@ func checkRendering(expect *Expectation, rendering *Rendering) error {
 		return fmt.Errorf("rendering %q %s does not meet %s: %w", language, ManifestFile, ManifestSchemaPath, err)
 	}
 	manifest := &rendering.Manifest
-	sites, err := Resolve(expect, manifest)
+	sites, err := Resolve(expect, language, manifest)
 	if err != nil {
 		return fmt.Errorf("rendering %q: %w", language, err)
 	}
@@ -469,11 +474,11 @@ func absentConsumers(expect *Expectation) []string {
 
 // checkSetupFailure holds a fixture whose run ends with a setup failure to no
 // expectation and no member that configures or answers a report, and every
-// other fixture to at least one expectation.
+// other fixture to at least one expectation or facts entry.
 func checkSetupFailure(expect *Expectation) []error {
 	if expect.SetupFailure == nil {
-		if len(expect.Expect) == 0 {
-			return []error{fmt.Errorf("%s expect is empty, want at least one expectation in a fixture with no setup_failure", ExpectFile)}
+		if len(expect.Expect) == 0 && len(expect.Facts) == 0 && len(expect.Generated) == 0 {
+			return []error{fmt.Errorf("%s expect is empty, want at least one expectation in a fixture with no setup_failure, no facts and no generated entries", ExpectFile)}
 		}
 		return nil
 	}
@@ -489,6 +494,8 @@ func checkSetupFailure(expect *Expectation) []error {
 		"configured_roots":        len(expect.ConfiguredRoots) != 0,
 		"configured_declarations": len(expect.ConfiguredDeclarations) != 0,
 		"edge_evaluations":        len(expect.EdgeEvaluations) != 0,
+		"facts":                   len(expect.Facts) != 0,
+		"generated":               len(expect.Generated) != 0,
 		"type_error_skips":        len(expect.TypeErrorSkips) != 0,
 		"notes":                   len(expect.Notes) != 0,
 		"conventions_applied":     len(expect.ConventionsApplied) != 0,
@@ -559,9 +566,9 @@ func checkVocabularies(doc *Expectation, env *environment) []error {
 	v := &vocabularyCheck{}
 	if per := doc.TargetKind.PerLanguage; per != nil {
 		for _, language := range slices.Sorted(maps.Keys(per)) {
-			v.value("fixture", "target_kind language", language, env.languages)
+			v.value("fixture", "target_kind language", language, env.targetKindLanguages)
 		}
-		for _, language := range env.languages {
+		for _, language := range env.targetKindLanguages {
 			v.value("fixture", "target_kind."+language, per[language], env.targetKinds)
 		}
 	} else {
@@ -576,7 +583,23 @@ func checkVocabularies(doc *Expectation, env *environment) []error {
 	for i := range doc.Expect {
 		v.row(&doc.Expect[i], env)
 	}
+	for i := range doc.Facts {
+		v.fact(&doc.Facts[i], doc.Languages)
+	}
 	return v.errs
+}
+
+// fact names a facts row's report code that is no live code, and a language
+// it names that the fixture does not list.
+func (v *vocabularyCheck) fact(row *FactRow, languages []string) {
+	if row.Report != "" && !vocab.Code(row.Report).Live() {
+		v.errs = append(v.errs, fmt.Errorf("%w: %s facts report = %q, want a live code", ErrOutsideVocabulary, row.Symbol, row.Report))
+	}
+	for _, language := range row.Languages {
+		if !slices.Contains(languages, language) {
+			v.errs = append(v.errs, fmt.Errorf("%w: %s facts languages names %s, which the fixture does not list", ErrOutsideVocabulary, row.Symbol, language))
+		}
+	}
 }
 
 func (v *vocabularyCheck) row(row *Row, env *environment) {
@@ -593,13 +616,23 @@ func (v *vocabularyCheck) row(row *Row, env *environment) {
 	}
 }
 
-// checkConventionsLanguage holds conventions_applied to a one-language fixture,
-// because a convention row is data of one language's analyzer.
-func checkConventionsLanguage(expect *Expectation) []error {
-	if len(expect.ConventionsApplied) == 0 || len(expect.Languages) == 1 {
+// checkOneLanguageMembers holds conventions_applied, a convention row being data
+// of one language's analyzer, and generated, whose paths spell one rendering's
+// layout, to a one-language fixture.
+func checkOneLanguageMembers(expect *Expectation) []error {
+	if len(expect.Languages) == 1 {
 		return nil
 	}
-	return []error{fmt.Errorf("%s holds conventions_applied and lists the languages %v, want exactly one language", ExpectFile, expect.Languages)}
+	var errs []error
+	for _, member := range []struct {
+		name  string
+		named bool
+	}{{"conventions_applied", len(expect.ConventionsApplied) != 0}, {"generated", len(expect.Generated) != 0}} {
+		if member.named {
+			errs = append(errs, fmt.Errorf("%s holds %s and lists the languages %v, want exactly one language", ExpectFile, member.name, expect.Languages))
+		}
+	}
+	return errs
 }
 
 // checkConsumerTestsNamesAConsumer holds consumer_tests to a fixture naming a
@@ -662,18 +695,22 @@ func checkConfiguredDeclarationsScope(doc *Expectation) []error {
 	return errs
 }
 
-// checkSubjectKindLanguageScope names every row naming a subject kind only one
-// language declares in a fixture that does not list that language alone.
-func checkSubjectKindLanguageScope(doc *Expectation, kindLanguages map[string]string) []error {
+// checkSubjectKindLanguageScope names every row naming a subject kind only some
+// languages declare in a fixture that lists a language outside them.
+func checkSubjectKindLanguageScope(doc *Expectation, kindLanguages map[string][]string) []error {
 	var errs []error
 	for i := range doc.Expect {
 		row := &doc.Expect[i]
-		language, single := kindLanguages[row.SymbolKind]
-		if !single || slices.Equal(doc.Languages, []string{language}) {
+		languages, named := kindLanguages[row.SymbolKind]
+		if !named || !slices.ContainsFunc(doc.Languages, func(l string) bool { return !slices.Contains(languages, l) }) {
 			continue
 		}
-		errs = append(errs, fmt.Errorf("%s names the symbol_kind %q, a subject only %s declares, and the fixture lists %v: a row naming such a kind belongs to a fixture that lists that one language",
-			row.Symbol, row.SymbolKind, language, doc.Languages))
+		verb := "declare"
+		if len(languages) == 1 {
+			verb = "declares"
+		}
+		errs = append(errs, fmt.Errorf("%s names the symbol_kind %q, a subject only %s %s, and the fixture lists %v: a row naming such a kind belongs to a fixture that lists only languages declaring it",
+			row.Symbol, row.SymbolKind, strings.Join(languages, " and "), verb, doc.Languages))
 	}
 	return errs
 }

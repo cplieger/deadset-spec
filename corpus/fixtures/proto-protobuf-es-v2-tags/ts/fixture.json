@@ -1,0 +1,29 @@
+{
+  "symbols": {
+    "PingRequest": {
+      "file": "target/src/gen/v1/service_pb.ts",
+      "line": 18,
+      "ref": "ts://@example/target/src/gen/v1/service_pb.ts#PingRequest"
+    },
+    "PingRequestSchema": {
+      "file": "target/src/gen/v1/service_pb.ts",
+      "line": 34,
+      "ref": "ts://@example/target/src/gen/v1/service_pb.ts#PingRequestSchema"
+    },
+    "PingRequest.text": {
+      "file": "target/src/gen/v1/service_pb.ts",
+      "line": 27,
+      "ref": "ts://@example/target/src/gen/v1/service_pb.ts#PingRequest.text"
+    },
+    "PingService": {
+      "file": "target/src/gen/v1/service_pb.ts",
+      "line": 57,
+      "ref": "ts://@example/target/src/gen/v1/service_pb.ts#PingService"
+    },
+    "PingService.ping": {
+      "file": "target/src/gen/v1/service_pb.ts",
+      "line": 61,
+      "ref": "ts://@example/target/src/gen/v1/service_pb.ts#PingService.ping"
+    }
+  }
+}

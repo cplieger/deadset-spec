@@ -1,0 +1,25 @@
+{
+  "name": "proto-gateway-server-mode",
+  "description": "A gateway registered in server mode converts the server to the server interface and forwards each HTTP request to its method, which binds nothing: the handler is a dead implementer and the RPC's client method is unreferenced, so the gateway keeps no RPC live.",
+  "rules": ["bindings.13", "references-go.12"],
+  "pending": "references-go.12: deadset-go reads a gateway's forwarding as binding nothing and its server argument as an implementer (GO5).",
+  "languages": ["go"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "facts": [
+    {
+      "symbol": "GrpcClient.Ping",
+      "role": "consumer",
+      "schema": "proto://v1#PingService.Ping",
+      "state": "unreferenced"
+    },
+    {
+      "symbol": "server.Ping",
+      "role": "implementer",
+      "schema": "proto://v1#PingService.Ping",
+      "state": "dead",
+      "report": "DS1101"
+    }
+  ],
+  "expect": []
+}

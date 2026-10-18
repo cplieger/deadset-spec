@@ -1,0 +1,191 @@
+{
+  "schema_version": "9.0.0",
+  "contract_version": "8.0.0",
+  "analyzer": {
+    "name": "deadset",
+    "version": "2.0.0",
+    "languages": [
+      "go",
+      "proto",
+      "ts"
+    ],
+    "schema_versions_accepted": [
+      "9.0.0"
+    ],
+    "conformance": {
+      "corpus_version": "6.0.0",
+      "result": "pass",
+      "digest": "sha256:c2b1f1c4f5a0200d55dc57145346fc248ad7d258853b486cb1ff145ad20ba90f"
+    }
+  },
+  "merged_from": [
+    {
+      "name": "deadset-go",
+      "version": "2.0.0",
+      "digest": "sha256:11244732bbc2cdedc691fd91819a8ceb800f0fa1a08ae972363b7fc6079dbadc",
+      "languages": [
+        "go"
+      ],
+      "totals": {
+        "findings": 0,
+        "by_severity": {
+          "allow": 0,
+          "warn": 0,
+          "deny": 0
+        },
+        "deletable_lines": 0,
+        "suppressions_in_effect": 0,
+        "reasons_recorded": 0,
+        "stale_suppressions": 0,
+        "pending": 0,
+        "omitted": 0,
+        "withheld": {
+          "certain": 0,
+          "probable": 0,
+          "possible": 0
+        }
+      }
+    },
+    {
+      "name": "deadset-proto",
+      "version": "2.0.0",
+      "digest": "sha256:6d1350ef89c386f54b461bcc8243e3c9ec37c761a8c2e127dc88dc4ba2114586",
+      "languages": [
+        "proto"
+      ],
+      "totals": {
+        "findings": 0,
+        "by_severity": {
+          "allow": 0,
+          "warn": 0,
+          "deny": 0
+        },
+        "deletable_lines": 0,
+        "suppressions_in_effect": 0,
+        "reasons_recorded": 0,
+        "stale_suppressions": 0,
+        "pending": 0,
+        "omitted": 0,
+        "withheld": {
+          "certain": 0,
+          "probable": 0,
+          "possible": 0
+        }
+      }
+    },
+    {
+      "name": "deadset-ts",
+      "version": "2.0.0",
+      "digest": "sha256:16e14ab8ab631241890b9771b462068ba1eed05c37158c669600c03e1915e51c",
+      "languages": [
+        "ts"
+      ],
+      "totals": {
+        "findings": 0,
+        "by_severity": {
+          "allow": 0,
+          "warn": 0,
+          "deny": 0
+        },
+        "deletable_lines": 0,
+        "suppressions_in_effect": 0,
+        "reasons_recorded": 0,
+        "stale_suppressions": 0,
+        "pending": 0,
+        "omitted": 0,
+        "withheld": {
+          "certain": 0,
+          "probable": 0,
+          "possible": 0
+        }
+      }
+    }
+  ],
+  "target": {
+    "kind": "application",
+    "root": ".",
+    "identity": "example.com/app"
+  },
+  "configurations": [
+    {
+      "id": "linux-amd64",
+      "os": "linux",
+      "arch": "amd64",
+      "tags": []
+    }
+  ],
+  "configurations_not_built": [],
+  "consumers": {
+    "declared": 0,
+    "loaded": [],
+    "unavailable": []
+  },
+  "findings": [
+    {
+      "code": "DS1801",
+      "kind": "unused-schema-type",
+      "language": "proto",
+      "position": {
+        "path": "proto/b/v1/service.proto",
+        "line": 5,
+        "column": 3,
+        "end_line": 5
+      },
+      "symbol": {
+        "ref": "proto://v1#Ping",
+        "kind": "message",
+        "name": "Ping",
+        "parent": "proto://v1#",
+        "exported": true,
+        "size_lines": 1
+      },
+      "reachability_class": "probable",
+      "confidence": "probable",
+      "liveness_relation": "reference-counting",
+      "test_only": false,
+      "generated": false,
+      "component": {
+        "id": "deadset-proto/c-2",
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 1
+      },
+      "retained_by": [],
+      "configurations": [],
+      "consumers_loaded": [],
+      "fixability": "deletable",
+      "severity": "deny",
+      "message": "schema type is used by no binding in any analyzed language",
+      "analyzer": "deadset-proto",
+      "details": {}
+    }
+  ],
+  "edge_evaluations": [],
+  "stale_suppressions": [],
+  "declared_gaps": [],
+  "excluded_by_cgo": [],
+  "test_file_rules": [],
+  "type_error_skips": [],
+  "notes": [],
+  "unanswered_questions": [],
+  "conventions_applied": [],
+  "totals": {
+    "findings": 1,
+    "by_severity": {
+      "allow": 0,
+      "warn": 0,
+      "deny": 1
+    },
+    "deletable_lines": 1,
+    "suppressions_in_effect": 0,
+    "reasons_recorded": 0,
+    "stale_suppressions": 0,
+    "pending": 0,
+    "omitted": 0,
+    "withheld": {
+      "certain": 0,
+      "probable": 0,
+      "possible": 0
+    }
+  }
+}

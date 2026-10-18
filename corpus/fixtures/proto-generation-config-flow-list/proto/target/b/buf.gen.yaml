@@ -1,0 +1,4 @@
+version: v2
+plugins:
+  - local: &plugin protoc-gen-go
+    out: gen

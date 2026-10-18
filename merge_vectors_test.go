@@ -16,6 +16,7 @@ import (
 	"testing/fstest"
 
 	"github.com/cplieger/deadset-spec/v8"
+	"github.com/cplieger/deadset-spec/v8/facts"
 	"github.com/cplieger/deadset-spec/v8/report"
 	"github.com/cplieger/deadset-spec/v8/vocab"
 )
@@ -114,6 +115,7 @@ type mergeCase struct {
 	inputs    []mergeReport
 	digests   []string
 	documents []mergeDocument
+	facts     []mergeDocument
 	exit      int
 }
 
@@ -232,6 +234,10 @@ func (c *mergeCase) loadInputs(fsys fs.FS, root string, digests map[string]strin
 		data, readErr := fs.ReadFile(fsys, inputs+"/"+name)
 		if readErr != nil {
 			return fmt.Errorf("reading %s/%s: %w", inputs, name, readErr)
+		}
+		if strings.HasSuffix(name, factsSuffix) {
+			c.facts = append(c.facts, mergeDocument{path: mergeInputsDir + "/" + name, data: data})
+			continue
 		}
 		var report mergeReport
 		if err = json.Unmarshal(data, &report); err != nil {
@@ -421,6 +427,16 @@ func TestMergeVectorExpectedFindingsAreInCanonicalOrder(t *testing.T) {
 	}
 }
 
+func TestMergeVectorFactsInputsAreFactsDocuments(t *testing.T) {
+	for _, c := range mergeCases(t) {
+		for _, doc := range c.facts {
+			if _, err := facts.Decode(doc.data); err != nil {
+				t.Errorf("%s/%s/%s: %v, want a facts document the facts schema and its rules admit", mergeVectorsDir, c.dir, doc.path, err)
+			}
+		}
+	}
+}
+
 func TestMergeVectorExpectedExitCodesAreInTheTable(t *testing.T) {
 	codes := mergeExitCodes(t)
 	for _, c := range mergeCases(t) {
@@ -480,6 +496,33 @@ var mergeTracePoints = []string{
 	traceFreeTextMerged + "configurations_not_built",
 	traceFreeTextMerged + "consumers.unavailable",
 	traceTieAgainstReadOrder + "test_file_rules",
+	traceFactsAnalyzer,
+	traceFactsLanguage,
+	traceFactsFinding,
+	traceKindNotClaimed,
+	traceKindlessTarget,
+	traceBindingNeutral,
+	traceBindingLive,
+	traceBindingStateless,
+	traceBindingUser,
+	traceBindingMember,
+	traceBindingPromoted,
+	traceBindingCap, traceBindingCapCertain, traceBindingLibrary,
+	traceViaUnreferenced,
+	traceImplementerNoSchema,
+	traceImplementerVia,
+	traceImplementerSchema,
+	traceImplementerPromoted,
+	traceMemberFolds,
+	traceCarriedShared,
+	traceBindingAndEdge,
+	traceUnboundNote,
+	traceUnsupportedNote,
+	traceCarriedOneComponent,
+	traceBindingWithheld,
+	traceWithheldKeptLive,
+	traceBlockedAcross,
+	traceBlockedDebited,
 }
 
 // TestMergeVectorCasesReachEveryTracedBranch runs the reference merge over every published case
@@ -517,6 +560,11 @@ func mergeCaseProblems(fsys fs.FS, root, dir string, codes []int) []string {
 	for _, doc := range c.documents {
 		for _, problem := range validationErrors(reportSchemaPath, doc.data) {
 			out = append(out, doc.path+": "+problem)
+		}
+	}
+	for _, doc := range c.facts {
+		if _, err := facts.Decode(doc.data); err != nil {
+			out = append(out, doc.path+": "+err.Error())
 		}
 	}
 	if !slices.Contains(codes, c.exit) {
@@ -835,4 +883,55 @@ func mergeFamily() vectorFamily {
 			return mergeExpectedFile, data, true
 		},
 	}
+}
+
+// The blocked-carrier and shared-carrier line debits count lines from position spans, so a case
+// whose position disagrees with its symbol.size_lines tests them on a finding finding.schema.json forbids.
+func TestMergeVectorFindingsSpanTheirSizeLines(t *testing.T) {
+	names, err := fs.Glob(spec.Vectors, mergeVectorsDir+"/*/*.json")
+	if err != nil {
+		t.Fatalf("Setup: glob: %v", err)
+	}
+	inputs, err := fs.Glob(spec.Vectors, mergeVectorsDir+"/*/inputs/*.json")
+	if err != nil {
+		t.Fatalf("Setup: glob: %v", err)
+	}
+	for _, name := range append(names, inputs...) {
+		data, err := fs.ReadFile(spec.Vectors, name)
+		if err != nil {
+			t.Fatalf("Setup: read %s: %v", name, err)
+		}
+		var doc any
+		if err := json.Unmarshal(data, &doc); err != nil {
+			t.Fatalf("Setup: decode %s: %v", name, err)
+		}
+		for _, problem := range sizeLinesProblems(doc) {
+			t.Errorf("%s: %s", name, problem)
+		}
+	}
+}
+
+// sizeLinesProblems names every finding under v whose position.end_line is not position.line
+// plus symbol.size_lines minus one.
+func sizeLinesProblems(v any) []string {
+	var problems []string
+	switch v := v.(type) {
+	case map[string]any:
+		position, _ := v["position"].(map[string]any)
+		symbol, _ := v["symbol"].(map[string]any)
+		if size, ok := symbol["size_lines"].(float64); ok && position != nil {
+			line, end := position["line"].(float64), position["end_line"].(float64)
+			if end != line+size-1 {
+				problems = append(problems, fmt.Sprintf("finding %v spans lines %v to %v, want size_lines %v", symbol["ref"], line, end, size))
+			}
+		}
+		for _, member := range v {
+			problems = append(problems, sizeLinesProblems(member)...)
+		}
+	case []any:
+		for _, item := range v {
+			problems = append(problems, sizeLinesProblems(item)...)
+		}
+	}
+	return problems
 }

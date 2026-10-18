@@ -1,0 +1,10 @@
+{
+  "symbols": {
+    "Wrapper.inner": {
+      "file": "target/v1/wrap.proto",
+      "line": 8,
+      "ref": "proto://v1#Wrapper.inner"
+    },
+    "Alone": { "file": "target/v1/wrap.proto", "line": 11, "ref": "proto://v1#Alone" }
+  }
+}

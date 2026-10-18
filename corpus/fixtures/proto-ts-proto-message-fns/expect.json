@@ -1,0 +1,30 @@
+{
+  "name": "proto-ts-proto-message-fns",
+  "description": "ts-proto's generated message functions are serializers: a hand call of encode reads every field of its message, while fromPartial writes the fields its argument names and reads none. The file is ts-proto output written with outputSchema, which binds each field.",
+  "rules": ["bindings.15", "references-ts.30", "references-ts.33"],
+  "pending": "references-ts.33: deadset-ts reads every field of the message a ts-proto encode call encodes, and none that fromPartial writes (J7).",
+  "languages": ["ts"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "facts": [
+    {
+      "symbol": "PingRequest.number",
+      "role": "consumer",
+      "schema": "proto://v1#PingRequest.number",
+      "state": "live"
+    },
+    {
+      "symbol": "PingRequest.text",
+      "role": "consumer",
+      "schema": "proto://v1#PingRequest.text",
+      "state": "live"
+    },
+    {
+      "symbol": "PingResponse.number",
+      "role": "consumer",
+      "schema": "proto://v1#PingResponse.number",
+      "state": "unreferenced"
+    }
+  ],
+  "expect": []
+}

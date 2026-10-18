@@ -1,0 +1,19 @@
+{
+  "target": {
+    "kind": "application"
+  },
+  "analysis": {
+    "min_confidence": "possible"
+  },
+  "providers": {
+    "analyzers": [
+      {
+        "name": "deadset-go",
+        "command": "@TARGET@/bin/absent",
+        "languages": [
+          "go"
+        ]
+      }
+    ]
+  }
+}

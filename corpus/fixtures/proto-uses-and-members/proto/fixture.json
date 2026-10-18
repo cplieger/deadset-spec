@@ -1,0 +1,17 @@
+{
+  "symbols": {
+    "Order": { "file": "target/v1/order.proto", "line": 9, "ref": "proto://v1#Order" },
+    "Order.items": { "file": "target/v1/order.proto", "line": 10, "ref": "proto://v1#Order.items" },
+    "Order.by_name": {
+      "file": "target/v1/order.proto",
+      "line": 11,
+      "ref": "proto://v1#Order.by_name"
+    },
+    "Order.status": {
+      "file": "target/v1/order.proto",
+      "line": 12,
+      "ref": "proto://v1#Order.status"
+    },
+    "Status": { "file": "target/v1/order.proto", "line": 18, "ref": "proto://v1#Status" }
+  }
+}

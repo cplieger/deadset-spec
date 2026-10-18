@@ -2,23 +2,27 @@
 
 package vocab
 
-// The versions this module states: of the Contract, of the newest report schema it admits, and of the conformance corpus.
+// The versions this module states: of the Contract, of the newest report schema it admits, of the facts document it writes, and of the conformance corpus.
 const (
 	ContractVersion = "8.0.0"
 	SchemaVersion   = "9.0.0"
+	FactsVersion    = "1.0.0"
 	CorpusVersion   = "6.0.0"
 	Prefix          = "DS"
 )
 
 var schemaVersions = []string{"9.0.0"}
 
+var factsVersions = []string{"1.0.0"}
+
 // The languages the vocabularies name.
 const (
-	Go Language = "go"
-	TS Language = "ts"
+	Go    Language = "go"
+	TS    Language = "ts"
+	Proto Language = "proto"
 )
 
-var languages = []Language{Go, TS}
+var languages = []Language{Go, TS, Proto}
 
 // The subjects a finding is about.
 const (
@@ -100,6 +104,11 @@ const (
 	FileNeverImported              Code = "DS1602"
 	UnusedDependency               Code = "DS1701"
 	UnusedModuleDirective          Code = "DS1702"
+	UnusedSchemaType               Code = "DS1801"
+	UnreadSchemaField              Code = "DS1802"
+	UnusedSchemaEnumValue          Code = "DS1803"
+	UnusedSchemaService            Code = "DS1804"
+	UncalledSchemaOperation        Code = "DS1805"
 	SuppressionWithoutReason       Code = "DS9001"
 	UnscopedIgnoreEntry            Code = "DS9002"
 	StaleSuppression               Code = "DS9003"
@@ -330,8 +339,9 @@ var kinds = []Kind{
 		MaxClass:        Certain,
 		Fixability:      Manual,
 		Overlap: map[Language][]string{
-			Go: []string{"revive unused-parameter", "gopls unusedparams", "unparam"},
-			TS: []string{"tsc --noUnusedParameters", "@typescript-eslint/no-unused-vars"},
+			Go:    []string{"revive unused-parameter", "gopls unusedparams", "unparam"},
+			Proto: []string{"not applicable"},
+			TS:    []string{"tsc --noUnusedParameters", "@typescript-eslint/no-unused-vars"},
 		},
 		Fixed: false,
 	},
@@ -349,8 +359,9 @@ var kinds = []Kind{
 		MaxClass:        Certain,
 		Fixability:      Deletable,
 		Overlap: map[Language][]string{
-			Go: []string{"revive unused-receiver"},
-			TS: []string{"not applicable"},
+			Go:    []string{"revive unused-receiver"},
+			Proto: []string{"not applicable"},
+			TS:    []string{"not applicable"},
 		},
 		Fixed: false,
 	},
@@ -368,8 +379,9 @@ var kinds = []Kind{
 		MaxClass:        Certain,
 		Fixability:      Manual,
 		Overlap: map[Language][]string{
-			Go: []string{"unparam"},
-			TS: []string{"none known"},
+			Go:    []string{"unparam"},
+			Proto: []string{"not applicable"},
+			TS:    []string{"none known"},
 		},
 		Fixed: false,
 	},
@@ -387,8 +399,9 @@ var kinds = []Kind{
 		MaxClass:        Certain,
 		Fixability:      Deletable,
 		Overlap: map[Language][]string{
-			Go: []string{"ineffassign", "wastedassign", "staticcheck SA4006"},
-			TS: []string{"eslint no-useless-assignment", "@typescript-eslint/no-unused-vars"},
+			Go:    []string{"ineffassign", "wastedassign", "staticcheck SA4006"},
+			Proto: []string{"not applicable"},
+			TS:    []string{"eslint no-useless-assignment", "@typescript-eslint/no-unused-vars"},
 		},
 		Fixed: false,
 	},
@@ -405,8 +418,9 @@ var kinds = []Kind{
 		MaxClass:        Certain,
 		Fixability:      Deletable,
 		Overlap: map[Language][]string{
-			Go: []string{"go vet unreachable"},
-			TS: []string{"tsc allowUnreachableCode", "eslint no-unreachable"},
+			Go:    []string{"go vet unreachable"},
+			Proto: []string{"not applicable"},
+			TS:    []string{"tsc allowUnreachableCode", "eslint no-unreachable"},
 		},
 		Fixed: false,
 	},
@@ -423,8 +437,9 @@ var kinds = []Kind{
 		MaxClass:        Certain,
 		Fixability:      Deletable,
 		Overlap: map[Language][]string{
-			Go: []string{"staticcheck SA4020"},
-			TS: []string{"none known"},
+			Go:    []string{"staticcheck SA4020"},
+			Proto: []string{"not applicable"},
+			TS:    []string{"none known"},
 		},
 		Fixed: false,
 	},
@@ -532,9 +547,74 @@ var kinds = []Kind{
 		Fixed:           false,
 	},
 	{
+		Code:            UnusedSchemaType,
+		Name:            "unused-schema-type",
+		Languages:       []Language{Proto},
+		Subject:         SubjectDeclaration,
+		HoldsLive:       false,
+		Rule:            "A schema message or enum that no binding in any analyzed language references, that no live schema declaration uses, and none of whose members is live.",
+		DefaultEnabled:  true,
+		DefaultSeverity: Deny,
+		MaxClass:        Certain,
+		Fixability:      Deletable,
+		Fixed:           false,
+	},
+	{
+		Code:            UnreadSchemaField,
+		Name:            "unread-schema-field",
+		Languages:       []Language{Proto},
+		Subject:         SubjectDeclaration,
+		HoldsLive:       false,
+		Rule:            "A schema field that no binding of it reads in any analyzed language: a field, a oneof member, a map field, a group field or an extension. A write is no read, because a field only written carries information no reader receives. Generated transport's encoding of it is no read, and a hand-code serializer's encoding is.",
+		DefaultEnabled:  true,
+		DefaultSeverity: Deny,
+		MaxClass:        Certain,
+		Fixability:      Manual,
+		Fixed:           false,
+	},
+	{
+		Code:            UnusedSchemaEnumValue,
+		Name:            "unused-schema-enum-value",
+		Languages:       []Language{Proto},
+		Subject:         SubjectDeclaration,
+		HoldsLive:       false,
+		Rule:            "A schema enum value that no binding names, of an enum whose name conversion no hand code reaches. A value that shares its number with another is never reported.",
+		DefaultEnabled:  true,
+		DefaultSeverity: Deny,
+		MaxClass:        Certain,
+		Fixability:      Manual,
+		Fixed:           false,
+	},
+	{
+		Code:            UnusedSchemaService,
+		Name:            "unused-schema-service",
+		Languages:       []Language{Proto},
+		Subject:         SubjectDeclaration,
+		HoldsLive:       false,
+		Rule:            "A schema service none of whose operations any client binding calls and none of whose service bindings hand code uses other than through a registration form. Its operations fall with it.",
+		DefaultEnabled:  true,
+		DefaultSeverity: Deny,
+		MaxClass:        Certain,
+		Fixability:      Manual,
+		Fixed:           false,
+	},
+	{
+		Code:            UncalledSchemaOperation,
+		Name:            "uncalled-schema-operation",
+		Languages:       []Language{Proto},
+		Subject:         SubjectDeclaration,
+		HoldsLive:       false,
+		Rule:            "A schema operation that no client binding in any analyzed language calls. Each hand-written method implementing it that nothing else keeps falls in this finding's component, under the code its own references select.",
+		DefaultEnabled:  true,
+		DefaultSeverity: Warn,
+		MaxClass:        Certain,
+		Fixability:      Manual,
+		Fixed:           false,
+	},
+	{
 		Code:            SuppressionWithoutReason,
 		Name:            "suppression-without-reason",
-		Languages:       []Language{Go, TS},
+		Languages:       []Language{Go, TS, Proto},
 		Subject:         SubjectRecord,
 		HoldsLive:       false,
 		Rule:            "A suppression that carries no reason, in any of the three documents: an inline directive, an ignore-file entry or a baseline row. For the ignore file and the baseline, an entry or a row whose reason field is absent, empty or whitespace only is refused and reported rather than matched.",
@@ -548,7 +628,7 @@ var kinds = []Kind{
 	{
 		Code:            UnscopedIgnoreEntry,
 		Name:            "unscoped-ignore-entry",
-		Languages:       []Language{Go, TS},
+		Languages:       []Language{Go, TS, Proto},
 		Subject:         SubjectRecord,
 		HoldsLive:       false,
 		Rule:            "An ignore-file entry or a baseline row that names a symbol and no file path. The entry is reported rather than matched, so a bare name cannot mask a match anywhere else in the project. The inline directive is scoped by its position and cannot be unscoped.",
@@ -562,7 +642,7 @@ var kinds = []Kind{
 	{
 		Code:            StaleSuppression,
 		Name:            "stale-suppression",
-		Languages:       []Language{Go, TS},
+		Languages:       []Language{Go, TS, Proto},
 		Subject:         SubjectRecord,
 		HoldsLive:       false,
 		Rule:            "A suppression record that is stale, as grammar/suppression.md defines it, at either mechanism and in the baseline alike. The run exits with the findings code when at least one is reported. The kind is fixed on at deny: no flag, no severity setting and no per-mechanism exception reduces it below a finding, and a configuration naming this code under a severity key is an unimplemented key.",
@@ -576,7 +656,7 @@ var kinds = []Kind{
 	{
 		Code:            UnmatchedRoot,
 		Name:            "unmatched-root",
-		Languages:       []Language{Go, TS},
+		Languages:       []Language{Go, TS, Proto},
 		Subject:         SubjectRecord,
 		HoldsLive:       false,
 		Rule:            "A configured root that matches no symbol, or a configured root pattern that matches no symbol. A root set nobody checks silently changes every result, so a stale one is a finding. The kind is fixed on at deny: no flag, no severity setting and no exception reduces it below a finding, and a configuration naming this code under a severity key is an unimplemented key.",
@@ -624,7 +704,7 @@ var families = []Family{
 	{Key: "DS15", Name: "too-visible", Title: "Too visible", Question: "It is used, but exposed more widely than its uses need.", Status: "live"},
 	{Key: "DS16", Name: "files", Title: "Files", Question: "The file is never built or never imported.", Status: "live"},
 	{Key: "DS17", Name: "dependencies", Title: "Dependencies and module files", Question: "The declared dependency or module directive changes nothing.", Status: "live"},
-	{Key: "DS18", Name: "schemas", Title: "Schemas", Question: "A schema definition nothing generated from it uses.", Status: "reserved"},
+	{Key: "DS18", Name: "schemas", Title: "Schemas", Question: "A schema definition nothing generated from it uses.", Status: "live"},
 	{Key: "DS90", Name: "configuration", Title: "deadset configuration", Question: "A suppression, root, declaration or edge deadset was given no longer matches anything.", Status: "live"},
 }
 
@@ -647,6 +727,9 @@ var symbolKinds = map[string]Subject{
 	"type-member":            SubjectDeclaration,
 	"interface-method":       SubjectDeclaration,
 	"enum-member":            SubjectDeclaration,
+	"message":                SubjectDeclaration,
+	"service":                SubjectDeclaration,
+	"rpc":                    SubjectDeclaration,
 	"satisfaction-assertion": SubjectDeclaration,
 	"type-parameter":         SubjectDeclaration,
 	"parameter":              SubjectPart,
@@ -665,7 +748,7 @@ var symbolKinds = map[string]Subject{
 	"edge":                   SubjectRecord,
 }
 
-var symbolKindOrder = []string{"function", "method", "type", "class", "interface", "enum", "namespace", "variable", "constant", "export-alias", "field", "class-member", "type-member", "interface-method", "enum-member", "satisfaction-assertion", "type-parameter", "parameter", "receiver", "result", "statement", "case", "store", "file", "import", "dependency", "module-directive", "suppression", "root", "configured-declaration", "edge"}
+var symbolKindOrder = []string{"function", "method", "type", "class", "interface", "enum", "namespace", "variable", "constant", "export-alias", "field", "class-member", "type-member", "interface-method", "enum-member", "message", "service", "rpc", "satisfaction-assertion", "type-parameter", "parameter", "receiver", "result", "statement", "case", "store", "file", "import", "dependency", "module-directive", "suppression", "root", "configured-declaration", "edge"}
 
 // The exemption classes, of every language.
 const (
@@ -682,6 +765,9 @@ const (
 	InjectionContainer    Exemption = "injection-container"
 	FrameworkLifecycle    Exemption = "framework-lifecycle"
 	SerializationContract Exemption = "serialization-contract"
+	SchemaOption          Exemption = "schema-option"
+	SchemaVendored        Exemption = "schema-vendored"
+	SchemaDefaultValue    Exemption = "schema-default-value"
 )
 
 var exemptionClasses = []ExemptionClass{
@@ -698,6 +784,9 @@ var exemptionClasses = []ExemptionClass{
 	{Name: InjectionContainer, Languages: []Language{TS}, Confidence: Certain, RetainsKinds: map[Language][]string{TS: []string{"method", "class-member"}}},
 	{Name: FrameworkLifecycle, Languages: []Language{TS}, Confidence: Certain, RetainsKinds: map[Language][]string{TS: []string{"method", "class-member"}}},
 	{Name: SerializationContract, Languages: []Language{TS}, Confidence: Certain, RetainsKinds: map[Language][]string{TS: []string{"method", "class-member", "interface-method", "type-member"}}},
+	{Name: SchemaOption, Languages: []Language{Proto}, Confidence: Certain, RetainsKinds: map[Language][]string{Proto: []string{"field", "message", "enum", "enum-member"}}},
+	{Name: SchemaVendored, Languages: []Language{Proto}, Confidence: Certain, RetainsKinds: map[Language][]string{Proto: []string{"message", "enum", "field", "enum-member", "service", "rpc"}}},
+	{Name: SchemaDefaultValue, Languages: []Language{Proto}, Confidence: Certain, RetainsKinds: map[Language][]string{Proto: []string{"enum-member"}}},
 }
 
 var evidence = []Evidence{
@@ -713,6 +802,13 @@ var evidence = []Evidence{
 	{Name: "possible-class", Rule: "confidence.23", Class: Possible, Languages: []Language{Go, TS}, Codes: []Code{UnusedExported, UnusedUnexported, UnusedMember, UnusedImport, UnusedEnumMember, UnusedTypeParameter, UnreachableExport, TestOnlyUse, TestOfDeadCode, DeprecatedUnused, UnusedInterface, UncalledInterfaceMethod, UnusedSatisfactionAssertion, WriteOnlySymbol, UnnecessaryExport, UnnecessaryExposure, RedundantExportKeyword}},
 	{Name: "roots-incomplete", Rule: "confidence.25", Class: Probable, Languages: []Language{TS}, Codes: []Code{UnusedExported, UnusedUnexported, UnusedMember, UnusedImport, UnusedEnumMember, UnusedTypeParameter, UnreachableExport, TestOnlyUse, TestOfDeadCode, DeprecatedUnused, UnusedInterface, UncalledInterfaceMethod, UnusedSatisfactionAssertion, WriteOnlySymbol, UnnecessaryExport, UnnecessaryExposure, RedundantExportKeyword, FileNeverImported}},
 	{Name: "computed-load", Rule: "confidence.26", Class: Probable, Languages: []Language{TS}, Codes: []Code{UnusedExported, UnusedUnexported, UnusedMember, UnusedImport, UnusedEnumMember, UnusedTypeParameter, UnreachableExport, TestOnlyUse, TestOfDeadCode, DeprecatedUnused, UnusedInterface, UncalledInterfaceMethod, UnusedSatisfactionAssertion, WriteOnlySymbol, UnnecessaryExport, UnnecessaryExposure, RedundantExportKeyword, FileNeverImported}},
+	{Name: "schema-operation-default", Rule: "schemas.10", Class: Possible, Languages: []Language{Proto}, Codes: []Code{UnusedSchemaService, UncalledSchemaOperation}},
+	{Name: "http-exposure", Rule: "schemas.11", Class: Possible, Languages: []Language{Proto}, Codes: []Code{UnusedSchemaType, UnreadSchemaField, UnusedSchemaEnumValue, UnusedSchemaService, UncalledSchemaOperation}},
+	{Name: "descriptor-exposure", Rule: "schemas.12", Class: Possible, Languages: []Language{Proto}, Codes: []Code{UnusedSchemaType, UnreadSchemaField, UnusedSchemaEnumValue, UnusedSchemaService, UncalledSchemaOperation}},
+	{Name: "persistence", Rule: "schemas.13", Class: Possible, Languages: []Language{Proto}, Codes: []Code{UnreadSchemaField, UnusedSchemaEnumValue}},
+	{Name: "explicit-json-name", Rule: "schemas.14", Class: Possible, Languages: []Language{Proto}, Codes: []Code{UnreadSchemaField, UnusedSchemaEnumValue}},
+	{Name: "generation-config-unknown", Rule: "schemas.15", Class: Possible, Languages: []Language{Proto}, Codes: []Code{UnusedSchemaType, UnreadSchemaField, UnusedSchemaEnumValue, UnusedSchemaService, UncalledSchemaOperation}},
+	{Name: "library-language", Rule: "schemas.16", Class: Possible, Languages: []Language{Proto}, Codes: []Code{UnusedSchemaType, UnreadSchemaField, UnusedSchemaEnumValue, UnusedSchemaService, UncalledSchemaOperation}},
 }
 
 // The exit codes a product ends with.
@@ -733,6 +829,8 @@ const (
 	SetupConventionNotLiteral         = "convention-not-literal"
 	SetupNoProgram                    = "no-program"
 	SetupUnreadableDocument           = "unreadable-document"
+	SetupMissingImportPath            = "missing-import-path"
+	SetupBindingUndecodable           = "binding-undecodable"
 )
 
 // The run-failure classes.
@@ -761,6 +859,8 @@ var setupClasses = []SetupClass{
 	{Name: SetupConventionNotLiteral, Languages: []Language{TS}},
 	{Name: SetupNoProgram, Languages: []Language{Go, TS}},
 	{Name: SetupUnreadableDocument, Languages: []Language{Go, TS}},
+	{Name: SetupMissingImportPath, Languages: []Language{Proto}},
+	{Name: SetupBindingUndecodable, Languages: []Language{Go, TS}},
 }
 
 var runClasses = []RunClass{
@@ -790,6 +890,7 @@ var options = []Option{
 	{Name: "config", Value: OptionValuePath, Setting: "", Summary: "The configuration document an orchestrator writes for this analyzer, read in place of the repository configuration.", Repeatable: false},
 	{Name: "central", Value: OptionValuePath, Setting: "", Summary: "The central configuration, resolved below the repository configuration.", Repeatable: false},
 	{Name: "report", Value: OptionValuePath, Setting: "", Summary: "The path the JSON report is written to.", Repeatable: false},
+	{Name: "facts", Value: OptionValuePath, Setting: "", Summary: "The path the facts document is written to, after the report; absent, the analyzer writes none and the report is the one it writes with it.", Repeatable: false},
 	{Name: "run-dir", Value: OptionValuePath, Setting: "", Summary: "The directory the orchestrator writes each analyzer's configuration, scope and report into; a fresh directory where absent.", Repeatable: false},
 	{Name: "format", Value: OptionValueName, Setting: "", Summary: "One rendering written beside the report, named by its format.", Repeatable: true},
 	{Name: "formats", Value: OptionValueList, Setting: "reporters.formats", Summary: "The renderings the run writes, comma-separated.", Repeatable: false},
@@ -815,7 +916,7 @@ var orchestratorVerbs = []Verb{
 }
 
 var analyzerVerbs = []analyzerVerb{
-	{Verb: Verb{Name: "analyze", Summary: "Analyze the target and write the report.", Stdout: "nothing", ExitCodes: []int{0, 1, 2, 3, 4}}, Options: map[Language][]string{Go: []string{"target", "config", "central", "scope", "report", "format", "template", "baseline-write", "exit-code", "min-confidence", "sort", "cascade", "max-findings", "fail-on"}, TS: []string{"target", "config", "central", "scope", "report", "format", "template", "baseline-write", "exit-code", "min-confidence", "sort", "cascade", "max-findings", "fail-on"}}},
+	{Verb: Verb{Name: "analyze", Summary: "Analyze the target and write the report.", Stdout: "nothing", ExitCodes: []int{0, 1, 2, 3, 4}}, Options: map[Language][]string{Go: []string{"target", "config", "central", "scope", "report", "facts", "format", "template", "baseline-write", "exit-code", "min-confidence", "sort", "cascade", "max-findings", "fail-on"}, TS: []string{"target", "config", "central", "scope", "report", "facts", "format", "template", "baseline-write", "exit-code", "min-confidence", "sort", "cascade", "max-findings", "fail-on"}}},
 	{Verb: Verb{Name: "explain", Summary: "Say why one symbol is or is not reported, from the analysis a report would be built from.", Stdout: "explanation", ExitCodes: []int{0, 2, 3}}, Options: map[Language][]string{Go: []string{"target", "scope", "config", "central", "min-confidence", "cascade", "why", "why-live", "why-not"}, TS: []string{"target", "config", "central", "scope", "why", "why-live", "why-not", "min-confidence", "sort", "cascade", "max-findings", "fail-on"}}},
 	{Verb: Verb{Name: "print-config", Summary: "Print the resolved configuration with the provenance of every setting.", Stdout: "configuration", ExitCodes: []int{0, 2, 3}}, Options: map[Language][]string{Go: []string{"target", "config", "central", "min-confidence"}, TS: []string{"target", "config", "central", "scope", "min-confidence", "sort", "cascade", "max-findings", "fail-on"}}},
 	{Verb: Verb{Name: "print-roots", Summary: "Print the root set, each root with its kind.", Stdout: "roots", ExitCodes: []int{0, 2, 3}}, Options: map[Language][]string{Go: []string{"target", "config", "central", "min-confidence"}, TS: []string{"target", "config", "central", "scope", "min-confidence", "sort", "cascade", "max-findings", "fail-on"}}},

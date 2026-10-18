@@ -45,6 +45,11 @@
             "description": "The 1-based line of the file on which the subject is declared: the line a finding for it carries in its position.",
             "type": "integer",
             "minimum": 1
+          },
+          "ref": {
+            "description": "The stable symbol reference this rendering spells for the subject, as contract/grammar/symbol-ref.md states it: present exactly for a subject a facts entry of the expectation file names, because a binding record names its subject by reference and not by position.",
+            "type": "string",
+            "minLength": 1
           }
         }
       }

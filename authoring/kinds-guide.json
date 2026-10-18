@@ -272,6 +272,56 @@
       }
     },
     {
+      "code": "DS1801",
+      "why": "A message or enum that no generated code in any analyzed language references, and that no live schema declaration uses, has no reader or writer the analysis can see.",
+      "fix": "Delete the declaration and regenerate. Deleting a message changes no wire format, but check first that no program outside the run is generated from the schema.",
+      "example": {
+        "language": "proto",
+        "before": "syntax = \"proto3\";\npackage v1;\n\nmessage PingRequest { string text = 1; }\n\n// Nothing generated from it is used.\nmessage LegacyPing { string text = 1; }",
+        "after": "syntax = \"proto3\";\npackage v1;\n\nmessage PingRequest { string text = 1; }"
+      }
+    },
+    {
+      "code": "DS1802",
+      "why": "A field that generated code writes but nothing reads carries information no reader receives.",
+      "fix": "Replace the field with reserved statements for its number and its name, so the number and the name are never reused, and regenerate.",
+      "example": {
+        "language": "proto",
+        "before": "message PingRequest {\n  string text = 1;\n  // Only ever written.\n  int64 sent_at = 2;\n}",
+        "after": "message PingRequest {\n  string text = 1;\n  reserved 2;\n  reserved \"sent_at\";\n}"
+      }
+    },
+    {
+      "code": "DS1803",
+      "why": "An enum value no generated code names, of an enum whose names no hand code converts, is a value no program produces or tests for.",
+      "fix": "Replace the value with reserved statements for its number and its name, and regenerate.",
+      "example": {
+        "language": "proto",
+        "before": "enum Mode {\n  MODE_UNSPECIFIED = 0;\n  MODE_FAST = 1;\n  MODE_LEGACY = 2;\n}",
+        "after": "enum Mode {\n  MODE_UNSPECIFIED = 0;\n  MODE_FAST = 1;\n  reserved 2;\n  reserved \"MODE_LEGACY\";\n}"
+      }
+    },
+    {
+      "code": "DS1804",
+      "why": "A service that no client calls and that hand code only registers serves no request any analyzed program sends.",
+      "fix": "Delete the service and its registration, then regenerate. Check first that no client outside the run calls it.",
+      "example": {
+        "language": "proto",
+        "before": "service PingService { rpc Ping(PingRequest) returns (PingResponse); }\n\n// Registered, never called.\nservice AdminService { rpc Reset(ResetRequest) returns (ResetResponse); }",
+        "after": "service PingService { rpc Ping(PingRequest) returns (PingResponse); }"
+      }
+    },
+    {
+      "code": "DS1805",
+      "why": "An operation no client binding calls answers no request any analyzed program sends; its server implementation is kept alive only by the registration.",
+      "fix": "Deprecate the operation, or delete it with its server method once no client outside the run calls it, and regenerate.",
+      "example": {
+        "language": "proto",
+        "before": "service PingService {\n  rpc Ping(PingRequest) returns (PingResponse);\n  rpc Fail(FailRequest) returns (FailResponse);\n}",
+        "after": "service PingService {\n  rpc Ping(PingRequest) returns (PingResponse);\n}"
+      }
+    },
+    {
       "code": "DS9001",
       "why": "A suppression that gives no reason: nobody can later tell whether it still holds.",
       "fix": "Add the reason after the code, or delete the suppression.",
