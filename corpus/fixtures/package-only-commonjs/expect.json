@@ -1,0 +1,19 @@
+{
+  "name": "package-only-commonjs",
+  "description": "A CommonJS package with no compiler configuration is analyzed, and a destructuring of a require call references the export table entry it names, so the file it loads is imported and the entry it reads is used.",
+  "pending": "The CommonJS export table and require references land with the JavaScript inventory and reference sources.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "liveC",
+      "report": "none"
+    },
+    {
+      "symbol": "CFile",
+      "report": "none"
+    }
+  ]
+}

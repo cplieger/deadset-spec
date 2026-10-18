@@ -1,0 +1,19 @@
+{
+  "name": "package-only-unread-node-command",
+  "description": "A package whose only Node evidence would be a script that runs node, here behind env --frobnicate, holds none for program.36, which reads no script: its JavaScript resolves as a bundler does, so the extensionless relative specifier names its file and raises no unresolved-specifier note. The script names index.js as a token, which roots it, so the manifest raises no unread-command note.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "expect": [
+    {
+      "symbol": "helper",
+      "report": "none"
+    },
+    {
+      "symbol": "UtilFile",
+      "report": "none"
+    }
+  ]
+}

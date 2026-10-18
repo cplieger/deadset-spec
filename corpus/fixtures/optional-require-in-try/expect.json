@@ -1,0 +1,21 @@
+{
+  "name": "optional-require-in-try",
+  "description": "A module specifier a JavaScript file loads optionally, inside the block of a try statement or as a require call an || or ?? fallback guards, is resolved as any other and notes nothing when it resolves to no file, because the program is written for that file's absence.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "used",
+      "report": "none"
+    },
+    {
+      "symbol": "unusedLib",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    }
+  ]
+}

@@ -64,7 +64,9 @@ const (
 	NoteKindSchemaUnparsed         NoteKind = "schema-unparsed"
 	NoteKindUnboundSchema          NoteKind = "unbound-schema"
 	NoteKindUnmappedEntry          NoteKind = "unmapped-entry"
+	NoteKindUnreadCommand          NoteKind = "unread-command"
 	NoteKindUnresolvedImport       NoteKind = "unresolved-import"
+	NoteKindUnresolvedSpecifier    NoteKind = "unresolved-specifier"
 )
 
 // Conformance is the object at report.schema.json#/properties/analyzer/properties/conformance.

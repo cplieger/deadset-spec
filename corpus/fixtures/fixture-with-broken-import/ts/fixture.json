@@ -1,0 +1,12 @@
+{
+  "symbols": {
+    "used": {
+      "file": "target/lib.js",
+      "line": 1
+    },
+    "unusedLib": {
+      "file": "target/lib.js",
+      "line": 3
+    }
+  }
+}

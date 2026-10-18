@@ -1,0 +1,12 @@
+{
+  "symbols": {
+    "helper": {
+      "file": "target/util.js",
+      "line": 1
+    },
+    "unusedHelper": {
+      "file": "target/util.js",
+      "line": 3
+    }
+  }
+}

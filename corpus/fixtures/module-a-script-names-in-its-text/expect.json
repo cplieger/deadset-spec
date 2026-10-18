@@ -1,0 +1,88 @@
+{
+  "name": "module-a-script-names-in-its-text",
+  "description": "A file a command string names in its text and no root enters with all it exports is held: one after a preload flag's =, one inside a command substitution, the file the command word node spells, and one a workflow step and one a git hook name behind a path the shell assembles. Such files and what they export, and what only that keeps live, are not reported, and the package has one note across all of its command strings. Holding a file keeps its exports only, so a local function in a held file that nothing references is reported. The entry the tokens root with all it exports is not held, so its unused local function is reported, and a file no command names is still reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "notes": [
+    {
+      "kind": "unread-command",
+      "path": "."
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "SetUpFile",
+      "report": "none"
+    },
+    {
+      "symbol": "SetUp",
+      "report": "none"
+    },
+    {
+      "symbol": "SetUpLocal",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "Configured",
+      "report": "none"
+    },
+    {
+      "symbol": "GenFile",
+      "report": "none"
+    },
+    {
+      "symbol": "Generate",
+      "report": "none"
+    },
+    {
+      "symbol": "EntryLocal",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "NodeWordFile",
+      "report": "none"
+    },
+    {
+      "symbol": "NodeWord",
+      "report": "none"
+    },
+    {
+      "symbol": "CiFile",
+      "report": "none"
+    },
+    {
+      "symbol": "CiCheck",
+      "report": "none"
+    },
+    {
+      "symbol": "HookFile",
+      "report": "none"
+    },
+    {
+      "symbol": "HookCheck",
+      "report": "none"
+    },
+    {
+      "symbol": "Stray",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "StrayFile",
+      "report": "DS1602",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "name": "dependency-preloaded-after-a-launcher",
+  "description": "A runtime flag that preloads a module counts in a command whose program is node behind a launcher: env with --, -u and an -S value, cross-env with an assignment, and npx with --yes, -p and a -c value, a quoted operator or a glob inside it included. A launcher option that prints and exits, as npx --version does, leaves the command with no program, so the dependency only that command preloads is reported.",
+  "pending": "roots.13: a preload flag read behind a launcher's options or inside the command value a launcher holds, and a launcher option that prints and exits, land with the static reader of script commands.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "TsNode",
+      "report": "none"
+    },
+    {
+      "symbol": "Dotenv",
+      "report": "none"
+    },
+    {
+      "symbol": "Tsx",
+      "report": "none"
+    },
+    {
+      "symbol": "SourceMapSupport",
+      "report": "none"
+    },
+    {
+      "symbol": "ModuleAlias",
+      "report": "none"
+    },
+    {
+      "symbol": "GlobalAgent",
+      "report": "none"
+    },
+    {
+      "symbol": "TsconfigPaths",
+      "report": "none"
+    },
+    {
+      "symbol": "Newrelic",
+      "report": "DS1701",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "dependency",
+      "details": {
+        "dependency_class": "dev-dependency"
+      }
+    }
+  ]
+}

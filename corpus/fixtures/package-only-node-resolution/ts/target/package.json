@@ -1,0 +1,15 @@
+{
+  "name": "@example/app",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "NODE_ENV=production ./index.mjs"
+  },
+  "imports": {
+    "#impl": {
+      "node": "./node.mjs",
+      "default": "./browser.mjs"
+    }
+  }
+}

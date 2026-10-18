@@ -1,0 +1,12 @@
+{
+  "symbols": {
+    "UtilFile": {
+      "file": "target/util.js",
+      "line": 1
+    },
+    "helper": {
+      "file": "target/util.js",
+      "line": 2
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "name": "@example/app",
+  "type": "module",
+  "main": "index.js",
+  "scripts": { "build": "vite build" },
+  "devDependencies": { "vite": "8.999.0" }
+}

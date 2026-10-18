@@ -1,0 +1,12 @@
+{
+  "symbols": {
+    "CFile": {
+      "file": "target/c.js",
+      "line": 1
+    },
+    "liveC": {
+      "file": "target/c.js",
+      "line": 2
+    }
+  }
+}

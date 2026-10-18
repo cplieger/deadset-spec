@@ -1,0 +1,12 @@
+{
+  "symbols": {
+    "Box.open": {
+      "file": "target/box.js",
+      "line": 2
+    },
+    "Box.close": {
+      "file": "target/box.js",
+      "line": 4
+    }
+  }
+}

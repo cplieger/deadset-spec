@@ -1,0 +1,29 @@
+{
+  "name": "package-only-bundler-runtime",
+  "description": "A package a bundler's convention row applies to resolves its JavaScript as the bundler does, so an extensionless relative specifier names the file it would load. The fixture assumes the analyzer carries a row named vite for the package vite, holding the installed version in its range.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "conventions_applied": [
+    {
+      "name": "vite",
+      "package": "vite",
+      "version": "8.999.0",
+      "manifest": "package.json"
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "helper",
+      "report": "none"
+    },
+    {
+      "symbol": "unusedHelper",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    }
+  ]
+}

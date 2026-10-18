@@ -1,0 +1,29 @@
+{
+  "name": "package-only-convention-output-excluded",
+  "description": "A JavaScript file below a directory an applied convention row names as generated is build output and no file of a package's program, so a bundle's copy of a use keeps nothing live. The fixture assumes the analyzer carries a row named next for the package next, holding the installed version in its range, that names .next as generated.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "conventions_applied": [
+    {
+      "name": "next",
+      "package": "next",
+      "version": "16.0.0",
+      "manifest": "package.json"
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "used",
+      "report": "none"
+    },
+    {
+      "symbol": "dead",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    }
+  ]
+}

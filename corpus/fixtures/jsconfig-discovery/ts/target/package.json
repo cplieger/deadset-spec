@@ -1,0 +1,5 @@
+{
+  "name": "@example/app",
+  "type": "module",
+  "main": "src/main.js"
+}

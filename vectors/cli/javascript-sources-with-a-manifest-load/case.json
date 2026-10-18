@@ -1,0 +1,14 @@
+{
+  "description": "A tree holding JavaScript sources and a manifest but no compiler configuration holds a program: the TypeScript analyzer reads each package's JavaScript files as one program, so the run analyzes the target rather than ending with the setup failure no-program.",
+  "products": [
+    "deadset-ts"
+  ],
+  "argv": [
+    "analyze",
+    "--target=@TARGET@",
+    "--report=@OUT@/report.json"
+  ],
+  "expect": {
+    "exit": 0
+  }
+}

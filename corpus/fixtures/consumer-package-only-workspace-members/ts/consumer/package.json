@@ -1,0 +1,8 @@
+{
+  "name": "@example/consumer",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ]
+}

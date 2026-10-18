@@ -1,0 +1,27 @@
+{
+  "name": "@example/target",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./main.ts",
+  "scripts": {
+    "start": "env -- node --loader ts-node/esm main.ts",
+    "debug": "env -u DEBUG node --require dotenv/config main.ts",
+    "named": "cross-env APP=app node --import tsx main.ts",
+    "called": "npx -c 'node --require source-map-support/register main.ts'",
+    "packaged": "npx --yes -p module-alias node --require module-alias/register main.ts",
+    "chained": "npx -c 'node --require global-agent/bootstrap main.ts && echo done'",
+    "globbed": "env -S 'node --require tsconfig-paths/register test/*.ts'",
+    "versioned": "npx --version node --require newrelic main.ts"
+  },
+  "devDependencies": {
+    "dotenv": "1.0.0",
+    "global-agent": "1.0.0",
+    "module-alias": "1.0.0",
+    "newrelic": "1.0.0",
+    "source-map-support": "1.0.0",
+    "ts-node": "1.0.0",
+    "tsconfig-paths": "1.0.0",
+    "tsx": "1.0.0"
+  }
+}

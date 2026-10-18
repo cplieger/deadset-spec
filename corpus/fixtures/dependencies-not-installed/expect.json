@@ -1,0 +1,16 @@
+{
+  "name": "dependencies-not-installed",
+  "description": "A package whose JavaScript files import declared dependencies of which none resolves has no installed dependencies, so its program is not the one the project runs: the run ends with the setup failure missing-module naming the package and the install step.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "setup_failure": {
+    "class": "missing-module",
+    "names": [
+      "index.js",
+      "left-pad"
+    ]
+  },
+  "expect": []
+}

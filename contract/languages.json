@@ -24,7 +24,7 @@
       "scheme": "ts",
       "runner": "process",
       "analyzer": "deadset-ts",
-      "markers": ["tsconfig*.json"],
+      "markers": ["tsconfig*.json", "jsconfig*.json"],
       "extensions": [".ts", ".tsx", ".mts", ".cts"],
       "companions": ["package.json"],
       "program_without_marker": false,
