@@ -1,0 +1,12 @@
+{
+  "target": {
+    "kind": "application"
+  },
+  "roots": {
+    "patterns": [
+      "ts://@example/app/src/a.ts#main",
+      "js://@example/app/b.js#x",
+      "go://example.com/app#absent"
+    ]
+  }
+}

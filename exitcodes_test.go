@@ -226,9 +226,7 @@ func TestExitCodesPrefixNamesTheGroup(t *testing.T) {
 	}
 }
 
-// The generated vocabulary lists every class of both groups as the table does, in its order,
-// each setup class with its languages and each run class with its products, so a product reads
-// the group of a class it meets from the vocabulary alone.
+// Products use this vocabulary instead of copying the failure-class table.
 func TestExitCodesFailureClassesAreTheGeneratedVocabulary(t *testing.T) {
 	t.Parallel()
 

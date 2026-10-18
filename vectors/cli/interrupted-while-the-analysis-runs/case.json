@@ -1,6 +1,5 @@
 {
   "description": "A run sent an interrupt while the toolchain loads the target's packages stops the analysis and ends with exit code 3 and the run failure interrupted-run, before any report is written.",
-  "pending": "the run-failure line: deadset-go prints the cancellation with no run-failure prefix or class.",
   "products": [
     "deadset-go"
   ],

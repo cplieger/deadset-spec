@@ -3,6 +3,7 @@ package vocab
 import (
 	"path"
 	"slices"
+	"strings"
 	"sync"
 )
 
@@ -205,3 +206,12 @@ func ProtoPlugins() []string { return slices.Clone(protoPlugins) }
 // HTTPExposurePlugins returns the plugins whose presence in a generation
 // configuration exposes a service over HTTP.
 func HTTPExposurePlugins() []string { return slices.Clone(httpExposurePlugins) }
+
+// ReadsRoot reports whether the analysis of languages reads the configured root
+// string root, as merge.md's DS9004 rule states: one whose text before its first
+// :// is absent, holds a wildcard, or names one of languages. Every analyzer is
+// handed every configured string and answers only those it reads.
+func ReadsRoot(languages []Language, root string) bool {
+	prefix, _, found := strings.Cut(root, "://")
+	return !found || strings.ContainsAny(prefix, "*?") || slices.Contains(languages, Language(prefix))
+}

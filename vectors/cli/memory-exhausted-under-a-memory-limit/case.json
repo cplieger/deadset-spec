@@ -1,6 +1,5 @@
 {
   "description": "A run whose memory limit is below what the analysis needs ends with exit code 3 and the run failure memory-exhausted, whose line names the memory needed and the memory available, before any report is written.",
-  "pending": "the run-failure line: deadset-go prints the memory line with no run-failure prefix or class.",
   "products": [
     "deadset-go"
   ],
