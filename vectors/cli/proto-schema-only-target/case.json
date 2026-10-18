@@ -1,5 +1,6 @@
 {
   "description": "A target holding only Protocol Buffers schema files puts proto alone in scope, and a provider list no entry of which claims proto is no refusal, because the in-process reader reads it: the run plans no analyzer, ends with exit code 0, and writes a merged report whose target carries no kind and which holds an unbound-schema note for the schema file no analyzed language binds.",
+  "pending": "the Protocol Buffers schema reader inside deadset, which reads the .proto files and joins the analyzers' binding facts; no deadset release carries it yet.",
   "products": [
     "deadset"
   ],

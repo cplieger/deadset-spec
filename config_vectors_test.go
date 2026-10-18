@@ -83,6 +83,7 @@ var vectorCaseFiles = []string{
 type configVectorCase struct {
 	Name        string   `json:"name"`
 	Description string   `json:"description"`
+	Pending     *string  `json:"pending"`
 	Covers      []string `json:"covers"`
 	Products    []string `json:"products"`
 }
@@ -371,6 +372,9 @@ func TestConfigVectorsCoverEveryAspectOnce(t *testing.T) {
 			}
 			if strings.TrimSpace(c.Description) == "" {
 				t.Errorf("%s/%s/%s: description = %q, want a sentence stating what the case establishes", configVectorsDir, dir, vectorCaseFile, c.Description)
+			}
+			if c.Pending != nil && strings.TrimSpace(*c.Pending) == "" {
+				t.Errorf("%s/%s/%s: pending = %q, want absent or the reason no product implements the case yet", configVectorsDir, dir, vectorCaseFile, *c.Pending)
 			}
 			if len(c.Covers) == 0 {
 				t.Errorf("%s/%s/%s: covers = %q, want at least one aspect", configVectorsDir, dir, vectorCaseFile, c.Covers)

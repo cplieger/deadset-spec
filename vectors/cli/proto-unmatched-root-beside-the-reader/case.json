@@ -1,5 +1,6 @@
 {
   "description": "The reader reads every configured root string with no language prefix and every proto:// one. An unprefixed root string matching no symbol is reported by the Go analyzer and by the reader, so the merged report carries both findings; a proto:// root holds the schema field it names live, so the reader holds no finding for it, the Go analyzer's finding for it is dropped and the field is not promoted.",
+  "pending": "the Protocol Buffers schema reader inside deadset, which reads the .proto files and joins the analyzers' binding facts; no deadset release carries it yet.",
   "products": [
     "deadset"
   ],

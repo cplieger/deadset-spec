@@ -6,7 +6,7 @@ One case per directory, named for what it establishes. A case holds the document
 
 | File | What it holds |
 | --- | --- |
-| `case.json` | the case's name, what it establishes, the aspects it covers, and the products it applies to where it does not apply to every product |
+| `case.json` | the case's name, what it establishes, the aspects it covers, the products it applies to where it does not apply to every product, and the reason it is pending where no product implements it yet |
 | `repository.json` | the repository configuration, the `deadset.json` at the target root; absent when the case has none |
 | `central.json` | the central configuration the invocation names; absent when the case has none |
 | `flags.json` | the settings a command-line flag supplied, each key one setting's dotted path; absent when the case passes none |
@@ -28,6 +28,8 @@ To run a case, place `repository.json` at the target root as the repository conf
 ## Which products run a case
 
 A case applies to every product unless its `case.json` lists `products`, the products whose run of the case has the outcome it states. The orchestrator checks the whole document; an analyzer checks and resolves only what its own language's analysis reads, the keys [`settings.json`](../../contract/settings.json) `read_by` names its language for and, of a key written per language, its own member, and accepts every other key unread. So a refusal of a key only another product reads lists the products that read it, and an analyzer compares a resolved case on the keys its language reads alone: those keys of `expected.json`, a key written per language narrowed to its own member, and their `provenance` entries.
+
+A case with `pending` states a rule no product implements yet, named by the reason: a product reports it pending rather than comparing its outcome. The cases that need the Protocol Buffers schema reader inside deadset are pending until the deadset release that carries the reader, which removes their `pending`.
 
 ## How the cases resolve
 

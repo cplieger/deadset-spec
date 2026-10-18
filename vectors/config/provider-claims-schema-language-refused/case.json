@@ -1,6 +1,7 @@
 {
   "name": "provider-claims-schema-language-refused",
   "description": "A repository configuration whose provider entry claims proto, a language the schema reader inside deadset reads rather than an analyzer process. The run is refused naming the entry's language, because a provider supplies an analyzer of a language whose row runs as a process, and no command can take the reader's place.",
+  "pending": "the Protocol Buffers schema reader inside deadset, which reads the .proto files and joins the analyzers' binding facts; no deadset release carries it yet.",
   "products": ["deadset"],
   "covers": ["provider-claims-schema-language-refused"]
 }

@@ -1,5 +1,6 @@
 {
   "description": "An unmatched root declared in a central configuration inside the target is reported in that document by the Go analyzer and by the reader alike, so both findings carry its target-relative path rather than the repository configuration's, which the target does not hold.",
+  "pending": "the Protocol Buffers schema reader inside deadset, which reads the .proto files and joins the analyzers' binding facts; no deadset release carries it yet.",
   "products": [
     "deadset"
   ],

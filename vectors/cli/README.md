@@ -18,6 +18,8 @@ Each case is one invocation of a product's command line over a small tree, and t
 
 A case with `pending` states a rule no product implements yet, named by the reason; the runner reports its result as pending, as the corpus does for a pending fixture. `deadset-corpus cases --product=NAME -- PRODUCT` runs every case naming a product.
 
+The `proto-` cases that need the Protocol Buffers schema reader inside deadset are pending until the deadset release that carries the reader, which removes their `pending`.
+
 | Case | What it pins |
 | --- | --- |
 | `analyzer-ends-with-the-failure-code-and-no-class-line` | An admitted analyzer whose analysis ends with exit code 3 and prints no class line is a fault of that analyzer: the run ends with exit code 3 and the run failure product-fault naming the analyzer. |

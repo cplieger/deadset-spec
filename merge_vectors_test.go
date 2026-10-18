@@ -27,6 +27,7 @@ const (
 	mergeAcceptedFile = "accepted.txt"
 	mergeExpectedFile = "expected.json"
 	mergeExitFile     = "expected_exit"
+	mergePendingFile  = "pending"
 
 	// mergeFailureExit is the code of the `failure` row of contract/exit-codes.json, which the
 	// merge returns from its admission step and from an unresolved edge. A case ending there has
@@ -44,7 +45,7 @@ const (
 )
 
 // mergeCaseEntries is every entry a case directory may hold.
-var mergeCaseEntries = []string{mergeInputsDir, mergeAcceptedFile, mergeCallerFile, mergeExpectedFile, mergeExitFile}
+var mergeCaseEntries = []string{mergeInputsDir, mergeAcceptedFile, mergeCallerFile, mergeExpectedFile, mergeExitFile, mergePendingFile}
 
 // mergeVersion matches a schema version wherever it is written, which is how accepted.txt is read
 // for the version tokens it names without this file parsing the range syntax that page owns.
@@ -251,9 +252,9 @@ func (c *mergeCase) loadInputs(fsys fs.FS, root string, digests map[string]strin
 }
 
 // mergeLayoutProblems lists every place a case directory departs from the layout "Merge test
-// vectors" publishes: an entry the layout does not name, a missing file, an exit code no step of
-// contract/grammar/merge.md returns, and an expected report present where the case ends before a
-// merged report exists or absent where it does not.
+// vectors" publishes: an entry the layout does not name, a missing file, a pending file naming no
+// reason, an exit code no step of contract/grammar/merge.md returns, and an expected report present
+// where the case ends before a merged report exists or absent where it does not.
 func mergeLayoutProblems(fsys fs.FS, root, dir string) []string {
 	var out []string
 	entries, err := fs.ReadDir(fsys, root+"/"+dir)
@@ -273,6 +274,12 @@ func mergeLayoutProblems(fsys fs.FS, root, dir string) []string {
 		out = append(out, fmt.Sprintf("%v: want %s naming the schema range the case is merged under", errMergeNoAccepted, mergeAcceptedFile))
 	case strings.Count(strings.TrimSpace(string(accepted)), "\n") > 0:
 		out = append(out, fmt.Sprintf("%s holds %d lines, want the range on one line", mergeAcceptedFile, strings.Count(strings.TrimSpace(string(accepted)), "\n")+1))
+	}
+	switch pending, held, err := mergeReadFile(fsys, root, dir, mergePendingFile); {
+	case err != nil:
+		out = append(out, err.Error())
+	case held && (strings.TrimSpace(string(pending)) == "" || strings.Count(strings.TrimSpace(string(pending)), "\n") > 0):
+		out = append(out, fmt.Sprintf("%s holds %q, want the reason no product implements the case yet on one line", mergePendingFile, pending))
 	}
 	if _, held, err := mergeReadFile(fsys, root, dir, mergeCallerFile); err != nil || !held {
 		out = append(out, fmt.Sprintf("holds no %s (%v), want the facts the caller supplies", mergeCallerFile, err))
@@ -686,6 +693,13 @@ func TestMergeCaseChecksRefuse(t *testing.T) {
 				m[mergeVectorsDir+"/"+mergePlantedDir+"/"+mergeInputsDir+"/02-go.txtar"] = &fstest.MapFile{Data: []byte("-- a --\n")}
 			},
 			wantMsg: "holds inputs/02-go.txtar, want only the input reports",
+		},
+		{
+			name: "pending_names_no_reason",
+			mutate: func(_ *testing.T, m fstest.MapFS) {
+				m[mergeVectorsDir+"/"+mergePlantedDir+"/"+mergePendingFile] = &fstest.MapFile{Data: []byte("\n")}
+			},
+			wantMsg: "want the reason no product implements the case yet on one line",
 		},
 		{
 			name: "case_holds_no_caller_facts",

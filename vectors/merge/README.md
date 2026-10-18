@@ -12,12 +12,15 @@ One case per directory, named for what it establishes. A case holds the reports 
 | `caller.json` | the facts the caller supplies: the merging product's identity, the schema and contract versions it writes, the artifact digest of each input report, the lowest severity that fails the run, and the run's minimum confidence |
 | `expected.json` | the merged report, byte for byte |
 | `expected_exit` | the exit code, one integer from [`exit-codes.json`](../../contract/exit-codes.json) |
+| `pending` | the reason the case is pending, on one line, where it states a rule no product implements yet; absent otherwise |
 
 An input file's name is a two-digit ordinal, a hyphen and the language of the analysis the report carries, and a facts document takes its report's name with `.facts.json` in place of `.json`. The ordinal orders the files of the directory and means nothing to the merge, which returns the same report and the same exit code whatever order it reads its inputs in; a case whose two reports carry one language numbers them both for that language.
 
 `caller.json` is one object with five members and an optional sixth: `schema_version` and `contract_version`, the versions the merged report is written to; `analyzer`, the merging product's `name`, `version` and `conformance` block in the shape [`report.schema.json`](../../contract/report.schema.json) gives those three members; `digests`, one member per file under `inputs/`, named for the file, whose value is the digest of the analyzer artifact that wrote that report; `fail_on`, one of `allow`, `warn` and `deny`, the lowest severity at which a finding fails the run; and `min_confidence`, one of `certain`, `probable` and `possible`, the run's `analysis.min_confidence`, below which binding rule 3 withholds a schema finding, absent where the caller withholds none. Every case carries one, a case the merge refuses before it builds a report included, because the caller hands the facts over with the reports.
 
 Every case carries `expected_exit`. A case carries `expected.json` only where the merge produces a merged report: a report the admission step refuses, and a pending finding that meets no evaluation of its edge's other side, each end the run with the failure code before a merged report exists, and those cases hold `expected_exit` alone.
+
+A case that holds `pending` states a rule no product implements yet, named by the reason: a product reports it pending rather than comparing its outcome. The `binding-` cases need the Protocol Buffers schema reader inside deadset and are pending until the deadset release that carries the reader, which removes their `pending` files.
 
 ## Running a case
 

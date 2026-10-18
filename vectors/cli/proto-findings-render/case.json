@@ -1,5 +1,6 @@
 {
   "description": "A schema field the reader publishes dead and whose only Go binding reads unreferenced is promoted though the Go binding of its message is live, and it renders like every finding: the text line opens with its position in the .proto file, and the SARIF rendering written beside the merged report names the file and the rule.",
+  "pending": "the Protocol Buffers schema reader inside deadset, which reads the .proto files and joins the analyzers' binding facts; no deadset release carries it yet.",
   "products": [
     "deadset"
   ],
