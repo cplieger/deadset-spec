@@ -45,20 +45,19 @@ type languagesDocument struct {
 }
 
 type languageRow struct {
-	IdentitySource       map[string]string `json:"identity_source"`
-	Language             string            `json:"language"`
-	Name                 string            `json:"name"`
-	Kind                 string            `json:"kind"`
-	Scheme               string            `json:"scheme"`
-	Runner               string            `json:"runner"`
-	Analyzer             string            `json:"analyzer"`
-	Markers              []string          `json:"markers"`
-	Extensions           []string          `json:"extensions"`
-	Companions           []string          `json:"companions"`
-	SkippedDirectories   []string          `json:"skipped_directories"`
-	WorkspaceFiles       []string          `json:"workspace_files"`
-	ProgramWithoutMarker bool              `json:"program_without_marker"`
-	TakesTargetKind      bool              `json:"takes_target_kind"`
+	IdentitySource     map[string]string `json:"identity_source"`
+	Language           string            `json:"language"`
+	Name               string            `json:"name"`
+	Kind               string            `json:"kind"`
+	Scheme             string            `json:"scheme"`
+	Runner             string            `json:"runner"`
+	Analyzer           string            `json:"analyzer"`
+	Markers            []string          `json:"markers"`
+	Extensions         []string          `json:"extensions"`
+	SkippedFiles       []string          `json:"skipped_files"`
+	SkippedDirectories []string          `json:"skipped_directories"`
+	WorkspaceFiles     []string          `json:"workspace_files"`
+	TakesTargetKind    bool              `json:"takes_target_kind"`
 }
 
 // TestEveryLanguageRowHoldsItsClosedValues pins each languages.json row to its
@@ -77,10 +76,18 @@ func TestEveryLanguageRowHoldsItsClosedValues(t *testing.T) {
 			if row.Runner == "process" && row.Analyzer == "" {
 				t.Errorf("%s runs as a process and names no analyzer", row.Language)
 			}
-			if len(row.Markers) == 0 && !row.ProgramWithoutMarker {
-				t.Errorf("%s has no marker and reads no program without one, so nothing puts it in scope", row.Language)
+			if len(row.Markers) == 0 && len(row.Extensions) == 0 {
+				t.Errorf("%s has no marker and no extension, so nothing puts it in scope", row.Language)
 			}
-			for _, pattern := range slices.Concat(row.Markers, row.Companions, row.SkippedDirectories) {
+			for _, extension := range row.Extensions {
+				if path.Ext(extension) != extension {
+					t.Errorf("%s extension %q is not the extension path.Ext reads of a file name", row.Language, extension)
+				}
+			}
+			if len(row.Extensions) == 0 && len(row.SkippedFiles) > 0 {
+				t.Errorf("%s skips files %q and has no extension they could match", row.Language, row.SkippedFiles)
+			}
+			for _, pattern := range slices.Concat(row.Markers, row.SkippedFiles, row.SkippedDirectories) {
 				if _, err := path.Match(pattern, ""); err != nil {
 					t.Errorf("%s pattern %q: %v", row.Language, pattern, err)
 				}

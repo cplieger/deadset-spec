@@ -1,0 +1,10 @@
+{
+  "target": {
+    "path": "@TARGET@/app"
+  },
+  "consumers": [
+    {
+      "path": "@TARGET@/web"
+    }
+  ]
+}

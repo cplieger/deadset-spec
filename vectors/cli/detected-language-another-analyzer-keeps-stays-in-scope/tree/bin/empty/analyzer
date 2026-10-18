@@ -1,0 +1,6 @@
+#!/bin/sh
+if [ "$1" = describe ]; then
+	exec cat "$(dirname "$0")/describe.json"
+fi
+echo 'setup failure: no-program: the target holds no package this build loads: run from the directory that holds one, or name the languages to analyze' >&2
+exit 3

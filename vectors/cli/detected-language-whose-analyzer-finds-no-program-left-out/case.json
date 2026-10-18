@@ -1,0 +1,30 @@
+{
+  "description": "A Go module whose only JavaScript file is one git ignores puts TypeScript in scope by its census, and the TypeScript analyzer, whose discovery leaves that file out, ends with the setup failure no-program as its one failure: the run leaves TypeScript out, shows the analyzer's line under its name, names the language left out, and ends with exit code 0 over the Go analyzer's report, as languages.json states.",
+  "products": [
+    "deadset"
+  ],
+  "rename": {
+    "go.mod.txt": "go.mod",
+    "main.go.txt": "main.go",
+    "gitignore.txt": ".gitignore"
+  },
+  "executables": [
+    "bin/go/analyzer",
+    "bin/ts/analyzer"
+  ],
+  "report_file": "@OUT@/run/report.json",
+  "argv": [
+    "analyze",
+    "--target=@TARGET@",
+    "--run-dir=@OUT@/run"
+  ],
+  "expect": {
+    "exit": 0,
+    "report": "valid",
+    "finding_paths": [],
+    "stderr_contains": [
+      "deadset-ts: setup failure: no-program: ",
+      "deadset: deadset-ts found no program, so the run leaves \"ts\" out of scope"
+    ]
+  }
+}

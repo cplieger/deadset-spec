@@ -225,7 +225,7 @@ func TestAPlantedConfigurationEditReachesEveryGeneratedTable(t *testing.T) {
 `, `  "languages": [
     {
       "language": "py", "name": "Python", "kind": "analyzed", "scheme": "py", "runner": "process", "analyzer": "deadset-py",
-      "markers": ["pyproject.toml"], "extensions": [".py"], "companions": [], "program_without_marker": false,
+      "markers": ["pyproject.toml"], "extensions": [], "skipped_files": [],
       "skipped_directories": [], "identity_source": { "file": "pyproject.toml", "field": "name" },
       "workspace_files": [], "takes_target_kind": true
     },

@@ -1,0 +1,8 @@
+{
+  "target": {
+    "kind": "application"
+  },
+  "providers": {
+    "analyzers": []
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "description": "Two provider entries claim Go over a Go module, and one ends with the setup failure no-program as its one failure while the other reports: the run leaves out the analyzer that found no program, shows its line under its name and says the run goes on without it, and keeps Go in scope, because the other analyzer's report covers it, so the run ends with exit code 0 over that report, as languages.json states.",
+  "products": [
+    "deadset"
+  ],
+  "rename": {
+    "go.mod.txt": "go.mod",
+    "main.go.txt": "main.go"
+  },
+  "executables": [
+    "bin/empty/analyzer",
+    "bin/go/analyzer"
+  ],
+  "report_file": "@OUT@/run/report.json",
+  "argv": [
+    "analyze",
+    "--target=@TARGET@",
+    "--run-dir=@OUT@/run"
+  ],
+  "expect": {
+    "exit": 0,
+    "report": "valid",
+    "finding_paths": [],
+    "stderr_contains": [
+      "empty-go: setup failure: no-program: ",
+      "deadset: empty-go found no program, so the run goes on without it"
+    ],
+    "files_contain": {
+      "@OUT@/run/report.json": [
+        "\"name\": \"deadset-go\""
+      ]
+    }
+  }
+}

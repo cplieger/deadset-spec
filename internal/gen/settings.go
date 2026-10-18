@@ -38,27 +38,25 @@ type languageDoc struct {
 		File  string `json:"file"`
 		Field string `json:"field"`
 	} `json:"identity_source"`
-	Language             string   `json:"language"`
-	Name                 string   `json:"name"`
-	Kind                 string   `json:"kind"`
-	Scheme               string   `json:"scheme"`
-	Runner               string   `json:"runner"`
-	Analyzer             string   `json:"analyzer"`
-	Markers              []string `json:"markers"`
-	Extensions           []string `json:"extensions"`
-	Companions           []string `json:"companions"`
-	SkippedDirectories   []string `json:"skipped_directories"`
-	WorkspaceFiles       []string `json:"workspace_files"`
-	ProgramWithoutMarker bool     `json:"program_without_marker"`
-	TakesTargetKind      bool     `json:"takes_target_kind"`
+	Language           string   `json:"language"`
+	Name               string   `json:"name"`
+	Kind               string   `json:"kind"`
+	Scheme             string   `json:"scheme"`
+	Runner             string   `json:"runner"`
+	Analyzer           string   `json:"analyzer"`
+	Markers            []string `json:"markers"`
+	Extensions         []string `json:"extensions"`
+	SkippedFiles       []string `json:"skipped_files"`
+	SkippedDirectories []string `json:"skipped_directories"`
+	WorkspaceFiles     []string `json:"workspace_files"`
+	TakesTargetKind    bool     `json:"takes_target_kind"`
 }
 
 // flags is a row's boolean columns by name, the ones an x-per-language selects
 // languages by.
 func (l *languageDoc) flags() map[string]bool {
 	return map[string]bool{
-		"program_without_marker": l.ProgramWithoutMarker,
-		"takes_target_kind":      l.TakesTargetKind,
+		"takes_target_kind": l.TakesTargetKind,
 	}
 }
 
@@ -579,10 +577,10 @@ func (c *configContext) configVocab(rows []configKey, maxBytes *value) ([]byte, 
 	for i := range c.languages.Languages {
 		l := &c.languages.Languages[i]
 		w.f("{\nLanguage: %s,\nName: %q,\nKind: %q,\nScheme: %q,\nRunner: %q,\nAnalyzer: %q,\n", languageIdent(l.Language), l.Name, l.Kind, l.Scheme, l.Runner, l.Analyzer)
-		w.f("Markers: %s,\nExtensions: %s,\nCompanions: %s,\nSkippedDirectories: %s,\nWorkspaceFiles: %s,\n",
-			goStrings(l.Markers), goStrings(l.Extensions), goStrings(l.Companions), goStrings(l.SkippedDirectories), goStrings(l.WorkspaceFiles))
-		w.f("IdentitySource: IdentitySource{File: %q, Field: %q},\nProgramWithoutMarker: %t,\nTakesTargetKind: %t,\n},\n",
-			l.IdentitySource.File, l.IdentitySource.Field, l.ProgramWithoutMarker, l.TakesTargetKind)
+		w.f("Markers: %s,\nExtensions: %s,\nSkippedFiles: %s,\nSkippedDirectories: %s,\nWorkspaceFiles: %s,\n",
+			goStrings(l.Markers), goStrings(l.Extensions), goStrings(l.SkippedFiles), goStrings(l.SkippedDirectories), goStrings(l.WorkspaceFiles))
+		w.f("IdentitySource: IdentitySource{File: %q, Field: %q},\nTakesTargetKind: %t,\n},\n",
+			l.IdentitySource.File, l.IdentitySource.Field, l.TakesTargetKind)
 	}
 	w.f("}\n\nvar generatorRows = []GeneratorRow{\n")
 	for i := range c.generators.Generators {

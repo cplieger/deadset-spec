@@ -1,0 +1,38 @@
+{
+  "description": "A declared consumer that holds only TypeScript, beside a target whose Go module sits below its root and whose only JavaScript file is one git ignores, is left out with TypeScript when the TypeScript analyzer ends with the setup failure no-program as its one failure: the line naming TypeScript left out names the consumer, the Go analyzer is run again over the scope without it, and the run ends with exit code 0 over the Go analyzer's report naming the target example.com/api, as languages.json states.",
+  "products": [
+    "deadset"
+  ],
+  "rename": {
+    "app/services/api/go.mod.txt": "app/services/api/go.mod",
+    "app/services/api/main.go.txt": "app/services/api/main.go",
+    "app/gitignore.txt": "app/.gitignore",
+    "web/tsconfig.json.txt": "web/tsconfig.json"
+  },
+  "executables": [
+    "bin/go/analyzer",
+    "bin/ts/analyzer"
+  ],
+  "report_file": "@OUT@/run/report.json",
+  "argv": [
+    "analyze",
+    "--target=@TARGET@/app",
+    "--scope=@TARGET@/scope.json",
+    "--run-dir=@OUT@/run"
+  ],
+  "expect": {
+    "exit": 0,
+    "report": "valid",
+    "finding_paths": [],
+    "stderr_contains": [
+      "deadset-ts: setup failure: no-program: ",
+      "deadset: deadset-ts found no program, so the run leaves \"ts\" out of scope, and with it the consumer /",
+      "/web\n"
+    ],
+    "files_contain": {
+      "@OUT@/run/report.json": [
+        "\"identity\": \"example.com/api\""
+      ]
+    }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "description": "A target whose Go module sits below its root and whose only JavaScript file is one git ignores puts Go and TypeScript in scope by its census, and the TypeScript analyzer ends with the setup failure no-program as its one failure: the run leaves TypeScript out and names every module as a run with no JavaScript does, so the Go analyzer, which names the target by the id its scope document hands it, else by the module its load finds, is run again without the id \".\" that two languages gave the target, and the merged report names the target example.com/api, as languages.json states.",
+  "products": [
+    "deadset"
+  ],
+  "rename": {
+    "services/api/go.mod.txt": "services/api/go.mod",
+    "services/api/main.go.txt": "services/api/main.go",
+    "gitignore.txt": ".gitignore"
+  },
+  "executables": [
+    "bin/go/analyzer",
+    "bin/ts/analyzer"
+  ],
+  "report_file": "@OUT@/run/report.json",
+  "argv": [
+    "analyze",
+    "--target=@TARGET@",
+    "--run-dir=@OUT@/run"
+  ],
+  "expect": {
+    "exit": 0,
+    "report": "valid",
+    "finding_paths": [],
+    "stderr_contains": [
+      "deadset-ts: setup failure: no-program: ",
+      "deadset: deadset-ts found no program, so the run leaves \"ts\" out of scope"
+    ],
+    "files_contain": {
+      "@OUT@/run/report.json": [
+        "\"identity\": \"example.com/api\""
+      ]
+    }
+  }
+}

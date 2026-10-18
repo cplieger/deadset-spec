@@ -1,0 +1,28 @@
+{
+  "description": "A language analysis.languages names is analyzed whatever its analyzer finds: where the TypeScript analyzer ends with the setup failure no-program over a Go module whose only JavaScript file git ignores, the run ends with exit code 3 and that class line, and no merged report is written.",
+  "products": [
+    "deadset"
+  ],
+  "rename": {
+    "go.mod.txt": "go.mod",
+    "main.go.txt": "main.go",
+    "gitignore.txt": ".gitignore"
+  },
+  "executables": [
+    "bin/go/analyzer",
+    "bin/ts/analyzer"
+  ],
+  "report_file": "@OUT@/run/report.json",
+  "argv": [
+    "analyze",
+    "--target=@TARGET@",
+    "--run-dir=@OUT@/run"
+  ],
+  "expect": {
+    "exit": 3,
+    "report": "absent",
+    "stderr_contains": [
+      "\nsetup failure: no-program: the target holds no compiler configuration"
+    ]
+  }
+}

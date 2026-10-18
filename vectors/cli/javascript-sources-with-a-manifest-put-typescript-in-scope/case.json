@@ -1,0 +1,16 @@
+{
+  "description": "A tree holding JavaScript sources and a manifest but no compiler configuration puts TypeScript in scope, because a file one of the TypeScript row's extensions names puts it in scope without a marker, as its analyzer forms a program from such files: the run then needs an analyzer claiming ts, and an empty provider list is refused with the usage code 2.",
+  "products": [
+    "deadset"
+  ],
+  "argv": [
+    "analyze",
+    "--target=@TARGET@"
+  ],
+  "expect": {
+    "exit": 2,
+    "stderr_contains": [
+      "claiming \"ts\", in scope"
+    ]
+  }
+}

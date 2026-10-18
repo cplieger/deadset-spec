@@ -1,0 +1,20 @@
+{
+  "description": "A Go module that also holds JavaScript sources and no compiler configuration puts both Go and TypeScript in scope, each by its own row of languages.json: the run then needs an analyzer claiming each, and an empty provider list is refused with the usage code 2, naming both.",
+  "products": [
+    "deadset"
+  ],
+  "rename": {
+    "go.mod.txt": "go.mod",
+    "main.go.txt": "main.go"
+  },
+  "argv": [
+    "analyze",
+    "--target=@TARGET@"
+  ],
+  "expect": {
+    "exit": 2,
+    "stderr_contains": [
+      "claiming \"go\", \"ts\", in scope"
+    ]
+  }
+}
