@@ -1,3 +1,4 @@
+-- fixture.json --
 {
   "symbols": {
     "Order": { "file": "target/v1/order.proto", "line": 9, "ref": "proto://v1#Order" },
@@ -14,4 +15,26 @@
     },
     "Status": { "file": "target/v1/order.proto", "line": 18, "ref": "proto://v1#Status" }
   }
+}
+-- target/v1/order.proto --
+syntax = "proto3";
+
+package v1;
+
+message Item {
+  string name = 1;
+}
+
+message Order {
+  repeated Item items = 1;
+  map<string, Item> by_name = 2;
+  Status status = 3;
+  message Line {
+    int32 count = 1;
+  }
+}
+
+enum Status {
+  STATUS_UNSPECIFIED = 0;
+  STATUS_DONE = 1;
 }

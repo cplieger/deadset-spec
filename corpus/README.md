@@ -1,6 +1,6 @@
 # Conformance corpus
 
-Each directory under `fixtures/` is one fixture: an `expect.json` file and one rendering per language it lists. A Go rendering is one `go.txtar` archive, and a TypeScript rendering is a `ts/` directory. The expectation file names, in language-neutral terms, what an analyzer must and must not report for each logical name, and each rendering's `fixture.json` binds those names to a file and a line.
+Each directory under `fixtures/` is one fixture: an `expect.json` file and one rendering per language it lists. A Go rendering is one `go.txtar` archive, a Protocol Buffers rendering is one `proto.txtar` archive, and a TypeScript rendering is a `ts/` directory. The expectation file names, in language-neutral terms, what an analyzer must and must not report for each logical name, and each rendering's `fixture.json` binds those names to a file and a line.
 
 ## Where the rules are
 

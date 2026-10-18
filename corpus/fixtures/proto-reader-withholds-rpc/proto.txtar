@@ -1,3 +1,4 @@
+-- fixture.json --
 {
   "symbols": {
     "PingService": { "file": "target/v1/ping.proto", "line": 9, "ref": "proto://v1#PingService" },
@@ -7,4 +8,16 @@
       "ref": "proto://v1#PingService.Ping"
     }
   }
+}
+-- target/v1/ping.proto --
+syntax = "proto3";
+
+package v1;
+
+message PingRequest {}
+
+message PingResponse {}
+
+service PingService {
+  rpc Ping(PingRequest) returns (PingResponse);
 }

@@ -1,0 +1,21 @@
+-- fixture.json --
+{
+  "symbols": {
+    "Good": { "file": "target/v1/good.proto", "line": 5, "ref": "proto://v1#Good" }
+  }
+}
+-- target/v1/bad.proto --
+syntax = "proto3";
+
+package v1;
+
+message Broken {
+  int32 a = 1;
+  int32 b = 1;
+}
+-- target/v1/good.proto --
+syntax = "proto3";
+
+package v1;
+
+message Good {}

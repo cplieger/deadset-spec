@@ -1,6 +1,17 @@
+-- fixture.json --
 {
   "symbols": {
     "Ping.number": { "file": "target/v1/ping.proto", "line": 7, "ref": "proto://v1#Ping.number" },
     "Ping.spare": { "file": "target/v1/ping.proto", "line": 8, "ref": "proto://v1#Ping.spare" }
   }
+}
+-- target/v1/ping.proto --
+syntax = "proto3";
+
+package v1;
+
+message Ping {
+  // deadset:ignore DS1802 -- reserved for the next protocol version
+  int32 number = 1;
+  int32 spare = 2;
 }

@@ -1,9 +1,0 @@
-syntax = "proto3";
-
-package v1;
-
-message Ping {
-  // deadset:ignore DS1802 -- reserved for the next protocol version
-  int32 number = 1;
-  int32 spare = 2;
-}

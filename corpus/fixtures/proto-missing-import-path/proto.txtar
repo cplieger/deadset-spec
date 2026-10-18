@@ -1,3 +1,8 @@
+-- fixture.json --
+{
+  "symbols": {}
+}
+-- target/v1/ping.proto --
 syntax = "proto3";
 
 package v1;

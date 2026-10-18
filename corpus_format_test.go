@@ -245,7 +245,7 @@ func TestCorpusDocument(t *testing.T) {
 	})
 
 	t.Run("layout", func(t *testing.T) {
-		want := map[string]string{"go": "go.txtar", "ts": "ts/", "proto": "proto/"}
+		want := map[string]string{"go": "go.txtar", "ts": "ts/", "proto": "proto.txtar"}
 		if !maps.Equal(doc.Layout.Renderings, want) {
 			t.Errorf("layout.renderings = %v, want %v, the layout this suite walks", doc.Layout.Renderings, want)
 		}

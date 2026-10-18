@@ -1,0 +1,25 @@
+-- fixture.json --
+{
+  "symbols": {
+    "Ping.number": { "file": "target/v1/ping.proto", "line": 6, "ref": "proto://v1#Ping.number" }
+  }
+}
+-- target/deadset-edges.json --
+{
+  "description": "An edge whose provides side is a schema field.",
+  "edges": {
+    "wire/ping-number": {
+      "because": "generated",
+      "provides": "proto://v1#Ping.number",
+      "used_by": "ts://@example/web/src/ping.ts#readNumber"
+    }
+  }
+}
+-- target/v1/ping.proto --
+syntax = "proto3";
+
+package v1;
+
+message Ping {
+  int32 number = 1;
+}

@@ -1,7 +1,0 @@
-syntax = "proto2";
-
-package validate;
-
-message FieldRules {
-  optional string const = 1;
-}

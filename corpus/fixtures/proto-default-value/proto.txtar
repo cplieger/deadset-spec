@@ -1,3 +1,4 @@
+-- fixture.json --
 {
   "symbols": {
     "Status.STATUS_UNSPECIFIED": {
@@ -11,4 +12,13 @@
       "ref": "proto://v1#Status.STATUS_OK"
     }
   }
+}
+-- target/v1/status.proto --
+syntax = "proto3";
+
+package v1;
+
+enum Status {
+  STATUS_UNSPECIFIED = 0;
+  STATUS_OK = 1;
 }
