@@ -1,0 +1,33 @@
+{
+  "name": "proto-grpc-server-reflection-caps",
+  "description": "A program that serves gRPC server reflection exposes the descriptors of every generated file it links, so each consumer of those files carries the descriptor-exposure cap whatever its state: the field no hand code reads and the RPC no client calls.",
+  "rules": ["bindings.16", "references-go.17"],
+  "pending": "references-go.17: deadset-go publishes cap descriptor-exposure on the consumers of every generated file a program serving reflection links (GO5).",
+  "languages": ["go"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "facts": [
+    {
+      "symbol": "PingRequest.text",
+      "role": "consumer",
+      "schema": "proto://v1#PingRequest.text",
+      "state": "unreferenced",
+      "cap": "descriptor-exposure"
+    },
+    {
+      "symbol": "GrpcClient.Ping",
+      "role": "consumer",
+      "schema": "proto://v1#PingService.Ping",
+      "state": "unreferenced",
+      "cap": "descriptor-exposure"
+    },
+    {
+      "symbol": "server.Ping",
+      "role": "implementer",
+      "schema": "proto://v1#PingService.Ping",
+      "state": "dead",
+      "report": "DS1101"
+    }
+  ],
+  "expect": []
+}

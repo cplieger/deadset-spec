@@ -69,6 +69,12 @@
     "serializers": [],
     "roots_complete": false
   },
+  "proto": {
+    "closed": false,
+    "plugins": [],
+    "import_paths": [],
+    "vendored_paths": []
+  },
   "provenance": {
     "contract_version": "default",
     "target.kind": "repository: repository.json",
@@ -97,6 +103,10 @@
     "ts.injection_registrations": "default",
     "ts.lifecycle_contracts": "default",
     "ts.serializers": "default",
-    "ts.roots_complete": "default"
+    "ts.roots_complete": "default",
+    "proto.closed": "default",
+    "proto.plugins": "default",
+    "proto.import_paths": "default",
+    "proto.vendored_paths": "default"
   }
 }

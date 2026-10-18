@@ -1,0 +1,12 @@
+#!/bin/sh
+dir=$(dirname "$0")
+if [ "$1" = describe ]; then
+	exec cat "$dir/describe.json"
+fi
+for arg in "$@"; do
+	case $arg in
+	--report=*) cp "$dir/report.json" "${arg#--report=}" ;;
+	--facts=*) echo "deadset-go: handed $arg" >&2; exit 3 ;;
+	esac
+done
+exit 0

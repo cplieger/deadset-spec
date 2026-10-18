@@ -1,0 +1,19 @@
+{
+  "symbols": {
+    "PingRequest.number": {
+      "file": "target/src/gen/v1/service.ts",
+      "line": 14,
+      "ref": "ts://@example/target/src/gen/v1/service.ts#PingRequest.number"
+    },
+    "PingRequest.text": {
+      "file": "target/src/gen/v1/service.ts",
+      "line": 15,
+      "ref": "ts://@example/target/src/gen/v1/service.ts#PingRequest.text"
+    },
+    "PingResponse.number": {
+      "file": "target/src/gen/v1/service.ts",
+      "line": 19,
+      "ref": "ts://@example/target/src/gen/v1/service.ts#PingResponse.number"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "name": "proto-field-read-by-getter",
+  "description": "A hand call of a getter reaches the getter, and the getter's read reaches its field, so both consumers of the field are live; the getter of a field hand code only writes is unreferenced, as is that field.",
+  "rules": ["bindings.12", "references-go.9"],
+  "pending": "bindings.12: deadset-go follows a generated getter's read of its field once hand code reaches the getter (GO5).",
+  "languages": ["go"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "facts": [
+    {
+      "symbol": "PingRequest.number",
+      "role": "consumer",
+      "schema": "proto://v1#PingRequest.number",
+      "state": "live"
+    },
+    {
+      "symbol": "PingRequest.text",
+      "role": "consumer",
+      "schema": "proto://v1#PingRequest.text",
+      "state": "unreferenced"
+    },
+    {
+      "symbol": "PingRequest.GetNumber",
+      "role": "consumer",
+      "schema": "proto://v1#PingRequest.number",
+      "state": "live"
+    },
+    {
+      "symbol": "PingRequest.GetText",
+      "role": "consumer",
+      "schema": "proto://v1#PingRequest.text",
+      "state": "unreferenced"
+    }
+  ],
+  "expect": []
+}

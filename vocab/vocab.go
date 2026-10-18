@@ -297,6 +297,12 @@ func SchemaVersions() []string {
 	return slices.Clone(schemaVersions)
 }
 
+// FactsVersions returns every facts document version the Contract lists, in
+// ascending order; [FactsVersion] is the last.
+func FactsVersions() []string {
+	return slices.Clone(factsVersions)
+}
+
 // Languages returns every language the vocabularies name, in their order.
 func Languages() []Language { return slices.Clone(languages) }
 

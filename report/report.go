@@ -9,7 +9,9 @@
 package report
 
 import (
+	"cmp"
 	"encoding/json"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -148,4 +150,27 @@ func (r *Report) Members() map[string][]Positioned {
 		members[r.Components[i].ID] = r.Components[i].Members
 	}
 	return members
+}
+
+// DistinctLines is the number of distinct source lines the positions span,
+// each from its line to its end_line, a line two of them share counted once:
+// the count finding.schema.json's deletable_lines takes over a component's
+// declarations.
+func DistinctLines(positions []Position) int {
+	ordered := slices.Clone(positions)
+	slices.SortFunc(ordered, func(a, b Position) int {
+		return cmp.Or(strings.Compare(a.Path, b.Path), cmp.Compare(a.Line, b.Line))
+	})
+	lines, last := 0, 0
+	for i, p := range ordered {
+		switch {
+		case i == 0 || p.Path != ordered[i-1].Path || p.Line > last:
+			lines += p.EndLine - p.Line + 1
+			last = p.EndLine
+		case p.EndLine > last:
+			lines += p.EndLine - last
+			last = p.EndLine
+		}
+	}
+	return lines
 }

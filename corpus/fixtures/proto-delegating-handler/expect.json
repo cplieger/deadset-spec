@@ -1,0 +1,34 @@
+{
+  "name": "proto-delegating-handler",
+  "description": "A decorator holding the inner handler in a field of the server interface type calls it through that interface, a hand-written selection that reaches the method of every implementer of the interface method. Both are implementers: the decorator's method is dead, the inner method is dead with via naming the decorator's, and the request field only the inner method reads is live with via naming both.",
+  "rules": ["bindings.8", "bindings.13", "bindings.16", "bindings.17"],
+  "pending": "bindings.13: deadset-go follows a hand-written selection of a generated server interface method to every implementer of it (GO5).",
+  "languages": ["go"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "facts": [
+    {
+      "symbol": "GetConfigRequest.name",
+      "role": "consumer",
+      "schema": "proto://v1#GetConfigRequest.name",
+      "state": "live",
+      "via": ["auth.GetConfig", "inner.GetConfig"]
+    },
+    {
+      "symbol": "auth.GetConfig",
+      "role": "implementer",
+      "schema": "proto://v1#ConfigService.GetConfig",
+      "state": "dead",
+      "report": "DS1101"
+    },
+    {
+      "symbol": "inner.GetConfig",
+      "role": "implementer",
+      "schema": "proto://v1#ConfigService.GetConfig",
+      "state": "dead",
+      "report": "DS1101",
+      "via": ["auth.GetConfig"]
+    }
+  ],
+  "expect": []
+}

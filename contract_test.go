@@ -29,6 +29,7 @@ type contractDocument struct {
 	Description     string   `json:"description"`
 	ContractVersion string   `json:"contract_version"`
 	SchemaVersions  []string `json:"schema_versions"`
+	FactsVersions   []string `json:"facts_versions"`
 	Platforms       []string `json:"platforms"`
 }
 
@@ -189,6 +190,7 @@ type contractBaselineDocument struct {
 	Description      string   `json:"description"`
 	ContractVersion  string   `json:"contract_version"`
 	SchemaVersions   []string `json:"schema_versions"`
+	FactsVersions    []string `json:"facts_versions"`
 	KindCodes        []string `json:"kind_codes"`
 	RetiredCodes     []string `json:"retired_codes"`
 	ExemptionClasses []string `json:"exemption_classes"`
@@ -212,6 +214,7 @@ func loadContractBaseline(t *testing.T) contractBaselineDocument {
 	}
 	sets := map[string]int{
 		"schema_versions":   len(doc.SchemaVersions),
+		"facts_versions":    len(doc.FactsVersions),
 		"kind_codes":        len(doc.KindCodes),
 		"retired_codes":     len(doc.RetiredCodes),
 		"exemption_classes": len(doc.ExemptionClasses),
@@ -268,6 +271,7 @@ func TestContractVersionMovesWithEveryClosedVocabulary(t *testing.T) {
 		want []string
 	}{
 		{name: "schema_versions", file: contractPath, got: contract.SchemaVersions, want: baseline.SchemaVersions},
+		{name: "facts_versions", file: contractPath, got: contract.FactsVersions, want: baseline.FactsVersions},
 		{name: "kind_codes", file: kindsPath, got: live, want: baseline.KindCodes},
 		{name: "retired_codes", file: kindsPath, got: retired, want: baseline.RetiredCodes},
 		{name: "exemption_classes", file: exemptionsPath, got: classes, want: baseline.ExemptionClasses},

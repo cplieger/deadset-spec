@@ -73,6 +73,18 @@
           "languages": ["go", "ts"],
           "meaning": "A document the analysis reads at the target root, the ignore file, the baseline or the edges document, is present and cannot be read: its name resolves outside the target root or to anything but a regular file, or the read fails.",
           "fix": "Name the document and why it cannot be read, and tell the user to make it a regular file inside the target root that the run can read, or to remove it."
+        },
+        {
+          "class": "missing-import-path",
+          "languages": ["proto"],
+          "meaning": "A directory proto.import_paths names does not exist in the target.",
+          "fix": "Name the setting and the directory, and tell the user to create the directory or remove it from proto.import_paths."
+        },
+        {
+          "class": "binding-undecodable",
+          "languages": ["go", "ts"],
+          "meaning": "A generated file matches a generator row whose version interval holds the version the file states, and its bindings do not decode as the row states them, so the row is wrong for output it claims to cover.",
+          "fix": "Name the generated file and its generator row, and tell the user to regenerate the file, or to report the file to the analyzer's maintainers where freshly generated output fails the same way."
         }
       ]
     },

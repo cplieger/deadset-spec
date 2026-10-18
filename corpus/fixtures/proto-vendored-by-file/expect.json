@@ -1,0 +1,26 @@
+{
+  "name": "proto-vendored-by-file",
+  "description": "A schema file that is a copy of an upstream schema, its import path and its package together matching the upstream list, is live under schema-vendored; a first-party file declaring the same package at another path is no copy, and its declarations are published as any others.",
+  "rules": ["schemas.7"],
+  "languages": ["proto"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "facts": [
+    {
+      "symbol": "FieldRules",
+      "role": "schema",
+      "schema": "proto://validate#FieldRules",
+      "state": "live",
+      "members": ["proto://validate#FieldRules.const"]
+    },
+    {
+      "symbol": "Rule",
+      "role": "schema",
+      "schema": "proto://validate#Rule",
+      "state": "dead",
+      "report": "DS1801",
+      "members": ["proto://validate#Rule.name"]
+    }
+  ],
+  "expect": []
+}

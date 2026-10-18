@@ -414,6 +414,14 @@ func TestReportExamplesAreInstancesOfTheReportSchema(t *testing.T) {
 	}
 }
 
+func TestFactsExamplesAreInstancesOfTheFactsSchema(t *testing.T) {
+	for _, file := range exampleFiles(t, "facts") {
+		t.Run(exampleName(file), func(t *testing.T) {
+			validateAgainst(t, "contract/facts.schema.json", readExample(t, "facts", file))
+		})
+	}
+}
+
 func TestEveryFindingInsideAReportExampleIsAnInstanceOfTheFindingSchema(t *testing.T) {
 	for _, file := range exampleFiles(t, "reports") {
 		t.Run(exampleName(file), func(t *testing.T) {

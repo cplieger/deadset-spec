@@ -151,6 +151,7 @@ func generatorInput(path string) bool {
 // settingsRow is what the configuration tests read of a contract/settings.json row.
 type settingsRow struct {
 	Key         string   `json:"key"`
+	ReadBy      []string `json:"read_by"`
 	Delivered   []string `json:"delivered"`
 	Values      []string `json:"values"`
 	PerLanguage []string `json:"per_language"`
@@ -190,8 +191,8 @@ func TestAPlantedConfigurationEditReachesEveryGeneratedTable(t *testing.T) {
 		if err != nil {
 			t.Fatalf("gen.Generate(planted) = %v", err)
 		}
-		if got := settingsRowOf(t, files, "reporters.planted").Delivered; !slices.Equal(got, []string{"go", "ts"}) {
-			t.Errorf("reporters.planted delivered = %q, want every analyzer that reads it, [go ts]", got)
+		if got := settingsRowOf(t, files, "reporters.planted"); !slices.Equal(got.ReadBy, []string{"go", "ts"}) || !slices.Equal(got.Delivered, []string{"go", "ts"}) {
+			t.Errorf("reporters.planted read_by, delivered = %q, %q, want the analyzed languages, [go ts], for both", got.ReadBy, got.Delivered)
 		}
 		if !regexp.MustCompile(`KeyReportersPlanted\s+Key = "reporters.planted"`).Match(files["vocab/config_gen.go"]) {
 			t.Error("vocab/config_gen.go declares no KeyReportersPlanted, want the planted setting's handle")
@@ -203,6 +204,19 @@ func TestAPlantedConfigurationEditReachesEveryGeneratedTable(t *testing.T) {
 			if !bytes.Contains(files[path], []byte(want)) {
 				t.Errorf("the generated %s holds no %s, want the planted setting resolved", path, want)
 			}
+		}
+	})
+	t.Run("a setting every analysis reads", func(t *testing.T) {
+		inputs := generatorInputs(t)
+		plant(t, inputs, "authoring/config.schema.json", `        "formats": {`,
+			`        "planted": { "description": "d", "type": "boolean", "default": false, "x-owner": "analysis" },
+        "formats": {`)
+		files, err := gen.Generate(inputs)
+		if err != nil {
+			t.Fatalf("gen.Generate(planted) = %v", err)
+		}
+		if got := settingsRowOf(t, files, "reporters.planted"); !slices.Equal(got.ReadBy, []string{"go", "ts", "proto"}) || !slices.Equal(got.Delivered, []string{"go", "ts"}) {
+			t.Errorf("reporters.planted read_by, delivered = %q, %q, want [go ts proto] read and only the process analyzers [go ts] delivered", got.ReadBy, got.Delivered)
 		}
 	})
 	t.Run("a language that takes a target kind", func(t *testing.T) {
@@ -242,12 +256,21 @@ func TestAPlantedConfigurationEditReachesEveryGeneratedTable(t *testing.T) {
 				"/properties/target/properties/kind/oneOf/1/required",
 			},
 			"contract/describe.schema.json":          {"/properties/languages/items/enum"},
+			"contract/facts.schema.json":             {"/properties/language/enum"},
 			"contract/finding.schema.json":           {"/properties/language/enum"},
 			"contract/report.schema.json":            {"/properties/analyzer/properties/languages/items/enum"},
 			"corpus/conformance-results.schema.json": {"/properties/product/properties/language/enum"},
-			"corpus/expect.schema.json":              {"/properties/languages/items/enum", "/properties/target_kind/oneOf/1/required"},
+			"corpus/expect.schema.json":              {"/properties/facts/items/properties/languages/items/enum", "/properties/languages/items/enum", "/properties/target_kind/oneOf/1/required"},
 		}
-		languages := []string{"py", "go", "ts"}
+		languages := []string{"py", "go", "ts", "proto"}
+		// A provider entry claims a process language and a target kind is taken by an
+		// analyzed language, so those lists hold the planted row and not proto.
+		narrowed := map[string][]string{
+			"/properties/providers/properties/analyzers/items/oneOf/0/properties/languages/items/enum": {"py", "go", "ts"},
+			"/properties/providers/properties/analyzers/items/oneOf/1/properties/languages/items/enum": {"py", "go", "ts"},
+			"/properties/target/properties/kind/oneOf/1/required":                                      {"py", "go", "ts"},
+			"/properties/target_kind/oneOf/1/required":                                                 {"py", "go", "ts"},
+		}
 		for _, path := range gen.Paths(files) {
 			if !strings.HasSuffix(path, ".schema.json") {
 				continue
@@ -257,8 +280,12 @@ func TestAPlantedConfigurationEditReachesEveryGeneratedTable(t *testing.T) {
 				t.Errorf("the published %s holds language lists at %q, want them at %q", path, got, want)
 			}
 			for pointer, got := range lists {
-				if !slices.Equal(got, languages) {
-					t.Errorf("the published %s holds %q at %s, want every language %q", path, got, pointer, languages)
+				want, ok := narrowed[pointer]
+				if !ok {
+					want = languages
+				}
+				if !slices.Equal(got, want) {
+					t.Errorf("the published %s holds %q at %s, want %q", path, got, pointer, want)
 				}
 			}
 			delete(wantLists, path)

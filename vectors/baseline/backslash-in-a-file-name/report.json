@@ -85,7 +85,7 @@
         "end_line": 1
       },
       "symbol": {
-        "ref": "ts://@example/app/src/orphan.ts#:file",
+        "ref": "ts://@example/app/src/orphan.ts#",
         "kind": "file",
         "name": "src/orphan.ts",
         "size_lines": 1

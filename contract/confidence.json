@@ -96,6 +96,62 @@
       "languages": ["ts"],
       "codes": ["DS1001", "DS1002", "DS1003", "DS1004", "DS1005", "DS1006", "DS1101", "DS1102", "DS1103", "DS1104", "DS1201", "DS1202", "DS1203", "DS1301", "DS1501", "DS1502", "DS1503", "DS1602"],
       "description": "A finding the roots cap applies to, in a configuration that compiles a load by a computed path."
+    },
+    {
+      "evidence": "schema-operation-default",
+      "rule": "schemas.10",
+      "class": "possible",
+      "languages": ["proto"],
+      "codes": ["DS1804", "DS1805"],
+      "description": "A schema service or operation, whose callers may run in programs the run does not analyze."
+    },
+    {
+      "evidence": "http-exposure",
+      "rule": "schemas.11",
+      "class": "possible",
+      "languages": ["proto"],
+      "codes": ["DS1801", "DS1802", "DS1803", "DS1804", "DS1805"],
+      "description": "A schema declaration a service reaches that the generation configuration exposes over HTTP."
+    },
+    {
+      "evidence": "descriptor-exposure",
+      "rule": "schemas.12",
+      "class": "possible",
+      "languages": ["proto"],
+      "codes": ["DS1801", "DS1802", "DS1803", "DS1804", "DS1805"],
+      "description": "A schema declaration a consumer binding of which carries the descriptor-exposure cap."
+    },
+    {
+      "evidence": "persistence",
+      "rule": "schemas.13",
+      "class": "possible",
+      "languages": ["proto"],
+      "codes": ["DS1802", "DS1803"],
+      "description": "A schema field or enum value a consumer binding of which carries the persistence cap."
+    },
+    {
+      "evidence": "explicit-json-name",
+      "rule": "schemas.14",
+      "class": "possible",
+      "languages": ["proto"],
+      "codes": ["DS1802", "DS1803"],
+      "description": "A schema field or enum value that states its JSON name."
+    },
+    {
+      "evidence": "generation-config-unknown",
+      "rule": "schemas.15",
+      "class": "possible",
+      "languages": ["proto"],
+      "codes": ["DS1801", "DS1802", "DS1803", "DS1804", "DS1805"],
+      "description": "A schema declaration whose generation the run cannot account for in full."
+    },
+    {
+      "evidence": "library-language",
+      "rule": "schemas.16",
+      "class": "possible",
+      "languages": ["proto"],
+      "codes": ["DS1801", "DS1802", "DS1803", "DS1804", "DS1805"],
+      "description": "A schema declaration a language whose target kind is library binds."
     }
   ]
 }

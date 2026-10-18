@@ -1,6 +1,6 @@
 # Conformance corpus
 
-Each directory under `fixtures/` is one fixture: an `expect.json` file and one rendering per language it lists. A Go rendering is one `go.txtar` archive, and a TypeScript rendering is a `ts/` directory. The expectation file names, in language-neutral terms, what an analyzer must and must not report for each logical name, and each rendering's `fixture.json` binds those names to a file and a line.
+Each directory under `fixtures/` is one fixture: an `expect.json` file and one rendering per language it lists. A Go rendering is one `go.txtar` archive, a Protocol Buffers rendering is one `proto.txtar` archive, and a TypeScript rendering is a `ts/` directory. The expectation file names, in language-neutral terms, what an analyzer must and must not report for each logical name, and each rendering's `fixture.json` binds those names to a file and a line.
 
 ## Where the rules are
 
@@ -14,6 +14,6 @@ Each directory under `fixtures/` is one fixture: an `expect.json` file and one r
 
 The `corpus` Go package of this module is the one runner and checker, and `cmd/deadset-corpus` puts them on the command line:
 
-- `deadset-corpus run --language=LANG --gaps=conformance.json -- ANALYZER` answers every fixture rendered in the language through the analyzer's `analyze` and `print-retained` verbs and writes the results document.
+- `deadset-corpus run --language=LANG --gaps=conformance.json -- ANALYZER` answers every fixture rendered in the language through the analyzer's `analyze` and `print-retained` verbs, and the facts document `analyze --facts` writes where the fixture names `facts`, and writes the results document. A product linked into its caller, as deadset's schema reader is, is answered through `corpus.Run` with an in-process `Analyzer` instead.
 - `deadset-corpus check` holds every fixture to the format, the vocabularies and the rule-coverage rule above.
 - `deadset-corpus agree FIRST SECOND` compares two analyzers' results on the expectations both answer.

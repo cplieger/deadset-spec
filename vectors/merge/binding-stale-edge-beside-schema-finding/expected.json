@@ -1,0 +1,254 @@
+{
+  "schema_version": "9.0.0",
+  "contract_version": "8.0.0",
+  "analyzer": {
+    "name": "deadset",
+    "version": "2.0.0",
+    "languages": [
+      "go",
+      "proto",
+      "ts"
+    ],
+    "schema_versions_accepted": [
+      "9.0.0"
+    ],
+    "conformance": {
+      "corpus_version": "6.0.0",
+      "result": "pass",
+      "digest": "sha256:c2b1f1c4f5a0200d55dc57145346fc248ad7d258853b486cb1ff145ad20ba90f"
+    }
+  },
+  "merged_from": [
+    {
+      "name": "deadset-go",
+      "version": "2.0.0",
+      "digest": "sha256:11244732bbc2cdedc691fd91819a8ceb800f0fa1a08ae972363b7fc6079dbadc",
+      "languages": [
+        "go"
+      ],
+      "totals": {
+        "findings": 0,
+        "by_severity": {
+          "allow": 0,
+          "warn": 0,
+          "deny": 0
+        },
+        "deletable_lines": 0,
+        "suppressions_in_effect": 0,
+        "reasons_recorded": 0,
+        "stale_suppressions": 0,
+        "pending": 0,
+        "omitted": 0,
+        "withheld": {
+          "certain": 0,
+          "probable": 0,
+          "possible": 0
+        }
+      }
+    },
+    {
+      "name": "deadset-proto",
+      "version": "2.0.0",
+      "digest": "sha256:6d1350ef89c386f54b461bcc8243e3c9ec37c761a8c2e127dc88dc4ba2114586",
+      "languages": [
+        "proto"
+      ],
+      "totals": {
+        "findings": 0,
+        "by_severity": {
+          "allow": 0,
+          "warn": 0,
+          "deny": 0
+        },
+        "deletable_lines": 0,
+        "suppressions_in_effect": 0,
+        "reasons_recorded": 0,
+        "stale_suppressions": 0,
+        "pending": 0,
+        "omitted": 0,
+        "withheld": {
+          "certain": 0,
+          "probable": 0,
+          "possible": 0
+        }
+      }
+    },
+    {
+      "name": "deadset-ts",
+      "version": "2.0.0",
+      "digest": "sha256:16e14ab8ab631241890b9771b462068ba1eed05c37158c669600c03e1915e51c",
+      "languages": [
+        "ts"
+      ],
+      "totals": {
+        "findings": 0,
+        "by_severity": {
+          "allow": 0,
+          "warn": 0,
+          "deny": 0
+        },
+        "deletable_lines": 0,
+        "suppressions_in_effect": 0,
+        "reasons_recorded": 0,
+        "stale_suppressions": 0,
+        "pending": 0,
+        "omitted": 0,
+        "withheld": {
+          "certain": 0,
+          "probable": 0,
+          "possible": 0
+        }
+      }
+    }
+  ],
+  "target": {
+    "kind": "application",
+    "root": ".",
+    "identity": "example.com/app"
+  },
+  "configurations": [
+    {
+      "id": "linux-amd64",
+      "os": "linux",
+      "arch": "amd64",
+      "tags": []
+    }
+  ],
+  "configurations_not_built": [],
+  "consumers": {
+    "declared": 0,
+    "loaded": [],
+    "unavailable": []
+  },
+  "findings": [
+    {
+      "code": "DS9005",
+      "kind": "stale-cross-language-edge",
+      "language": "go",
+      "position": {
+        "path": "deadset-edges.json",
+        "line": 1,
+        "column": 1,
+        "end_line": 1
+      },
+      "symbol": {
+        "ref": "go://example.com/app/internal/api#neverDeclared",
+        "kind": "edge",
+        "name": "wire/missing",
+        "size_lines": 1
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "test_only": false,
+      "generated": false,
+      "component": {
+        "id": "deadset/c-1",
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 0
+      },
+      "retained_by": [],
+      "configurations": [],
+      "consumers_loaded": [],
+      "fixability": "none",
+      "severity": "deny",
+      "message": "no analyzer enumerates the symbol the provides side of the edge names",
+      "details": {
+        "edge": "wire/missing",
+        "sides": [
+          {
+            "side": "provides",
+            "symbol": "go://example.com/app/internal/api#neverDeclared",
+            "state": "absent"
+          },
+          {
+            "side": "used_by",
+            "symbol": "ts://@example/web/src/wire.ts#missing",
+            "state": "live"
+          }
+        ]
+      }
+    },
+    {
+      "code": "DS1802",
+      "kind": "unread-schema-field",
+      "language": "proto",
+      "position": {
+        "path": "proto/v1/service.proto",
+        "line": 6,
+        "column": 3,
+        "end_line": 6
+      },
+      "symbol": {
+        "ref": "proto://v1#PingRequest.number",
+        "kind": "field",
+        "name": "PingRequest.number",
+        "parent": "proto://v1#PingRequest",
+        "exported": true,
+        "size_lines": 1
+      },
+      "reachability_class": "probable",
+      "confidence": "probable",
+      "liveness_relation": "reference-counting",
+      "test_only": false,
+      "generated": false,
+      "component": {
+        "id": "deadset-proto/c-1",
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 1
+      },
+      "retained_by": [],
+      "configurations": [],
+      "consumers_loaded": [],
+      "fixability": "manual",
+      "severity": "deny",
+      "message": "schema field is read by no binding in any analyzed language",
+      "analyzer": "deadset-proto",
+      "details": {}
+    }
+  ],
+  "edge_evaluations": [
+    {
+      "edge": "wire/missing",
+      "side": "provides",
+      "symbol": "go://example.com/app/internal/api#neverDeclared",
+      "state": "absent",
+      "analyzer": "deadset-go"
+    },
+    {
+      "edge": "wire/missing",
+      "side": "used_by",
+      "symbol": "ts://@example/web/src/wire.ts#missing",
+      "state": "live",
+      "analyzer": "deadset-ts"
+    }
+  ],
+  "stale_suppressions": [],
+  "declared_gaps": [],
+  "excluded_by_cgo": [],
+  "test_file_rules": [],
+  "type_error_skips": [],
+  "notes": [],
+  "unanswered_questions": [],
+  "conventions_applied": [],
+  "totals": {
+    "findings": 2,
+    "by_severity": {
+      "allow": 0,
+      "warn": 0,
+      "deny": 2
+    },
+    "deletable_lines": 1,
+    "suppressions_in_effect": 0,
+    "reasons_recorded": 0,
+    "stale_suppressions": 0,
+    "pending": 0,
+    "omitted": 0,
+    "withheld": {
+      "certain": 0,
+      "probable": 0,
+      "possible": 0
+    }
+  }
+}

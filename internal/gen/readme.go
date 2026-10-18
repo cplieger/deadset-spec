@@ -32,7 +32,7 @@ func readmeCounts(fsys fs.FS, out map[string][]byte) error {
 	if err != nil {
 		return err
 	}
-	var total, both, goOnly, tsOnly int
+	var total, both, goOnly, tsOnly, protoOnly int
 	for _, e := range entries {
 		if !e.IsDir() {
 			continue
@@ -53,11 +53,13 @@ func readmeCounts(fsys fs.FS, out map[string][]byte) error {
 			both++
 		case slices.Contains(fixture.Languages, "go"):
 			goOnly++
-		default:
+		case slices.Contains(fixture.Languages, "ts"):
 			tsOnly++
+		default:
+			protoOnly++
 		}
 	}
-	sentence := fmt.Sprintf("`corpus/` holds %d fixture projects. For each one, an `expect.json` file names in language-neutral terms what an analyzer must and must not report for each issue kind and each exemption class. Of these, %d apply to both languages, %d to Go only and %d to TypeScript only.", total, both, goOnly, tsOnly)
+	sentence := fmt.Sprintf("`corpus/` holds %d fixture projects. For each one, an `expect.json` file names in language-neutral terms what an analyzer must and must not report for each issue kind and each exemption class. Of these, %d apply to both languages, %d to Go only, %d to TypeScript only and %d to Protocol Buffers, which deadset's schema reader answers.", total, both, goOnly, tsOnly, protoOnly)
 	out[readmePath] = []byte(text[:start+len(countsOpen)] + sentence + text[end:])
 	return nil
 }

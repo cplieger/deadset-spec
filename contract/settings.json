@@ -56,8 +56,8 @@
     {
       "key": "analysis",
       "role": "section",
-      "owner": "product",
-      "read_by": ["go", "ts"],
+      "owner": "analysis",
+      "read_by": ["go", "ts", "proto"],
       "delivered": ["go", "ts"]
     },
     {
@@ -69,21 +69,21 @@
       "default": [],
       "option": "languages",
       "vocabulary": "languages",
-      "values": ["go", "ts"],
+      "values": ["go", "ts", "proto"],
       "value": {
         "type": "array",
         "uniqueItems": true,
         "items": {
           "type": "string",
-          "enum": ["go", "ts"]
+          "enum": ["go", "ts", "proto"]
         }
       }
     },
     {
       "key": "analysis.min_confidence",
       "role": "setting",
-      "owner": "analyzer",
-      "read_by": ["go", "ts"],
+      "owner": "analysis",
+      "read_by": ["go", "ts", "proto"],
       "delivered": ["go", "ts"],
       "default": "probable",
       "option": "min-confidence",
@@ -256,15 +256,15 @@
     {
       "key": "roots",
       "role": "section",
-      "owner": "analyzer",
-      "read_by": ["go", "ts"],
+      "owner": "analysis",
+      "read_by": ["go", "ts", "proto"],
       "delivered": ["go", "ts"]
     },
     {
       "key": "roots.patterns",
       "role": "setting",
-      "owner": "analyzer",
-      "read_by": ["go", "ts"],
+      "owner": "analysis",
+      "read_by": ["go", "ts", "proto"],
       "delivered": ["go", "ts"],
       "default": [],
       "value": {
@@ -279,12 +279,12 @@
     {
       "key": "severity",
       "role": "keyed",
-      "owner": "analyzer",
-      "read_by": ["go", "ts"],
+      "owner": "analysis",
+      "read_by": ["go", "ts", "proto"],
       "delivered": ["go", "ts"],
       "default": {},
       "vocabulary": "severity-keys",
-      "values": ["DS10", "DS1001", "DS1002", "DS1003", "DS1004", "DS1005", "DS1006", "DS11", "DS1101", "DS1102", "DS1103", "DS1104", "DS12", "DS1201", "DS1202", "DS1203", "DS13", "DS1301", "DS14", "DS1401", "DS1402", "DS1403", "DS1404", "DS1405", "DS1406", "DS15", "DS1501", "DS1502", "DS1503", "DS16", "DS1601", "DS1602", "DS17", "DS1701", "DS1702", "DS9001", "DS9002", "DS9005"],
+      "values": ["DS10", "DS1001", "DS1002", "DS1003", "DS1004", "DS1005", "DS1006", "DS11", "DS1101", "DS1102", "DS1103", "DS1104", "DS12", "DS1201", "DS1202", "DS1203", "DS13", "DS1301", "DS14", "DS1401", "DS1402", "DS1403", "DS1404", "DS1405", "DS1406", "DS15", "DS1501", "DS1502", "DS1503", "DS16", "DS1601", "DS1602", "DS17", "DS1701", "DS1702", "DS18", "DS1801", "DS1802", "DS1803", "DS1804", "DS1805", "DS9001", "DS9002", "DS9005"],
       "key_pattern": "^DS[0-9]{2}([0-9]{2})?$",
       "value": {
         "type": "string",
@@ -294,25 +294,25 @@
     {
       "key": "exemptions",
       "role": "section",
-      "owner": "analyzer",
-      "read_by": ["go", "ts"],
+      "owner": "analysis",
+      "read_by": ["go", "ts", "proto"],
       "delivered": ["go", "ts"]
     },
     {
       "key": "exemptions.disabled",
       "role": "setting",
-      "owner": "analyzer",
-      "read_by": ["go", "ts"],
+      "owner": "analysis",
+      "read_by": ["go", "ts", "proto"],
       "delivered": ["go", "ts"],
       "default": [],
       "vocabulary": "exemption-classes",
-      "values": ["interface-satisfaction", "encoding-reflection", "format-verb-contract", "errors-duck-typing", "enum-group", "generated-file", "linkname-cgo-asm-plugin", "template-field", "reflective-lookup", "decorator", "injection-container", "framework-lifecycle", "serialization-contract"],
+      "values": ["interface-satisfaction", "encoding-reflection", "format-verb-contract", "errors-duck-typing", "enum-group", "generated-file", "linkname-cgo-asm-plugin", "template-field", "reflective-lookup", "decorator", "injection-container", "framework-lifecycle", "serialization-contract", "schema-option", "schema-vendored", "schema-default-value"],
       "value": {
         "type": "array",
         "uniqueItems": true,
         "items": {
           "type": "string",
-          "enum": ["interface-satisfaction", "encoding-reflection", "format-verb-contract", "errors-duck-typing", "enum-group", "generated-file", "linkname-cgo-asm-plugin", "template-field", "reflective-lookup", "decorator", "injection-container", "framework-lifecycle", "serialization-contract"]
+          "enum": ["interface-satisfaction", "encoding-reflection", "format-verb-contract", "errors-duck-typing", "enum-group", "generated-file", "linkname-cgo-asm-plugin", "template-field", "reflective-lookup", "decorator", "injection-container", "framework-lifecycle", "serialization-contract", "schema-option", "schema-vendored", "schema-default-value"]
         }
       }
     },
@@ -431,7 +431,10 @@
               "properties": {
                 "name": {
                   "type": "string",
-                  "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$"
+                  "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$",
+                  "not": {
+                    "enum": ["deadset-proto"]
+                  }
                 },
                 "languages": {
                   "type": "array",
@@ -455,7 +458,10 @@
               "properties": {
                 "name": {
                   "type": "string",
-                  "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$"
+                  "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$",
+                  "not": {
+                    "enum": ["deadset-proto"]
+                  }
                 },
                 "languages": {
                   "type": "array",
@@ -818,10 +824,78 @@
       }
     },
     {
+      "key": "proto",
+      "role": "section",
+      "owner": "proto-analyzer",
+      "read_by": ["proto"],
+      "delivered": []
+    },
+    {
+      "key": "proto.closed",
+      "role": "setting",
+      "owner": "proto-analyzer",
+      "read_by": ["proto"],
+      "delivered": [],
+      "default": false,
+      "value": {
+        "type": "boolean"
+      }
+    },
+    {
+      "key": "proto.plugins",
+      "role": "setting",
+      "owner": "proto-analyzer",
+      "read_by": ["proto"],
+      "delivered": [],
+      "default": [],
+      "vocabulary": "proto-plugins",
+      "values": ["protoc-gen-go", "protoc-gen-gogo", "protoc-gen-go-grpc", "protoc-gen-connect-go", "protoc-gen-go-vtproto", "protoc-gen-grpc-gateway", "protoc-gen-es", "protoc-gen-connect-es", "ts-proto", "protoc-gen-js", "protoc-gen-grpc-web", "protobuf-ts", "ts-protoc-gen", "protoc-gen-openapiv2", "python", "java", "csharp", "rust", "ruby", "php", "cpp", "swift", "kotlin", "dart", "elixir", "objc", "other"],
+      "value": {
+        "type": "array",
+        "uniqueItems": true,
+        "items": {
+          "type": "string",
+          "enum": ["protoc-gen-go", "protoc-gen-gogo", "protoc-gen-go-grpc", "protoc-gen-connect-go", "protoc-gen-go-vtproto", "protoc-gen-grpc-gateway", "protoc-gen-es", "protoc-gen-connect-es", "ts-proto", "protoc-gen-js", "protoc-gen-grpc-web", "protobuf-ts", "ts-protoc-gen", "protoc-gen-openapiv2", "python", "java", "csharp", "rust", "ruby", "php", "cpp", "swift", "kotlin", "dart", "elixir", "objc", "other"]
+        }
+      }
+    },
+    {
+      "key": "proto.import_paths",
+      "role": "setting",
+      "owner": "proto-analyzer",
+      "read_by": ["proto"],
+      "delivered": [],
+      "default": [],
+      "value": {
+        "type": "array",
+        "uniqueItems": true,
+        "items": {
+          "type": "string",
+          "pattern": "^(?:\\.|(?:[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.\\.[^/\\x00-\\x1f\\x7f]+)(?:/(?:[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.\\.[^/\\x00-\\x1f\\x7f]+))*)$"
+        }
+      }
+    },
+    {
+      "key": "proto.vendored_paths",
+      "role": "setting",
+      "owner": "proto-analyzer",
+      "read_by": ["proto"],
+      "delivered": [],
+      "default": [],
+      "value": {
+        "type": "array",
+        "uniqueItems": true,
+        "items": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    {
       "key": "provenance",
       "role": "ignored",
-      "owner": "product",
-      "read_by": ["go", "ts"],
+      "owner": "analysis",
+      "read_by": ["go", "ts", "proto"],
       "delivered": ["go", "ts"],
       "key_pattern": "^[a-z][a-z_]*(\\.[A-Za-z0-9_]+)*$",
       "value": {

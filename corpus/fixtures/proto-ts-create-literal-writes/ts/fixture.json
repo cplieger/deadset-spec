@@ -1,0 +1,19 @@
+{
+  "symbols": {
+    "PingRequest.number": {
+      "file": "target/src/gen/v1/service_pb.ts",
+      "line": 22,
+      "ref": "ts://@example/target/src/gen/v1/service_pb.ts#PingRequest.number"
+    },
+    "PingRequest.text": {
+      "file": "target/src/gen/v1/service_pb.ts",
+      "line": 27,
+      "ref": "ts://@example/target/src/gen/v1/service_pb.ts#PingRequest.text"
+    },
+    "PingRequestSchema": {
+      "file": "target/src/gen/v1/service_pb.ts",
+      "line": 34,
+      "ref": "ts://@example/target/src/gen/v1/service_pb.ts#PingRequestSchema"
+    }
+  }
+}

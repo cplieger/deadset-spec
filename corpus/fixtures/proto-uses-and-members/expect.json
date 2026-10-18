@@ -1,0 +1,56 @@
+{
+  "name": "proto-uses-and-members",
+  "description": "A schema record lists the declarations it names as a type in uses, a map field's value type included, and its direct members and nested declarations in members: a message its fields and nested messages, an enum its values.",
+  "rules": ["schemas.2"],
+  "languages": ["proto"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "facts": [
+    {
+      "symbol": "Order",
+      "role": "schema",
+      "schema": "proto://v1#Order",
+      "state": "dead",
+      "report": "DS1801",
+      "members": [
+        "proto://v1#Order.items",
+        "proto://v1#Order.by_name",
+        "proto://v1#Order.status",
+        "proto://v1#Order.Line"
+      ]
+    },
+    {
+      "symbol": "Order.by_name",
+      "role": "schema",
+      "schema": "proto://v1#Order.by_name",
+      "state": "dead",
+      "report": "DS1802",
+      "uses": ["proto://v1#Item"]
+    },
+    {
+      "symbol": "Order.items",
+      "role": "schema",
+      "schema": "proto://v1#Order.items",
+      "state": "dead",
+      "report": "DS1802",
+      "uses": ["proto://v1#Item"]
+    },
+    {
+      "symbol": "Order.status",
+      "role": "schema",
+      "schema": "proto://v1#Order.status",
+      "state": "dead",
+      "report": "DS1802",
+      "uses": ["proto://v1#Status"]
+    },
+    {
+      "symbol": "Status",
+      "role": "schema",
+      "schema": "proto://v1#Status",
+      "state": "dead",
+      "report": "DS1801",
+      "members": ["proto://v1#Status.STATUS_UNSPECIFIED", "proto://v1#Status.STATUS_DONE"]
+    }
+  ],
+  "expect": []
+}

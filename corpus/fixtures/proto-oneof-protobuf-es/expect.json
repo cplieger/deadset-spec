@@ -1,0 +1,48 @@
+{
+  "name": "proto-oneof-protobuf-es",
+  "description": "A protobuf-es v2 oneof member is read where hand code tells it apart from its siblings: an access of value on the union narrowed by a comparison of case with the member's literal reads that member, and so do the clauses of a switch that falls through two case labels; a member only create's init literal names is written and stays unreferenced; and a read of the discriminant compared with no literal reads every member of its oneof.",
+  "rules": ["bindings.14", "references-ts.32"],
+  "pending": "references-ts.32: deadset-ts reads a oneof constituent by narrowing and by discriminant literals (J7).",
+  "languages": ["ts"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "facts": [
+    {
+      "symbol": "Outcome.ok",
+      "role": "consumer",
+      "schema": "proto://v1#Outcome.ok",
+      "state": "live"
+    },
+    {
+      "symbol": "Outcome.error",
+      "role": "consumer",
+      "schema": "proto://v1#Outcome.error",
+      "state": "live"
+    },
+    {
+      "symbol": "Outcome.pending",
+      "role": "consumer",
+      "schema": "proto://v1#Outcome.pending",
+      "state": "live"
+    },
+    {
+      "symbol": "Outcome.skipped",
+      "role": "consumer",
+      "schema": "proto://v1#Outcome.skipped",
+      "state": "unreferenced"
+    },
+    {
+      "symbol": "Probe.a",
+      "role": "consumer",
+      "schema": "proto://v1#Probe.a",
+      "state": "live"
+    },
+    {
+      "symbol": "Probe.b",
+      "role": "consumer",
+      "schema": "proto://v1#Probe.b",
+      "state": "live"
+    }
+  ],
+  "expect": []
+}

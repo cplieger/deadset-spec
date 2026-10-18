@@ -1,0 +1,30 @@
+{
+  "name": "proto-field-written-only",
+  "description": "A field hand code only writes, through a literal or an assignment, is unreferenced, while the literal keeps the message type's own consumer live.",
+  "rules": ["bindings.14"],
+  "pending": "bindings.14: deadset-go and deadset-ts read a field write as reaching nothing (GO5, J7).",
+  "languages": ["go", "ts"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "facts": [
+    {
+      "symbol": "PingRequest.number",
+      "role": "consumer",
+      "schema": "proto://v1#PingRequest.number",
+      "state": "unreferenced"
+    },
+    {
+      "symbol": "PingRequest.text",
+      "role": "consumer",
+      "schema": "proto://v1#PingRequest.text",
+      "state": "unreferenced"
+    },
+    {
+      "symbol": "PingRequest",
+      "role": "consumer",
+      "schema": "proto://v1#PingRequest",
+      "state": "live"
+    }
+  ],
+  "expect": []
+}

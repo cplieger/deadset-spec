@@ -13,6 +13,7 @@ import (
 
 	spec "github.com/cplieger/deadset-spec/v8"
 	"github.com/cplieger/deadset-spec/v8/corpus"
+	"github.com/cplieger/deadset-spec/v8/facts"
 )
 
 // updateVectors is the gate that rewrites every family's expected outputs from
@@ -156,7 +157,8 @@ func TestVectorCasesReproduceFromTheirInputs(t *testing.T) {
 // cliCaseProblems holds one command-line case to its layout: a case.json that
 // decodes strictly, names products the Contract's command-line surface lists and
 // an exit code of the table, and a tree holding every file it renames or makes
-// executable, each describe document of which a run of this contract admits.
+// executable, each describe document of which a run of this contract admits,
+// and each report and facts document of which the Contract's schemas admit.
 func cliCaseProblems(t *testing.T, fsys fs.FS, dir string) []string {
 	t.Helper()
 	at := path.Join("vectors/cli", dir)
@@ -200,8 +202,18 @@ func cliCaseProblems(t *testing.T, fsys fs.FS, dir string) []string {
 			rel = to
 		}
 		held[rel] = true
-		if path.Base(rel) == "describe.json" {
+		switch {
+		case path.Base(rel) == "describe.json":
 			problems = append(problems, describedProblems(t, fsys, p)...)
+		case strings.HasPrefix(rel, "bin/") && path.Base(rel) == "report.json":
+			problems = append(problems, writtenProblems(fsys, p, func(data []byte) []string { return validationErrors(reportSchemaPath, data) })...)
+		case strings.HasSuffix(rel, ".facts.json"):
+			problems = append(problems, writtenProblems(fsys, p, func(data []byte) []string {
+				if _, err := facts.Decode(data); err != nil {
+					return []string{err.Error()}
+				}
+				return nil
+			})...)
 		}
 		return nil
 	})
@@ -240,6 +252,20 @@ func describedProblems(t *testing.T, fsys fs.FS, file string) []string {
 		if !slices.Contains(accepted, version) {
 			problems = append(problems, file+": reads the schema version "+version+", which contract/contract.json does not list")
 		}
+	}
+	return problems
+}
+
+// writtenProblems is every refusal of a document a case's stub analyzer writes,
+// each naming the file.
+func writtenProblems(fsys fs.FS, file string, refusals func([]byte) []string) []string {
+	data, err := fs.ReadFile(fsys, file)
+	if err != nil {
+		return []string{err.Error()}
+	}
+	var problems []string
+	for _, line := range refusals(data) {
+		problems = append(problems, file+": "+line)
 	}
 	return problems
 }

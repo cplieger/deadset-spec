@@ -20,6 +20,7 @@ type pathMember struct {
 var pathMembers = []pathMember{
 	{schema: findingSchemaPath, at: "/" + findingPathDefPath + "/pattern"},
 	{schema: configSchemaPath, at: "/properties/analysis/properties/configurations/items/oneOf/1/properties/project/pattern"},
+	{schema: configSchemaPath, at: "/properties/proto/properties/import_paths/items/pattern", dot: true},
 	{schema: reportSchemaPath, at: "/properties/target/properties/root/pattern", dot: true},
 	{schema: reportSchemaPath, at: "/" + reportConfigurationProjectPath + "/properties/project/pattern"},
 	{schema: reportSchemaPath, at: "/" + reportNotBuiltProjectPath + "/properties/project/pattern"},
@@ -32,6 +33,8 @@ var pathMembers = []pathMember{
 	{schema: "corpus/conformance-results.schema.json", at: "/properties/fixtures/items/properties/unexpected/items/properties/file/pattern"},
 	{schema: "corpus/expect.schema.json", at: "/properties/notes/items/properties/path/pattern", dot: true},
 	{schema: "corpus/expect.schema.json", at: "/properties/conventions_applied/items/properties/manifest/pattern"},
+	{schema: "corpus/expect.schema.json", at: "/properties/generated/items/properties/path/pattern"},
+	{schema: "corpus/expect.schema.json", at: "/properties/generated/items/properties/schema_files/items/pattern"},
 	{schema: "corpus/fixture.schema.json", at: "/properties/symbols/additionalProperties/properties/file/pattern"},
 }
 

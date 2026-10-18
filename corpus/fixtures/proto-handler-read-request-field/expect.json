@@ -1,0 +1,32 @@
+{
+  "name": "proto-handler-read-request-field",
+  "description": "A request field only a handler reads is published live with via naming that handler's implementer record, because only the merge knows whether a client calls the RPC; the handler itself is a dead implementer, since the registration that converts it to the server interface is cut, and the field no handler reads is unreferenced.",
+  "rules": ["bindings.8", "bindings.16", "bindings.17", "references-go.10"],
+  "pending": "bindings.16: deadset-go searches from each dead implementer and publishes the consumers only those searches reach with via (GO5).",
+  "languages": ["go"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "facts": [
+    {
+      "symbol": "PingRequest.number",
+      "role": "consumer",
+      "schema": "proto://v1#PingRequest.number",
+      "state": "live",
+      "via": ["server.Ping"]
+    },
+    {
+      "symbol": "PingRequest.text",
+      "role": "consumer",
+      "schema": "proto://v1#PingRequest.text",
+      "state": "unreferenced"
+    },
+    {
+      "symbol": "server.Ping",
+      "role": "implementer",
+      "schema": "proto://v1#PingService.Ping",
+      "state": "dead",
+      "report": "DS1101"
+    }
+  ],
+  "expect": []
+}

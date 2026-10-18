@@ -1,0 +1,29 @@
+{
+  "symbols": {
+    "Item.number": {
+      "file": "target/src/gen/v1/envelope_pb.ts",
+      "line": 22,
+      "ref": "ts://@example/target/src/gen/v1/envelope_pb.ts#Item.number"
+    },
+    "Item.text": {
+      "file": "target/src/gen/v1/envelope_pb.ts",
+      "line": 27,
+      "ref": "ts://@example/target/src/gen/v1/envelope_pb.ts#Item.text"
+    },
+    "Envelope.item": {
+      "file": "target/src/gen/v1/envelope_pb.ts",
+      "line": 44,
+      "ref": "ts://@example/target/src/gen/v1/envelope_pb.ts#Envelope.item"
+    },
+    "Envelope.label": {
+      "file": "target/src/gen/v1/envelope_pb.ts",
+      "line": 49,
+      "ref": "ts://@example/target/src/gen/v1/envelope_pb.ts#Envelope.label"
+    },
+    "Other.number": {
+      "file": "target/src/gen/v1/envelope_pb.ts",
+      "line": 66,
+      "ref": "ts://@example/target/src/gen/v1/envelope_pb.ts#Other.number"
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "provider-named-like-in-process-reader-refused",
+  "description": "A repository configuration whose provider entry takes the name deadset-proto, the name of the schema reader inside deadset. The run is refused naming the entry's name, because every file a run writes for an analyzer is keyed by its name and the reader's files already carry that one.",
+  "products": ["deadset"],
+  "covers": ["provider-named-like-in-process-reader-refused"]
+}

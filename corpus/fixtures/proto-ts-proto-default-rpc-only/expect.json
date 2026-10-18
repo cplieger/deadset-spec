@@ -1,0 +1,28 @@
+{
+  "name": "proto-ts-proto-default-rpc-only",
+  "description": "A ts-proto file of the default option set that writes a service path binds its RPCs and nothing else: the service interface's method is a consumer of the RPC, the file is one fallback of scope types, published live, and the message interface is no consumer.",
+  "rules": ["bindings.7", "references-ts.31"],
+  "pending": "references-ts.31: deadset-ts publishes a ts-proto default file as RPC consumers and a types fallback (J4).",
+  "languages": ["ts"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "facts": [
+    {
+      "symbol": "PingService.Ping",
+      "role": "consumer",
+      "schema": "proto://v1#PingService.Ping"
+    },
+    {
+      "symbol": "ServiceFile",
+      "role": "fallback",
+      "state": "live",
+      "scope": "types"
+    },
+    {
+      "symbol": "PingRequest",
+      "role": "consumer",
+      "absent": true
+    }
+  ],
+  "expect": []
+}

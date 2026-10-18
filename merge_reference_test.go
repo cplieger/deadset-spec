@@ -18,6 +18,7 @@ import (
 
 	"github.com/cplieger/deadset-spec/v8"
 	"github.com/cplieger/deadset-spec/v8/corpus"
+	"github.com/cplieger/deadset-spec/v8/report"
 )
 
 // This file is the merge contract/grammar/merge.md states, run over each published case's
@@ -338,10 +339,10 @@ func sortByKey(records []*jsonValue, key func(*jsonValue) mergeKey) {
 
 // unionEntries carries every entry of the named array of every input once, ordered by the
 // named member and then by the compact encoding.
-func unionEntries(inputs []mergeInput, trace mergeTrace, array string, by ...string) *jsonValue {
+func unionEntries(inputs []mergeInput, trace mergeTrace, array string, extra []*jsonValue, by ...string) *jsonValue {
 	seen := map[string]bool{}
 	var out []*jsonValue
-	for _, in := range inputs {
+	for _, in := range append(slices.Clone(inputs), mergeInput{report: jsonObjectOf(array, jsonArrayOf(extra...))}) {
 		for _, entry := range in.report.get(array).items {
 			key := string(entry.compactBytes())
 			if !seen[key] {
@@ -375,6 +376,7 @@ func unionEntries(inputs []mergeInput, trace mergeTrace, array string, by ...str
 // it.
 type mergeInput struct {
 	report *jsonValue
+	facts  *jsonValue // the facts document beside the report, nil where the case holds none
 	file   string
 	name   string
 	digest string
@@ -386,6 +388,7 @@ type mergeCaller struct {
 	SchemaVersion   string            `json:"schema_version"`
 	ContractVersion string            `json:"contract_version"`
 	FailOn          string            `json:"fail_on"`
+	MinConfidence   string            `json:"min_confidence"`
 	Analyzer        struct {
 		Conformance json.RawMessage `json:"conformance"`
 		Name        string          `json:"name"`
@@ -505,28 +508,18 @@ func referenceMerge(inputs []mergeInput, accepted []string, caller mergeCaller, 
 	if len(inputs) > 1 && len(evaluations) == 0 {
 		trace.hit(traceNoEdges)
 	}
-	promoted, dropped, err := resolveEvaluations(evaluations, trace)
+	findings, promoted, joined, pass, err := resolveStep(inputs, evaluations, caller.MinConfidence, trace)
 	if err != nil {
 		return nil, mergeFailureExit, err
 	}
-	matched := matchedRoots(inputs)
-	for _, in := range inputs {
-		for _, f := range in.report.get("findings").items {
-			if pair := dropped[f.at("component", "id").str()]; pair != "" {
-				trace.hit(traceFallsWithPair + pair)
-				continue
-			}
-			if f.get("code").str() == unmatchedRootCode && matched[f.at("symbol", "ref").str()] {
-				trace.hit(traceRootMatchedElsewhere)
-				continue
-			}
-			findings = append(findings, carried(f, in.name, "details"))
+	factMembers := map[string][]*jsonValue{}
+	for _, p := range promoted {
+		if len(p.records) > 0 {
+			id := p.finding.at("component", "id").str()
+			factMembers[id] = append(factMembers[id], jsonObjectOf("ref", p.finding.at("symbol", "ref").clone(), "name", p.finding.at("symbol", "name").clone(), "position", p.finding.get("position").clone()))
 		}
 	}
-	for _, p := range promoted {
-		findings = append(findings, p.finding)
-	}
-	joined := unionComponents(findings, promoted, trace)
+	withheld := withheldBelow(inputs, evaluations, caller.MinConfidence, promoted, trace)
 	staleEdge := staleEdges(evaluations, caller.Analyzer.Name, kinds)
 	if len(staleEdge) > 0 {
 		trace.hit(traceEdgeAbsent)
@@ -540,18 +533,18 @@ func referenceMerge(inputs []mergeInput, accepted []string, caller mergeCaller, 
 	report := mergedEnvelope(inputs, accepted, caller, trace)
 	report.set("findings", jsonArrayOf(findings...), "")
 	report.set("edge_evaluations", keptEvaluations(evaluations), "")
-	if listed := listedComponents(inputs, findings, joined); listed != nil {
+	if listed := listedComponents(inputs, findings, joined, factMembers); listed != nil {
 		report.set("components", listed, "edge_evaluations")
 	}
 	report.set("stale_suppressions", jsonArrayOf(stale...), "")
 	report.set("declared_gaps", jsonArrayOf(gaps...), "")
 	report.set("excluded_by_cgo", unionStrings(inputs, "excluded_by_cgo"), "")
-	report.set("test_file_rules", unionEntries(inputs, trace, "test_file_rules", "rule"), "")
-	report.set("type_error_skips", unionEntries(inputs, trace, "type_error_skips", "path", "line"), "")
-	report.set("notes", unionEntries(inputs, trace, "notes", "kind", "path"), "")
-	report.set("unanswered_questions", unionEntries(inputs, trace, "unanswered_questions", "configuration"), "")
-	report.set("conventions_applied", unionEntries(inputs, trace, "conventions_applied", "name", "manifest"), "")
-	report.set("totals", mergedTotals(inputs, findings, stale, trace), "")
+	report.set("test_file_rules", unionEntries(inputs, trace, "test_file_rules", nil, "rule"), "")
+	report.set("type_error_skips", unionEntries(inputs, trace, "type_error_skips", nil, "path", "line"), "")
+	report.set("notes", unionEntries(inputs, trace, "notes", mergeNotes(inputs, pass, trace), "kind", "path"), "")
+	report.set("unanswered_questions", unionEntries(inputs, trace, "unanswered_questions", nil, "configuration"), "")
+	report.set("conventions_applied", unionEntries(inputs, trace, "conventions_applied", nil, "name", "manifest"), "")
+	report.set("totals", mergedTotals(inputs, findings, stale, withheld, trace), "")
 
 	exit := mergeCleanExit
 	failing := func(f *jsonValue) bool { return severityRank[f.get("severity").str()] >= severityRank[caller.FailOn] }
@@ -559,6 +552,74 @@ func referenceMerge(inputs []mergeInput, accepted []string, caller mergeCaller, 
 		exit = mergeFindingsExit
 	}
 	return report, exit, nil
+}
+
+// resolveStep runs step 4 under one minimum confidence: it returns every carried finding of no
+// dropped component and every promoted finding, rewritten by the component union, the promoted
+// findings, the surviving identifier of every component the union reached, and the binding pass.
+func resolveStep(inputs []mergeInput, evaluations []referenceEvaluation, minimum string, trace mergeTrace) ([]*jsonValue, []promotion, map[string]string, *bindingPass, error) {
+	pass := &bindingPass{all: bindingsOf(inputs), minimum: minimum}
+	promoted, dropped, err := resolveEvaluations(evaluations, pass, trace)
+	if err != nil {
+		return nil, nil, nil, nil, err
+	}
+	promoted = promoteBindings(promoted, pass, trace)
+	matched := matchedRoots(inputs)
+	var findings []*jsonValue
+	for _, in := range inputs {
+		for _, f := range in.report.get("findings").items {
+			if pair := dropped[f.at("component", "id").str()]; pair != "" {
+				if pair != droppedByBinding {
+					trace.hit(traceFallsWithPair + pair)
+				}
+				continue
+			}
+			if f.get("code").str() == unmatchedRootCode && matched[f.at("symbol", "ref").str()] {
+				trace.hit(traceRootMatchedElsewhere)
+				continue
+			}
+			findings = append(findings, carried(f, in.name, "details"))
+		}
+	}
+	pass.debits = pass.unpromoted(findings, evaluations, trace)
+	for _, p := range promoted {
+		findings = append(findings, p.finding)
+	}
+	joined := unionComponents(findings, promoted, pass, trace)
+	return findings, promoted, joined, pass, nil
+}
+
+// withheldBelow is binding rule 3's withheld count: for each confidence below the minimum, from
+// the highest, every finding a merge with that minimum promotes and no merge with a higher one
+// does, counted at that confidence.
+func withheldBelow(inputs []mergeInput, evaluations []referenceEvaluation, minimum string, promoted []promotion, trace mergeTrace) map[string]int {
+	counts := map[string]int{}
+	if minimum == "" {
+		return counts
+	}
+	shown := map[mergeKey]bool{}
+	for _, p := range promoted {
+		shown[findingKey(p.finding)] = true
+	}
+	for _, level := range withheldLevels {
+		if classRank[level] <= classRank[minimum] {
+			continue
+		}
+		_, lower, _, _, err := resolveStep(inputs, evaluations, level, nil)
+		if err != nil {
+			continue
+		}
+		for _, p := range lower {
+			if key := findingKey(p.finding); !shown[key] {
+				shown[key] = true
+				counts[level]++
+				if len(p.records) == 0 || p.records[0].record.role != roleSchema {
+					trace.hit(traceWithheldKeptLive)
+				}
+			}
+		}
+	}
+	return counts
 }
 
 // admit runs step 1 over every input and every two inputs, naming the first refusal.
@@ -575,6 +636,9 @@ func admit(inputs []mergeInput, accepted []string, trace mergeTrace) error {
 		if omitted := in.report.at("totals", "omitted").num(); omitted != 0 {
 			trace.hit(traceOmitted)
 			return fmt.Errorf("%s: %s omitted %d findings", in.file, in.name, omitted)
+		}
+		if err := admitFacts(in, trace); err != nil {
+			return err
 		}
 	}
 	if _, err := claimedKinds(inputs, trace); err != nil {
@@ -619,10 +683,15 @@ func oneNameTwice(in, other mergeInput) string {
 // one kind for all of them, and two reports claiming two kinds for one language.
 func claimedKinds(inputs []mergeInput, trace mergeTrace) (map[string]string, error) {
 	claims, from := map[string]string{}, map[string]string{}
+	takes := kindTakingLanguages()
 	for _, in := range inputs {
 		kind, perLanguage := in.report.at("target", "kind").str(), in.report.at("target", "language_kinds")
 		var languages []string
 		for _, l := range in.report.at("analyzer", "languages").items {
+			if !takes[l.str()] {
+				trace.hit(traceKindNotClaimed)
+				continue
+			}
 			languages = append(languages, l.str())
 		}
 		own := map[string]string{}
@@ -675,6 +744,10 @@ func contractLanguages() []string {
 func mergedTarget(inputs []mergeInput, kinds map[string]string, languageOrder []string, trace mergeTrace) *jsonValue {
 	first := inputs[0].report.get("target")
 	distinct := slices.Compact(slices.Sorted(maps.Values(kinds)))
+	if len(distinct) == 0 {
+		trace.hit(traceKindlessTarget)
+		return jsonObjectOf("root", first.get("root").clone(), "identity", first.get("identity").clone())
+	}
 	if len(distinct) == 1 {
 		return jsonObjectOf("kind", jsonText(distinct[0]), "root", first.get("root").clone(), "identity", first.get("identity").clone())
 	}
@@ -772,13 +845,14 @@ func carried(record *jsonValue, analyzer, before string) *jsonValue {
 type promotion struct {
 	finding     *jsonValue
 	evaluations []referenceEvaluation
+	records     []carrier
 }
 
 // resolveEvaluations runs step 4 over every dead evaluation: rule 1 in canonical order of the
 // findings, rules 2 and 4 to a fixpoint over the components they drop, then rule 3. It returns
 // the findings it promotes, in canonical order, and the components it drops, each with the
 // state of the pair that dropped it.
-func resolveEvaluations(evaluations []referenceEvaluation, trace mergeTrace) ([]promotion, map[string]string, error) {
+func resolveEvaluations(evaluations []referenceEvaluation, pass *bindingPass, trace mergeTrace) ([]promotion, map[string]string, error) {
 	var dead []referenceEvaluation
 	for _, e := range evaluations {
 		if e.state == mergeStateDead {
@@ -789,6 +863,8 @@ func resolveEvaluations(evaluations []referenceEvaluation, trace mergeTrace) ([]
 		return findingKey(carried(a.record.get("finding"), a.analyzer, "details")).compare(findingKey(carried(b.record.get("finding"), b.analyzer, "details")))
 	})
 	dropped, droppedOn := map[string]string{}, map[string]string{}
+	pass.dropped = dropped
+	pass.withhold(trace)
 	for _, e := range dead {
 		if strongestOther(e, evaluations, dropped) == "" {
 			trace.hit(traceUnresolvedEdge)
@@ -803,10 +879,16 @@ func resolveEvaluations(evaluations []referenceEvaluation, trace mergeTrace) ([]
 				grew = true
 			}
 		}
+		grew = pass.drop(trace) || grew
 	}
+	pass.blocked = pass.blockedKeys(dead)
 	var promoted []promotion
 	for _, e := range dead {
 		pair := dropped[e.component()]
+		if pair == "" && pass.blocked[findingKey(carried(e.record.get("finding"), e.analyzer, "details"))] {
+			trace.hit(traceBlockedAcross)
+			continue
+		}
 		if pair == "" {
 			trace.hit(tracePromotedDeadPair)
 			finding := carried(e.record.get("finding"), e.analyzer, "details")
@@ -816,7 +898,7 @@ func resolveEvaluations(evaluations []referenceEvaluation, trace mergeTrace) ([]
 				continue
 			}
 			promoted = append(promoted, promotion{finding: finding, evaluations: []referenceEvaluation{e}})
-		} else if e.edge != droppedOn[e.component()] && strongestOther(e, evaluations, nil) == mergeStateDead {
+		} else if pair != droppedByBinding && e.edge != droppedOn[e.component()] && strongestOther(e, evaluations, nil) == mergeStateDead {
 			trace.hit(traceDroppedBesideDeadPair + pair)
 		}
 	}
@@ -852,7 +934,7 @@ func strongestOther(e referenceEvaluation, evaluations []referenceEvaluation, dr
 // spans, and rewrites every finding whose component the union named, its confidence lowered to
 // the lowest of the joined component's roots that are not test-only. It returns the surviving
 // identifier of every component the union reached.
-func unionComponents(findings []*jsonValue, promoted []promotion, trace mergeTrace) map[string]string {
+func unionComponents(findings []*jsonValue, promoted []promotion, pass *bindingPass, trace mergeTrace) map[string]string {
 	parent := map[string]string{}
 	reached := map[string]int{}
 	var find func(id string) string
@@ -878,9 +960,35 @@ func unionComponents(findings []*jsonValue, promoted []promotion, trace mergeTra
 		}
 		return false
 	}
+	unite := func(id, other string) {
+		reach(other)
+		a, b := find(id), find(other)
+		if reached[b] < reached[a] {
+			a, b = b, a
+		}
+		if a != b {
+			parent[b] = a
+		}
+	}
+	promotedIDs := map[string]bool{}
+	for _, f := range promoted {
+		promotedIDs[f.finding.at("component", "id").str()] = true
+	}
 	for _, f := range promoted {
 		id := f.finding.at("component", "id").str()
 		reach(id)
+		for _, c := range f.records {
+			if c.carried && c.record.component() != id {
+				unite(id, c.record.component())
+			}
+			ids, member := pass.joins(c, promotedIDs, trace)
+			for _, other := range ids {
+				unite(id, other)
+			}
+			if member {
+				f.finding.get("component").set("root", jsonBoolOf(false), "")
+			}
+		}
 		for _, g := range promoted {
 			if !paired(f, g) {
 				continue
@@ -906,7 +1014,39 @@ func unionComponents(findings []*jsonValue, promoted []promotion, trace mergeTra
 	sums := map[string][2]int{}
 	for id := range parent {
 		root := find(id)
-		sums[root] = [2]int{sums[root][0] + counts[id][0], sums[root][1] + counts[id][1]}
+		debit := pass.debits[id]
+		sums[root] = [2]int{sums[root][0] + counts[id][0] - debit[0], sums[root][1] + counts[id][1] - debit[1]}
+	}
+	spans := map[string]map[string][]report.Position{}
+	for _, f := range promoted {
+		components := map[string]bool{}
+		for _, c := range f.records {
+			components[c.record.component()] = true
+		}
+		if len(f.records) > len(components) && len(components) > 0 && f.records[0].carried {
+			trace.hit(traceCarriedOneComponent)
+		}
+		if shared := len(components) - 1; shared > 0 && f.records[0].carried {
+			root := find(f.finding.at("component", "id").str())
+			sums[root] = [2]int{sums[root][0] - shared, sums[root][1]}
+			if spans[root] == nil {
+				spans[root] = map[string][]report.Position{}
+			}
+			for id := range components {
+				spans[root][id] = append(spans[root][id], positionOf(f.finding))
+			}
+		}
+	}
+	// A line the shared findings span counts once in the union, however many carrying
+	// components counted it.
+	for root, byComponent := range spans {
+		var all []report.Position
+		lines := 0
+		for _, positions := range byComponent {
+			lines += report.DistinctLines(positions)
+			all = append(all, positions...)
+		}
+		sums[root] = [2]int{sums[root][0], sums[root][1] - lines + report.DistinctLines(all)}
 	}
 	lowest := map[string]string{}
 	for _, f := range findings {
@@ -944,7 +1084,7 @@ func unionComponents(findings []*jsonValue, promoted []promotion, trace mergeTra
 // entry per component the ordered findings name, in the order of the first finding naming it,
 // holding every member an input lists under it or under a component the union joined into it,
 // once each, ordered by path, line, column and reference.
-func listedComponents(inputs []mergeInput, findings []*jsonValue, joined map[string]string) *jsonValue {
+func listedComponents(inputs []mergeInput, findings []*jsonValue, joined map[string]string, factMembers map[string][]*jsonValue) *jsonValue {
 	lists := false
 	members := map[string][]*jsonValue{}
 	for _, in := range inputs {
@@ -963,6 +1103,13 @@ func listedComponents(inputs []mergeInput, findings []*jsonValue, joined map[str
 	}
 	if !lists {
 		return nil
+	}
+	for _, id := range slices.Sorted(maps.Keys(factMembers)) {
+		at := id
+		if root, ok := joined[id]; ok {
+			at = root
+		}
+		members[at] = append(members[at], factMembers[id]...)
 	}
 	out := jsonArrayOf()
 	seen := map[string]bool{}
@@ -1169,8 +1316,8 @@ func unionByID(inputs []mergeInput, trace mergeTrace, path ...string) *jsonValue
 }
 
 // mergedTotals recomputes the counts over the merged arrays, summing the two that count records
-// no merged array holds.
-func mergedTotals(inputs []mergeInput, findings, stale []*jsonValue, trace mergeTrace) *jsonValue {
+// no merged array holds, the withheld counts with the binding pass's own.
+func mergedTotals(inputs []mergeInput, findings, stale []*jsonValue, bindingWithheld map[string]int, trace mergeTrace) *jsonValue {
 	severities := map[string]int{}
 	lines := map[string]int{}
 	for _, f := range findings {
@@ -1200,6 +1347,9 @@ func mergedTotals(inputs []mergeInput, findings, stale []*jsonValue, trace merge
 	}
 	if withholding > 1 {
 		trace.hit(traceWithheldSummed)
+	}
+	for level, n := range bindingWithheld {
+		withheld[level] += n
 	}
 	return jsonObjectOf(
 		"findings", jsonNumberOf(len(findings)),
@@ -1245,7 +1395,18 @@ func loadReferenceCase(fsys fs.FS, root, dir string) ([]mergeInput, []string, me
 		return nil, nil, caller, err
 	}
 	var inputs []mergeInput
+	factsOf := map[string]*jsonValue{}
 	for _, entry := range entries {
+		if prefix, isFacts := strings.CutSuffix(entry.Name(), factsSuffix); isFacts {
+			raw, err := fs.ReadFile(fsys, at+"/"+entry.Name())
+			if err != nil {
+				return nil, nil, caller, err
+			}
+			if factsOf[prefix+".json"], err = decodeJSONValue(raw); err != nil {
+				return nil, nil, caller, fmt.Errorf("decoding %s/%s: %w", mergeInputsDir, entry.Name(), err)
+			}
+			continue
+		}
 		raw, err := fs.ReadFile(fsys, at+"/"+entry.Name())
 		if err != nil {
 			return nil, nil, caller, err
@@ -1257,8 +1418,13 @@ func loadReferenceCase(fsys fs.FS, root, dir string) ([]mergeInput, []string, me
 		inputs = append(inputs, mergeInput{report: report, file: entry.Name(), name: report.at("analyzer", "name").str(), digest: caller.Digests[entry.Name()]})
 	}
 	files := make([]string, 0, len(inputs))
-	for _, in := range inputs {
-		files = append(files, in.file)
+	for i := range inputs {
+		files = append(files, inputs[i].file)
+		inputs[i].facts = factsOf[inputs[i].file]
+		delete(factsOf, inputs[i].file)
+	}
+	for file := range factsOf {
+		return nil, nil, caller, fmt.Errorf("the facts document of %s pairs with no input report", file)
 	}
 	if named := slices.Sorted(maps.Keys(caller.Digests)); !slices.Equal(named, files) {
 		return nil, nil, caller, fmt.Errorf("%s digests name %q, want one digest per input report %q", mergeCallerFile, named, files)

@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	spec "github.com/cplieger/deadset-spec/v8"
+	"github.com/cplieger/deadset-spec/v8/vocab"
 )
 
 // readSchema decodes one schema of a tree into the generic form its paths walk.
@@ -60,16 +61,12 @@ func enumAt(schema map[string]any, p string) []string {
 
 const findingSchemaPath = "contract/finding.schema.json"
 
-var languageNamePattern = regexp.MustCompile(`\b(Go|TypeScript)\b`)
-
-// languageNames are the words the symbol.kind description names a language by.
-var languageNames = map[string]string{"Go": "go", "TypeScript": "ts"}
-
-// subjectKindLanguages reads the language of each subject kind only one language
-// declares from the symbol.kind description of the finding schema, whose clauses
-// name each value once with its subject; a clause naming one language is that
-// language's kind.
-func subjectKindLanguages() (map[string]string, error) {
+// subjectKindLanguages reads, from the symbol.kind description of the finding
+// schema, the languages that declare each subject kind whose clause names a
+// language: a clause names a language by its contract/languages.json name, and
+// "either language" names Go and TypeScript. A kind whose clause names no
+// language is absent, because every language may name it.
+func subjectKindLanguages() (map[string][]string, error) {
 	schema, err := readSchema(spec.Contract, findingSchemaPath)
 	if err != nil {
 		return nil, err
@@ -81,7 +78,7 @@ func subjectKindLanguages() (map[string]string, error) {
 		return nil, fmt.Errorf("the %s symbol.kind description carries no %q", findingSchemaPath, lead)
 	}
 	vocabulary := enumAt(schema, "properties/symbol/properties/kind")
-	out := map[string]string{}
+	out := map[string][]string{}
 	seen := map[string]bool{}
 	for clause := range strings.SplitSeq(strings.TrimSuffix(list, "."), "; ") {
 		value, subject, ok := strings.Cut(clause, ", ")
@@ -89,8 +86,8 @@ func subjectKindLanguages() (map[string]string, error) {
 			return nil, fmt.Errorf("the %s symbol.kind clause %q names no value of the vocabulary once", findingSchemaPath, clause)
 		}
 		seen[value] = true
-		if language, single := clauseLanguage(subject); single {
-			out[value] = language
+		if languages := clauseLanguages(subject); len(languages) != 0 {
+			out[value] = languages
 		}
 	}
 	if missing := slices.IndexFunc(vocabulary, func(value string) bool { return !seen[value] }); missing >= 0 {
@@ -99,18 +96,17 @@ func subjectKindLanguages() (map[string]string, error) {
 	return out, nil
 }
 
-// clauseLanguage is the one language a clause's subject names, if it names one
-// and not "either language".
-func clauseLanguage(subject string) (string, bool) {
-	named := map[string]bool{}
-	for _, word := range languageNamePattern.FindAllString(subject, -1) {
-		named[languageNames[word]] = true
+// clauseLanguages are the languages a clause's subject names, in the registry's
+// order.
+func clauseLanguages(subject string) []string {
+	var languages []string
+	rows := vocab.LanguageRows()
+	for i := range rows {
+		row := &rows[i]
+		either := strings.Contains(subject, "either language") && (row.Language == "go" || row.Language == "ts")
+		if either || regexp.MustCompile(`\b`+regexp.QuoteMeta(row.Name)+`\b`).MatchString(subject) {
+			languages = append(languages, string(row.Language))
+		}
 	}
-	if len(named) != 1 || strings.Contains(subject, "either language") {
-		return "", false
-	}
-	for language := range named {
-		return language, true
-	}
-	return "", false
+	return languages
 }

@@ -1,0 +1,19 @@
+{
+  "symbols": {
+    "PingService": {
+      "file": "target/src/gen/v1/service_pb.ts",
+      "line": 57,
+      "ref": "ts://@example/target/src/gen/v1/service_pb.ts#PingService"
+    },
+    "PingService.ping": {
+      "file": "target/src/gen/v1/service_pb.ts",
+      "line": 61,
+      "ref": "ts://@example/target/src/gen/v1/service_pb.ts#PingService.ping"
+    },
+    "PingService.fail": {
+      "file": "target/src/gen/v1/service_pb.ts",
+      "line": 69,
+      "ref": "ts://@example/target/src/gen/v1/service_pb.ts#PingService.fail"
+    }
+  }
+}

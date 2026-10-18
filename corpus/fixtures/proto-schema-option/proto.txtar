@@ -1,0 +1,26 @@
+-- fixture.json --
+{
+  "symbols": {
+    "label": { "file": "target/v1/options.proto", "line": 8, "ref": "proto://v1#label" },
+    "unused_label": {
+      "file": "target/v1/options.proto",
+      "line": 9,
+      "ref": "proto://v1#unused_label"
+    }
+  }
+}
+-- target/v1/options.proto --
+syntax = "proto3";
+
+package v1;
+
+import "google/protobuf/descriptor.proto";
+
+extend google.protobuf.FieldOptions {
+  string label = 50000;
+  string unused_label = 50001;
+}
+
+message Ping {
+  int32 number = 1 [(v1.label) = "n"];
+}

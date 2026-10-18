@@ -1,0 +1,24 @@
+{
+  "name": "proto-schema-option",
+  "description": "An extension a schema option of the target names is live under schema-option, because a plugin or the runtime reads options, which no binding shows; an extension no option names is published dead like any field.",
+  "rules": ["schemas.6"],
+  "languages": ["proto"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "facts": [
+    {
+      "symbol": "label",
+      "role": "schema",
+      "schema": "proto://v1#label",
+      "state": "live"
+    },
+    {
+      "symbol": "unused_label",
+      "role": "schema",
+      "schema": "proto://v1#unused_label",
+      "state": "dead",
+      "report": "DS1802"
+    }
+  ],
+  "expect": []
+}

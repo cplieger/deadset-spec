@@ -1,0 +1,21 @@
+{
+  "facts_version": "1.0.0",
+  "analyzer": {
+    "name": "deadset-proto",
+    "version": "2.0.0"
+  },
+  "language": "proto",
+  "evaluated": true,
+  "generated": [],
+  "bindings": [
+    {
+      "role": "schema",
+      "symbol": "proto://v1#PingService.Ping",
+      "schema_file": "v1/service.proto",
+      "schema": "proto://v1#PingService.Ping",
+      "state": "live",
+      "uses": [],
+      "members": []
+    }
+  ]
+}

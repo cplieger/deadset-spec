@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package v1;
+
+message Outcome {
+  oneof result {
+    string ok = 1;
+    string error = 2;
+    string pending = 3;
+    int32 skipped = 4;
+  }
+}
+
+message Probe {
+  oneof value {
+    string a = 1;
+    string b = 2;
+  }
+}

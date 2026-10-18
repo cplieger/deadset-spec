@@ -1,0 +1,22 @@
+{
+  "description": "A target holding only Protocol Buffers schema files puts proto alone in scope, and a provider list no entry of which claims proto is no refusal, because the in-process reader reads it: the run plans no analyzer, ends with exit code 0, and writes a merged report whose target carries no kind and which holds an unbound-schema note for the schema file no analyzed language binds.",
+  "products": [
+    "deadset"
+  ],
+  "report_file": "@OUT@/run/report.json",
+  "argv": [
+    "analyze",
+    "--target=@TARGET@",
+    "--run-dir=@OUT@/run"
+  ],
+  "expect": {
+    "exit": 0,
+    "report": "valid",
+    "finding_paths": [],
+    "files_contain": {
+      "@OUT@/run/report.json": [
+        "\"kind\": \"unbound-schema\""
+      ]
+    }
+  }
+}

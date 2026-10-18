@@ -38,8 +38,13 @@
       "uniqueItems": true,
       "items": {
         "type": "string",
-        "enum": ["go", "ts"]
+        "enum": ["go", "ts", "proto"]
       }
+    },
+    "facts_version_written": {
+      "description": "The facts document version the analyzer writes when an invocation passes the facts option, a value of contract/contract.json facts_versions. Absent from an analyzer that writes no facts document, which an orchestrator with a schema language in scope refuses as an unadmitted analyzer.",
+      "type": "string",
+      "enum": ["1.0.0"]
     },
     "conformance": {
       "description": "The analyzer's recorded result over the conformance corpus, copied from the results document its corpus runner wrote, in the shape a report's analyzer.conformance takes. The member is absent where the analyzer records no conformance run, which an invoking product reads as no record and refuses as it refuses a result other than pass; it is never null.",

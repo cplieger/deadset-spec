@@ -1,0 +1,42 @@
+{
+  "name": "proto-hand-serializer-reads",
+  "description": "A hand call of a serializer that encodes a message reads every field reachable from the message type it encodes through field types, the fields of a nested message included, because the bytes it produces are observable; a message outside that closure that hand code only writes keeps its field unreferenced.",
+  "rules": ["bindings.15"],
+  "pending": "bindings.15: deadset-go and deadset-ts read the closure of a message a hand-written serializer call encodes (GO5, J7).",
+  "languages": ["go", "ts"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "facts": [
+    {
+      "symbol": "Item.number",
+      "role": "consumer",
+      "schema": "proto://v1#Item.number",
+      "state": "live"
+    },
+    {
+      "symbol": "Item.text",
+      "role": "consumer",
+      "schema": "proto://v1#Item.text",
+      "state": "live"
+    },
+    {
+      "symbol": "Envelope.item",
+      "role": "consumer",
+      "schema": "proto://v1#Envelope.item",
+      "state": "live"
+    },
+    {
+      "symbol": "Envelope.label",
+      "role": "consumer",
+      "schema": "proto://v1#Envelope.label",
+      "state": "live"
+    },
+    {
+      "symbol": "Other.number",
+      "role": "consumer",
+      "schema": "proto://v1#Other.number",
+      "state": "unreferenced"
+    }
+  ],
+  "expect": []
+}

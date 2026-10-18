@@ -100,6 +100,223 @@
       "violates": "an exemption class is switched off by a name contract/exemptions.json does not declare, so the switch names no class"
     },
     {
+      "file": "facts-cap-on-implementer.json",
+      "schema": "contract/facts.schema.json",
+      "constraint": "not",
+      "instance_path": "/bindings/2",
+      "violates": "an implementer record carries cap, which only a consumer states"
+    },
+    {
+      "file": "facts-carried-on-live-implementer.json",
+      "schema": "contract/facts.schema.json",
+      "constraint": "const",
+      "instance_path": "/bindings/2/state",
+      "violates": "a live implementer record carries findings, which only a dead implementer carries"
+    },
+    {
+      "file": "facts-consumer-in-proto.json",
+      "schema": "contract/facts.schema.json",
+      "constraint": "const",
+      "instance_path": "/bindings/0/role",
+      "violates": "the schema reader's document holds a consumer record, which only an analyzer writes"
+    },
+    {
+      "file": "facts-consumer-without-schema.json",
+      "schema": "contract/facts.schema.json",
+      "constraint": "required",
+      "instance_path": "/bindings/0",
+      "violates": "a consumer record names no schema declaration it binds"
+    },
+    {
+      "file": "facts-dead-without-finding.json",
+      "schema": "contract/facts.schema.json",
+      "constraint": "required",
+      "instance_path": "/bindings/2",
+      "violates": "a dead implementer record carries no finding"
+    },
+    {
+      "file": "facts-fallback-not-file.json",
+      "schema": "contract/facts.schema.json",
+      "constraint": "pattern",
+      "instance_path": "/bindings/2/symbol",
+      "violates": "a fallback record's symbol is not a generated file's own reference"
+    },
+    {
+      "file": "facts-fallback-unreferenced.json",
+      "schema": "contract/facts.schema.json",
+      "constraint": "const",
+      "instance_path": "/bindings/2/state",
+      "violates": "a fallback record is unreferenced, and a fallback holds its file live"
+    },
+    {
+      "file": "facts-finding-on-live.json",
+      "schema": "contract/facts.schema.json",
+      "constraint": "not",
+      "instance_path": "/bindings/0",
+      "violates": "a live schema record carries a finding, which only a dead record carries"
+    },
+    {
+      "file": "facts-generated-file-on-implementer.json",
+      "schema": "contract/facts.schema.json",
+      "constraint": "not",
+      "instance_path": "/bindings/2",
+      "violates": "an implementer record names a generated file, and an implementer is hand-written"
+    },
+    {
+      "file": "facts-generated-in-proto.json",
+      "schema": "contract/facts.schema.json",
+      "constraint": "maxItems",
+      "instance_path": "/generated",
+      "violates": "the schema reader's document lists a generated file, which only an analyzer recognises"
+    },
+    {
+      "file": "facts-generator-without-schema-files.json",
+      "schema": "contract/facts.schema.json",
+      "constraint": "required",
+      "instance_path": "/generated/1",
+      "violates": "a generated entry names a generator row and no schema files"
+    },
+    {
+      "file": "facts-go-tag-evidence.json",
+      "schema": "contract/facts.schema.json",
+      "constraint": "const",
+      "instance_path": "/generated/2/evidence",
+      "violates": "a Go document records a generated file by an @generated tag, and Go recognises a generated file by its header form only"
+    },
+    {
+      "file": "facts-missing-evaluated.json",
+      "schema": "contract/facts.schema.json",
+      "constraint": "required",
+      "instance_path": "",
+      "violates": "the document omits evaluated, so a reader cannot tell identity-only facts from decided ones"
+    },
+    {
+      "file": "facts-schema-file-dotdot.json",
+      "schema": "contract/facts.schema.json",
+      "constraint": "pattern",
+      "instance_path": "/bindings/0/schema_file",
+      "violates": "the schema file path climbs out of the target with a .. segment"
+    },
+    {
+      "file": "facts-schema-file-not-proto.json",
+      "schema": "contract/facts.schema.json",
+      "constraint": "pattern",
+      "instance_path": "/bindings/0/schema_file",
+      "violates": "the schema file path does not end in .proto"
+    },
+    {
+      "file": "facts-schema-files-without-generator.json",
+      "schema": "contract/facts.schema.json",
+      "constraint": "not",
+      "instance_path": "/generated/2",
+      "violates": "a generated entry names schema files without the generator row that read them"
+    },
+    {
+      "file": "facts-schema-ref-leading-dot.json",
+      "schema": "contract/facts.schema.json",
+      "constraint": "pattern",
+      "instance_path": "/bindings/0/schema",
+      "violates": "the schema reference's fragment opens with a full stop, which the proto declaration form refuses"
+    },
+    {
+      "file": "facts-schema-role-in-go.json",
+      "schema": "contract/facts.schema.json",
+      "constraint": "enum",
+      "instance_path": "/bindings/3/role",
+      "violates": "an analyzed language's document holds a schema record, which only a schema reader writes"
+    },
+    {
+      "file": "facts-schema-role-in-ts.json",
+      "schema": "contract/facts.schema.json",
+      "constraint": "enum",
+      "instance_path": "/bindings/3/role",
+      "violates": "an analyzed language's document holds a schema record, which only a schema reader writes"
+    },
+    {
+      "file": "facts-schema-state-unreferenced.json",
+      "schema": "contract/facts.schema.json",
+      "constraint": "enum",
+      "instance_path": "/bindings/0/state",
+      "violates": "a schema record is unreferenced, and a schema record is live or dead"
+    },
+    {
+      "file": "facts-schema-without-members.json",
+      "schema": "contract/facts.schema.json",
+      "constraint": "required",
+      "instance_path": "/bindings/0",
+      "violates": "a schema record omits members"
+    },
+    {
+      "file": "facts-schema-without-uses.json",
+      "schema": "contract/facts.schema.json",
+      "constraint": "required",
+      "instance_path": "/bindings/0",
+      "violates": "a schema record omits uses"
+    },
+    {
+      "file": "facts-scope-on-consumer.json",
+      "schema": "contract/facts.schema.json",
+      "constraint": "not",
+      "instance_path": "/bindings/1",
+      "violates": "a consumer record carries scope, which only a fallback states"
+    },
+    {
+      "file": "facts-state-when-unevaluated.json",
+      "schema": "contract/facts.schema.json",
+      "constraint": "not",
+      "instance_path": "/bindings/0",
+      "violates": "an identity-only document gives a consumer record a state"
+    },
+    {
+      "file": "facts-unevaluated-proto.json",
+      "schema": "contract/facts.schema.json",
+      "constraint": "const",
+      "instance_path": "/evaluated",
+      "violates": "the schema reader's document is identity-only, and a schema reader decides every record it writes"
+    },
+    {
+      "file": "facts-unknown-facts-version.json",
+      "schema": "contract/facts.schema.json",
+      "constraint": "enum",
+      "instance_path": "/facts_version",
+      "violates": "the facts version is not one contract/contract.json lists"
+    },
+    {
+      "file": "facts-unknown-generator-row.json",
+      "schema": "contract/facts.schema.json",
+      "constraint": "enum",
+      "instance_path": "/generated/1/generator/row",
+      "violates": "the generator row is not one contract/generators.json lists"
+    },
+    {
+      "file": "facts-unknown-language.json",
+      "schema": "contract/facts.schema.json",
+      "constraint": "enum",
+      "instance_path": "/language",
+      "violates": "the language is not one contract/languages.json lists"
+    },
+    {
+      "file": "facts-unknown-member.json",
+      "schema": "contract/facts.schema.json",
+      "constraint": "additionalProperties",
+      "instance_path": "/bindings/1",
+      "violates": "a binding record carries a member the facts schema does not define"
+    },
+    {
+      "file": "facts-uses-on-consumer.json",
+      "schema": "contract/facts.schema.json",
+      "constraint": "not",
+      "instance_path": "/bindings/1",
+      "violates": "a consumer record carries uses, which only a schema record states"
+    },
+    {
+      "file": "facts-via-on-unreferenced.json",
+      "schema": "contract/facts.schema.json",
+      "constraint": "const",
+      "instance_path": "/bindings/0/state",
+      "violates": "an unreferenced consumer record carries via, which only a live consumer states"
+    },
+    {
       "file": "finding-details-missing-for-code.json",
       "schema": "contract/report.schema.json",
       "constraint": "required",
@@ -170,6 +387,13 @@
       "violates": "a position column is zero, and a column is counted from one"
     },
     {
+      "file": "report-analyzed-without-kind.json",
+      "schema": "contract/report.schema.json",
+      "constraint": "required",
+      "instance_path": "/target",
+      "violates": "a report of an analyzed language omits the target kind"
+    },
+    {
       "file": "report-configuration-mixed-shape.json",
       "schema": "contract/report.schema.json",
       "constraint": "oneOf",
@@ -189,6 +413,13 @@
       "constraint": "enum",
       "instance_path": "/notes/0/kind",
       "violates": "the note's kind is outside the closed set of notes the report carries"
+    },
+    {
+      "file": "report-schema-language-with-kind.json",
+      "schema": "contract/report.schema.json",
+      "constraint": "not",
+      "instance_path": "/target",
+      "violates": "a report of schema languages alone states a target kind, which only a language that takes one states"
     },
     {
       "file": "report-type-error-skip-line-zero.json",

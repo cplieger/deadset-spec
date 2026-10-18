@@ -14,7 +14,7 @@ DS19 to DS89 are left for families not yet defined, and DS90 to DS99 hold the fi
 | [Too visible](kinds/too-visible.md) | `DS1500` to `DS1599` | It is used, but exposed more widely than its uses need. | `DS1501`, `DS1502`, `DS1503` |
 | [Files](kinds/files.md) | `DS1600` to `DS1699` | The file is never built or never imported. | `DS1601`, `DS1602` |
 | [Dependencies and module files](kinds/dependencies.md) | `DS1700` to `DS1799` | The declared dependency or module directive changes nothing. | `DS1701`, `DS1702` |
-| [Schemas](kinds/schemas.md) | `DS1800` to `DS1899` | A schema definition nothing generated from it uses. | reserved |
+| [Schemas](kinds/schemas.md) | `DS1800` to `DS1899` | A schema definition nothing generated from it uses. | `DS1801`, `DS1802`, `DS1803`, `DS1804`, `DS1805` |
 | [deadset configuration](kinds/configuration.md) | `DS9000` to `DS9099` | A suppression, root, declaration or edge deadset was given no longer matches anything. | `DS9001`, `DS9002`, `DS9003`, `DS9004`, `DS9005`, `DS9006` |
 
 ## The columns

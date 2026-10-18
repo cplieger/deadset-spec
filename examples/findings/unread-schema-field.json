@@ -1,0 +1,32 @@
+{
+  "code": "DS1802",
+  "kind": "unread-schema-field",
+  "language": "proto",
+  "position": { "path": "proto/v1/service.proto", "line": 42, "column": 10, "end_line": 42 },
+  "symbol": {
+    "ref": "proto://example.v1#PingRequest.trace_hint",
+    "kind": "field",
+    "name": "PingRequest.trace_hint",
+    "parent": "proto://example.v1#PingRequest",
+    "exported": true,
+    "size_lines": 1
+  },
+  "reachability_class": "probable",
+  "confidence": "probable",
+  "liveness_relation": "reference-counting",
+  "test_only": false,
+  "generated": false,
+  "component": {
+    "id": "deadset-proto/c-1",
+    "root": true,
+    "symbol_count": 1,
+    "deletable_lines": 1
+  },
+  "retained_by": [],
+  "configurations": [],
+  "consumers_loaded": [],
+  "fixability": "manual",
+  "severity": "deny",
+  "message": "schema field is read by no binding in any analyzed language",
+  "details": {}
+}

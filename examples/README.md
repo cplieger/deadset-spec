@@ -19,7 +19,7 @@ examples/
 
 ## findings/
 
-One document per family of the code space, named for the `kind` field it carries. The eight
+One document per family of the code space, named for the `kind` field it carries. The nine
 families are the live ranges of [`../contract/kinds.json`](../contract/kinds.json), so a family
 gains an example when it gains a kind, and every example carries the `details` its own code
 requires.
@@ -28,7 +28,7 @@ A finding here is a complete finding: every field
 [`../contract/finding.schema.json`](../contract/finding.schema.json) requires, the optional fields
 a real analyzer writes where the subject has them, and values drawn from the contract's
 vocabularies. The module and package paths are neutral: `example.com/app` for Go, `@example/app`
-for TypeScript.
+for TypeScript, `example.v1` for Protocol Buffers.
 
 ## reports/
 

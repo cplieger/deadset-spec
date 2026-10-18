@@ -202,7 +202,7 @@ func TestReportSchemaRequiredMembers(t *testing.T) {
 		},
 		{name: "analyzer", at: "properties/analyzer", want: []string{"name", "version", "languages", "schema_versions_accepted", "conformance"}},
 		{name: "conformance", at: reportConformancePath, want: []string{"corpus_version", "result", "digest"}},
-		{name: "target", at: "properties/target", want: []string{"kind", "root", "identity"}},
+		{name: "target", at: "properties/target", want: []string{"root", "identity"}},
 		{name: "configuration_platform", at: reportConfigurationPlatformPath, want: []string{"id", "os", "arch", "tags"}},
 		{name: "configuration_project", at: reportConfigurationProjectPath, want: []string{"id", "project"}},
 		{name: "configuration_not_built_platform", at: reportNotBuiltPlatformPath, want: []string{"id", "os", "arch", "tags", "error"}},
@@ -272,8 +272,8 @@ func TestReportSchemaVocabulariesAreTheContractVocabularies(t *testing.T) {
 	}
 
 	t.Run("target_language_kinds", func(t *testing.T) {
-		if got := propertyNames(schema, "properties/target/properties/language_kinds"); !slices.Equal(got, slices.Sorted(slices.Values(contractLanguages()))) {
-			t.Errorf("propertyNames(%s, language_kinds) = %v, want the languages %s declares, %v", reportSchemaPath, got, languagesPath, contractLanguages())
+		if got := propertyNames(schema, "properties/target/properties/language_kinds"); !slices.Equal(got, slices.Sorted(slices.Values(targetKindLanguages()))) {
+			t.Errorf("propertyNames(%s, language_kinds) = %v, want the languages %s declares taking a target kind, %v", reportSchemaPath, got, languagesPath, targetKindLanguages())
 		}
 	})
 
@@ -314,6 +314,9 @@ func TestReportSchemaTargetCarriesLanguageKindsExactlyWhenMixed(t *testing.T) {
 	target := objectAt(schema, "properties/target")
 	if got := reportConstAt(target, "if/properties/kind"); got != "mixed" {
 		t.Errorf("schema[target].if.properties.kind.const = %q, want %q", got, "mixed")
+	}
+	if got := requiredAt(target, "if"); !slices.Equal(got, []string{"kind"}) {
+		t.Errorf("schema[target].if.required = %v, want [kind], so a target with no kind takes the else branch", got)
 	}
 	if got := requiredAt(target, "then"); !slices.Equal(got, []string{"language_kinds"}) {
 		t.Errorf("schema[target].then.required = %v, want [language_kinds]", got)

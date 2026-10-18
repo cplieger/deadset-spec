@@ -1,0 +1,11 @@
+{
+  "name": "@connectrpc/connect",
+  "version": "2.1.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts"
+    }
+  }
+}

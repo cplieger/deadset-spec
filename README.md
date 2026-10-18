@@ -73,11 +73,11 @@ A kind enters the vocabulary only when it passes two tests. What it reports must
 
 ## The conformance corpus
 
-<!-- corpus-counts -->`corpus/` holds 422 fixture projects. For each one, an `expect.json` file names in language-neutral terms what an analyzer must and must not report for each issue kind and each exemption class. Of these, 55 apply to both languages, 138 to Go only and 229 to TypeScript only.<!-- /corpus-counts --> Every analyzer runs the corpus before each of its releases.
+<!-- corpus-counts -->`corpus/` holds 465 fixture projects. For each one, an `expect.json` file names in language-neutral terms what an analyzer must and must not report for each issue kind and each exemption class. Of these, 61 apply to both languages, 153 to Go only, 239 to TypeScript only and 12 to Protocol Buffers, which deadset's schema reader answers.<!-- /corpus-counts --> Every analyzer runs the corpus before each of its releases.
 
 An analyzer records each capability it does not implement as a declared gap in its committed `conformance.json`, and its runner writes `conformance-results.json`. Both follow the schemas in `corpus/`. An expectation that is neither answered nor declared fails the analyzer. Where two analyzers answer the same expectation, they must agree on the code, the confidence and what a suppression does. Before any analysis, the product that runs the analyzers, such as deadset, reads the describe document each analyzer prints about itself. It runs an analyzer only when that document records a corpus result of `pass`.
 
-A fixture ships one rendering per language. A Go rendering is one [`go.txtar`](https://pkg.go.dev/golang.org/x/tools/txtar) archive holding the target module and its consumer modules as sections, so no fixture file is ever compiled as part of this module. A TypeScript rendering is a directory of real files, because a package needs a real `package.json` on disk to resolve modules. Each rendering's `fixture.json` maps every name the expectation file uses to a file and a line in that rendering.
+A fixture ships one rendering per language. A Go rendering is one [`go.txtar`](https://pkg.go.dev/golang.org/x/tools/txtar) archive holding the target module and its consumer modules as sections, so no fixture file is ever compiled as part of this module. A Protocol Buffers rendering is one `proto.txtar` archive the same way, so no schema tool reads a fixture's `buf.yaml` or `buf.gen.yaml` as this repository's own. A TypeScript rendering is a directory of real files, because a package needs a real `package.json` on disk to resolve modules. Each rendering's `fixture.json` maps every name the expectation file uses to a file and a line in that rendering.
 
 ## Related projects
 

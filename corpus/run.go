@@ -19,16 +19,23 @@ import (
 	"sync"
 	"time"
 
+	"github.com/cplieger/deadset-spec/v8/facts"
 	"github.com/cplieger/deadset-spec/v8/suppress"
 	"github.com/cplieger/deadset-spec/v8/vocab"
 )
 
-// Analyzer is the command line of the product a run answers the corpus through.
-// Command is the program and any leading arguments; a verb and its options follow.
+// Analyzer is the product a run answers the corpus through. Command is the
+// program and any leading arguments; a verb and its options follow.
 type Analyzer struct {
-	Language string
-	Env      []string
-	Command  []string
+	// InProcess, where set, answers every invocation in this program in place of
+	// Command and Env, for a product linked into its caller, as a schema reader
+	// is: it runs the verb and options args holds, a relative path in them read
+	// from dir, writes the files a process would, and returns what the process
+	// would print and its exit code. An interrupted run sees ctx cancelled.
+	InProcess func(ctx context.Context, dir string, args []string) (stdout []byte, stderr string, code int)
+	Language  string
+	Env       []string
+	Command   []string
 }
 
 // Options narrow and shape one run.
@@ -56,6 +63,9 @@ const (
 // StaleGap is the message of a gap row whose expectation the analyzer answers as
 // written, which a product removes the declared gap for.
 const StaleGap = "the analyzer answers this expectation as written, and a declared gap covers it"
+
+// verbAnalyze is the verb every analysis of a fixture runs.
+const verbAnalyze = "analyze"
 
 // errFixture is a fixture the runner could not complete, recorded as its failure.
 var errFixture = errors.New("fixture")
@@ -160,6 +170,17 @@ func describe(ctx context.Context, analyzer Analyzer) (*GapProduct, error) {
 // non-empty interrupt is a path: once a file is there, the run is sent an
 // interrupt.
 func invoke(ctx context.Context, analyzer Analyzer, dir, interrupt string, args ...string) (stdout []byte, stderr string, code int, err error) {
+	if analyzer.InProcess != nil {
+		running, cancel := context.WithCancel(ctx)
+		defer cancel()
+		stop := make(chan struct{})
+		if interrupt != "" {
+			go interruptOnce(cancel, interrupt, stop)
+		}
+		stdout, stderr, code = analyzer.InProcess(running, dir, args)
+		close(stop)
+		return stdout, stderr, code, nil
+	}
 	argv := append(slices.Clone(analyzer.Command[1:]), args...)
 	cmd := exec.CommandContext(ctx, analyzer.Command[0], argv...) //nolint:gosec // the analyzer under test, named by its caller
 	cmd.Dir = dir
@@ -171,7 +192,7 @@ func invoke(ctx context.Context, analyzer Analyzer, dir, interrupt string, args 
 	}
 	stop := make(chan struct{})
 	if interrupt != "" {
-		go interruptOnce(cmd.Process, interrupt, stop)
+		go interruptOnce(func() { _ = cmd.Process.Signal(os.Interrupt) }, interrupt, stop) // a run that already ended is not interrupted
 	}
 	runErr := cmd.Wait()
 	close(stop)
@@ -184,9 +205,9 @@ func invoke(ctx context.Context, analyzer Analyzer, dir, interrupt string, args 
 	return out.Bytes(), errOut.String(), 0, nil
 }
 
-// interruptOnce sends process an interrupt once a file is at marker, unless stop
-// closes first.
-func interruptOnce(process *os.Process, marker string, stop <-chan struct{}) {
+// interruptOnce calls interrupt once a file is at marker, unless stop closes
+// first.
+func interruptOnce(interrupt func(), marker string, stop <-chan struct{}) {
 	tick := time.NewTicker(10 * time.Millisecond)
 	defer tick.Stop()
 	for {
@@ -195,7 +216,7 @@ func interruptOnce(process *os.Process, marker string, stop <-chan struct{}) {
 			return
 		case <-tick.C:
 			if _, err := os.Stat(marker); err == nil {
-				_ = process.Signal(os.Interrupt) // a run that already ended is not interrupted
+				interrupt()
 				return
 			}
 		}
@@ -225,6 +246,7 @@ type scratch struct {
 	dir       string
 	rendering string
 	scope     bool
+	facts     bool // the first analysis is asked for a facts document
 }
 
 func (r *runner) answerFixture(ctx context.Context, fixture *Fixture) FixtureResult {
@@ -249,7 +271,7 @@ func (r *runner) answer(ctx context.Context, fixture *Fixture) (FixtureResult, e
 		return FixtureResult{}, err
 	}
 	defer os.RemoveAll(dir)
-	sites, err := Resolve(expect, &rendering.Manifest)
+	sites, err := Resolve(expect, r.analyzer.Language, &rendering.Manifest)
 	if err != nil {
 		return FixtureResult{}, fixtureError("%v", err)
 	}
@@ -261,6 +283,7 @@ func (r *runner) answer(ctx context.Context, fixture *Fixture) (FixtureResult, e
 	if expect.SetupFailure != nil {
 		return r.setupFixture(ctx, at, fixture.Name, expect.SetupFailure)
 	}
+	at.facts = len(expect.Facts) > 0 || len(expect.Generated) > 0
 	first, err := r.analyze(ctx, at, "first", slices.ContainsFunc(expect.Expect, func(row Row) bool { return row.Report == ReportNone }))
 	if err != nil {
 		return FixtureResult{}, err
@@ -324,6 +347,7 @@ func (r *runner) fixtureResult(fixture *Fixture, sites map[string]Site, first *a
 	var messages []string
 	for _, message := range []string{
 		edgeDifferences(expect, manifest, first.report),
+		factsDifferences(expect, manifest, r.analyzer.Language, first.facts),
 		notBuiltDifference(manifest, first.report),
 		skipDifferences(expect, manifest, first.report, coversFixture(gaps, fixture.Name, typeErrorCap)),
 		noteDifferences(expect, first.report),
@@ -434,6 +458,9 @@ func configOf(expect *Expectation, manifest *Manifest, language string) ([]byte,
 	if len(expect.EntryFiles) > 0 {
 		section["entry_files"] = expect.EntryFiles
 	}
+	if len(expect.ImportPaths) > 0 {
+		section["import_paths"] = expect.ImportPaths
+	}
 	if len(expect.DisabledConventions) > 0 {
 		section["disabled_conventions"] = expect.DisabledConventions
 	}
@@ -542,10 +569,12 @@ func (at *scratch) options() []string {
 	return args
 }
 
-// analysis is what one analysis of the rendering answered: its report and the
-// classes the retained-symbol listing names at each site.
+// analysis is what one analysis of the rendering answered: its report, its
+// facts document where it was asked for one, and the classes the
+// retained-symbol listing names at each site.
 type analysis struct {
 	report   *wireReport
+	facts    *facts.Document
 	retained map[Site][]string
 }
 
@@ -553,7 +582,7 @@ type analysis struct {
 // print-retained verb where withRetained asks for the listing.
 func (r *runner) analyze(ctx context.Context, at *scratch, phase string, withRetained bool) (*analysis, error) {
 	held := &analysis{report: &wireReport{}, retained: map[Site][]string{}}
-	if err := r.report(ctx, at, phase, held.report); err != nil {
+	if err := r.report(ctx, at, phase, held); err != nil {
 		return nil, err
 	}
 	if !withRetained {
@@ -573,10 +602,18 @@ func (r *runner) analyze(ctx context.Context, at *scratch, phase string, withRet
 }
 
 // report runs the analyze verb and decodes the report it wrote, held to the
-// report schema.
-func (r *runner) report(ctx context.Context, at *scratch, phase string, into *wireReport) error {
+// report schema, and, in the first analysis of a fixture naming facts, the
+// facts document it wrote, held to the facts schema, and the report and exit
+// code to those of an analysis without --facts.
+func (r *runner) report(ctx context.Context, at *scratch, phase string, into *analysis) error {
 	name := filepath.Join(at.dir, phase+".report.json")
-	_, stderr, code, err := invoke(ctx, r.analyzer, at.dir, "", append([]string{"analyze"}, append(at.options(), "--report="+name)...)...)
+	args := append([]string{verbAnalyze}, append(at.options(), "--report="+name)...)
+	asked := at.facts && phase == "first"
+	factsName := filepath.Join(at.dir, phase+".facts.json")
+	if asked {
+		args = append(args, "--facts="+factsName)
+	}
+	_, stderr, code, err := invoke(ctx, r.analyzer, at.dir, "", args...)
 	if err != nil {
 		return err
 	}
@@ -587,11 +624,41 @@ func (r *runner) report(ctx context.Context, at *scratch, phase string, into *wi
 	if err != nil {
 		return fixtureError("the %s analysis wrote no report: %v", phase, err)
 	}
-	if err := ValidateReport(data); err != nil {
-		return fixtureError("the %s report does not meet the report schema: %v", phase, err)
+	written := data
+	if invalid := ValidateReport(data); invalid != nil {
+		return fixtureError("the %s report does not meet the report schema: %v", phase, invalid)
 	}
-	if err := json.Unmarshal(data, into); err != nil {
-		return fixtureError("the %s report: %v", phase, err)
+	if undecoded := json.Unmarshal(data, into.report); undecoded != nil {
+		return fixtureError("the %s report: %v", phase, undecoded)
+	}
+	if !asked {
+		return nil
+	}
+	if data, err = os.ReadFile(factsName); err != nil {
+		return fixtureError("the %s analysis wrote no facts document: %v", phase, err)
+	}
+	if into.facts, err = facts.Decode(data); err != nil {
+		return fixtureError("the %s facts document: %v", phase, err)
+	}
+	return r.sameWithoutFacts(ctx, at, written, code)
+}
+
+// sameWithoutFacts runs the analyze verb once more without --facts and holds
+// its report and exit code to those the run with it gave.
+func (r *runner) sameWithoutFacts(ctx context.Context, at *scratch, written []byte, code int) error {
+	name := filepath.Join(at.dir, "without-facts.report.json")
+	_, _, plainCode, err := invoke(ctx, r.analyzer, at.dir, "", append([]string{verbAnalyze}, append(at.options(), "--report="+name)...)...)
+	if err != nil {
+		return err
+	}
+	plain, err := os.ReadFile(name)
+	switch {
+	case err != nil:
+		return fixtureError("the analysis without --facts wrote no report: %v", err)
+	case plainCode != code:
+		return fixtureError("the analysis exited %d with --facts and %d without it", code, plainCode)
+	case !bytes.Equal(plain, written):
+		return fixtureError("the report written with --facts differs from the one written without it")
 	}
 	return nil
 }
@@ -638,7 +705,7 @@ func positionSite(position string) (Site, error) {
 // setupFixture answers a fixture whose run must end with a setup failure.
 func (r *runner) setupFixture(ctx context.Context, at *scratch, name string, want *SetupFailure) (FixtureResult, error) {
 	report := filepath.Join(at.dir, "first.report.json")
-	_, stderr, code, err := invoke(ctx, r.analyzer, at.dir, "", append([]string{"analyze"}, append(at.options(), "--report="+report)...)...)
+	_, stderr, code, err := invoke(ctx, r.analyzer, at.dir, "", append([]string{verbAnalyze}, append(at.options(), "--report="+report)...)...)
 	if err != nil {
 		return FixtureResult{}, err
 	}

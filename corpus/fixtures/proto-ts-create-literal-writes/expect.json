@@ -1,0 +1,30 @@
+{
+  "name": "proto-ts-create-literal-writes",
+  "description": "The init literal of a create call writes the fields it names and reads none, so both fields stay unreferenced, while naming the message's Schema constant keeps that constant's consumer live.",
+  "rules": ["bindings.14", "references-ts.33"],
+  "pending": "bindings.14: deadset-ts reads the properties of create's init literal, through its optional parameter's non-nullable type, as writes (J7).",
+  "languages": ["ts"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "facts": [
+    {
+      "symbol": "PingRequest.number",
+      "role": "consumer",
+      "schema": "proto://v1#PingRequest.number",
+      "state": "unreferenced"
+    },
+    {
+      "symbol": "PingRequest.text",
+      "role": "consumer",
+      "schema": "proto://v1#PingRequest.text",
+      "state": "unreferenced"
+    },
+    {
+      "symbol": "PingRequestSchema",
+      "role": "consumer",
+      "schema": "proto://v1#PingRequest",
+      "state": "live"
+    }
+  ],
+  "expect": []
+}

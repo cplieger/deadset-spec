@@ -1,0 +1,63 @@
+{
+  "schema_version": "9.0.0",
+  "contract_version": "8.0.0",
+  "analyzer": {
+    "name": "deadset-proto",
+    "version": "2.0.0",
+    "languages": ["proto"],
+    "schema_versions_accepted": ["9.0.0"],
+    "conformance": {
+      "corpus_version": "6.0.0",
+      "result": "pass",
+      "digest": "sha256:5f0c3a1e9b7d2c4486a0e1f3b5d7c9e2a4f6b8d0c2e4a6f8b0d2c4e6a8f0b2d4"
+    }
+  },
+  "target": {
+    "root": ".",
+    "identity": "example.com/app",
+    "kind": "application"
+  },
+  "configurations": [],
+  "configurations_not_built": [],
+  "consumers": {
+    "declared": 0,
+    "loaded": [],
+    "unavailable": []
+  },
+  "findings": [],
+  "edge_evaluations": [],
+  "stale_suppressions": [],
+  "declared_gaps": [],
+  "excluded_by_cgo": [],
+  "test_file_rules": [],
+  "type_error_skips": [],
+  "notes": [
+    {
+      "kind": "unresolved-import",
+      "path": "proto/v1/service.proto",
+      "key": "proto.import_paths",
+      "message": "the import google/api/annotations.proto names no file of the import roots; name its root in proto.import_paths"
+    }
+  ],
+  "unanswered_questions": [],
+  "conventions_applied": [],
+  "totals": {
+    "findings": 0,
+    "by_severity": {
+      "allow": 0,
+      "warn": 0,
+      "deny": 0
+    },
+    "deletable_lines": 0,
+    "suppressions_in_effect": 0,
+    "reasons_recorded": 0,
+    "stale_suppressions": 0,
+    "pending": 0,
+    "omitted": 0,
+    "withheld": {
+      "certain": 0,
+      "probable": 0,
+      "possible": 0
+    }
+  }
+}

@@ -1644,7 +1644,7 @@
             "test_only": false
           },
           "ruleId": "DS9005",
-          "ruleIndex": 31
+          "ruleIndex": 36
         }
       ],
       "tool": {
@@ -2243,6 +2243,116 @@
               },
               "shortDescription": {
                 "text": "A replace directive whose target module is absent from the build list, the one case in which the directive is exactly a no-op."
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "A schema message or enum that no binding in any analyzed language references, that no live schema declaration uses, and none of whose members is live."
+              },
+              "help": {
+                "text": "A schema message or enum that no binding in any analyzed language references, that no live schema declaration uses, and none of whose members is live."
+              },
+              "id": "DS1801",
+              "name": "unused-schema-type",
+              "properties": {
+                "precision": "very-high",
+                "problem": {
+                  "severity": "error"
+                }
+              },
+              "shortDescription": {
+                "text": "A schema message or enum that no binding in any analyzed language references, that no live schema declaration uses, and none of whose members is live."
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "A schema field that no binding of it reads in any analyzed language: a field, a oneof member, a map field, a group field or an extension. A write is no read, because a field only written carries information no reader receives. Generated transport's encoding of it is no read, and a hand-code serializer's encoding is."
+              },
+              "help": {
+                "text": "A schema field that no binding of it reads in any analyzed language: a field, a oneof member, a map field, a group field or an extension. A write is no read, because a field only written carries information no reader receives. Generated transport's encoding of it is no read, and a hand-code serializer's encoding is."
+              },
+              "id": "DS1802",
+              "name": "unread-schema-field",
+              "properties": {
+                "precision": "very-high",
+                "problem": {
+                  "severity": "error"
+                }
+              },
+              "shortDescription": {
+                "text": "A schema field that no binding of it reads in any analyzed language: a field, a oneof member, a map field, a group field or an extension."
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "A schema enum value that no binding names, of an enum whose name conversion no hand code reaches. A value that shares its number with another is never reported."
+              },
+              "help": {
+                "text": "A schema enum value that no binding names, of an enum whose name conversion no hand code reaches. A value that shares its number with another is never reported."
+              },
+              "id": "DS1803",
+              "name": "unused-schema-enum-value",
+              "properties": {
+                "precision": "very-high",
+                "problem": {
+                  "severity": "error"
+                }
+              },
+              "shortDescription": {
+                "text": "A schema enum value that no binding names, of an enum whose name conversion no hand code reaches."
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "A schema service none of whose operations any client binding calls and none of whose service bindings hand code uses other than through a registration form. Its operations fall with it."
+              },
+              "help": {
+                "text": "A schema service none of whose operations any client binding calls and none of whose service bindings hand code uses other than through a registration form. Its operations fall with it."
+              },
+              "id": "DS1804",
+              "name": "unused-schema-service",
+              "properties": {
+                "precision": "very-high",
+                "problem": {
+                  "severity": "error"
+                }
+              },
+              "shortDescription": {
+                "text": "A schema service none of whose operations any client binding calls and none of whose service bindings hand code uses other than through a registration form."
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "A schema operation that no client binding in any analyzed language calls. Each hand-written method implementing it that nothing else keeps falls in this finding's component, under the code its own references select."
+              },
+              "help": {
+                "text": "A schema operation that no client binding in any analyzed language calls. Each hand-written method implementing it that nothing else keeps falls in this finding's component, under the code its own references select."
+              },
+              "id": "DS1805",
+              "name": "uncalled-schema-operation",
+              "properties": {
+                "precision": "very-high",
+                "problem": {
+                  "severity": "warning"
+                }
+              },
+              "shortDescription": {
+                "text": "A schema operation that no client binding in any analyzed language calls."
               }
             },
             {

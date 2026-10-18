@@ -59,6 +59,9 @@ func TestDecodeReadsEveryMergeVectorBackByteForByte(t *testing.T) {
 	names := append(glob(t, spec.Vectors, "vectors/merge/*/inputs/*.json"),
 		glob(t, spec.Vectors, "vectors/merge/*/expected.json")...)
 	for _, name := range names {
+		if strings.HasSuffix(name, ".facts.json") {
+			continue
+		}
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 

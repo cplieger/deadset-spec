@@ -88,8 +88,11 @@ func TestEveryLanguageRowHoldsItsClosedValues(t *testing.T) {
 			if row.Name == "" {
 				t.Errorf("%s name is empty, want how a sentence names the language", row.Language)
 			}
-			if row.IdentitySource["file"] == "" || row.IdentitySource["field"] == "" {
-				t.Errorf("%s identity_source = %v, want a file and a field", row.Language, row.IdentitySource)
+			switch {
+			case row.Kind == "analyzed" && (row.IdentitySource["file"] == "" || row.IdentitySource["field"] == ""):
+				t.Errorf("%s identity_source = %v, want a file and a field on an analyzed row", row.Language, row.IdentitySource)
+			case row.Kind == "schema" && row.IdentitySource != nil:
+				t.Errorf("%s identity_source = %v, want none on a schema row", row.Language, row.IdentitySource)
 			}
 		})
 	}

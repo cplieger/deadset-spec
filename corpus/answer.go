@@ -15,6 +15,7 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/cplieger/deadset-spec/v8/facts"
 	"github.com/cplieger/deadset-spec/v8/suppress"
 	"github.com/cplieger/deadset-spec/v8/vocab"
 )
@@ -620,6 +621,166 @@ func skipDifferences(expect *Expectation, manifest *Manifest, report *wireReport
 	}
 	return strings.Join(held, "; ")
 }
+
+// factsDifferences is every way the facts document answers the fixture's facts
+// and generated entries for one language's rendering differently: no or several
+// records of an entry's role and subject, a record an absent entry names, a
+// record whose schema, state, via, cap or pending finding is another, or a
+// generated entry one side lists and the other does not.
+func factsDifferences(expect *Expectation, manifest *Manifest, language string, doc *facts.Document) string {
+	if doc == nil {
+		return ""
+	}
+	var held []string
+	for i := range expect.Facts {
+		if !expect.Facts[i].appliesTo(language) {
+			continue
+		}
+		if message := factDifference(&expect.Facts[i], manifest, doc); message != "" {
+			held = append(held, message)
+		}
+	}
+	if message := generatedDifferences(expect.Generated, doc.Generated); message != "" {
+		held = append(held, message)
+	}
+	return strings.Join(held, "; ")
+}
+
+// generatedDifferences compares the generated entries as sets of whole entries;
+// a fixture naming none compares nothing.
+func generatedDifferences(want, got []facts.Generated) string {
+	if len(want) == 0 {
+		return ""
+	}
+	wanted, listed := generatedSpellings(want), generatedSpellings(got)
+	var held []string
+	for _, one := range wanted {
+		if !slices.Contains(listed, one) {
+			held = append(held, "want the generated entry "+one)
+		}
+	}
+	for _, one := range listed {
+		if !slices.Contains(wanted, one) {
+			held = append(held, "the generated entry "+one+", which no entry names")
+		}
+	}
+	return strings.Join(held, "; ")
+}
+
+func generatedSpellings(entries []facts.Generated) []string {
+	spelled := make([]string, 0, len(entries))
+	for _, one := range entries {
+		text := fmt.Sprintf("%s:%d %s %q", one.Path, one.Line, one.Evidence, one.Detail)
+		if one.Generator != nil {
+			text += fmt.Sprintf(" by %s %s from %v", one.Generator.Row, one.Generator.Version, one.SchemaFiles)
+		}
+		spelled = append(spelled, text)
+	}
+	return spelled
+}
+
+// recordsOf is every record of a role about one symbol.
+func recordsOf(doc *facts.Document, role, ref string) []*facts.Binding {
+	var records []*facts.Binding
+	for i := range doc.Bindings {
+		if one := &doc.Bindings[i]; string(one.Role) == role && one.Symbol == ref {
+			records = append(records, one)
+		}
+	}
+	return records
+}
+
+func factDifference(want *FactRow, manifest *Manifest, doc *facts.Document) string {
+	named := want.Role + " record of " + want.Symbol
+	records := recordsOf(doc, want.Role, manifest.Symbols[want.Symbol].Ref)
+	switch {
+	case want.Absent && len(records) != 0:
+		return fmt.Sprintf("want no %s, got %d", named, len(records))
+	case want.Absent:
+		return ""
+	case len(records) != 1:
+		return fmt.Sprintf("want exactly one %s, got %d", named, len(records))
+	}
+	got := records[0]
+	via := make([]string, 0, len(want.Via))
+	for _, name := range want.Via {
+		via = append(via, manifest.Symbols[name].Ref)
+	}
+	var held []string
+	for _, member := range []struct{ name, want, got string }{
+		{"schema", want.Schema, got.Schema},
+		{"state", want.State, string(got.State)},
+		{"cap", want.Cap, string(got.Cap)},
+		{"generated_file", wantGenerated(want, manifest), gotGenerated(got)},
+		{"scope", want.Scope, string(got.Scope)},
+		{"via", setOf(via), setOf(got.Via)},
+		{"uses", setOf(want.Uses), setOf(got.Uses)},
+		{"members", setOf(want.Members), setOf(got.Members)},
+		{"carried", setOf(wantCarried(want, manifest)), setOf(gotCarried(got))},
+	} {
+		if member.want != member.got {
+			held = append(held, fmt.Sprintf("%s %s want %q got %q", named, member.name, member.want, member.got))
+		}
+	}
+	if want.Report != "" {
+		at := manifest.Symbols[want.Symbol]
+		site := Site{File: at.File, Line: *at.Line}.String()
+		switch found := got.Finding; {
+		case found == nil:
+			held = append(held, fmt.Sprintf("%s finding want %s at %s got none", named, want.Report, site))
+		case string(found.Code) != want.Report || wirePosition{Path: found.Position.Path, Line: found.Position.Line}.site().String() != site:
+			held = append(held, fmt.Sprintf("%s finding want %s at %s got %s at %s", named, want.Report, site, found.Code,
+				wirePosition{Path: found.Position.Path, Line: found.Position.Line}.site()))
+		}
+	}
+	return strings.Join(held, "; ")
+}
+
+// wantGenerated is the fixture path of the generated entry a record must name:
+// the entry's, else, for a consumer or a fallback, the file its subject is
+// declared in.
+func wantGenerated(want *FactRow, manifest *Manifest) string {
+	if want.GeneratedFile != "" || (want.Role != string(facts.RoleConsumer) && want.Role != string(facts.RoleFallback)) {
+		return want.GeneratedFile
+	}
+	return manifest.Symbols[want.Symbol].File
+}
+
+// gotGenerated is a record's generated entry as a fixture path.
+func gotGenerated(got *facts.Binding) string {
+	if got.GeneratedFile == "" {
+		return ""
+	}
+	return wirePosition{Path: got.GeneratedFile}.site().File
+}
+
+// wantCarried and gotCarried spell each carried finding as its code, its
+// subject's reference and its site.
+func wantCarried(want *FactRow, manifest *Manifest) []string {
+	out := make([]string, 0, len(want.Carried))
+	for _, c := range want.Carried {
+		at := manifest.Symbols[c.Symbol]
+		line := 0
+		if at.Line != nil {
+			line = *at.Line
+		}
+		out = append(out, c.Report+"|"+at.Ref+"|"+Site{File: at.File, Line: line}.String())
+	}
+	return out
+}
+
+func gotCarried(got *facts.Binding) []string {
+	out := make([]string, 0, len(got.Carried))
+	for i := range got.Carried {
+		c := &got.Carried[i]
+		out = append(out, string(c.Code)+"|"+c.Symbol.Ref+"|"+wirePosition{Path: c.Position.Path, Line: c.Position.Line}.site().String())
+	}
+	return out
+}
+
+// setOf spells a list as its sorted members, so two lists holding the same
+// members in another order compare equal.
+func setOf(list []string) string { return strings.Join(slices.Sorted(slices.Values(list)), " ") }
 
 // noteDifferences is every way the report's notes differ from the fixture's.
 func noteDifferences(expect *Expectation, report *wireReport) string {

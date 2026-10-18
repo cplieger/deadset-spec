@@ -1,0 +1,103 @@
+{
+  "schema_version": "9.0.0",
+  "contract_version": "8.0.0",
+  "analyzer": {
+    "name": "deadset-proto",
+    "version": "2.0.0",
+    "languages": [
+      "proto"
+    ],
+    "schema_versions_accepted": [
+      "9.0.0"
+    ],
+    "conformance": {
+      "corpus_version": "6.0.0",
+      "result": "pass",
+      "digest": "sha256:60cbbbcb8d27840a23ccbde76b6ebd08902bfbbb0f996cf361ea8af9fe90e480"
+    }
+  },
+  "target": {
+    "root": ".",
+    "identity": "example.com/app"
+  },
+  "configurations": [],
+  "configurations_not_built": [],
+  "consumers": {
+    "declared": 0,
+    "loaded": [],
+    "unavailable": []
+  },
+  "findings": [],
+  "edge_evaluations": [
+    {
+      "edge": "wire/ping-number",
+      "side": "provides",
+      "symbol": "proto://v1#PingRequest.number",
+      "state": "dead",
+      "finding": {
+        "code": "DS1802",
+        "kind": "unread-schema-field",
+        "language": "proto",
+        "position": {
+          "path": "proto/v1/service.proto",
+          "line": 6,
+          "column": 3,
+          "end_line": 6
+        },
+        "symbol": {
+          "ref": "proto://v1#PingRequest.number",
+          "kind": "field",
+          "name": "PingRequest.number",
+          "parent": "proto://v1#PingRequest",
+          "exported": true,
+          "size_lines": 1
+        },
+        "reachability_class": "probable",
+        "confidence": "probable",
+        "liveness_relation": "reference-counting",
+        "test_only": false,
+        "generated": false,
+        "component": {
+          "id": "deadset-proto/c-1",
+          "root": true,
+          "symbol_count": 1,
+          "deletable_lines": 1
+        },
+        "retained_by": [],
+        "configurations": [],
+        "consumers_loaded": [],
+        "fixability": "manual",
+        "severity": "deny",
+        "message": "schema field is read by no binding in any analyzed language",
+        "details": {}
+      }
+    }
+  ],
+  "stale_suppressions": [],
+  "declared_gaps": [],
+  "excluded_by_cgo": [],
+  "test_file_rules": [],
+  "type_error_skips": [],
+  "notes": [],
+  "unanswered_questions": [],
+  "conventions_applied": [],
+  "totals": {
+    "findings": 0,
+    "by_severity": {
+      "allow": 0,
+      "warn": 0,
+      "deny": 0
+    },
+    "deletable_lines": 0,
+    "suppressions_in_effect": 0,
+    "reasons_recorded": 0,
+    "stale_suppressions": 0,
+    "pending": 1,
+    "omitted": 0,
+    "withheld": {
+      "certain": 0,
+      "probable": 0,
+      "possible": 0
+    }
+  }
+}

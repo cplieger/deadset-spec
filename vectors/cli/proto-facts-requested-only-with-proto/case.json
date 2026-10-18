@@ -1,0 +1,24 @@
+{
+  "description": "An analyzer is handed --facts only when a schema language is in scope: a Go target holding no schema file runs its analyzer without the option, whose describe document names a facts version, and the run ends with exit code 0 as it would without facts.",
+  "products": [
+    "deadset"
+  ],
+  "rename": {
+    "go.mod.txt": "go.mod",
+    "main.go.txt": "main.go"
+  },
+  "executables": [
+    "bin/analyzer"
+  ],
+  "report_file": "@OUT@/run/report.json",
+  "argv": [
+    "analyze",
+    "--target=@TARGET@",
+    "--run-dir=@OUT@/run"
+  ],
+  "expect": {
+    "exit": 0,
+    "report": "valid",
+    "finding_paths": []
+  }
+}

@@ -1,0 +1,565 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "deadset facts document",
+  "description": "What one language's analysis knows about schema-generated code: the generated files it recognised and, per generated or implementing declaration, which schema declaration it binds and how hand code uses it. An analyzer writes it only when asked with --facts, and its report is the same with and without it. grammar/analysis/schemas.md, grammar/analysis/bindings.md and grammar/merge.md state every rule, and facts.Validate checks the order, uniqueness and cross-reference rules no keyword here states.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["facts_version", "analyzer", "language", "evaluated", "generated", "bindings"],
+  "properties": {
+    "facts_version": {
+      "description": "The shape this document is written to, a value of contract.json facts_versions.",
+      "type": "string",
+      "enum": ["1.0.0"]
+    },
+    "analyzer": {
+      "description": "The writer, whose name and version equal the paired report's analyzer.name and analyzer.version.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$"
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "language": {
+      "description": "The one language these facts are about.",
+      "type": "string",
+      "enum": ["go", "ts", "proto"]
+    },
+    "evaluated": {
+      "description": "true when every consumer and implementer record carries a state every rule that can change it computed; false when the writer publishes identities only, and no consumer or implementer carries state, via, cap, finding or carried.",
+      "type": "boolean"
+    },
+    "generated": {
+      "description": "One entry per generated file the analysis recognised, ordered by path bytewise, path unique.",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/generated"
+      }
+    },
+    "bindings": {
+      "description": "The binding records, ordered by schema_file, then schema (absent read as the empty string), then role, then symbol, each bytewise; the tuple of role, symbol, schema_file and schema is unique.",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/binding"
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "language": {
+            "enum": ["proto"]
+          }
+        },
+        "required": ["language"]
+      },
+      "then": {
+        "properties": {
+          "evaluated": {
+            "const": true
+          },
+          "generated": {
+            "maxItems": 0
+          },
+          "bindings": {
+            "items": {
+              "properties": {
+                "role": {
+                  "const": "schema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "bindings": {
+            "items": {
+              "properties": {
+                "role": {
+                  "enum": ["consumer", "implementer", "fallback"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "language": {
+            "const": "go"
+          }
+        },
+        "required": ["language"]
+      },
+      "then": {
+        "properties": {
+          "generated": {
+            "items": {
+              "properties": {
+                "evidence": {
+                  "const": "header"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "evaluated": {
+            "const": false
+          }
+        },
+        "required": ["evaluated"]
+      },
+      "then": {
+        "properties": {
+          "bindings": {
+            "items": {
+              "if": {
+                "properties": {
+                  "role": {
+                    "enum": ["consumer", "implementer"]
+                  }
+                }
+              },
+              "then": {
+                "not": {
+                  "anyOf": [
+                    {
+                      "required": ["state"]
+                    },
+                    {
+                      "required": ["via"]
+                    },
+                    {
+                      "required": ["cap"]
+                    },
+                    {
+                      "required": ["finding"]
+                    },
+                    {
+                      "required": ["carried"]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "evaluated": {
+            "const": true
+          }
+        },
+        "required": ["evaluated"]
+      },
+      "then": {
+        "properties": {
+          "bindings": {
+            "items": {
+              "required": ["state"]
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "proto_declaration": {
+      "description": "A Protocol Buffers declaration reference, the proto declaration form of contract/grammar/symbol-ref.md.",
+      "type": "string",
+      "pattern": "^proto://(?:\\.|[A-Za-z_][A-Za-z0-9_]*(?:\\.[A-Za-z_][A-Za-z0-9_]*)*)#[A-Za-z_][A-Za-z0-9_]*(?:\\.[A-Za-z_][A-Za-z0-9_]*)*$"
+    },
+    "schema_file": {
+      "description": "A schema file's import path.",
+      "allOf": [
+        {
+          "$ref": "finding.schema.json#/$defs/relative_path"
+        },
+        {
+          "pattern": "\\.proto$"
+        }
+      ]
+    },
+    "generated": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "line", "evidence", "detail"],
+      "properties": {
+        "path": {
+          "description": "The generated file, relative to the target root.",
+          "$ref": "finding.schema.json#/$defs/relative_path"
+        },
+        "line": {
+          "description": "The 1-based line of the comment line that marks the file: for notice the first line either word of the notice is on; 1 for convention.",
+          "type": "integer",
+          "minimum": 1
+        },
+        "evidence": {
+          "description": "header: the Go generated-file header form. tag: an @generated tag. notice: a do-not-edit notice, or a first comment naming its generator. convention: a convention row's generated directory.",
+          "enum": ["header", "tag", "notice", "convention"]
+        },
+        "detail": {
+          "description": "The text of the comment line at line, or the convention row's name.",
+          "type": "string",
+          "minLength": 1
+        },
+        "generator": {
+          "description": "The contract/generators.json row the output matches and the version the output states. Absent when no row recognises the file.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["row"],
+          "properties": {
+            "row": {
+              "type": "string",
+              "enum": ["protoc-gen-go-1", "protoc-gen-go-1-fallback", "protoc-gen-go-legacy", "protoc-gen-gogo", "protoc-gen-go-grpc-1", "protoc-gen-connect-go-1", "protoc-gen-connect-go-2", "protoc-gen-go-vtproto", "protoc-gen-grpc-gateway-2", "protoc-gen-go-grpc-unsupported", "protoc-gen-go-grpc-1-fallback", "protoc-gen-es-2", "protoc-gen-es-2-fallback", "protoc-gen-es-1", "protoc-gen-connect-es-1", "ts-proto-2-output-schema", "ts-proto-2", "ts-proto-2-types", "ts-proto-2-fallback", "protoc-gen-js", "protoc-gen-grpc-web", "protobuf-ts", "ts-protoc-gen", "protoc-gen-es-unsupported"]
+            },
+            "version": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "schema_files": {
+          "description": "The schema files the output names as its sources, unique, bytewise ordered, empty when it names none; present exactly with generator.",
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/schema_file"
+          }
+        }
+      },
+      "if": {
+        "required": ["generator"]
+      },
+      "then": {
+        "required": ["schema_files"]
+      },
+      "else": {
+        "not": {
+          "required": ["schema_files"]
+        }
+      }
+    },
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role", "symbol", "schema_file"],
+      "properties": {
+        "role": {
+          "description": "schema: a schema reader's declaration. consumer: a generated declaration a schema declaration became. implementer: a hand-written method implementing an RPC. fallback: a generated file whose declarations bind only as a whole.",
+          "enum": ["schema", "consumer", "implementer", "fallback"]
+        },
+        "symbol": {
+          "description": "The declaration the record is about, in the document language's scheme: the schema declaration for schema, the generated declaration for consumer, the hand-written method for implementer, the generated file's own reference for fallback.",
+          "$ref": "finding.schema.json#/$defs/symbol_reference"
+        },
+        "schema_file": {
+          "$ref": "#/$defs/schema_file"
+        },
+        "schema": {
+          "description": "The schema declaration bound; equal to symbol for schema.",
+          "$ref": "#/$defs/proto_declaration"
+        },
+        "generated_file": {
+          "description": "The generated entry the record was read from, one that has a generator.",
+          "$ref": "finding.schema.json#/$defs/relative_path"
+        },
+        "scope": {
+          "description": "What a fallback holds: all its file's schema declarations, or only types and fields.",
+          "enum": ["all", "types"]
+        },
+        "state": {
+          "description": "schema: live or dead. consumer: live or unreferenced. implementer: live or dead. fallback: live.",
+          "enum": ["live", "dead", "unreferenced"]
+        },
+        "via": {
+          "description": "The implementer records of this document the state depends on, unique, bytewise ordered, never the record's own symbol.",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "finding.schema.json#/$defs/symbol_reference"
+          }
+        },
+        "cap": {
+          "description": "Hand-code evidence that lowers the schema finding to possible.",
+          "enum": ["persistence", "descriptor-exposure"]
+        },
+        "finding": {
+          "description": "The pending finding of a dead record, its symbol.ref the record's symbol.",
+          "$ref": "finding.schema.json"
+        },
+        "carried": {
+          "description": "The findings only this dead implementer's search reaches, each in finding's component.",
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "finding.schema.json"
+          }
+        },
+        "uses": {
+          "description": "The declarations a schema declaration names as a type, unique, bytewise ordered.",
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/proto_declaration"
+          }
+        },
+        "members": {
+          "description": "A schema declaration's direct members and nested declarations, unique, bytewise ordered.",
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/proto_declaration"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "role": {
+                "const": "schema"
+              }
+            }
+          },
+          "then": {
+            "required": ["schema", "state", "uses", "members"],
+            "properties": {
+              "state": {
+                "enum": ["live", "dead"]
+              }
+            },
+            "not": {
+              "anyOf": [
+                {
+                  "required": ["generated_file"]
+                },
+                {
+                  "required": ["scope"]
+                },
+                {
+                  "required": ["via"]
+                },
+                {
+                  "required": ["cap"]
+                },
+                {
+                  "required": ["carried"]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "role": {
+                "const": "consumer"
+              }
+            }
+          },
+          "then": {
+            "required": ["schema", "generated_file"],
+            "properties": {
+              "state": {
+                "enum": ["live", "unreferenced"]
+              }
+            },
+            "not": {
+              "anyOf": [
+                {
+                  "required": ["scope"]
+                },
+                {
+                  "required": ["finding"]
+                },
+                {
+                  "required": ["carried"]
+                },
+                {
+                  "required": ["uses"]
+                },
+                {
+                  "required": ["members"]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "role": {
+                "const": "implementer"
+              }
+            }
+          },
+          "then": {
+            "required": ["schema"],
+            "properties": {
+              "state": {
+                "enum": ["live", "dead"]
+              }
+            },
+            "not": {
+              "anyOf": [
+                {
+                  "required": ["generated_file"]
+                },
+                {
+                  "required": ["scope"]
+                },
+                {
+                  "required": ["cap"]
+                },
+                {
+                  "required": ["uses"]
+                },
+                {
+                  "required": ["members"]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "role": {
+                "const": "fallback"
+              }
+            }
+          },
+          "then": {
+            "required": ["generated_file", "scope", "state"],
+            "properties": {
+              "state": {
+                "const": "live"
+              },
+              "symbol": {
+                "description": "The generated file's own reference: the :file form in go, the module (the empty fragment) in ts.",
+                "pattern": "(?::file|#)$"
+              }
+            },
+            "not": {
+              "anyOf": [
+                {
+                  "required": ["schema"]
+                },
+                {
+                  "required": ["via"]
+                },
+                {
+                  "required": ["cap"]
+                },
+                {
+                  "required": ["finding"]
+                },
+                {
+                  "required": ["carried"]
+                },
+                {
+                  "required": ["uses"]
+                },
+                {
+                  "required": ["members"]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "dead"
+              }
+            },
+            "required": ["state"]
+          },
+          "then": {
+            "required": ["finding"]
+          },
+          "else": {
+            "not": {
+              "required": ["finding"]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "role": {
+                "const": "consumer"
+              }
+            },
+            "required": ["via"]
+          },
+          "then": {
+            "properties": {
+              "state": {
+                "const": "live"
+              }
+            },
+            "required": ["state"]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "role": {
+                "const": "implementer"
+              }
+            },
+            "required": ["via"]
+          },
+          "then": {
+            "properties": {
+              "state": {
+                "const": "dead"
+              }
+            },
+            "required": ["state"]
+          }
+        },
+        {
+          "if": {
+            "required": ["carried"]
+          },
+          "then": {
+            "properties": {
+              "role": {
+                "const": "implementer"
+              },
+              "state": {
+                "const": "dead"
+              }
+            },
+            "required": ["state"]
+          }
+        }
+      ]
+    }
+  }
+}

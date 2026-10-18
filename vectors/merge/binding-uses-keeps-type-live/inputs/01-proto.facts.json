@@ -1,0 +1,69 @@
+{
+  "facts_version": "1.0.0",
+  "analyzer": {
+    "name": "deadset-proto",
+    "version": "2.0.0"
+  },
+  "language": "proto",
+  "evaluated": true,
+  "generated": [],
+  "bindings": [
+    {
+      "role": "schema",
+      "symbol": "proto://v1#PingRequest.status",
+      "schema_file": "v1/service.proto",
+      "schema": "proto://v1#PingRequest.status",
+      "state": "live",
+      "uses": [
+        "proto://v1#Status"
+      ],
+      "members": []
+    },
+    {
+      "role": "schema",
+      "symbol": "proto://v1#Status",
+      "schema_file": "v1/service.proto",
+      "schema": "proto://v1#Status",
+      "state": "dead",
+      "finding": {
+        "code": "DS1801",
+        "kind": "unused-schema-type",
+        "language": "proto",
+        "position": {
+          "path": "proto/v1/service.proto",
+          "line": 15,
+          "column": 3,
+          "end_line": 15
+        },
+        "symbol": {
+          "ref": "proto://v1#Status",
+          "kind": "enum",
+          "name": "Status",
+          "parent": "proto://v1#",
+          "exported": true,
+          "size_lines": 1
+        },
+        "reachability_class": "probable",
+        "confidence": "probable",
+        "liveness_relation": "reference-counting",
+        "test_only": false,
+        "generated": false,
+        "component": {
+          "id": "deadset-proto/c-1",
+          "root": true,
+          "symbol_count": 1,
+          "deletable_lines": 1
+        },
+        "retained_by": [],
+        "configurations": [],
+        "consumers_loaded": [],
+        "fixability": "deletable",
+        "severity": "deny",
+        "message": "schema type is used by no binding in any analyzed language",
+        "details": {}
+      },
+      "uses": [],
+      "members": []
+    }
+  ]
+}

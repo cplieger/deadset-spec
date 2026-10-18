@@ -1,0 +1,12 @@
+-- fixture.json --
+{
+  "symbols": {}
+}
+-- target/v1/ping.proto --
+syntax = "proto3";
+
+package v1;
+
+message Ping {
+  int32 number = 1;
+}

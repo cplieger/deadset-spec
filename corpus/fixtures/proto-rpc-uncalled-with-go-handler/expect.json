@@ -1,0 +1,38 @@
+{
+  "name": "proto-rpc-uncalled-with-go-handler",
+  "description": "An RPC with a gRPC handler and a Connect handler and no client call has two dead implementers, one per handler, each carrying the pending finding of its method, and the client method of each runtime is unreferenced.",
+  "rules": ["bindings.8", "bindings.17", "references-go.10", "references-go.11"],
+  "pending": "bindings.17: deadset-go publishes a dead implementer for each handler of an RPC the carrier sweep does not reach (GO5).",
+  "languages": ["go"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "facts": [
+    {
+      "symbol": "GrpcClient.Ping",
+      "role": "consumer",
+      "schema": "proto://v1#PingService.Ping",
+      "state": "unreferenced"
+    },
+    {
+      "symbol": "ConnectClient.Ping",
+      "role": "consumer",
+      "schema": "proto://v1#PingService.Ping",
+      "state": "unreferenced"
+    },
+    {
+      "symbol": "grpcServer.Ping",
+      "role": "implementer",
+      "schema": "proto://v1#PingService.Ping",
+      "state": "dead",
+      "report": "DS1101"
+    },
+    {
+      "symbol": "connectServer.Ping",
+      "role": "implementer",
+      "schema": "proto://v1#PingService.Ping",
+      "state": "dead",
+      "report": "DS1101"
+    }
+  ],
+  "expect": []
+}

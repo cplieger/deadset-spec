@@ -1,0 +1,27 @@
+-- fixture.json --
+{
+  "symbols": {
+    "FieldRules": {
+      "file": "target/validate/validate.proto",
+      "line": 5,
+      "ref": "proto://validate#FieldRules"
+    },
+    "Rule": { "file": "target/v1/rules.proto", "line": 5, "ref": "proto://validate#Rule" }
+  }
+}
+-- target/v1/rules.proto --
+syntax = "proto3";
+
+package validate;
+
+message Rule {
+  string name = 1;
+}
+-- target/validate/validate.proto --
+syntax = "proto2";
+
+package validate;
+
+message FieldRules {
+  optional string const = 1;
+}

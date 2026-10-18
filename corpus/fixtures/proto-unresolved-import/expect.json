@@ -1,0 +1,31 @@
+{
+  "name": "proto-unresolved-import",
+  "description": "An import no import root resolves holds every declaration whose type it would supply, published live, and an unresolved-import note names the importing file; a declaration that needs nothing from the import is published as any other.",
+  "rules": ["schemas.5"],
+  "languages": ["proto"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "notes": [
+    {
+      "kind": "unresolved-import",
+      "path": "v1/wrap.proto"
+    }
+  ],
+  "facts": [
+    {
+      "symbol": "Wrapper.inner",
+      "role": "schema",
+      "schema": "proto://v1#Wrapper.inner",
+      "state": "live"
+    },
+    {
+      "symbol": "Alone",
+      "role": "schema",
+      "schema": "proto://v1#Alone",
+      "state": "dead",
+      "report": "DS1801",
+      "members": ["proto://v1#Alone.count"]
+    }
+  ],
+  "expect": []
+}

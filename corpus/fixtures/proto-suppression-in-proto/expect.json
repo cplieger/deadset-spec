@@ -1,0 +1,24 @@
+{
+  "name": "proto-suppression-in-proto",
+  "description": "An inline directive in a schema file's line comment, alone on the line above the field it names, publishes that field's record live; the field beside it, which no directive names, is published dead.",
+  "rules": ["schemas.21"],
+  "languages": ["proto"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "facts": [
+    {
+      "symbol": "Ping.number",
+      "role": "schema",
+      "schema": "proto://v1#Ping.number",
+      "state": "live"
+    },
+    {
+      "symbol": "Ping.spare",
+      "role": "schema",
+      "schema": "proto://v1#Ping.spare",
+      "state": "dead",
+      "report": "DS1802"
+    }
+  ],
+  "expect": []
+}

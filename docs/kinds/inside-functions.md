@@ -36,6 +36,7 @@ Before reporting: The signature must be free, defined as follows: the function i
 Other tools that report it:
 
 - `go`: revive unused-parameter, gopls unusedparams, unparam
+- `proto`: not applicable
 - `ts`: tsc --noUnusedParameters, @typescript-eslint/no-unused-vars
 
 What lowers its confidence:
@@ -68,6 +69,7 @@ Before reporting: None beyond the rule. Deleting a receiver name changes no sign
 Other tools that report it:
 
 - `go`: revive unused-receiver
+- `proto`: not applicable
 - `ts`: not applicable
 
 What lowers its confidence:
@@ -100,6 +102,7 @@ Before reporting: The same free-signature rule as unused-parameter, plus a close
 Other tools that report it:
 
 - `go`: unparam
+- `proto`: not applicable
 - `ts`: none known
 
 What lowers its confidence:
@@ -135,6 +138,7 @@ Before reporting: In TypeScript the binding of a catch clause is a local variabl
 Other tools that report it:
 
 - `go`: ineffassign, wastedassign, staticcheck SA4006
+- `proto`: not applicable
 - `ts`: eslint no-useless-assignment, @typescript-eslint/no-unused-vars
 
 What lowers its confidence:
@@ -170,6 +174,7 @@ The rule: A statement that control flow cannot reach, at the precision the langu
 Other tools that report it:
 
 - `go`: go vet unreachable
+- `proto`: not applicable
 - `ts`: tsc allowUnreachableCode, eslint no-unreachable
 
 What lowers its confidence:
@@ -208,6 +213,7 @@ The rule: A switch case whose type or value an earlier case in the same switch a
 Other tools that report it:
 
 - `go`: staticcheck SA4020
+- `proto`: not applicable
 - `ts`: none known
 
 What lowers its confidence:

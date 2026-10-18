@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "deadset configuration",
-  "description": "The closed key list every deadset product reads. A repository configuration (deadset.json at the target root) and a central configuration (the file the invocation names) are both instances of this schema; a command-line flag outranks the repository configuration, which outranks the central configuration, which outranks the default each key declares here. Each source is optional and neither has to be complete on its own, so no key is required at the root; the resolved configuration is what must name a target kind, and a run whose sources all omit it exits with the usage code. A key this list does not declare fails the decode of every product that reads the section holding it and exits with the usage code, so no product implements a parser or a validator for it. An analyzer checks and resolves only what its own language's analysis reads: the keys contract/settings.json's read_by names its language for and, of a key written per language, its own language's member. Every other key this list declares it accepts unread, checking nothing of its value, and its resolved configuration does not name it; the orchestrator checks the whole document. Every key carries its JSON type, its default where it has one, the product that reads it under x-owner (product: every product; analyzer: every analyzer; orchestrator: the orchestrator; <language>-analyzer: the analyzer of that language, one contract/languages.json lists), and whether it is required through the enclosing object's required array. No key admits arbitrary nesting: every object closes with additionalProperties false. An object marked x-setting is one setting: a higher-ranked source replaces it whole, it carries the default a run uses when no source names it, it carries one provenance entry under its own dotted path, and every member it declares is required and carries no default of its own. A key whose value takes one of several shapes, the branches of its oneOf, is one setting too, whichever shape a source writes: a higher-ranked source replaces its whole value, and it carries one provenance entry under its own dotted path. An object one of those shapes declares is neither a section nor a setting of its own, so its members carry no default and no provenance entry. An object without the mark is a section, whose keys a higher-ranked source replaces one by one and which carries one provenance entry per key; a section of declared keys carries no default, because each of its keys carries its own, and a section keyed by a pattern carries the default a run uses when no source names a key. The one key resolution ignores is provenance, marked x-ignored-by-resolution. A key of type integer takes a number written as an optional minus sign and digits alone, with no fraction and no exponent: 100.0 and 1e2 are refused naming the key with the usage code, although each denotes an integer and JSON Schema's integer type admits both. A value of a type its key does not admit is refused naming the key with the usage code, null included: no key admits null, so a source writing a key as null is refused rather than read as a source that omits the key. A refusal of one entry of an array names the entry rather than the key alone: the key, the entry's index in square brackets counted from zero, and the path within the entry where the entry is an object, so the refusal of the second analyzer's name reads providers.analyzers[1].name. x-delivered on a key names the languages whose analyzers receive it in the document an orchestrator writes for each: an analyzer receives the keys every analyzer or every product reads and the section of its own language, and an orchestrator keeps the keys it alone reads and the reporter settings it applies to the merged report. Every closed list a value or a member name is drawn from another Contract document is written in here from that document: the languages contract/languages.json lists, the classes contract/exemptions.json declares, the severities, reachability classes and target kinds contract/kinds.json lists, and the severity keys, each the code of a live kind of contract/kinds.json whose severity the Contract does not fix or the family key of a range holding a live kind and no kind whose severity the Contract fixes. contract/settings.json lists every key of this schema with what a product reads of it, the vocabulary its entries or member names are drawn from and that vocabulary's values among them. x-max-bytes bounds the input documents a run is given: a configuration document, a scope document, and the ignore file, the baseline and the edges document at the target root; one larger is refused without being read whole. A report an analyzer writes and a package manifest are not among them.",
+  "description": "The closed key list every deadset product reads. A repository configuration (deadset.json at the target root) and a central configuration (the file the invocation names) are both instances of this schema; a command-line flag outranks the repository configuration, which outranks the central configuration, which outranks the default each key declares here. Each source is optional and neither has to be complete on its own, so no key is required at the root; the resolved configuration is what must name a target kind, and a run whose sources all omit it exits with the usage code. A key this list does not declare fails the decode of every product that reads the section holding it and exits with the usage code, so no product implements a parser or a validator for it. An analyzer checks and resolves only what its own language's analysis reads: the keys contract/settings.json's read_by names its language for and, of a key written per language, its own language's member. Every other key this list declares it accepts unread, checking nothing of its value, and its resolved configuration does not name it; the orchestrator checks the whole document. Every key carries its JSON type, its default where it has one, the product that reads it under x-owner (product: every product, read by the analyzer of each language of kind analyzed; analyzer: the analyzer of each language of kind analyzed; analysis: the analysis of every language contract/languages.json names an analyzer for, a reader the orchestrator runs in process included; orchestrator: the orchestrator; <language>-analyzer: the analyzer of that language, one contract/languages.json lists), and whether it is required through the enclosing object's required array. No key admits arbitrary nesting: every object closes with additionalProperties false. An object marked x-setting is one setting: a higher-ranked source replaces it whole, it carries the default a run uses when no source names it, it carries one provenance entry under its own dotted path, and every member it declares is required and carries no default of its own. A key whose value takes one of several shapes, the branches of its oneOf, is one setting too, whichever shape a source writes: a higher-ranked source replaces its whole value, and it carries one provenance entry under its own dotted path. An object one of those shapes declares is neither a section nor a setting of its own, so its members carry no default and no provenance entry. An object without the mark is a section, whose keys a higher-ranked source replaces one by one and which carries one provenance entry per key; a section of declared keys carries no default, because each of its keys carries its own, and a section keyed by a pattern carries the default a run uses when no source names a key. The one key resolution ignores is provenance, marked x-ignored-by-resolution. A key of type integer takes a number written as an optional minus sign and digits alone, with no fraction and no exponent: 100.0 and 1e2 are refused naming the key with the usage code, although each denotes an integer and JSON Schema's integer type admits both. A value of a type its key does not admit is refused naming the key with the usage code, null included: no key admits null, so a source writing a key as null is refused rather than read as a source that omits the key. A refusal of one entry of an array names the entry rather than the key alone: the key, the entry's index in square brackets counted from zero, and the path within the entry where the entry is an object, so the refusal of the second analyzer's name reads providers.analyzers[1].name. x-delivered on a key names the languages whose analyzers receive it in the document an orchestrator writes for each: an analyzer receives the keys every analyzer or every product reads and the section of its own language, and an orchestrator keeps the keys it alone reads and the reporter settings it applies to the merged report. Every closed list a value or a member name is drawn from another Contract document is written in here from that document: the languages contract/languages.json lists, the classes contract/exemptions.json declares, the severities, reachability classes and target kinds contract/kinds.json lists, and the severity keys, each the code of a live kind of contract/kinds.json whose severity the Contract does not fix or the family key of a range holding a live kind and no kind whose severity the Contract fixes. contract/settings.json lists every key of this schema with what a product reads of it, the vocabulary its entries or member names are drawn from and that vocabulary's values among them. x-max-bytes bounds the input documents a run is given: a configuration document, a scope document, and the ignore file, the baseline and the edges document at the target root; one larger is refused without being read whole. A report an analyzer writes and a package manifest are not among them.",
   "type": "object",
   "additionalProperties": false,
   "x-max-bytes": 1048576,
@@ -59,7 +59,7 @@
       "description": "How the analysis is scoped and filtered.",
       "type": "object",
       "additionalProperties": false,
-      "x-owner": "product",
+      "x-owner": "analysis",
       "x-delivered": ["go", "ts"],
       "properties": {
         "languages": {
@@ -68,7 +68,7 @@
           "uniqueItems": true,
           "items": {
             "type": "string",
-            "enum": ["go", "ts"]
+            "enum": ["go", "ts", "proto"]
           },
           "default": [],
           "x-owner": "orchestrator",
@@ -79,7 +79,7 @@
           "type": "string",
           "enum": ["certain", "probable", "possible"],
           "default": "probable",
-          "x-owner": "analyzer",
+          "x-owner": "analysis",
           "x-delivered": ["go", "ts"]
         },
         "generated_files": {
@@ -245,7 +245,7 @@
       "description": "Symbols the analysis treats as live without a reference, in addition to the roots the analysis marks itself.",
       "type": "object",
       "additionalProperties": false,
-      "x-owner": "analyzer",
+      "x-owner": "analysis",
       "x-delivered": ["go", "ts"],
       "properties": {
         "patterns": {
@@ -257,7 +257,7 @@
             "minLength": 1
           },
           "default": [],
-          "x-owner": "analyzer",
+          "x-owner": "analysis",
           "x-delivered": ["go", "ts"]
         }
       }
@@ -267,7 +267,7 @@
       "type": "object",
       "additionalProperties": false,
       "propertyNames": {
-        "enum": ["DS10", "DS1001", "DS1002", "DS1003", "DS1004", "DS1005", "DS1006", "DS11", "DS1101", "DS1102", "DS1103", "DS1104", "DS12", "DS1201", "DS1202", "DS1203", "DS13", "DS1301", "DS14", "DS1401", "DS1402", "DS1403", "DS1404", "DS1405", "DS1406", "DS15", "DS1501", "DS1502", "DS1503", "DS16", "DS1601", "DS1602", "DS17", "DS1701", "DS1702", "DS9001", "DS9002", "DS9005"]
+        "enum": ["DS10", "DS1001", "DS1002", "DS1003", "DS1004", "DS1005", "DS1006", "DS11", "DS1101", "DS1102", "DS1103", "DS1104", "DS12", "DS1201", "DS1202", "DS1203", "DS13", "DS1301", "DS14", "DS1401", "DS1402", "DS1403", "DS1404", "DS1405", "DS1406", "DS15", "DS1501", "DS1502", "DS1503", "DS16", "DS1601", "DS1602", "DS17", "DS1701", "DS1702", "DS18", "DS1801", "DS1802", "DS1803", "DS1804", "DS1805", "DS9001", "DS9002", "DS9005"]
       },
       "patternProperties": {
         "^DS[0-9]{2}([0-9]{2})?$": {
@@ -276,14 +276,14 @@
         }
       },
       "default": {},
-      "x-owner": "analyzer",
+      "x-owner": "analysis",
       "x-delivered": ["go", "ts"]
     },
     "exemptions": {
       "description": "Switches over the computed exemption classes.",
       "type": "object",
       "additionalProperties": false,
-      "x-owner": "analyzer",
+      "x-owner": "analysis",
       "x-delivered": ["go", "ts"],
       "properties": {
         "disabled": {
@@ -292,10 +292,10 @@
           "uniqueItems": true,
           "items": {
             "type": "string",
-            "enum": ["interface-satisfaction", "encoding-reflection", "format-verb-contract", "errors-duck-typing", "enum-group", "generated-file", "linkname-cgo-asm-plugin", "template-field", "reflective-lookup", "decorator", "injection-container", "framework-lifecycle", "serialization-contract"]
+            "enum": ["interface-satisfaction", "encoding-reflection", "format-verb-contract", "errors-duck-typing", "enum-group", "generated-file", "linkname-cgo-asm-plugin", "template-field", "reflective-lookup", "decorator", "injection-container", "framework-lifecycle", "serialization-contract", "schema-option", "schema-vendored", "schema-default-value"]
           },
           "default": [],
-          "x-owner": "analyzer",
+          "x-owner": "analysis",
           "x-delivered": ["go", "ts"]
         }
       }
@@ -376,13 +376,16 @@
                 "required": ["name", "languages", "command"],
                 "properties": {
                   "name": {
-                    "description": "The analyzer's name, as its report's analyzer.name spells it: lowercase words joined by single hyphens.",
+                    "description": "The analyzer's name, as its report's analyzer.name spells it: lowercase words joined by single hyphens, and never the name of a reader the orchestrator runs in process, which names that reader's report and run-directory entry.",
                     "type": "string",
                     "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$",
+                    "not": {
+                      "enum": ["deadset-proto"]
+                    },
                     "x-owner": "orchestrator"
                   },
                   "languages": {
-                    "description": "The languages the analyzer claims, drawn from the languages contract/languages.json lists.",
+                    "description": "The languages the analyzer claims, drawn from the languages contract/languages.json lists whose runner is process: a language the orchestrator reads in process is claimed by no provider entry.",
                     "type": "array",
                     "minItems": 1,
                     "uniqueItems": true,
@@ -407,13 +410,16 @@
                 "required": ["name", "languages", "command", "source", "version", "digest"],
                 "properties": {
                   "name": {
-                    "description": "The analyzer's name, as its report's analyzer.name spells it: lowercase words joined by single hyphens.",
+                    "description": "The analyzer's name, as its report's analyzer.name spells it: lowercase words joined by single hyphens, and never the name of a reader the orchestrator runs in process, which names that reader's report and run-directory entry.",
                     "type": "string",
                     "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$",
+                    "not": {
+                      "enum": ["deadset-proto"]
+                    },
                     "x-owner": "orchestrator"
                   },
                   "languages": {
-                    "description": "The languages the analyzer claims, drawn from the languages contract/languages.json lists.",
+                    "description": "The languages the analyzer claims, drawn from the languages contract/languages.json lists whose runner is process: a language the orchestrator reads in process is claimed by no provider entry.",
                     "type": "array",
                     "minItems": 1,
                     "uniqueItems": true,
@@ -823,6 +829,58 @@
         }
       }
     },
+    "proto": {
+      "description": "The section deadset's Protocol Buffers reader owns, grammar/analysis/schemas.md. The orchestrator checks it against this schema and reads it, and no analyzer receives any of its keys.",
+      "type": "object",
+      "additionalProperties": false,
+      "x-owner": "proto-analyzer",
+      "x-delivered": [],
+      "properties": {
+        "closed": {
+          "description": "Every reader and writer of the target's schemas, stored data and outside callers included, is in this target. A schema finding then reaches certain where every language that binds its declaration is an application, and no cap of grammar/analysis/schemas.md lowers it, a binding's cap included, which the merge then disregards.",
+          "type": "boolean",
+          "default": false,
+          "x-owner": "proto-analyzer",
+          "x-delivered": []
+        },
+        "plugins": {
+          "description": "The plugins the target's schemas are generated with, for a target whose generation no buf.gen.yaml states: each a plugin contract/generators.json lists, or a token standing for a plugin that writes a language the suite does not analyze. Empty, the reader reads every buf.gen.yaml of the target.",
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": ["protoc-gen-go", "protoc-gen-gogo", "protoc-gen-go-grpc", "protoc-gen-connect-go", "protoc-gen-go-vtproto", "protoc-gen-grpc-gateway", "protoc-gen-es", "protoc-gen-connect-es", "ts-proto", "protoc-gen-js", "protoc-gen-grpc-web", "protobuf-ts", "ts-protoc-gen", "protoc-gen-openapiv2", "python", "java", "csharp", "rust", "ruby", "php", "cpp", "swift", "kotlin", "dart", "elixir", "objc", "other"]
+          },
+          "default": [],
+          "x-owner": "proto-analyzer",
+          "x-delivered": []
+        },
+        "import_paths": {
+          "description": "The import roots, each a directory relative to the target root, inside it. Empty, the roots are the module roots of the target's buf.yaml files, as buf computes them, and otherwise the target root and then each schema file's own directory. A root that names no directory is the setup failure missing-import-path.",
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^(?:\\.|(?:[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.\\.[^/\\x00-\\x1f\\x7f]+)(?:/(?:[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.\\.[^/\\x00-\\x1f\\x7f]+))*)$"
+          },
+          "default": [],
+          "x-owner": "proto-analyzer",
+          "x-delivered": []
+        },
+        "vendored_paths": {
+          "description": "Patterns, in the syntax of roots.patterns, over the target-relative paths of schema files that are copies of a dependency's schema, beyond the upstream files grammar/analysis/schemas.md lists. A declaration of such a file is kept live.",
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "default": [],
+          "x-owner": "proto-analyzer",
+          "x-delivered": []
+        }
+      }
+    },
     "provenance": {
       "description": "The source of each resolved setting, as the resolved-configuration printout writes it: a key is a setting's dotted path (target.kind, severity.DS1501) and a value is default, or repository, central or flag followed by a colon, a space and the file or flag that supplied the value. Accepted on input so that a printed resolved configuration reads back as a repository configuration, and ignored by resolution, so its presence in any source changes no resolved value.",
       "type": "object",
@@ -834,7 +892,7 @@
         }
       },
       "x-ignored-by-resolution": true,
-      "x-owner": "product",
+      "x-owner": "analysis",
       "x-delivered": ["go", "ts"]
     }
   }

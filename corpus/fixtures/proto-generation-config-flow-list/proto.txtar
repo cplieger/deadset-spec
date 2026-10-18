@@ -1,0 +1,29 @@
+-- fixture.json --
+{
+  "symbols": {
+    "A": { "file": "target/a/v1/a.proto", "line": 5, "ref": "proto://a.v1#A" },
+    "B": { "file": "target/b/v1/b.proto", "line": 5, "ref": "proto://b.v1#B" }
+  }
+}
+-- target/a/buf.gen.yaml --
+version: v2
+plugins:
+  - local: [go, tool, protoc-gen-go]
+    out: gen
+-- target/a/v1/a.proto --
+syntax = "proto3";
+
+package a.v1;
+
+message A {}
+-- target/b/buf.gen.yaml --
+version: v2
+plugins:
+  - local: &plugin protoc-gen-go
+    out: gen
+-- target/b/v1/b.proto --
+syntax = "proto3";
+
+package b.v1;
+
+message B {}

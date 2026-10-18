@@ -1,0 +1,14 @@
+{
+  "target": {
+    "kind": "application"
+  },
+  "providers": {
+    "analyzers": [
+      {
+        "name": "proto-tool",
+        "languages": ["proto"],
+        "command": "proto-tool"
+      }
+    ]
+  }
+}

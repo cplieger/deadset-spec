@@ -1,0 +1,48 @@
+{
+  "name": "proto-oneof-go-wrapper",
+  "description": "A Go oneof member is read where hand code tells it apart: a type-switch case naming its wrapper type, a type assertion to the wrapper, and a comparison of the Which result with its case constant, written by the hybrid API. A nil arm and a default clause read nothing further, a wrapper composite literal only writes its member, and a comparison of the oneof field with nil tells no member apart, so it reads every member of that oneof.",
+  "rules": ["bindings.14", "references-go.15"],
+  "pending": "references-go.15: deadset-go reads a oneof member by its wrapper type in a type switch or assertion and by its case constant against a Which result (GO5).",
+  "languages": ["go"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "facts": [
+    {
+      "symbol": "Outcome.ok",
+      "role": "consumer",
+      "schema": "proto://v1#Outcome.ok",
+      "state": "live"
+    },
+    {
+      "symbol": "Outcome.error",
+      "role": "consumer",
+      "schema": "proto://v1#Outcome.error",
+      "state": "live"
+    },
+    {
+      "symbol": "Outcome.pendingCase",
+      "role": "consumer",
+      "schema": "proto://v1#Outcome.pending",
+      "state": "live"
+    },
+    {
+      "symbol": "Outcome.skipped",
+      "role": "consumer",
+      "schema": "proto://v1#Outcome.skipped",
+      "state": "unreferenced"
+    },
+    {
+      "symbol": "Probe.a",
+      "role": "consumer",
+      "schema": "proto://v1#Probe.a",
+      "state": "live"
+    },
+    {
+      "symbol": "Probe.b",
+      "role": "consumer",
+      "schema": "proto://v1#Probe.b",
+      "state": "live"
+    }
+  ],
+  "expect": []
+}

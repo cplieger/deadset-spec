@@ -1,0 +1,7 @@
+analyzer deadset-go 2.0.0
+analyzer deadset-proto 2.0.0
+internal/api/helpers.go:9:3 DS1002 unused-unexported deny deadset-go
+internal/api/server.go:21:3 DS1001 unused-exported deny deadset-go
+internal/api/server.go:40:3 DS1001 unused-exported deny deadset-go
+proto/v1/service.proto:12:3 DS1805 uncalled-schema-operation warn deadset-proto
+4 findings, 0 stale, 0 omitted

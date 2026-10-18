@@ -1,0 +1,25 @@
+-- fixture.json --
+{
+  "symbols": {
+    "Wrapper.inner": {
+      "file": "target/v1/wrap.proto",
+      "line": 8,
+      "ref": "proto://v1#Wrapper.inner"
+    },
+    "Alone": { "file": "target/v1/wrap.proto", "line": 11, "ref": "proto://v1#Alone" }
+  }
+}
+-- target/v1/wrap.proto --
+syntax = "proto3";
+
+package v1;
+
+import "other/missing.proto";
+
+message Wrapper {
+  other.Missing inner = 1;
+}
+
+message Alone {
+  int32 count = 1;
+}
