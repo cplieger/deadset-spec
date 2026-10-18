@@ -1,0 +1,7 @@
+{
+  "name": "@example/consumer",
+  "type": "module",
+  "devDependencies": {
+    "vite": "8.999.0"
+  }
+}

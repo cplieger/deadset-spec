@@ -1,0 +1,4 @@
+{
+  "name": "@example/app",
+  "scripts": { "start": "env --frobnicate node index.js" }
+}

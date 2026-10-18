@@ -1,0 +1,38 @@
+{
+  "name": "package-only-declaration-beside-javascript",
+  "description": "A hand-written JavaScript file beside a declaration file of its name, in a package a compiler configuration builds elsewhere, is no build output that configuration proves, so it is a file of the package's program and its declarations are analyzed.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "LegacyFile",
+      "report": "DS1602",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "legacyDead",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "MainFile",
+      "report": "DS1602",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "main",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "variable"
+    }
+  ]
+}

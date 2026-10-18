@@ -1,0 +1,46 @@
+{
+  "name": "package-only-discovery",
+  "description": "A target that holds JavaScript sources and package.json manifests but no compiler configuration is analyzed: each package below the target root, the nearest directory at or above a JavaScript file that holds a package.json, is one program over its JavaScript files, so the run holds a program and each package's manifest roots its own entry points.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "used",
+      "report": "none"
+    },
+    {
+      "symbol": "unusedExport",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "OrphanFile",
+      "report": "DS1602",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "orphan",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "variable"
+    },
+    {
+      "symbol": "helper",
+      "report": "none"
+    },
+    {
+      "symbol": "unusedTool",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    }
+  ]
+}

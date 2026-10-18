@@ -1,0 +1,14 @@
+{
+  "name": "@example/target",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./main.ts",
+  "scripts": {
+    "start": "env --frobnicate node --require=./setup.ts --require never-loaded main.ts"
+  },
+  "devDependencies": {
+    "never-loaded": "1.0.0",
+    "stray-package": "1.0.0"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "symbols": {
+    "SetUp": {
+      "file": "target/setup.ts",
+      "line": 3
+    },
+    "Configured": {
+      "file": "target/config.ts",
+      "line": 1
+    },
+    "NeverLoaded": {
+      "file": "target/package.json",
+      "line": 11
+    },
+    "Stray": {
+      "file": "target/stray.ts",
+      "line": 2
+    },
+    "StrayPackage": {
+      "file": "target/package.json",
+      "line": 12
+    },
+    "StrayFile": {
+      "file": "target/stray.ts",
+      "line": 1
+    }
+  }
+}

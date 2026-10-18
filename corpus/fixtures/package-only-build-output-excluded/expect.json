@@ -1,0 +1,28 @@
+{
+  "name": "package-only-build-output-excluded",
+  "description": "A minified JavaScript file, one whose name ends with .min.js, .min.cjs or .min.mjs, and one of at least 10 kB whose lines average more than 500 characters, is build output and no file of a package's program, so a bundle's copy of a use keeps nothing live: each of the two files calls a declaration nothing else uses.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "used",
+      "report": "none"
+    },
+    {
+      "symbol": "dead",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "deadLong",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    }
+  ]
+}

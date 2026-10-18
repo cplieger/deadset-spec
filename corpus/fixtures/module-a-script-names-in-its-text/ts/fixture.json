@@ -1,0 +1,64 @@
+{
+  "symbols": {
+    "SetUpFile": {
+      "file": "target/setup.ts",
+      "line": 1
+    },
+    "SetUp": {
+      "file": "target/setup.ts",
+      "line": 3
+    },
+    "Configured": {
+      "file": "target/config.ts",
+      "line": 1
+    },
+    "GenFile": {
+      "file": "target/gen.ts",
+      "line": 1
+    },
+    "Generate": {
+      "file": "target/gen.ts",
+      "line": 2
+    },
+    "StrayFile": {
+      "file": "target/stray.ts",
+      "line": 1
+    },
+    "Stray": {
+      "file": "target/stray.ts",
+      "line": 2
+    },
+    "EntryLocal": {
+      "file": "target/main.ts",
+      "line": 3
+    },
+    "NodeWordFile": {
+      "file": "target/node.ts",
+      "line": 1
+    },
+    "NodeWord": {
+      "file": "target/node.ts",
+      "line": 2
+    },
+    "SetUpLocal": {
+      "file": "target/setup.ts",
+      "line": 7
+    },
+    "CiFile": {
+      "file": "target/ci.ts",
+      "line": 1
+    },
+    "CiCheck": {
+      "file": "target/ci.ts",
+      "line": 2
+    },
+    "HookFile": {
+      "file": "target/hook.ts",
+      "line": 1
+    },
+    "HookCheck": {
+      "file": "target/hook.ts",
+      "line": 2
+    }
+  }
+}

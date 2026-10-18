@@ -1,0 +1,12 @@
+{
+  "symbols": {
+    "used": {
+      "file": "target/src/util.js",
+      "line": 1
+    },
+    "unusedUtil": {
+      "file": "target/src/util.js",
+      "line": 3
+    }
+  }
+}

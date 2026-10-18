@@ -1,0 +1,11 @@
+{
+  "name": "@example/target",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./main.ts",
+  "scripts": {
+    "start": "node --require=./setup.ts main.ts",
+    "gen": "V=\"$(node ./gen.ts)\" node main.ts"
+  }
+}

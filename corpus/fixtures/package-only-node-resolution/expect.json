@@ -1,0 +1,41 @@
+{
+  "name": "package-only-node-resolution",
+  "description": "A package whose manifest names engines.node resolves its JavaScript as Node does, its scripts unread for that: a package import map's node condition selects the file Node loads, and a relative specifier that resolves to no file is noted and references nothing.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "notes": [
+    {
+      "kind": "unresolved-specifier",
+      "path": "."
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "nodeImpl",
+      "report": "none"
+    },
+    {
+      "symbol": "unusedNode",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "BrowserFile",
+      "report": "DS1602",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "browserImpl",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    }
+  ]
+}

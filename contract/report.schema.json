@@ -263,7 +263,7 @@
             "required": ["id", "project"],
             "properties": {
               "id": {
-                "description": "The name this report uses for the configuration, as the configuration document spells it. Every finding's configurations list names ids from this array. A configuration the analysis derived rather than read from the configuration document is identified by the compiler configuration file's path relative to the target root, as project spells it: tsconfig.json, packages/app/tsconfig.json.",
+                "description": "The name this report uses for the configuration, as the configuration document spells it. Every finding's configurations list names ids from this array. A configuration the analysis derived rather than read from the configuration document is identified by the compiler configuration file's path relative to the target root, as project spells it: tsconfig.json, packages/app/tsconfig.json. A program the analysis forms for a JavaScript package is identified by its package.json path relative to the target root, or ., as grammar/analysis/program.md states.",
                 "type": "string",
                 "minLength": 1
               },
@@ -817,13 +817,41 @@
                 "required": ["key"]
               }
             }
+          },
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "unread-command"
+                }
+              }
+            },
+            "then": {
+              "not": {
+                "required": ["key"]
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "unresolved-specifier"
+                }
+              }
+            },
+            "then": {
+              "not": {
+                "required": ["key"]
+              }
+            }
           }
         ],
         "properties": {
           "kind": {
-            "description": "What the note is about, from a closed set. computed-load: a TypeScript load by a computed path the analysis cannot resolve, which grammar/analysis/notes.md defines. module-not-loaded: a Go module below the target root that the run dropped because it does not load, or one the workspace listing the target lists outside it whose go.mod the go command reads and the analysis cannot, which grammar/analysis/notes.md defines. published-package: a package of an application that no other package of the target imports and that outside programs may import, which grammar/analysis/notes.md defines. unmapped-entry: a manifest entry that reads back to no source file of the target, which grammar/analysis/notes.md defines. binding-unsupported: a generated file whose generator row is unsupported, which grammar/merge.md defines. generation-config-unread: a generation or module configuration outside the subset the schema reader reads, which grammar/analysis/schemas.md defines. schema-unparsed: a schema file that does not parse, link or validate, which grammar/analysis/schemas.md defines. unbound-schema: a schema file whose every dead declaration no analyzed language binds, which grammar/merge.md defines. unresolved-import: an import of a schema file that names no file of the import roots, which grammar/analysis/schemas.md defines.",
+            "description": "What the note is about, from a closed set. computed-load: a TypeScript load by a computed path the analysis cannot resolve, which grammar/analysis/notes.md defines. module-not-loaded: a Go module below the target root that the run dropped because it does not load, or one the workspace listing the target lists outside it whose go.mod the go command reads and the analysis cannot, which grammar/analysis/notes.md defines. published-package: a package of an application that no other package of the target imports and that outside programs may import, which grammar/analysis/notes.md defines. unmapped-entry: a manifest entry that reads back to no source file of the target, which grammar/analysis/notes.md defines. binding-unsupported: a generated file whose generator row is unsupported, which grammar/merge.md defines. generation-config-unread: a generation or module configuration outside the subset the schema reader reads, which grammar/analysis/schemas.md defines. schema-unparsed: a schema file that does not parse, link or validate, which grammar/analysis/schemas.md defines. unbound-schema: a schema file whose every dead declaration no analyzed language binds, which grammar/merge.md defines. unresolved-import: an import of a schema file that names no file of the import roots, which grammar/analysis/schemas.md defines. unread-command: a package whose command strings name files the analysis holds without reading the commands, which grammar/analysis/notes.md defines. unresolved-specifier: a relative module specifier of a JavaScript file that resolves to no file, which grammar/analysis/notes.md defines.",
             "type": "string",
-            "enum": ["binding-unsupported", "computed-load", "generation-config-unread", "module-not-loaded", "published-package", "schema-unparsed", "unbound-schema", "unmapped-entry", "unresolved-import"]
+            "enum": ["binding-unsupported", "computed-load", "generation-config-unread", "module-not-loaded", "published-package", "schema-unparsed", "unbound-schema", "unmapped-entry", "unread-command", "unresolved-import", "unresolved-specifier"]
           },
           "path": {
             "description": "The file or the directory the note is about, relative to the target root, in the path form: segments joined by /, none of them empty, . or .., so never absolute, with no leading ./ and no trailing /; no control character, U+0000 to U+001F or U+007F; every other character, a space, a backslash, which is no separator, a +, a $, a bracket, a parenthesis or one outside ASCII, written as it is; the target root itself is a single dot, so a note about the package at the root names it as .",
@@ -831,7 +859,7 @@
             "pattern": "^(?:\\.|(?:[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.\\.[^/\\x00-\\x1f\\x7f]+)(?:/(?:[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.\\.[^/\\x00-\\x1f\\x7f]+))*)$"
           },
           "key": {
-            "description": "The configuration key that settles the note, as a dotted path of contract/config.schema.json: present on a published-package, an unmapped-entry, an unbound-schema, an unresolved-import and a generation-config-unread note, and absent on a computed-load, a module-not-loaded, a binding-unsupported and a schema-unparsed note, which no key settles.",
+            "description": "The configuration key that settles the note, as a dotted path of contract/config.schema.json: present on a published-package, an unmapped-entry, an unbound-schema, an unresolved-import and a generation-config-unread note, and absent on a computed-load, a module-not-loaded, a binding-unsupported, a schema-unparsed, an unread-command and an unresolved-specifier note, which no key settles.",
             "type": "string",
             "enum": ["proto.import_paths", "proto.plugins", "roots.patterns", "ts.entry_files"]
           },

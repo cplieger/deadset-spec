@@ -1,0 +1,21 @@
+{
+  "name": "package-only-workspace-members",
+  "description": "A workspace member whose JavaScript files no compiler configuration lists is read from source by the member that imports it, through the program formed for its files, so a declaration the importing member uses is live and one nothing uses is reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "used",
+      "report": "none"
+    },
+    {
+      "symbol": "unused",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    }
+  ]
+}

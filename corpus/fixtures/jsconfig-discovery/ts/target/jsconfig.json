@@ -1,0 +1,4 @@
+{
+  "compilerOptions": { "module": "nodenext" },
+  "include": ["src"]
+}

@@ -1,0 +1,6 @@
+{
+  "name": "@example/tools",
+  "private": true,
+  "type": "module",
+  "bin": "cli.js"
+}

@@ -142,7 +142,7 @@
                 }
               },
               {
-                "description": "A project configuration: one compiler configuration file the target is built from.",
+                "description": "A project configuration: one compiler configuration file the target is built from, or a package.json naming the program grammar/analysis/program.md forms for that directory's JavaScript files.",
                 "type": "object",
                 "additionalProperties": false,
                 "required": ["id", "project"],

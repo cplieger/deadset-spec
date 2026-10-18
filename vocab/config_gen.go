@@ -31,7 +31,7 @@ var languageRows = []LanguageRow{
 		Scheme:               "ts",
 		Runner:               "process",
 		Analyzer:             "deadset-ts",
-		Markers:              []string{"tsconfig*.json"},
+		Markers:              []string{"tsconfig*.json", "jsconfig*.json"},
 		Extensions:           []string{".ts", ".tsx", ".mts", ".cts"},
 		Companions:           []string{"package.json"},
 		SkippedDirectories:   []string{"node_modules", ".git"},

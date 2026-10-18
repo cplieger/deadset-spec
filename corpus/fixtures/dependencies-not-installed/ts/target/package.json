@@ -1,0 +1,6 @@
+{
+  "name": "@example/app",
+  "type": "module",
+  "main": "index.js",
+  "dependencies": { "left-pad": "1.3.0" }
+}

@@ -1,0 +1,29 @@
+{
+  "name": "package-only-node-runtime",
+  "description": "A package whose manifest declares Node evidence resolves its JavaScript as Node does, so an extensionless relative ESM specifier resolves to nothing under Node and is noted. Asked again as a bundler resolves it, the file it names is referenced at the class possible, because a loader the analysis does not see may load it.",
+  "pending": "program.38: the bundler-resolution retry of a specifier the Node runtime leaves unresolved, which references its file at the class possible, lands with the JavaScript reference sources.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "notes": [
+    {
+      "kind": "unresolved-specifier",
+      "path": "."
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "helper",
+      "report": "none"
+    },
+    {
+      "symbol": "UtilFile",
+      "report": "DS1602",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "file"
+    }
+  ]
+}

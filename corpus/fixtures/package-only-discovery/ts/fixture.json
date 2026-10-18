@@ -1,0 +1,28 @@
+{
+  "symbols": {
+    "used": {
+      "file": "target/lib.js",
+      "line": 1
+    },
+    "unusedExport": {
+      "file": "target/lib.js",
+      "line": 3
+    },
+    "OrphanFile": {
+      "file": "target/orphan.js",
+      "line": 1
+    },
+    "helper": {
+      "file": "target/tools/helper.js",
+      "line": 1
+    },
+    "unusedTool": {
+      "file": "target/tools/helper.js",
+      "line": 3
+    },
+    "orphan": {
+      "file": "target/orphan.js",
+      "line": 2
+    }
+  }
+}

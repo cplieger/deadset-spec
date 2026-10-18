@@ -1,0 +1,36 @@
+{
+  "symbols": {
+    "Dotenv": {
+      "file": "target/package.json",
+      "line": 18
+    },
+    "GlobalAgent": {
+      "file": "target/package.json",
+      "line": 19
+    },
+    "ModuleAlias": {
+      "file": "target/package.json",
+      "line": 20
+    },
+    "Newrelic": {
+      "file": "target/package.json",
+      "line": 21
+    },
+    "SourceMapSupport": {
+      "file": "target/package.json",
+      "line": 22
+    },
+    "TsNode": {
+      "file": "target/package.json",
+      "line": 23
+    },
+    "TsconfigPaths": {
+      "file": "target/package.json",
+      "line": 24
+    },
+    "Tsx": {
+      "file": "target/package.json",
+      "line": 25
+    }
+  }
+}

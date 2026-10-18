@@ -1,0 +1,24 @@
+{
+  "name": "consumer-package-only",
+  "description": "A declared consumer that holds no compiler configuration is loaded through the programs formed for its JavaScript files, each resolving its modules as the runtime its own package is written for: a consumer a bundler's convention row applies to resolves an extensionless relative import as the bundler does, so the target declaration it names is live. The fixture assumes the analyzer carries a row named vite for the package vite, holding the installed version in its range.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "consumers": [
+    "consumer"
+  ],
+  "expect": [
+    {
+      "symbol": "helper",
+      "report": "none"
+    },
+    {
+      "symbol": "unusedHelper",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    }
+  ]
+}

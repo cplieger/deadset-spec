@@ -1,0 +1,27 @@
+{
+  "name": "fixture-with-broken-import",
+  "description": "A relative module specifier of a JavaScript file that resolves to no file is no setup failure: the program is kept, the specifier references nothing, and the report carries an unresolved-specifier note naming the directory of the file that writes it.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "notes": [
+    {
+      "kind": "unresolved-specifier",
+      "path": "."
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "used",
+      "report": "none"
+    },
+    {
+      "symbol": "unusedLib",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    }
+  ]
+}

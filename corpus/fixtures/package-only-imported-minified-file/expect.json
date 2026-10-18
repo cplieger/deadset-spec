@@ -1,0 +1,21 @@
+{
+  "name": "package-only-imported-minified-file",
+  "description": "A minified JavaScript file a program reaches by import is a generated file: it is no file a program is formed over, and every declaration in it is retained by the generated-file class, so a minified vendor file reports nothing.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "min",
+      "report": "none"
+    },
+    {
+      "symbol": "unusedMin",
+      "report": "none",
+      "retained_by": [
+        "generated-file"
+      ]
+    }
+  ]
+}

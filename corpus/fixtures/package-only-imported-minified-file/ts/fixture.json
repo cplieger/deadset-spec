@@ -1,0 +1,12 @@
+{
+  "symbols": {
+    "min": {
+      "file": "target/vendor.min.js",
+      "line": 1
+    },
+    "unusedMin": {
+      "file": "target/vendor.min.js",
+      "line": 2
+    }
+  }
+}

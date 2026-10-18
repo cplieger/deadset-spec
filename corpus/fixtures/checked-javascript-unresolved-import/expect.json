@@ -1,0 +1,27 @@
+{
+  "name": "checked-javascript-unresolved-import",
+  "description": "A JavaScript file a // @ts-check comment checks, in a program that does not check its JavaScript files, keeps its unresolved specifiers out of setup failures: an unresolved relative import is noted and references nothing, and one written inside the block of a try statement notes nothing.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "notes": [
+    {
+      "kind": "unresolved-specifier",
+      "path": "."
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "used",
+      "report": "none"
+    },
+    {
+      "symbol": "unusedLib",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    }
+  ]
+}

@@ -8,7 +8,7 @@ Each family of rules is one page, and each rule is a numbered paragraph cited by
 
 | Page | Sections |
 | --- | --- |
-| [The program](analysis/program.md) | The target kind, The program, The Go modules of a target, Component files, Workspace packages, Nested packages, Type errors, Unanswered questions |
+| [The program](analysis/program.md) | The target kind, The program, The Go modules of a target, Component files, Workspace packages, Nested packages, Type errors, Unanswered questions, JavaScript projects |
 | [The build matrix](analysis/matrix.md) | The derived Go matrix |
 | [Test code](analysis/tests.md) | Test code |
 | [References in Go](analysis/references-go.md) | Uses through memory layout, Conversions an outside program writes, References in Go, Schema bindings in Go |

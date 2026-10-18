@@ -1,0 +1,53 @@
+{
+  "name": "module-preloaded-behind-an-unread-launcher",
+  "description": "A script command behind a launcher option, here env --frobnicate, still names its files and packages: the file its --require=./setup.ts preloads and what only that file keeps live are held and not reported, the package its --require never-loaded preloads is used, and the manifest is noted. A file and a package no command names are still reported.",
+  "pending": "roots.13: a package preloaded behind a launcher option, used rather than reported, lands with the static reader of script commands.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "notes": [
+    {
+      "kind": "unread-command",
+      "path": "."
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "SetUp",
+      "report": "none"
+    },
+    {
+      "symbol": "Configured",
+      "report": "none"
+    },
+    {
+      "symbol": "NeverLoaded",
+      "report": "none"
+    },
+    {
+      "symbol": "Stray",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "StrayFile",
+      "report": "DS1602",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "StrayPackage",
+      "report": "DS1701",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "dependency",
+      "details": {
+        "dependency_class": "dev-dependency"
+      }
+    }
+  ]
+}

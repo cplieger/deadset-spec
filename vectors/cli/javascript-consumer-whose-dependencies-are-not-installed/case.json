@@ -1,0 +1,19 @@
+{
+  "description": "A declared consumer that holds no compiler configuration is loaded through the programs formed for its JavaScript files, and one whose JavaScript imports declared dependencies of which none is installed cannot be read: the TypeScript analyzer ends the run with exit code 3 and the setup failure missing-consumer naming the consumer and the import, before any report is written.",
+  "products": [
+    "deadset-ts"
+  ],
+  "argv": [
+    "analyze",
+    "--scope=@TARGET@/scope.json",
+    "--report=@OUT@/report.json"
+  ],
+  "expect": {
+    "exit": 3,
+    "stderr_contains": [
+      "setup failure: missing-consumer: the consumer ",
+      "/consumer does not build, its dependencies not installed: use.js:1: use.js imports \"left-pad\""
+    ],
+    "report": "absent"
+  }
+}

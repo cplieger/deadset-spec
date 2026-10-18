@@ -1,0 +1,20 @@
+{
+  "description": "A package.json that does not parse still bounds the JavaScript files below it: the TypeScript analyzer forms their program, reads no manifest fact of it, and names the file on standard error, while the run goes on.",
+  "products": [
+    "deadset-ts"
+  ],
+  "rename": {
+    "tools/package.json.txt": "tools/package.json"
+  },
+  "argv": [
+    "analyze",
+    "--target=@TARGET@",
+    "--report=@OUT@/report.json"
+  ],
+  "expect": {
+    "exit": 0,
+    "stderr_contains": [
+      "tools/package.json does not parse"
+    ]
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "target": {
+    "path": "@TARGET@/target"
+  },
+  "consumers": [
+    {
+      "path": "@TARGET@/consumer"
+    }
+  ]
+}

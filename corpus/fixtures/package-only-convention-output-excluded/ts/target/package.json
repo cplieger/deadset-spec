@@ -1,0 +1,10 @@
+{
+  "name": "@example/app",
+  "main": "index.js",
+  "scripts": {
+    "build": "next build"
+  },
+  "devDependencies": {
+    "next": "16.0.0"
+  }
+}

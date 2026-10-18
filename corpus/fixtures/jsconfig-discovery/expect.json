@@ -1,0 +1,21 @@
+{
+  "name": "jsconfig-discovery",
+  "description": "A jsconfig.json is a compiler configuration discovery reads as it reads a tsconfig.json, opened as written with the compiler's defaults for it, which read JavaScript, so a target whose only configuration is a jsconfig.json is analyzed through it.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "used",
+      "report": "none"
+    },
+    {
+      "symbol": "unusedUtil",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    }
+  ]
+}
