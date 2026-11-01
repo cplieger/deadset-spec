@@ -1,0 +1,64 @@
+{
+  "symbols": {
+    "MainFile": {
+      "file": "target/main.js",
+      "line": 1
+    },
+    "EncodedFile": {
+      "file": "target/scripts/encoded.js",
+      "line": 1
+    },
+    "Encoded": {
+      "file": "target/scripts/encoded.js",
+      "line": 2
+    },
+    "FoldedFile": {
+      "file": "target/scripts/folded.js",
+      "line": 1
+    },
+    "Folded": {
+      "file": "target/scripts/folded.js",
+      "line": 2
+    },
+    "FirstFile": {
+      "file": "target/scripts/first.js",
+      "line": 1
+    },
+    "First": {
+      "file": "target/scripts/first.js",
+      "line": 2
+    },
+    "ContinuedFile": {
+      "file": "target/scripts/continued.js",
+      "line": 1
+    },
+    "Continued": {
+      "file": "target/scripts/continued.js",
+      "line": 2
+    },
+    "NextLineFile": {
+      "file": "target/scripts/next-line.js",
+      "line": 1
+    },
+    "NextLine": {
+      "file": "target/scripts/next-line.js",
+      "line": 2
+    },
+    "LiteralFile": {
+      "file": "target/scripts/literal.js",
+      "line": 1
+    },
+    "Literal": {
+      "file": "target/scripts/literal.js",
+      "line": 2
+    },
+    "StrayFile": {
+      "file": "target/scripts/stray.js",
+      "line": 1
+    },
+    "Stray": {
+      "file": "target/scripts/stray.js",
+      "line": 2
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "name": "@example/app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "cd api && node server.js & cd web && node client.js"
+  }
+}

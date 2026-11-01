@@ -1,0 +1,32 @@
+{
+  "symbols": {
+    "MainFile": {
+      "file": "target/main.js",
+      "line": 1
+    },
+    "BuildAFile": {
+      "file": "target/packages/a/build.js",
+      "line": 1
+    },
+    "BuildA": {
+      "file": "target/packages/a/build.js",
+      "line": 2
+    },
+    "BuildBFile": {
+      "file": "target/packages/b/build.js",
+      "line": 1
+    },
+    "BuildB": {
+      "file": "target/packages/b/build.js",
+      "line": 2
+    },
+    "StrayFile": {
+      "file": "target/packages/a/stray.js",
+      "line": 1
+    },
+    "Stray": {
+      "file": "target/packages/a/stray.js",
+      "line": 2
+    }
+  }
+}

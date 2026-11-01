@@ -1,6 +1,6 @@
 {
   "name": "package-only-node-resolution",
-  "description": "A package whose manifest names engines.node resolves its JavaScript as Node does, its scripts unread for that: a package import map's node condition selects the file Node loads, and a relative specifier that resolves to no file is noted and references nothing.",
+  "description": "A package whose manifest names engines.node resolves its JavaScript as Node does, its script running its entry as a path rather than with node: a package import map's node condition selects the file Node loads, and a relative specifier that resolves to no file is noted and references nothing.",
   "languages": [
     "ts"
   ],

@@ -1,7 +1,6 @@
 {
   "name": "dependency-preloaded-after-a-launcher",
-  "description": "A runtime flag that preloads a module counts in a command whose program is node behind a launcher: env with --, -u and an -S value, cross-env with an assignment, and npx with --yes, -p and a -c value, a quoted operator or a glob inside it included. A launcher option that prints and exits, as npx --version does, leaves the command with no program, so the dependency only that command preloads is reported.",
-  "pending": "roots.13: a preload flag read behind a launcher's options or inside the command value a launcher holds, and a launcher option that prints and exits, land with the static reader of script commands.",
+  "description": "A runtime flag that preloads a module counts in a command whose program is node behind a launcher the analysis reads: env with -- and -u, cross-env with an assignment, and npx with --yes, -p and a -c command. A command the analysis does not read, behind env -S or an npx option that is not one of the few it reads, as --version is, is held: the dependency its text names is used, so no dependency a command names is reported.",
   "languages": [
     "ts"
   ],
@@ -37,13 +36,7 @@
     },
     {
       "symbol": "Newrelic",
-      "report": "DS1701",
-      "confidence": "certain",
-      "reachability_class": "certain",
-      "symbol_kind": "dependency",
-      "details": {
-        "dependency_class": "dev-dependency"
-      }
+      "report": "none"
     }
   ]
 }

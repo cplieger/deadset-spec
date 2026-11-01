@@ -1,0 +1,66 @@
+{
+  "name": "workflow-file-read-as-yaml-and-held-whole",
+  "description": "A workflow file is read as a YAML document, so a step whose run command an alias names, a step written as a flow mapping and a run command written on the line after a comment-only key line each run node on the file they name, and those files are rooted. The workflow file's whole text is held as well, so a file only a job's env names, which no command reads, is held, nothing it exports is reported, and the package has one note. A file nothing names is still reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "notes": [
+    {
+      "kind": "unread-command",
+      "path": "."
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "MainFile",
+      "report": "none"
+    },
+    {
+      "symbol": "SeedFile",
+      "report": "none"
+    },
+    {
+      "symbol": "Seed",
+      "report": "none"
+    },
+    {
+      "symbol": "FlowFile",
+      "report": "none"
+    },
+    {
+      "symbol": "Flow",
+      "report": "none"
+    },
+    {
+      "symbol": "GateFile",
+      "report": "none"
+    },
+    {
+      "symbol": "Gate",
+      "report": "none"
+    },
+    {
+      "symbol": "ReportFile",
+      "report": "none"
+    },
+    {
+      "symbol": "Report",
+      "report": "none"
+    },
+    {
+      "symbol": "StrayFile",
+      "report": "DS1602",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "Stray",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    }
+  ]
+}

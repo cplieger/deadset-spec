@@ -1,0 +1,44 @@
+{
+  "name": "workflow-directory-is-where-its-commands-run",
+  "description": "A workflow step's working-directory, and a job's defaults.run.working-directory, set the directory that step's or that job's commands run in, so node . run there roots the directory's index file. A directory set for a job that runs no command roots nothing, but the workflow file's whole text is held, so that directory's index file is held, nothing it exports is reported, and the package has one note.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "notes": [
+    {
+      "kind": "unread-command",
+      "path": "."
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "MainFile",
+      "report": "none"
+    },
+    {
+      "symbol": "PublishFile",
+      "report": "none"
+    },
+    {
+      "symbol": "Publish",
+      "report": "none"
+    },
+    {
+      "symbol": "BuildFile",
+      "report": "none"
+    },
+    {
+      "symbol": "Build",
+      "report": "none"
+    },
+    {
+      "symbol": "IdleFile",
+      "report": "none"
+    },
+    {
+      "symbol": "Idle",
+      "report": "none"
+    }
+  ]
+}

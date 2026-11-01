@@ -1,0 +1,25 @@
+on: push
+permissions: {}
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: publish
+        working-directory: tools/publish
+        run: node .
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tools/build
+    steps:
+      - run: node .
+  idle:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tools/idle
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false

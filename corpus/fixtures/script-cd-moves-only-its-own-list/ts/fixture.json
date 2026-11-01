@@ -1,0 +1,28 @@
+{
+  "symbols": {
+    "ServerFile": {
+      "file": "target/api/server.js",
+      "line": 1
+    },
+    "Serve": {
+      "file": "target/api/server.js",
+      "line": 2
+    },
+    "ClientFile": {
+      "file": "target/web/client.js",
+      "line": 1
+    },
+    "Render": {
+      "file": "target/web/client.js",
+      "line": 2
+    },
+    "StrayFile": {
+      "file": "target/stray.js",
+      "line": 1
+    },
+    "Stray": {
+      "file": "target/stray.js",
+      "line": 2
+    }
+  }
+}

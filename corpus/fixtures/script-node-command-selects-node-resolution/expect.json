@@ -1,0 +1,35 @@
+{
+  "name": "script-node-command-selects-node-resolution",
+  "description": "A package with no compiler configuration and no Node member in its manifest whose script runs one of its files with node, after an assignment, resolves its JavaScript as Node does: its import map's node condition selects the file Node loads, and the file the browser condition names is reported. The script's text names neither file, so neither is held.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "nodeImpl",
+      "report": "none"
+    },
+    {
+      "symbol": "unusedNode",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "BrowserFile",
+      "report": "DS1602",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "browserImpl",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    }
+  ]
+}

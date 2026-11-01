@@ -1,6 +1,6 @@
 {
   "name": "module-a-script-names-in-its-text",
-  "description": "A file a command string names in its text and no root enters with all it exports is held: one after a preload flag's =, one inside a command substitution, the file the command word node spells, and one a workflow step and one a git hook name behind a path the shell assembles. Such files and what they export, and what only that keeps live, are not reported, and the package has one note across all of its command strings. Holding a file keeps its exports only, so a local function in a held file that nothing references is reported. The entry the tokens root with all it exports is not held, so its unused local function is reported, and a file no command names is still reported.",
+  "description": "A file a command string names in its text and no root enters with all it exports is held, whatever a command reader reads of the string: one inside a command substitution, the file the command word node spells, and one a workflow step and one a git hook name behind a path the shell assembles. Such files and what they export, and what only that keeps live, are not reported, and the package has one note across all of its command strings. Holding a file keeps its exports only, so a local function in a held file that nothing references is reported. A file a read command preloads, after a preload flag's =, is a root, so its unused local function is reported too, and a file no command names is still reported.",
   "languages": [
     "ts"
   ],

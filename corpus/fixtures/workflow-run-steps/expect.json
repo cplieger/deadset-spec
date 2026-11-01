@@ -1,10 +1,16 @@
 {
   "name": "workflow-run-steps",
-  "description": "A source file a workflow step's run command names by its path from the target root is a root, on a single-line command and in a block scalar, with or without a leading ./. A path built from an expression names no file, and a path under a key other than run is not read, so both files are reported as never imported.",
+  "description": "A source file a workflow step's run command names by its path from the target root is a root, on a single-line command and in a block scalar, with or without a leading ./. A path built from an expression and a path under a key other than run root nothing, but the workflow file's whole text is held, so both files are held, nothing they export is reported, and the package has one note.",
   "languages": [
     "ts"
   ],
   "target_kind": "application",
+  "notes": [
+    {
+      "kind": "unread-command",
+      "path": "."
+    }
+  ],
   "expect": [
     {
       "symbol": "Check",
@@ -20,17 +26,11 @@
     },
     {
       "symbol": "Lint",
-      "report": "DS1602",
-      "confidence": "certain",
-      "reachability_class": "certain",
-      "symbol_kind": "file"
+      "report": "none"
     },
     {
       "symbol": "Upload",
-      "report": "DS1602",
-      "confidence": "certain",
-      "reachability_class": "certain",
-      "symbol_kind": "file"
+      "report": "none"
     }
   ]
 }

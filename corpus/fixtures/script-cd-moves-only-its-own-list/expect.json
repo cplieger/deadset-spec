@@ -1,0 +1,40 @@
+{
+  "name": "script-cd-moves-only-its-own-list",
+  "description": "A cd moves the later commands of its own and-or list, and a list sent to the background with & runs in a subshell, so the next list starts in the package's directory again. The script cd api && node server.js & cd web && node client.js runs api/server.js and web/client.js, which are roots, so nothing they export is reported and no command is noted. A file no command names is still reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "ServerFile",
+      "report": "none"
+    },
+    {
+      "symbol": "Serve",
+      "report": "none"
+    },
+    {
+      "symbol": "ClientFile",
+      "report": "none"
+    },
+    {
+      "symbol": "Render",
+      "report": "none"
+    },
+    {
+      "symbol": "StrayFile",
+      "report": "DS1602",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "Stray",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "name": "workflow-command-written-with-yaml-escapes",
+  "description": "A workflow step's run command is the value YAML decodes from its scalar: an escape in double quotes, an escaped line break, a plain scalar continued on a more indented line or begun on the line after its key, and a block scalar whose header carries a comment. Each step runs node on the file the decoded command names, so every such file is rooted, nothing they export is reported, and no command is noted. A file no command names is still reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "MainFile",
+      "report": "none"
+    },
+    {
+      "symbol": "EncodedFile",
+      "report": "none"
+    },
+    {
+      "symbol": "Encoded",
+      "report": "none"
+    },
+    {
+      "symbol": "FoldedFile",
+      "report": "none"
+    },
+    {
+      "symbol": "Folded",
+      "report": "none"
+    },
+    {
+      "symbol": "FirstFile",
+      "report": "none"
+    },
+    {
+      "symbol": "First",
+      "report": "none"
+    },
+    {
+      "symbol": "ContinuedFile",
+      "report": "none"
+    },
+    {
+      "symbol": "Continued",
+      "report": "none"
+    },
+    {
+      "symbol": "NextLineFile",
+      "report": "none"
+    },
+    {
+      "symbol": "NextLine",
+      "report": "none"
+    },
+    {
+      "symbol": "LiteralFile",
+      "report": "none"
+    },
+    {
+      "symbol": "Literal",
+      "report": "none"
+    },
+    {
+      "symbol": "StrayFile",
+      "report": "DS1602",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "Stray",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    }
+  ]
+}
