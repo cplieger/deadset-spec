@@ -1,0 +1,8 @@
+{
+  "name": "idle-tool",
+  "private": true,
+  "version": "1.0.0",
+  "bin": {
+    "idle-tool": "cli.js"
+  }
+}

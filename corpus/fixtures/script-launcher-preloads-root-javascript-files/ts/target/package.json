@@ -1,0 +1,11 @@
+{
+  "name": "@example/app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node --require=./setup.js --import ./hooks.js index.js",
+    "dev": "tsx --import=./register.js index.js",
+    "debug": "ts-node -r ./trace.js index.js",
+    "test": "cross-env NODE_ENV=test npx --yes node -r ./test-env.js index.js"
+  }
+}

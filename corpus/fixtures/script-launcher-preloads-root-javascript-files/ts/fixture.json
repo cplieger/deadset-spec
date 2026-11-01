@@ -1,0 +1,60 @@
+{
+  "symbols": {
+    "MainFile": {
+      "file": "target/index.js",
+      "line": 1
+    },
+    "Main": {
+      "file": "target/index.js",
+      "line": 2
+    },
+    "SetUpFile": {
+      "file": "target/setup.js",
+      "line": 1
+    },
+    "SetUp": {
+      "file": "target/setup.js",
+      "line": 2
+    },
+    "HooksFile": {
+      "file": "target/hooks.js",
+      "line": 1
+    },
+    "Hooks": {
+      "file": "target/hooks.js",
+      "line": 2
+    },
+    "RegisterFile": {
+      "file": "target/register.js",
+      "line": 1
+    },
+    "Register": {
+      "file": "target/register.js",
+      "line": 2
+    },
+    "TraceFile": {
+      "file": "target/trace.js",
+      "line": 1
+    },
+    "Trace": {
+      "file": "target/trace.js",
+      "line": 2
+    },
+    "TestEnvFile": {
+      "file": "target/test-env.js",
+      "line": 1
+    },
+    "TestEnv": {
+      "file": "target/test-env.js",
+      "line": 2
+    },
+    "StrayFile": {
+      "file": "target/stray.js",
+      "line": 1
+    },
+    "Stray": {
+      "file": "target/stray.js",
+      "line": 2
+    }
+  }
+}

@@ -7,6 +7,7 @@
   "devDependencies": {
     "hook-tool": "1.0.0",
     "never-run": "1.0.0",
-    "staged-lint": "1.0.0"
+    "staged-lint": "1.0.0",
+    "idle-tool": "1.0.0"
   }
 }

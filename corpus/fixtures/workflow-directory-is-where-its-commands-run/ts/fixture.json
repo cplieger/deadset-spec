@@ -1,0 +1,32 @@
+{
+  "symbols": {
+    "MainFile": {
+      "file": "target/main.js",
+      "line": 1
+    },
+    "PublishFile": {
+      "file": "target/tools/publish/index.js",
+      "line": 1
+    },
+    "Publish": {
+      "file": "target/tools/publish/index.js",
+      "line": 2
+    },
+    "BuildFile": {
+      "file": "target/tools/build/index.js",
+      "line": 1
+    },
+    "Build": {
+      "file": "target/tools/build/index.js",
+      "line": 2
+    },
+    "IdleFile": {
+      "file": "target/tools/idle/index.js",
+      "line": 1
+    },
+    "Idle": {
+      "file": "target/tools/idle/index.js",
+      "line": 2
+    }
+  }
+}

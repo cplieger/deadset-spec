@@ -1,0 +1,15 @@
+on: push
+permissions: {}
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - run: "node scripts/\u0065ncoded.js"
+      - run: "node scripts/fold\
+          ed.js"
+      - run: node scripts/first.js &&
+          node scripts/continued.js
+      - run:
+          node scripts/next-line.js
+      - run: |  # a comment after the block header
+          node scripts/literal.js

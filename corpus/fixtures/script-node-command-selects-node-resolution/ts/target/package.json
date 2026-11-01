@@ -1,0 +1,12 @@
+{
+  "name": "@example/app",
+  "scripts": {
+    "start": "NODE_ENV=production node index.mjs"
+  },
+  "imports": {
+    "#impl": {
+      "node": "./server.mjs",
+      "default": "./browser.mjs"
+    }
+  }
+}

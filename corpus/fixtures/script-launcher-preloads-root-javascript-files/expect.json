@@ -1,0 +1,73 @@
+{
+  "name": "script-launcher-preloads-root-javascript-files",
+  "description": "The files the launchers the analysis reads preload, node's --require and --import, tsx's --import and ts-node's -r, written with or without =, and behind cross-env and npx, are roots of a package of JavaScript files with no compiler configuration, so nothing they export is reported, even at the confidence possible, and no command is noted. A file no command names is still reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "expect": [
+    {
+      "symbol": "MainFile",
+      "report": "none"
+    },
+    {
+      "symbol": "Main",
+      "report": "none"
+    },
+    {
+      "symbol": "SetUpFile",
+      "report": "none"
+    },
+    {
+      "symbol": "SetUp",
+      "report": "none"
+    },
+    {
+      "symbol": "HooksFile",
+      "report": "none"
+    },
+    {
+      "symbol": "Hooks",
+      "report": "none"
+    },
+    {
+      "symbol": "RegisterFile",
+      "report": "none"
+    },
+    {
+      "symbol": "Register",
+      "report": "none"
+    },
+    {
+      "symbol": "TraceFile",
+      "report": "none"
+    },
+    {
+      "symbol": "Trace",
+      "report": "none"
+    },
+    {
+      "symbol": "TestEnvFile",
+      "report": "none"
+    },
+    {
+      "symbol": "TestEnv",
+      "report": "none"
+    },
+    {
+      "symbol": "Stray",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "StrayFile",
+      "report": "DS1602",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "name": "workflow-directory-written-with-an-expression",
+  "description": "A step whose working-directory is written with an expression, which GitHub Actions evaluates per matrix entry, runs its command in a directory the analysis does not know, so the command roots nothing and its text holds every file it names in each directory: packages/a/build.js and packages/b/build.js are held, nothing they export is reported, and the package is noted. A file no command names is still reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "notes": [
+    {
+      "kind": "unread-command",
+      "path": "."
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "MainFile",
+      "report": "none"
+    },
+    {
+      "symbol": "BuildAFile",
+      "report": "none"
+    },
+    {
+      "symbol": "BuildA",
+      "report": "none"
+    },
+    {
+      "symbol": "BuildBFile",
+      "report": "none"
+    },
+    {
+      "symbol": "BuildB",
+      "report": "none"
+    },
+    {
+      "symbol": "StrayFile",
+      "report": "DS1602",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "Stray",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    }
+  ]
+}

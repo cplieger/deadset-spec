@@ -1,0 +1,11 @@
+on: push
+permissions: {}
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        pkg: [a, b]
+    steps:
+      - run: node build.js
+        working-directory: packages/${{ matrix.pkg }}

@@ -1,0 +1,15 @@
+on: push
+permissions: {}
+env:
+  FIRST: &first node scripts/seed.js
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      REPORT: scripts/report.js
+    steps:
+      - run: *first
+      - { run: node scripts/flow.js }
+      - run: # the last check
+          node scripts/gate.js
+      - run: node "$REPORT"

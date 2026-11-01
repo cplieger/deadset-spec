@@ -1,0 +1,48 @@
+{
+  "symbols": {
+    "MainFile": {
+      "file": "target/main.js",
+      "line": 1
+    },
+    "SeedFile": {
+      "file": "target/scripts/seed.js",
+      "line": 1
+    },
+    "Seed": {
+      "file": "target/scripts/seed.js",
+      "line": 2
+    },
+    "FlowFile": {
+      "file": "target/scripts/flow.js",
+      "line": 1
+    },
+    "Flow": {
+      "file": "target/scripts/flow.js",
+      "line": 2
+    },
+    "GateFile": {
+      "file": "target/scripts/gate.js",
+      "line": 1
+    },
+    "Gate": {
+      "file": "target/scripts/gate.js",
+      "line": 2
+    },
+    "ReportFile": {
+      "file": "target/scripts/report.js",
+      "line": 1
+    },
+    "Report": {
+      "file": "target/scripts/report.js",
+      "line": 2
+    },
+    "StrayFile": {
+      "file": "target/scripts/stray.js",
+      "line": 1
+    },
+    "Stray": {
+      "file": "target/scripts/stray.js",
+      "line": 2
+    }
+  }
+}

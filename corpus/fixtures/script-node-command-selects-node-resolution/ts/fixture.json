@@ -1,0 +1,20 @@
+{
+  "symbols": {
+    "nodeImpl": {
+      "file": "target/server.mjs",
+      "line": 1
+    },
+    "unusedNode": {
+      "file": "target/server.mjs",
+      "line": 3
+    },
+    "BrowserFile": {
+      "file": "target/browser.mjs",
+      "line": 1
+    },
+    "browserImpl": {
+      "file": "target/browser.mjs",
+      "line": 2
+    }
+  }
+}

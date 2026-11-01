@@ -4,6 +4,10 @@
       "file": "target/package.json",
       "line": 8
     },
+    "IdleTool": {
+      "file": "target/package.json",
+      "line": 11
+    },
     "NeverRun": {
       "file": "target/package.json",
       "line": 9
