@@ -1,0 +1,45 @@
+The Go rendering: an html/template page that calls, inside an unquoted attribute
+value after its first character, a template of another file that names one field.
+
+-- fixture.json --
+{
+  "symbols": {
+    "page.Name": {
+      "file": "target/main.go",
+      "line": 10
+    },
+    "page.Secret": {
+      "file": "target/main.go",
+      "line": 11
+    }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target renders one page.
+package main
+
+import (
+	"html/template"
+	"os"
+)
+
+type page struct {
+	Name   string
+	Secret string
+}
+
+var pages = template.Must(template.ParseFiles("page.html", "value.html"))
+
+func main() {
+	if err := pages.Execute(os.Stdout, page{Name: "n", Secret: "s"}); err != nil {
+		panic(err)
+	}
+}
+-- target/page.html --
+<a title=x{{template "value" .}}>x</a>
+-- target/value.html --
+{{define "value"}}{{.Name}}{{end}}

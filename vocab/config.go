@@ -179,7 +179,9 @@ func matchesAny(patterns []string, name string) bool {
 }
 
 // GeneratorRow is one generator of contract/generators.json. VersionMin and
-// VersionMax are empty where the row names no bound.
+// VersionMax are empty where the row names no bound. Registration is the names of
+// a service's generated registration functions, "<Svc>" standing for the
+// service's name.
 type GeneratorRow struct {
 	ID            string
 	Plugin        string
@@ -189,12 +191,19 @@ type GeneratorRow struct {
 	Cell          string
 	VersionMin    string
 	VersionMax    string
+	Registration  []string
 	Major         int
 }
 
 // GeneratorRows returns every generator row in document order, the order a
 // generated file is matched in.
-func GeneratorRows() []GeneratorRow { return slices.Clone(generatorRows) }
+func GeneratorRows() []GeneratorRow {
+	held := slices.Clone(generatorRows)
+	for i := range held {
+		held[i].Registration = slices.Clone(held[i].Registration)
+	}
+	return held
+}
 
 // ProtoPlugins returns every name proto.plugins admits.
 func ProtoPlugins() []string { return slices.Clone(protoPlugins) }

@@ -1,8 +1,7 @@
 {
   "name": "proto-go-grpc-no-type-fallback",
   "description": "A protoc-gen-go-grpc file and a protoc-gen-connect-go file are rpc-only: each publishes a consumer of the RPC, its client interface method, and no fallback record, because the messages they name are bound by the protoc-gen-go file.",
-  "rules": ["bindings.6", "bindings.7", "references-go.10", "references-go.11"],
-  "pending": "bindings.7: deadset-go publishes no fallback for an rpc-only file, and the RPC consumers of references-go.10 and references-go.11 (GO3b).",
+  "rules": ["references-go.10", "references-go.11"],
   "languages": ["go"],
   "target_kind": "application",
   "min_confidence": "possible",
@@ -10,12 +9,14 @@
     {
       "symbol": "GrpcClient.Ping",
       "role": "consumer",
-      "schema": "proto://v1#PingService.Ping"
+      "schema": "proto://v1#PingService.Ping",
+      "state": "live"
     },
     {
       "symbol": "ConnectClient.Ping",
       "role": "consumer",
-      "schema": "proto://v1#PingService.Ping"
+      "schema": "proto://v1#PingService.Ping",
+      "state": "live"
     },
     {
       "symbol": "GrpcFile",

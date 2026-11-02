@@ -36,7 +36,6 @@ var protoGenerations = []protocRun{
 	{fixture: "proto-facts-leave-report-unchanged-go", language: "go", plugin: "go-grpc", version: "v1.0.1", opt: "module=example.com/target", out: "target", files: []string{"v1/service.proto"}},
 	{fixture: "proto-facts-leave-report-unchanged-ts", language: "ts", plugin: "es", version: "v2.16.0", opt: "target=ts", out: "target/src/gen", files: []string{"v1/service.proto"}},
 	{fixture: "proto-facts-leave-report-unchanged-ts", language: "ts", plugin: "es", version: "v0.5.0", opt: "target=ts", out: "target/src/legacy", files: []string{"v1/legacy.proto"}},
-	{fixture: "proto-facts-unevaluated-before-serializers", language: "go", plugin: "go", version: "v1.36.11", opt: "module=example.com/target", out: "target", files: []string{"v1/service.proto"}},
 	{fixture: "proto-facts-unevaluated-before-serializers", language: "ts", plugin: "es", version: "v2.16.0", opt: "target=ts", out: "target/src/gen", files: []string{"v1/service.proto"}},
 	{fixture: "proto-rpc-called-from-ts", language: "ts", plugin: "es", version: "v2.16.0", opt: "target=ts", out: "target/src/gen", files: []string{"v1/service.proto"}},
 	{fixture: "proto-ts-create-literal-writes", language: "ts", plugin: "es", version: "v2.16.0", opt: "target=ts", out: "target/src/gen", files: []string{"v1/service.proto"}},
@@ -99,7 +98,7 @@ func TestRegenerateProtoFixtures(t *testing.T) {
 		}
 		args := []string{
 			"-I", filepath.Join(rendering, "target", "proto"),
-			"--plugin=protoc-gen-" + run.plugin + "=" + filepath.Join(plugins, "protoc-gen-"+run.plugin+"@"+run.version),
+			"--plugin=protoc-gen-" + run.plugin + "=" + filepath.Join(plugins, run.version, "protoc-gen-"+run.plugin),
 			"--" + run.plugin + "_out=" + out,
 		}
 		if run.opt != "" {

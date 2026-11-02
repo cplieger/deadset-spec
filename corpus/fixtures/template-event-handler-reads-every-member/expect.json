@@ -1,6 +1,6 @@
 {
   "name": "template-event-handler-reads-every-member",
-  "description": "An html/template text holding an event-handler attribute, a JavaScript context the engine encodes a value inside whole, is a set the analysis does not read whole, so every field and every exported method of what it renders is read.",
+  "description": "An html/template text holding an event-handler attribute whose value holds an action, which the engine's escaper escapes in a JavaScript context and writes with every field, is a set the analysis does not read by name, so every field and every exported method of what it renders is read.",
   "languages": [
     "go"
   ],

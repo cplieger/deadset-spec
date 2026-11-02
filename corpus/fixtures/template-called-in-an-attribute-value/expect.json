@@ -1,0 +1,24 @@
+{
+  "name": "template-called-in-an-attribute-value",
+  "description": "An html/template set that calls a template inside an attribute value escapes the called template in that value, so a callee that writes only a field there leaves no JavaScript context: the set reads only the fields its templates name, and a field none names is reported.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "page.Name",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field",
+      "symbol": "page.Secret"
+    }
+  ]
+}

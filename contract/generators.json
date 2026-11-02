@@ -1,5 +1,5 @@
 {
-  "description": "The generators whose output an analyzer recognises as generated from a schema, one row each, read by the analyzers, which decode a generated file by the row it matches, and by the schema reader, which reads a plugin of the generation configuration by its row. A file matches the first row, in this document's order, whose language is the file's, whose header pattern matches a line of the file's leading comments, whose runtime_import, where the row names one, the file imports, whose version interval, where the row names one, holds the version the output states, and whose option set the output meets. major is the generator's major version the row covers. cell is what the output's declarations bind, as grammar/analysis/bindings.md states each: exact, every message, enum, enum value, field, service and operation binds by reference; rpc-only, services and operations bind exactly and the file declares no message, enum or field; rpc-types-fallback, services and operations bind exactly and the file's other declarations take the fallback of scope types; fallback, the file takes the fallback of scope all; serializer-only, the output binds nothing and lists serializer entry points; exposure-only, the output binds nothing and the plugin's presence in the generation configuration is the HTTP exposure cap; unsupported, a recognised plugin whose version or option set no other row covers, which binds nothing and makes the merge write a binding-unsupported note. roles names, per role, the generated declarations that stand for a schema declaration, the registration forms and the hand-written implementers. plugin_tokens are the names the proto.plugins setting admits beside the plugins of these rows, each standing for a plugin that writes a language the suite does not analyze. http_exposure_plugins are the plugins whose presence in the generation configuration exposes a service over HTTP.",
+  "description": "The generators whose output an analyzer recognises as generated from a schema, one row each, read by the analyzers, which decode a generated file by the row it matches, and by the schema reader, which reads a plugin of the generation configuration by its row. A file matches the first row, in this document's order, whose language is the file's, whose header pattern matches a line of the file's leading comments, whose runtime_import, where the row names one, the file imports, whose version interval, where the row names one, holds the version the output states, and whose option set the output meets. major is the generator's major version the row covers. cell is what the output's declarations bind, as grammar/analysis/bindings.md states each: exact, every message, enum, enum value, field, service and operation binds by reference; rpc-only, services and operations bind exactly and the file declares no message, enum or field; rpc-types-fallback, services and operations bind exactly and the file's other declarations take the fallback of scope types; fallback, the file takes the fallback of scope all; serializer-only, the output binds nothing and lists serializer entry points; exposure-only, the output binds nothing and the plugin's presence in the generation configuration is the HTTP exposure cap; unsupported, a recognised plugin whose version or option set no other row covers, which binds nothing and makes the merge write a binding-unsupported note. roles names, per role, the generated declarations that stand for a schema declaration, the registration forms and the hand-written implementers; its registration lists the names of the generated registration functions of each service, <Svc> standing for the service's name. plugin_tokens are the names the proto.plugins setting admits beside the plugins of these rows, each standing for a plugin that writes a language the suite does not analyze. http_exposure_plugins are the plugins whose presence in the generation configuration exposes a service over HTTP.",
   "plugin_tokens": ["python", "java", "csharp", "rust", "ruby", "php", "cpp", "swift", "kotlin", "dart", "elixir", "objc", "other"],
   "http_exposure_plugins": ["protoc-gen-grpc-gateway", "protoc-gen-openapiv2"],
   "generators": [
@@ -61,7 +61,7 @@
       "cell": "rpc-only",
       "roles": {
         "consumer": "of each RPC, the <Svc>Client interface method; of the service, the <Svc>Client interface, New<Svc>Client, and the <Svc>Server interface outside registration forms",
-        "registration": "Register<Svc>Server",
+        "registration": ["Register<Svc>Server"],
         "implementer": "every method of a hand-written type converted to <Svc>Server that implements one of its methods"
       }
     },
@@ -76,7 +76,7 @@
       "cell": "rpc-only",
       "roles": {
         "consumer": "of each RPC, the <Svc>Client interface method; of the service, the <Svc>Client interface, New<Svc>Client, and the <Svc>Handler interface outside registration forms",
-        "registration": "New<Svc>Handler",
+        "registration": ["New<Svc>Handler"],
         "implementer": "every method of a hand-written type converted to <Svc>Handler that implements one of its methods"
       }
     },
@@ -90,7 +90,7 @@
       "cell": "rpc-only",
       "roles": {
         "consumer": "of each RPC, the <Svc>Client interface method; of the service, the <Svc>Client interface, New<Svc>Client, and the <Svc>Handler interface outside registration forms",
-        "registration": "Register<Svc>Handler",
+        "registration": ["Register<Svc>Handler"],
         "implementer": "every method of a hand-written type converted to <Svc>Handler that implements one of its methods"
       }
     },
@@ -114,7 +114,7 @@
       "header": "^// Code generated by protoc-gen-grpc-gateway\\. DO NOT EDIT\\.$",
       "cell": "exposure-only",
       "roles": {
-        "registration": "Register<Svc>HandlerServer and Register<Svc>HandlerClient",
+        "registration": ["Register<Svc>HandlerServer", "Register<Svc>HandlerClient"],
         "implementer": "every method of the argument Register<Svc>HandlerServer converts to <Svc>Server"
       }
     },

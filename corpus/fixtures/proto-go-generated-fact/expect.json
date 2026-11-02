@@ -1,8 +1,7 @@
 {
   "name": "proto-go-generated-fact",
   "description": "A Go file the analysis recognises as generated is one generated entry of the facts document, whatever wrote it: its line is the header line's, which a leading comment may put below the first line, its detail that line's text, and a file a generator row matches names the row, the version its output states and the schema file it names as its source.",
-  "rules": ["bindings.2", "bindings.3"],
-  "pending": "bindings.2 and bindings.3: deadset-go writes the facts document's generated entries with the header line, its text and the generator row (GO3b).",
+  "rules": ["references-go.9"],
   "languages": ["go"],
   "target_kind": "application",
   "min_confidence": "possible",
@@ -10,7 +9,8 @@
     {
       "symbol": "PingRequest",
       "role": "consumer",
-      "schema": "proto://v1#PingRequest"
+      "schema": "proto://v1#PingRequest",
+      "state": "live"
     }
   ],
   "generated": [

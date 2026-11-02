@@ -9,14 +9,15 @@ protoc --version | grep -qx 'libprotoc 36.2' || {
 }
 plugins=$(mktemp -d)
 trap 'rm -rf "$plugins"' EXIT
+# Each plugin keeps its own file name, under a directory named by its version,
+# because protoc-gen-connect-go writes the name it was run by into its header.
 gobin() { # module path, version, binary
   GOBIN="$plugins/$2" GOWORK=off GOFLAGS='' go install "$1@$2"
-  mv "$plugins/$2/$3" "$plugins/$3@$2"
 }
 npmbin() { # package, version, binary
-  mkdir -p "$plugins/npm-$3-$2"
+  mkdir -p "$plugins/npm-$3-$2" "$plugins/v$2"
   (cd "$plugins/npm-$3-$2" && npm init -y >/dev/null && npm install --no-audit --no-fund --save-exact "$1@$2" >/dev/null)
-  ln -s "$plugins/npm-$3-$2/node_modules/.bin/$3" "$plugins/$3@v$2"
+  ln -s "$plugins/npm-$3-$2/node_modules/.bin/$3" "$plugins/v$2/$3"
 }
 for v in v1.36.3 v1.36.5 v1.36.11; do gobin google.golang.org/protobuf/cmd/protoc-gen-go "$v" protoc-gen-go; done
 for v in v1.0.1 v1.6.2; do gobin google.golang.org/grpc/cmd/protoc-gen-go-grpc "$v" protoc-gen-go-grpc; done

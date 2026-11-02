@@ -1,8 +1,7 @@
 {
   "name": "proto-handler-calls-handler",
   "description": "A handler only another handler calls is a dead implementer whose via names the caller, because it survives exactly when the caller does, and the request field it reads is live with via naming both, because the search from either reaches it.",
-  "rules": ["bindings.17", "bindings.16", "references-go.10"],
-  "pending": "bindings.17: deadset-go publishes via on a dead implementer another implementer's search reaches (GO5).",
+  "rules": ["references-go.10"],
   "languages": ["go"],
   "target_kind": "application",
   "min_confidence": "possible",
