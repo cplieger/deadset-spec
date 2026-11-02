@@ -10,6 +10,7 @@ package suppress
 import (
 	"errors"
 	"fmt"
+	"slices"
 	"strconv"
 
 	"github.com/cplieger/deadset-spec/v8/vocab"
@@ -24,6 +25,17 @@ const (
 	Ignore   Mechanism = "ignore"
 	Baseline Mechanism = "baseline"
 )
+
+// Names reports whether a record of the mechanism can name a finding about the
+// subject, as kinds.json's remedies state; a subject with no row is a
+// declaration's.
+func Names(subject vocab.Subject, mechanism Mechanism) bool {
+	r, ok := subject.Remedy()
+	if !ok {
+		r, _ = vocab.SubjectDeclaration.Remedy()
+	}
+	return slices.Contains(r.Suppressions, string(mechanism))
+}
 
 // Site is where a suppression is written: a target-relative path, and the line
 // and column, counting UTF-16 code units, of its first character. A site naming

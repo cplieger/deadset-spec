@@ -29,6 +29,34 @@ type Language string
 // Subject is what a finding of a kind is about.
 type Subject string
 
+// Remedy is how a finding about one subject is suppressed or removed, a row of
+// kinds.json's remedies.
+type Remedy struct {
+	Subject Subject
+
+	// Names is the phrase a line names the subject by.
+	Names string
+
+	// Remedy is the change that removes a finding about the subject.
+	Remedy string
+
+	// Suppressions is each mechanism whose suppression record can name a
+	// finding about the subject: inline, ignore or baseline.
+	Suppressions []string
+}
+
+// Remedy returns the remedy row of the subject, and false for one kinds.json
+// lists none for.
+func (s Subject) Remedy() (Remedy, bool) {
+	for _, r := range remedies {
+		if r.Subject == s {
+			r.Suppressions = slices.Clone(r.Suppressions)
+			return r, true
+		}
+	}
+	return Remedy{}, false
+}
+
 // Class is a reachability class, ordered from the most to the least certain.
 type Class string
 
@@ -311,6 +339,9 @@ func Classes() []Class { return slices.Clone(classValues) }
 
 // Severities returns the severities a configuration may give a kind.
 func Severities() []Severity { return slices.Clone(severityValues) }
+
+// Subjects returns every subject a finding may be about, in kinds.json's order.
+func Subjects() []Subject { return slices.Clone(subjectValues) }
 
 // Fixabilities returns the fixabilities a finding may carry.
 func Fixabilities() []Fixability { return slices.Clone(fixabilityValues) }

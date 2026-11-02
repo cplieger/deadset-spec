@@ -1,0 +1,34 @@
+{
+  "description": "A Go module that also holds a Protocol Buffers schema file puts proto in scope by its census, and an orchestrator that does not hold the proto reader leaves proto out of the run before any analyzer runs, with a declared consumer that holds only schema files: one line names the language and the consumer left out, and the run ends with exit code 0 over the Go analyzer's report naming the target example.com/app, as languages.json states.",
+  "products": [
+    "deadset"
+  ],
+  "rename": {
+    "app/go.mod.txt": "app/go.mod",
+    "app/main.go.txt": "app/main.go"
+  },
+  "executables": [
+    "bin/go/analyzer"
+  ],
+  "report_file": "@OUT@/run/report.json",
+  "argv": [
+    "analyze",
+    "--target=@TARGET@/app",
+    "--scope=@TARGET@/scope.json",
+    "--run-dir=@OUT@/run"
+  ],
+  "expect": {
+    "exit": 0,
+    "report": "valid",
+    "finding_paths": [],
+    "stderr_contains": [
+      "deadset: this build of deadset holds no reader of \"proto\", so the run leaves it out of scope, and with it the consumer /",
+      "/schemas\n"
+    ],
+    "files_contain": {
+      "@OUT@/run/report.json": [
+        "\"identity\": \"example.com/app\""
+      ]
+    }
+  }
+}

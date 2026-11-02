@@ -81,6 +81,7 @@ type kindsDoc struct {
 	ReachabilityClasses []string        `json:"reachability_classes"`
 	Fixabilities        []string        `json:"fixabilities"`
 	Subjects            []string        `json:"subjects"`
+	Remedies            []remedyRow     `json:"remedies"`
 	TargetKinds         []string        `json:"target_kinds"`
 	SymbolKinds         json.RawMessage `json:"symbol_kinds"`
 	Ranges              []rangeRow      `json:"ranges"`
@@ -117,6 +118,13 @@ type kindDoc struct {
 	HoldsLive         bool        `json:"holds_live"`
 	Fixed             bool        `json:"fixed"`
 	DefaultEnabled    bool        `json:"default_enabled"`
+}
+
+type remedyRow struct {
+	Subject      string   `json:"subject"`
+	Names        string   `json:"names"`
+	Remedy       string   `json:"remedy"`
+	Suppressions []string `json:"suppressions"`
 }
 
 type rangeRow struct {

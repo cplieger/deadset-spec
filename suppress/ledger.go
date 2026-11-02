@@ -123,11 +123,11 @@ func pairs(record *Record, found *Finding) bool {
 		return false
 	}
 	subject, _ := vocab.SubjectOf(found.SymbolKind)
-	switch subject {
-	case vocab.SubjectDependency:
-		return record.Mechanism != Inline && record.Symbol == found.Ref && record.Path == found.Path
-	case vocab.SubjectFile, vocab.SubjectRecord:
+	switch {
+	case !Names(subject, record.Mechanism):
 		return false
+	case subject == vocab.SubjectDependency:
+		return record.Symbol == found.Ref && record.Path == found.Path
 	}
 	if record.Bound != "" && record.Bound == found.Key() {
 		return true
