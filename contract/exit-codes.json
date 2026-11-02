@@ -19,7 +19,7 @@
     {
       "code": 3,
       "name": "failure",
-      "meaning": "The run cannot answer, for a cause a class of failure_classes names. A setup failure is a cause in the project: the run holds no program to analyze, a setup failure stops the analysis of a declared configuration or of every configuration the analysis derived, a declared consumer or a declared build configuration failed to load, or a document the target holds at its root cannot be read. A run failure is a cause in the environment or in a product: a document the run was asked to write cannot be produced or written, in which case a rendering that is not produced leaves the report already written, a path the report must name has no spelling the report admits, the analysis needs more memory than the machine makes available, an analyzer could not be found, started, described or admitted, an acquired artifact's digest did not match, a pending finding met no other side at the merge, the run was interrupted, or a product failed for a cause in itself. A type error in source the program holds is none of these: it skips the function holding it, as grammar/analysis/program.md states, and the exit code follows the findings. The errors are printed, the one class line among them, and no finding list is, so a partial result is never read as a clean tree."
+      "meaning": "The run cannot answer, for a cause a class of failure_classes names. A setup failure is a cause in the project: the run holds no program to analyze, a setup failure stops the analysis of a declared configuration or of every configuration the analysis derived, a declared consumer or a declared build configuration failed to load, a document the target holds at its root cannot be read, or a language in scope is one the orchestrator holds no reader of. A run failure is a cause in the environment or in a product: a document the run was asked to write cannot be produced or written, in which case a rendering that is not produced leaves the report already written, a path the report must name has no spelling the report admits, the analysis needs more memory than the machine makes available, an analyzer could not be found, started, described or admitted, an acquired artifact's digest did not match, a pending finding met no other side at the merge, the run was interrupted, or a product failed for a cause in itself. A type error in source the program holds is none of these: it skips the function holding it, as grammar/analysis/program.md states, and the exit code follows the findings. The errors are printed, the one class line among them, and no finding list is, so a partial result is never read as a clean tree."
     },
     {
       "code": 4,
@@ -85,6 +85,12 @@
           "languages": ["go", "ts"],
           "meaning": "A generated file matches a generator row whose version interval holds the version the file states, and its bindings do not decode as the row states them, so the row is wrong for output it claims to cover.",
           "fix": "Name the generated file and its generator row, and tell the user to regenerate the file, or to report the file to the analyzer's maintainers where freshly generated output fails the same way."
+        },
+        {
+          "class": "unsupported-language",
+          "languages": ["proto"],
+          "meaning": "A language in scope is one whose runner is in-process and whose reader the orchestrator does not hold: analysis.languages names it, or it is the only language the census of the target puts in scope.",
+          "fix": "Name the language, and tell the user to run a release of the orchestrator that holds its reader, or, where analysis.languages names it, to leave it out of analysis.languages."
         }
       ]
     },

@@ -1,0 +1,32 @@
+{
+  "description": "A run that findings fail names, for each subject of a failing finding, the change kinds.json's remedies give that subject and only the suppression records its suppressions name: a declaration finding offers a directive, an ignore entry or a baseline row, while a file finding and a configuration-record finding offer none, because no suppression record can name a file or a record of deadset's own configuration.",
+  "products": [
+    "deadset"
+  ],
+  "rename": {
+    "tsconfig.json.txt": "tsconfig.json"
+  },
+  "executables": [
+    "bin/ts/analyzer"
+  ],
+  "report_file": "@OUT@/run/report.json",
+  "argv": [
+    "analyze",
+    "--target=@TARGET@",
+    "--run-dir=@OUT@/run"
+  ],
+  "expect": {
+    "exit": 1,
+    "report": "valid",
+    "finding_paths": [
+      "deadset.json",
+      "src/orphan.ts",
+      "src/panel.ts"
+    ],
+    "stdout_contains": [
+      "remediation: for each failing finding about a declaration: delete the symbol, or wire it up so the program uses it; or record an adjudication with its reason in an inline directive, a deadset-ignore.json entry or a deadset-baseline.json row\n",
+      "remediation: for each failing finding about a file: delete the file, name it as a root, or build it in a configuration of the build matrix; no suppression can name a file\n",
+      "remediation: for each failing finding about a record of deadset's own configuration: correct or remove the record the finding names; no suppression can name a record of deadset's own configuration\n"
+    ]
+  }
+}

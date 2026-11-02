@@ -192,6 +192,11 @@ func (d *vocabDocs) versions(w *writer) {
 	}
 	w.f(")\n\nvar languages = %s\n\n", goConsts("Language", ids, languageIdent))
 	writeConsts(w.f, "subjects a finding is about", "Subject", "Subject", d.kinds.Subjects, ident)
+	w.f("var remedies = []Remedy{\n")
+	for _, r := range d.kinds.Remedies {
+		w.f("{Subject: Subject%s, Names: %q, Suppressions: %s, Remedy: %q},\n", ident(r.Subject), r.Names, goStrings(r.Suppressions), r.Remedy)
+	}
+	w.f("}\n\n")
 	writeConsts(w.f, "reachability classes, from the most to the least certain", "Class", "", d.kinds.ReachabilityClasses, ident)
 	writeConsts(w.f, "severities a configuration may give a kind", "Severity", "", d.kinds.Severities, ident)
 	writeConsts(w.f, "fixabilities a finding may carry", "Fixability", "", d.kinds.Fixabilities, ident)

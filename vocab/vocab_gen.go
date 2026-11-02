@@ -36,6 +36,15 @@ const (
 
 var subjectValues = []Subject{SubjectDeclaration, SubjectBinding, SubjectPart, SubjectFile, SubjectDependency, SubjectRecord}
 
+var remedies = []Remedy{
+	{Subject: SubjectDeclaration, Names: "a declaration", Suppressions: []string{"inline", "ignore", "baseline"}, Remedy: "delete the symbol, or wire it up so the program uses it"},
+	{Subject: SubjectBinding, Names: "an import binding", Suppressions: []string{"inline", "ignore", "baseline"}, Remedy: "delete the import, or use what it binds"},
+	{Subject: SubjectPart, Names: "a part of a declaration", Suppressions: []string{"inline", "ignore", "baseline"}, Remedy: "remove the part, or use it"},
+	{Subject: SubjectFile, Names: "a file", Suppressions: []string{}, Remedy: "delete the file, name it as a root, or build it in a configuration of the build matrix"},
+	{Subject: SubjectDependency, Names: "a dependency row", Suppressions: []string{"ignore", "baseline"}, Remedy: "remove the dependency"},
+	{Subject: SubjectRecord, Names: "a record of deadset's own configuration", Suppressions: []string{}, Remedy: "correct or remove the record the finding names"},
+}
+
 // The reachability classes, from the most to the least certain.
 const (
 	Certain  Class = "certain"
@@ -831,6 +840,7 @@ const (
 	SetupUnreadableDocument           = "unreadable-document"
 	SetupMissingImportPath            = "missing-import-path"
 	SetupBindingUndecodable           = "binding-undecodable"
+	SetupUnsupportedLanguage          = "unsupported-language"
 )
 
 // The run-failure classes.
@@ -861,6 +871,7 @@ var setupClasses = []SetupClass{
 	{Name: SetupUnreadableDocument, Languages: []Language{Go, TS}},
 	{Name: SetupMissingImportPath, Languages: []Language{Proto}},
 	{Name: SetupBindingUndecodable, Languages: []Language{Go, TS}},
+	{Name: SetupUnsupportedLanguage, Languages: []Language{Proto}},
 }
 
 var runClasses = []RunClass{

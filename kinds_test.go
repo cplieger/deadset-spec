@@ -13,6 +13,7 @@ import (
 	"testing"
 
 	"github.com/cplieger/deadset-spec/v8"
+	"github.com/cplieger/deadset-spec/v8/vocab"
 )
 
 const kindsPath = "contract/kinds.json"
@@ -41,9 +42,17 @@ type kindsDocument struct {
 	ReachabilityClasses []string      `json:"reachability_classes"`
 	Fixabilities        []string      `json:"fixabilities"`
 	Subjects            []string      `json:"subjects"`
+	Remedies            []remedyRow   `json:"remedies"`
 	Ranges              []codeRange   `json:"ranges"`
 	Kinds               []kindRow     `json:"kinds"`
 	Retired             []retiredKind `json:"retired"`
+}
+
+type remedyRow struct {
+	Subject      string   `json:"subject"`
+	Names        string   `json:"names"`
+	Remedy       string   `json:"remedy"`
+	Suppressions []string `json:"suppressions"`
 }
 
 type codeRange struct {
@@ -588,5 +597,33 @@ func TestKindsPublicTextsHoldNoSemicolon(t *testing.T) {
 				t.Errorf("Kind(%s).%s = %q, want no semicolon", k.Code, field, text)
 			}
 		}
+	}
+}
+
+// Every subject has one remedies row, in the subjects' order, naming it, the
+// change that removes its finding and only mechanisms a suppression record is
+// written in; the vocabulary answers each row.
+func TestKindsRemediesHoldOneRowPerSubject(t *testing.T) {
+	t.Parallel()
+
+	doc := loadKinds(t)
+	var subjects []string
+	for _, row := range doc.Remedies {
+		subjects = append(subjects, row.Subject)
+		if strings.TrimSpace(row.Names) == "" || strings.TrimSpace(row.Remedy) == "" {
+			t.Errorf("remedies row %s names %q, remedy %q, want both", row.Subject, row.Names, row.Remedy)
+		}
+		for _, m := range row.Suppressions {
+			if !slices.Contains([]string{"inline", "ignore", "baseline"}, m) {
+				t.Errorf("remedies row %s suppressions holds %q, want inline, ignore or baseline", row.Subject, m)
+			}
+		}
+		got, ok := vocab.Subject(row.Subject).Remedy()
+		if !ok || got.Names != row.Names || got.Remedy != row.Remedy || !slices.Equal(got.Suppressions, row.Suppressions) {
+			t.Errorf("Subject(%s).Remedy() = %+v, %t, want the row %+v", row.Subject, got, ok, row)
+		}
+	}
+	if !slices.Equal(subjects, doc.Subjects) {
+		t.Errorf("remedies rows name %v, want one per subject in order %v", subjects, doc.Subjects)
 	}
 }

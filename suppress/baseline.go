@@ -34,12 +34,12 @@ type Provenance struct {
 	Version  string
 }
 
-// Recordable reports whether a round records a row for a reported finding: none
-// for one about a row of a document other than a dependency row, which no record
-// binds, so its row would be stale on the first read back.
+// Recordable reports whether a round records a row for a reported finding: one
+// whose subject a baseline row can name, as kinds.json's remedies state, since
+// any other row would be stale on the first read back.
 func Recordable(found *report.Finding) bool {
 	subject, _ := vocab.SubjectOf(found.Symbol.Kind)
-	return subject != vocab.SubjectFile && subject != vocab.SubjectRecord
+	return Names(subject, Baseline)
 }
 
 // Fixpoint runs the rounds of a baseline write: the first reads no row, each
