@@ -67,7 +67,10 @@ type (
 		Header        string `json:"header"`
 		RuntimeImport string `json:"runtime_import"`
 		Cell          string `json:"cell"`
-		Major         int    `json:"major"`
+		Roles         struct {
+			Registration []string `json:"registration"`
+		} `json:"roles"`
+		Major int `json:"major"`
 	}
 	confidenceDoc struct {
 		Evidence []evidenceRow `json:"evidence"`

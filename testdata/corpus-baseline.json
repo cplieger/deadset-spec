@@ -393,6 +393,7 @@
     "target-kind-per-language-ts-library",
     "target-of-several-modules",
     "template-attribute-value-like-an-event-handler",
+    "template-called-in-an-attribute-value",
     "template-event-handler-reads-every-member",
     "template-field-member-kinds",
     "template-retains-only-named-methods",

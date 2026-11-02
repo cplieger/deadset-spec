@@ -1,11 +1,7 @@
 {
   "name": "proto-implementer-carries-helper",
   "description": "A dead implementer carries the finding of each hand-written declaration only its own search reaches: the helper the handler alone calls is no finding of the report, and the implementer record's carried list holds it, in the implementer's component.",
-  "rules": [
-    "bindings.17",
-    "references-go.10"
-  ],
-  "pending": "bindings.17: deadset-go searches from each dead implementer and publishes the findings only that search reaches as carried (GO5).",
+  "rules": ["references-go.10"],
   "languages": [
     "go"
   ],
