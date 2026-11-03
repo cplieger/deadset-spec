@@ -1,0 +1,20 @@
+{
+  "symbols": {
+    "PluginFile": {
+      "file": "target/src/plugins/greeting.ts",
+      "line": 1
+    },
+    "plugin": {
+      "file": "target/src/plugins/greeting.ts",
+      "line": 2
+    },
+    "WidgetFile": {
+      "file": "target/src/widgets/button.ts",
+      "line": 1
+    },
+    "widget": {
+      "file": "target/src/widgets/button.ts",
+      "line": 2
+    }
+  }
+}

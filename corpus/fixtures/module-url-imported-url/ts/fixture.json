@@ -1,0 +1,12 @@
+{
+  "symbols": {
+    "WorkerFile": {
+      "file": "target/src/worker.ts",
+      "line": 1
+    },
+    "handle": {
+      "file": "target/src/worker.ts",
+      "line": 7
+    }
+  }
+}

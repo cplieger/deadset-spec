@@ -1,0 +1,16 @@
+{
+  "symbols": {
+    "spawn": {
+      "file": "target/src/loaders.ts",
+      "line": 8
+    },
+    "WorkerFile": {
+      "file": "target/src/worker/one.ts",
+      "line": 1
+    },
+    "workerValue": {
+      "file": "target/src/worker/one.ts",
+      "line": 2
+    }
+  }
+}

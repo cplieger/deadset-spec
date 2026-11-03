@@ -1,0 +1,30 @@
+{
+  "name": "worker-url-from-node-url",
+  "description": "A worker address built with a URL imported from node:url, the platform's URL class, roots the file it names as one built with the global URL does, wherever the call is written: the worker's file is not reported, while the function nobody calls and the file's export nothing imports are.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "spawn",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "WorkerFile",
+      "report": "none"
+    },
+    {
+      "symbol": "workerValue",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "variable",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

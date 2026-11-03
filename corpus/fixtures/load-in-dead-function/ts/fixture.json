@@ -1,0 +1,52 @@
+{
+  "symbols": {
+    "loadLiteral": {
+      "file": "target/src/loaders.ts",
+      "line": 6
+    },
+    "loadPlugin": {
+      "file": "target/src/loaders.ts",
+      "line": 10
+    },
+    "loadEager": {
+      "file": "target/src/loaders.ts",
+      "line": 14
+    },
+    "workerURL": {
+      "file": "target/src/loaders.ts",
+      "line": 18
+    },
+    "LiteralFile": {
+      "file": "target/src/literal/one.ts",
+      "line": 1
+    },
+    "literalValue": {
+      "file": "target/src/literal/one.ts",
+      "line": 2
+    },
+    "PluginFile": {
+      "file": "target/src/plugins/one.ts",
+      "line": 1
+    },
+    "pluginValue": {
+      "file": "target/src/plugins/one.ts",
+      "line": 2
+    },
+    "EagerFile": {
+      "file": "target/src/eager/one.ts",
+      "line": 1
+    },
+    "eagerValue": {
+      "file": "target/src/eager/one.ts",
+      "line": 2
+    },
+    "WorkerFile": {
+      "file": "target/src/worker/one.ts",
+      "line": 1
+    },
+    "workerValue": {
+      "file": "target/src/worker/one.ts",
+      "line": 2
+    }
+  }
+}

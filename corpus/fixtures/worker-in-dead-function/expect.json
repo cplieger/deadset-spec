@@ -1,0 +1,30 @@
+{
+  "name": "worker-in-dead-function",
+  "description": "A worker address roots the file it names wherever the call is written: a new Worker call in a function nobody calls leaves its file a root, while the function and the file's export nothing imports are reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "spawn",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "WorkerFile",
+      "report": "none"
+    },
+    {
+      "symbol": "workerValue",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "variable",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "symbols": {
+    "OnlyTested": {
+      "file": "target/src/lib.ts",
+      "line": 5
+    },
+    "Run": {
+      "file": "target/src/lib.ts",
+      "line": 1
+    },
+    "HomeFile": {
+      "file": "target/src/pages/home.ts",
+      "line": 1
+    },
+    "Title": {
+      "file": "target/src/pages/home.ts",
+      "line": 2
+    },
+    "LogoFile": {
+      "file": "target/src/links/logo.ts",
+      "line": 1
+    },
+    "Logo": {
+      "file": "target/src/links/logo.ts",
+      "line": 2
+    }
+  }
+}
