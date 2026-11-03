@@ -9,6 +9,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"reflect"
 	"slices"
 	"strings"
 
@@ -42,6 +43,7 @@ type Case struct {
 // compared.
 type CaseOutcome struct {
 	FilesContain   map[string][]string `json:"files_contain"`
+	StdoutJSON     json.RawMessage     `json:"stdout_json"`
 	Report         string              `json:"report"`
 	StdoutContains []string            `json:"stdout_contains"`
 	StderrContains []string            `json:"stderr_contains"`
@@ -154,6 +156,9 @@ func runOnce(ctx context.Context, vectors fs.FS, name string, c *Case, argv []st
 		return "", err
 	}
 	held := outcomeDifference(&c.Expect, code, string(stdout), stderr, report)
+	if c.Expect.StdoutJSON != nil {
+		held = append(held, documentDifference(stdout, c.Expect.StdoutJSON, replace)...)
+	}
 	for _, name := range slices.Sorted(maps.Keys(c.Expect.FilesContain)) {
 		held = append(held, contentDifference(replace.Replace(name), c.Expect.FilesContain[name])...)
 	}
@@ -211,6 +216,49 @@ func outcomeDifference(want *CaseOutcome, code int, stdout, stderr, report strin
 		held = append(held, reportDifference(want, report)...)
 	}
 	return held
+}
+
+// documentDifference is how standard output departs from the one JSON document
+// a case expects, compared as decoded values once @TARGET@ and @OUT@ are
+// replaced in the expected document's strings.
+func documentDifference(stdout, expected []byte, replace *strings.Replacer) []string {
+	var want any
+	if err := json.Unmarshal(expected, &want); err != nil {
+		return []string{fmt.Sprintf("the expected standard output: %v", err)}
+	}
+	want = replaced(want, replace)
+	var got any
+	if err := DecodeStrict(stdout, &got); err != nil {
+		return []string{fmt.Sprintf("stdout %q is not one JSON document: %v", strings.TrimSpace(string(stdout)), err)}
+	}
+	if !reflect.DeepEqual(got, want) {
+		return []string{fmt.Sprintf("stdout %s, want %s", compact(got), compact(want))}
+	}
+	return nil
+}
+
+// replaced is v with every string in it, a member name included, replaced.
+func replaced(v any, replace *strings.Replacer) any {
+	switch v := v.(type) {
+	case string:
+		return replace.Replace(v)
+	case []any:
+		for i := range v {
+			v[i] = replaced(v[i], replace)
+		}
+	case map[string]any:
+		out := make(map[string]any, len(v))
+		for name, member := range v {
+			out[replace.Replace(name)] = replaced(member, replace)
+		}
+		return out
+	}
+	return v
+}
+
+func compact(v any) string {
+	data, _ := json.Marshal(v)
+	return string(data)
 }
 
 // contentDifference is every string a file the run writes must hold and does

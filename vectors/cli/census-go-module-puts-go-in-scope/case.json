@@ -1,0 +1,34 @@
+{
+  "description": "The print-languages verb prints the plan analyze makes: a Go module puts Go alone in scope by the go.mod marker of the Go row of languages.json, so the census names go as detected and the default deadset-go entry as the analyzer the run invokes.",
+  "products": [
+    "deadset"
+  ],
+  "rename": {
+    "go.mod.txt": "go.mod",
+    "main.go.txt": "main.go"
+  },
+  "argv": [
+    "print-languages",
+    "--target=@TARGET@"
+  ],
+  "expect": {
+    "exit": 0,
+    "stdout_json": {
+      "languages": [
+        {
+          "language": "go",
+          "provenance": "detected"
+        }
+      ],
+      "analyzers": [
+        {
+          "name": "deadset-go",
+          "languages": [
+            "go"
+          ]
+        }
+      ],
+      "left_out": []
+    }
+  }
+}

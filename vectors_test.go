@@ -10,10 +10,12 @@ import (
 	"slices"
 	"strings"
 	"testing"
+	"testing/fstest"
 
 	spec "github.com/cplieger/deadset-spec/v8"
 	"github.com/cplieger/deadset-spec/v8/corpus"
 	"github.com/cplieger/deadset-spec/v8/facts"
+	"github.com/cplieger/deadset-spec/v8/vocab"
 )
 
 // updateVectors is the gate that rewrites every family's expected outputs from
@@ -154,6 +156,18 @@ func TestVectorCasesReproduceFromTheirInputs(t *testing.T) {
 	}
 }
 
+// A case expecting a document on standard output and naming no argv is
+// reported as naming none, not checked against the schema of a verb it lacks.
+func TestCliCaseProblemsNameAMissingArgvBesideAnExpectedDocument(t *testing.T) {
+	t.Parallel()
+
+	fsys := fstest.MapFS{"vectors/cli/no-argv/case.json": {Data: []byte(`{"description": "d", "products": ["deadset"], "expect": {"exit": 0, "stdout_json": {}}}`)}}
+	problems := cliCaseProblems(t, fsys, "no-argv")
+	if !slices.Contains(problems, "case.json names no description, product or argv") {
+		t.Errorf("cliCaseProblems = %q, want it to name the missing argv", problems)
+	}
+}
+
 // cliCaseProblems holds one command-line case to its layout: a case.json that
 // decodes strictly, names products the Contract's command-line surface lists and
 // an exit code of the table, and a tree holding every file it renames or makes
@@ -185,6 +199,9 @@ func cliCaseProblems(t *testing.T, fsys fs.FS, dir string) []string {
 	}
 	if c.Expect.Report != "" && c.Expect.Report != "valid" && c.Expect.Report != "absent" {
 		problems = append(problems, "expect.report is "+c.Expect.Report+", want valid or absent")
+	}
+	if c.Expect.StdoutJSON != nil && len(c.Argv) > 0 {
+		problems = append(problems, stdoutProblems(c.Argv[0], c.Expect.StdoutJSON)...)
 	}
 	for from := range c.Rename {
 		if _, err := fs.Stat(fsys, path.Join(at, "tree", from)); err != nil {
@@ -224,6 +241,29 @@ func cliCaseProblems(t *testing.T, fsys fs.FS, dir string) []string {
 		if !held[file] {
 			problems = append(problems, "makes "+file+" executable, which the tree does not hold")
 		}
+	}
+	return problems
+}
+
+// stdoutSchemas is the schema each JSON document an orchestrator verb writes on
+// standard output is an instance of, by the verb's stdout in contract/cli.json.
+var stdoutSchemas = map[string]string{"census": censusSchemaPath}
+
+// stdoutProblems holds the document a case expects on standard output to the
+// schema of what its verb writes there.
+func stdoutProblems(verb string, document []byte) []string {
+	at := slices.IndexFunc(vocab.OrchestratorVerbs(), func(v vocab.Verb) bool { return v.Name == verb })
+	if at < 0 {
+		return []string{"expects a document on the standard output of " + verb + ", which is no verb of the orchestrator"}
+	}
+	stdout := vocab.OrchestratorVerbs()[at].Stdout
+	schema, ok := stdoutSchemas[stdout]
+	if !ok {
+		return []string{"expects a document on the standard output of " + verb + ", whose " + stdout + " no schema states"}
+	}
+	var problems []string
+	for _, line := range validationErrors(schema, document) {
+		problems = append(problems, "expect.stdout_json: "+line)
 	}
 	return problems
 }

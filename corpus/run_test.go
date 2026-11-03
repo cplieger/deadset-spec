@@ -347,6 +347,34 @@ func TestRunCasesHoldsTheOutputAndTheFilesTheRunWrites(t *testing.T) {
 	}
 }
 
+func TestRunCasesHoldsTheStandardOutputToTheExpectedDocument(t *testing.T) {
+	vectors := fstest.MapFS{
+		"vectors/cli/census/case.json": {Data: []byte(`{"description": "d", "products": ["p"], "argv": ["x"],
+			"expect": {"exit": 0, "stdout_json": {"at": "@TARGET@/a", "n": [1, "b"]}}}`)},
+		"vectors/cli/census/tree/a": {Data: []byte("a\n")},
+	}
+	for _, tc := range []struct {
+		name, script, want string
+	}{
+		{name: "the document in another layout", script: `printf '{\n  "n": [1, "b"],\n  "at": "%s/a"\n}\n' "$PWD"`},
+		{name: "a value differing", script: `printf '{"at": "%s/a", "n": [2, "b"]}' "$PWD"`, want: `"n":[2,"b"]`},
+		{name: "the target unreplaced", script: `printf '{"at": "@TARGET@/a", "n": [1, "b"]}'`, want: `"at":"@TARGET@/a"`},
+		{name: "a member added", script: `printf '{"at": "%s/a", "n": [1, "b"], "m": 0}' "$PWD"`, want: `"m":0`},
+		{name: "a second document", script: `printf '{"at": "%s/a", "n": [1, "b"]} {}' "$PWD"`, want: "data after the document"},
+		{name: "no document", script: `echo 'go'`, want: "is not one JSON document"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			got, err := RunCases(t.Context(), vectors, "p", Analyzer{Command: []string{"/bin/sh", "-c", tc.script, "sh"}})
+			if err != nil || len(got) != 1 {
+				t.Fatalf("RunCases = %+v, %v, want one result", got, err)
+			}
+			if tc.want == "" && got[0].Result != Pass || tc.want != "" && (got[0].Result != Fail || !strings.Contains(got[0].Message, tc.want)) {
+				t.Errorf("RunCases(%s) = %+v, want %q", tc.name, got[0], tc.want)
+			}
+		})
+	}
+}
+
 func TestRunCasesGivesTheRunTheCaseEnvironment(t *testing.T) {
 	vectors := fstest.MapFS{
 		"vectors/cli/env/case.json": {Data: []byte(`{"description": "d", "products": ["p"], "argv": ["x"], "env": {"CASE_DIR": "@TARGET@"},

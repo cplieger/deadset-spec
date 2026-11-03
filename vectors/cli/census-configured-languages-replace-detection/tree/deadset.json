@@ -1,0 +1,10 @@
+{
+  "target": {
+    "kind": "library"
+  },
+  "analysis": {
+    "languages": [
+      "go"
+    ]
+  }
+}

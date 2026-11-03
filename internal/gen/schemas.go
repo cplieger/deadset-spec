@@ -160,6 +160,7 @@ type detailsBranch struct {
 // filledSchemas are the published schemas whose source differs from them only
 // by the members x-inline, x-enum and x-per-language stand for, by source.
 var filledSchemas = map[string]string{
+	"authoring/census.schema.json":              "contract/census.schema.json",
 	"authoring/describe.schema.json":            "contract/describe.schema.json",
 	"authoring/report.schema.json":              "contract/report.schema.json",
 	"authoring/conformance-results.schema.json": "corpus/conformance-results.schema.json",
