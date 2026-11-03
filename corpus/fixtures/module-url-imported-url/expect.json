@@ -1,0 +1,22 @@
+{
+  "name": "module-url-imported-url",
+  "description": "A URL imported from node:url is the platform's URL class, so a new URL expression resolved against import.meta.url through it loads the file its string names, as one through the global URL does: the file is not reported, while an export of it that nothing imports is.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "WorkerFile",
+      "report": "none"
+    },
+    {
+      "symbol": "handle",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

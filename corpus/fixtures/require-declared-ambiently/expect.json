@@ -1,0 +1,18 @@
+{
+  "name": "require-declared-ambiently",
+  "description": "A require that the target declares only in a declaration file, with no runtime value, is the platform's or the bundler's require: a computed require of a directory below the calling file loads every file there with its exports, as one of an undeclared require does.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "GreetingFile",
+      "report": "none"
+    },
+    {
+      "symbol": "greeting",
+      "report": "none"
+    }
+  ]
+}

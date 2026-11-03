@@ -1,0 +1,46 @@
+{
+  "name": "computed-load-reads-text",
+  "description": "An import.meta.glob call whose query reads each matched file as text or as a URL, a query of raw, url or inline or an as of raw or url, uses the file as an asset and references no declaration of it: the file is not reported, an export nothing else references is, and a test file's text load leaves a declaration only tests reference reported under the test-only code.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "OnlyTested",
+      "report": "DS1102",
+      "symbol_kind": "function",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Run",
+      "report": "none"
+    },
+    {
+      "symbol": "HomeFile",
+      "report": "none"
+    },
+    {
+      "symbol": "Title",
+      "report": "DS1001",
+      "symbol_kind": "variable",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "LogoFile",
+      "report": "none"
+    },
+    {
+      "symbol": "Logo",
+      "report": "DS1001",
+      "symbol_kind": "variable",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

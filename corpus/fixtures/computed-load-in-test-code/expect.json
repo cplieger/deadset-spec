@@ -1,0 +1,22 @@
+{
+  "name": "computed-load-in-test-code",
+  "description": "An import.meta.glob call written in a test file loads each matched module for the tests alone: it is a test reference to what each module exports, never a production root, so a declaration only the test's glob and the test reach is reported under the test-only code, and the one beside it that the entry file imports is reported under no code.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "OnlyTested",
+      "report": "DS1102",
+      "symbol_kind": "function",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Production",
+      "report": "none"
+    }
+  ]
+}
