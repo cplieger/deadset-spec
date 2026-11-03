@@ -16,6 +16,13 @@
       "violates": "the analyzer object omits conformance, so the report records no conformance pass"
     },
     {
+      "file": "census-languages-empty.json",
+      "schema": "contract/census.schema.json",
+      "constraint": "minItems",
+      "instance_path": "/languages",
+      "violates": "the census names no language in scope, and a tree in which the census finds none ends the verb with the setup failure no-program instead"
+    },
+    {
       "file": "component-id-unprefixed.json",
       "schema": "contract/report.schema.json",
       "constraint": "pattern",

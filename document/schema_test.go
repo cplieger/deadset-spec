@@ -47,6 +47,7 @@ func TestCheckAcceptsEveryExample(t *testing.T) {
 		"examples/describe": "contract/describe.schema.json",
 		"examples/edges":    "contract/edges.schema.json",
 		"examples/facts":    "contract/facts.schema.json",
+		"examples/census":   "contract/census.schema.json",
 	} {
 		s := compiled(t, name)
 		files, err := fs.Glob(spec.Examples, dir+"/*.json")

@@ -1,0 +1,25 @@
+{
+  "languages": [
+    {
+      "language": "go",
+      "provenance": "detected"
+    }
+  ],
+  "analyzers": [
+    {
+      "name": "deadset-go",
+      "languages": [
+        "go"
+      ]
+    }
+  ],
+  "left_out": [
+    {
+      "language": "proto",
+      "reason": "this build of deadset holds no reader of \"proto\", so the run leaves it out of scope, and with it the consumer /src/schemas",
+      "consumers": [
+        "/src/schemas"
+      ]
+    }
+  ]
+}

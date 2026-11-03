@@ -255,6 +255,11 @@ func TestAPlantedConfigurationEditReachesEveryGeneratedTable(t *testing.T) {
 				"/properties/providers/properties/analyzers/items/oneOf/1/properties/languages/items/enum",
 				"/properties/target/properties/kind/oneOf/1/required",
 			},
+			"contract/census.schema.json": {
+				"/properties/analyzers/items/properties/languages/items/enum",
+				"/properties/languages/items/properties/language/enum",
+				"/properties/left_out/items/properties/language/enum",
+			},
 			"contract/describe.schema.json":          {"/properties/languages/items/enum"},
 			"contract/facts.schema.json":             {"/properties/language/enum"},
 			"contract/finding.schema.json":           {"/properties/language/enum"},
@@ -266,6 +271,7 @@ func TestAPlantedConfigurationEditReachesEveryGeneratedTable(t *testing.T) {
 		// A provider entry claims a process language and a target kind is taken by an
 		// analyzed language, so those lists hold the planted row and not proto.
 		narrowed := map[string][]string{
+			"/properties/analyzers/items/properties/languages/items/enum":                              {"py", "go", "ts"},
 			"/properties/providers/properties/analyzers/items/oneOf/0/properties/languages/items/enum": {"py", "go", "ts"},
 			"/properties/providers/properties/analyzers/items/oneOf/1/properties/languages/items/enum": {"py", "go", "ts"},
 			"/properties/target/properties/kind/oneOf/1/required":                                      {"py", "go", "ts"},

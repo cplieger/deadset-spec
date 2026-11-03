@@ -923,6 +923,7 @@ var options = []Option{
 var orchestratorVerbs = []Verb{
 	{Name: "analyze", Summary: "Analyze every language in scope and write the merged report.", Stdout: "renderings", ExitCodes: []int{0, 1, 2, 3, 4}, Options: []string{"target", "scope", "central", "run-dir", "template", "exit-code", "languages", "min-confidence", "formats", "fail-on"}},
 	{Name: "print-config", Summary: "Print the resolved configuration with the provenance of every setting.", Stdout: "configuration", ExitCodes: []int{0, 2, 3}, Options: []string{"target", "central", "languages", "min-confidence", "formats", "fail-on"}},
+	{Name: "print-languages", Summary: "Print the languages a run puts in scope, the analyzers it runs and the languages it leaves out, as one JSON object, an instance of contract/census.schema.json.", Stdout: "census", ExitCodes: []int{0, 2, 3}, Options: []string{"target", "scope", "central", "languages"}},
 	{Name: "version", Summary: "Print the product's version and the Contract version it implements.", Stdout: "version", ExitCodes: []int{0, 2, 3}, Options: []string{}},
 }
 

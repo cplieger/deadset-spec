@@ -21,6 +21,7 @@ The contract is versioned as one unit, apart from every analyzer's version and f
 - The scope document, `contract/scope.schema.json`. It names the target an analysis reports on and the consumers whose references count against it. The product that invokes the analyzer writes it, and the analyzer reads it.
 - The edges document, `contract/edges.schema.json`. It declares the cross-language edges of one target, `deadset-edges.json` at the target root, which every analyzer the run invokes reads.
 - The describe document, `contract/describe.schema.json`. It is what an analyzer states about itself before any analysis runs, and the invoking product reads it to admit or refuse the analyzer.
+- The language census, `contract/census.schema.json`. The orchestrator's `print-languages` verb writes it: the languages a run puts in scope, the analyzers it runs and the languages it leaves out, from the same plan its `analyze` verb makes, before any analyzer runs. A tool that installs analyzers reads it to learn which ones a target needs.
 
 ## Grammars and rules
 

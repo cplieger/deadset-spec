@@ -13,6 +13,7 @@ examples/
   scope/<shape>.json      one scope document per shape, an instance of contract/scope.schema.json
   describe/<state>.json   one describe document per conformance state, an instance of contract/describe.schema.json
   edges/<shape>.json      one edges document per shape, an instance of contract/edges.schema.json
+  census/<shape>.json     one language census per shape, an instance of contract/census.schema.json
   negatives/<name>.json   a refused document, each violating exactly one constraint
   negatives/index.json    one row per refused document: its schema, its constraint, its instance path
 ```
@@ -80,6 +81,10 @@ The edges documents a product accepts. `declared.json` names every member
 schema are the edges documents a product refuses. A decoder also refuses a key written twice in
 one object, an edge identifier among them, which no schema keyword states, so no document here
 carries one; the command-line vector `edge-identifier-written-twice-refused` does.
+
+## census/
+
+The documents the orchestrator's print-languages verb writes. `detected.json` is the census of a tree holding Go and TypeScript, `configured.json` one whose languages a repository configuration names, and `left-out.json` one that leaves a language out with a declared consumer. The negative whose row names [`../contract/census.schema.json`](../contract/census.schema.json) is a census naming no language, which the verb never writes: a tree holding none ends it with a setup failure.
 
 ## negatives/
 

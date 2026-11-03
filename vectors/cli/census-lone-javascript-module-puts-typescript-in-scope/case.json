@@ -1,0 +1,30 @@
+{
+  "description": "The print-languages verb prints the plan analyze makes: a tree holding one JavaScript module and no manifest or compiler configuration puts TypeScript alone in scope by the extension of the TypeScript row of languages.json, so the census names ts as detected and the default deadset-ts entry as the analyzer the run invokes, and leaves nothing out.",
+  "products": [
+    "deadset"
+  ],
+  "argv": [
+    "print-languages",
+    "--target=@TARGET@"
+  ],
+  "expect": {
+    "exit": 0,
+    "stdout_json": {
+      "languages": [
+        {
+          "language": "ts",
+          "provenance": "detected"
+        }
+      ],
+      "analyzers": [
+        {
+          "name": "deadset-ts",
+          "languages": [
+            "ts"
+          ]
+        }
+      ],
+      "left_out": []
+    }
+  }
+}

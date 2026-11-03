@@ -1,0 +1,35 @@
+{
+  "description": "The print-languages verb takes analysis.languages from its languages option as analyze does: in a tree that puts Go and TypeScript in scope, --languages=ts outranks every configuration document and replaces detection, so the census names ts alone with the provenance of the option, and only the deadset-ts entry.",
+  "products": [
+    "deadset"
+  ],
+  "rename": {
+    "go.mod.txt": "go.mod",
+    "main.go.txt": "main.go"
+  },
+  "argv": [
+    "print-languages",
+    "--target=@TARGET@",
+    "--languages=ts"
+  ],
+  "expect": {
+    "exit": 0,
+    "stdout_json": {
+      "languages": [
+        {
+          "language": "ts",
+          "provenance": "flag: --languages"
+        }
+      ],
+      "analyzers": [
+        {
+          "name": "deadset-ts",
+          "languages": [
+            "ts"
+          ]
+        }
+      ],
+      "left_out": []
+    }
+  }
+}

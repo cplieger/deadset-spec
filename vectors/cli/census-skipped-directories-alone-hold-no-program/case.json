@@ -1,0 +1,20 @@
+{
+  "description": "The print-languages verb ends as analyze ends: a tree whose only sources sit in directories every row of languages.json that reads them skips, Go below vendor and JavaScript below node_modules, puts no language in scope, so the verb prints no census and ends with exit code 3 and the setup failure no-program, never with an empty census.",
+  "products": [
+    "deadset"
+  ],
+  "rename": {
+    "vendor/example.com/lib/lib.go.txt": "vendor/example.com/lib/lib.go",
+    "nm/left-pad/index.js": "node_modules/left-pad/index.js"
+  },
+  "argv": [
+    "print-languages",
+    "--target=@TARGET@"
+  ],
+  "expect": {
+    "exit": 3,
+    "stderr_contains": [
+      "setup failure: no-program"
+    ]
+  }
+}
