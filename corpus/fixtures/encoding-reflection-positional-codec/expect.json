@@ -1,0 +1,45 @@
+{
+  "name": "encoding-reflection-positional-codec",
+  "description": "A positional codec, encoding/asn1 or encoding/binary, encodes and decodes the fields of a struct in their declared order, so deleting one field moves every later element: it reads every field of each type it walks, exported or not, whether or not the program writes it.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "keyDER.Version",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "keyDER.Modulus",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "frame.Magic",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "frame.Size",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "frame.flags",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    }
+  ]
+}

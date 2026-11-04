@@ -1,0 +1,385 @@
+The Go rendering: a command that decodes documents through a YAML decoder it
+makes refuse unknown keys inside a function that hands its parameter on, a JSON
+decoder it makes refuse unknown members, a gob decoder, which has no such switch, a
+YAML decoder whose switch it turns off, a second YAML decoder that takes no switch,
+sigs.k8s.io/yaml given its strict option and a goccy YAML decoder made with its
+strict option, an encoding/json/v2 decode whose strict option takes a flag the
+command computes, a YAML v2 decoder whose switch it sets through a method value,
+and a go.yaml.in YAML v2 decoder whose switch it sets through a method expression.
+The five YAML packages are local modules the target requires and replaces, so the
+rendering loads with no network access.
+
+-- fixture.json --
+{
+  "symbols": {
+    "settings.Name": { "file": "target/main.go", "line": 20 },
+    "settings.Theme": { "file": "target/main.go", "line": 21 },
+    "settings.Secret": { "file": "target/main.go", "line": 22 },
+    "request.ID": { "file": "target/main.go", "line": 27 },
+    "request.Note": { "file": "target/main.go", "line": 28 },
+    "cache.Hits": { "file": "target/main.go", "line": 33 },
+    "lenient.Name": { "file": "target/main.go", "line": 38 },
+    "lenient.Extra": { "file": "target/main.go", "line": 39 },
+    "loose.Name": { "file": "target/main.go", "line": 44 },
+    "loose.Spare": { "file": "target/main.go", "line": 45 },
+    "manifest.Kind": { "file": "target/main.go", "line": 50 },
+    "manifest.Spec": { "file": "target/main.go", "line": 51 },
+    "profile.User": { "file": "target/main.go", "line": 56 },
+    "profile.Shell": { "file": "target/main.go", "line": 57 },
+    "flagged.Name": { "file": "target/main.go", "line": 62 },
+    "flagged.Extra": { "file": "target/main.go", "line": 63 },
+    "relaxed.Name": { "file": "target/main.go", "line": 68 },
+    "relaxed.Extra": { "file": "target/main.go", "line": 69 },
+    "pinned.Name": { "file": "target/main.go", "line": 74 },
+    "pinned.Extra": { "file": "target/main.go", "line": 75 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+
+require (
+	github.com/goccy/go-yaml v1.0.0
+	go.yaml.in/yaml/v2 v2.4.2
+	gopkg.in/yaml.v2 v2.4.0
+	gopkg.in/yaml.v3 v3.0.1
+	sigs.k8s.io/yaml v1.4.0
+)
+
+replace (
+	github.com/goccy/go-yaml => ../goccy
+	go.yaml.in/yaml/v2 => ../yamlin
+	gopkg.in/yaml.v2 => ../yamlv2
+	gopkg.in/yaml.v3 => ../yaml
+	sigs.k8s.io/yaml => ../k8syaml
+)
+-- target/main.go --
+// Command target decodes documents through strict and lenient decoders.
+package main
+
+import (
+	"bytes"
+	"encoding/gob"
+	"encoding/json"
+	jsonv2 "encoding/json/v2"
+	"os"
+
+	goyaml "github.com/goccy/go-yaml"
+	yamlin "go.yaml.in/yaml/v2"
+	yamlv2 "gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
+	k8syaml "sigs.k8s.io/yaml"
+)
+
+// settings is decoded by a YAML decoder that refuses unknown keys.
+type settings struct {
+	Name   string `yaml:"name"`
+	Theme  string `yaml:"theme"`
+	Secret string `yaml:"-"`
+}
+
+// request is decoded by a JSON decoder that refuses unknown members.
+type request struct {
+	ID   string `json:"id"`
+	Note string `json:"note"`
+}
+
+// cache is decoded by a gob decoder.
+type cache struct {
+	Hits int
+}
+
+// lenient is decoded by a YAML decoder whose switch is turned off.
+type lenient struct {
+	Name  string `yaml:"name"`
+	Extra string `yaml:"extra"`
+}
+
+// loose is decoded by a second YAML decoder that takes no switch.
+type loose struct {
+	Name  string `yaml:"name"`
+	Spare string `yaml:"spare"`
+}
+
+// manifest is decoded by sigs.k8s.io/yaml with its strict option.
+type manifest struct {
+	Kind string `json:"kind"`
+	Spec string `json:"spec"`
+}
+
+// profile is decoded by a goccy YAML decoder made with its strict option.
+type profile struct {
+	User  string `yaml:"user"`
+	Shell string `yaml:"shell"`
+}
+
+// flagged is decoded strictly where the command is given an argument.
+type flagged struct {
+	Name  string `json:"name"`
+	Extra string `json:"extra"`
+}
+
+// relaxed is decoded by a YAML v2 decoder whose switch is set through a method value.
+type relaxed struct {
+	Name  string `yaml:"name"`
+	Extra string `yaml:"extra"`
+}
+
+// pinned is decoded by a YAML v2 decoder whose switch a method expression sets.
+type pinned struct {
+	Name  string `yaml:"name"`
+	Extra string `yaml:"extra"`
+}
+
+func checkKeys(data []byte, probe any) error {
+	dec := yaml.NewDecoder(bytes.NewReader(data))
+	dec.KnownFields(true)
+	return dec.Decode(probe)
+}
+
+func main() {
+	data, err := os.ReadFile("settings.yaml")
+	if err != nil {
+		os.Exit(1)
+	}
+	var s settings
+	if err := checkKeys(data, &s); err != nil {
+		os.Exit(1)
+	}
+	println(s.Name)
+	dec := json.NewDecoder(os.Stdin)
+	dec.DisallowUnknownFields()
+	var r request
+	if err := dec.Decode(&r); err != nil {
+		os.Exit(1)
+	}
+	println(r.ID)
+	var c cache
+	if err := gob.NewDecoder(bytes.NewReader(data)).Decode(&c); err != nil {
+		os.Exit(1)
+	}
+	off := yaml.NewDecoder(bytes.NewReader(data))
+	off.KnownFields(false)
+	var l lenient
+	if err := off.Decode(&l); err != nil {
+		os.Exit(1)
+	}
+	println(l.Name)
+	var o loose
+	if err := yaml.NewDecoder(bytes.NewReader(data)).Decode(&o); err != nil {
+		os.Exit(1)
+	}
+	println(o.Name)
+	var m manifest
+	if err := k8syaml.Unmarshal(data, &m, k8syaml.DisallowUnknownFields); err != nil {
+		os.Exit(1)
+	}
+	println(m.Kind)
+	var p profile
+	if err := goyaml.NewDecoder(bytes.NewReader(data), goyaml.DisallowUnknownField()).Decode(&p); err != nil {
+		os.Exit(1)
+	}
+	println(p.User)
+	var g flagged
+	if err := jsonv2.Unmarshal(data, &g, jsonv2.RejectUnknownMembers(len(os.Args) > 1)); err != nil {
+		os.Exit(1)
+	}
+	println(g.Name)
+	v2 := yamlv2.NewDecoder(bytes.NewReader(data))
+	set := v2.SetStrict
+	set(len(os.Args) > 2)
+	var x relaxed
+	if err := v2.Decode(&x); err != nil {
+		os.Exit(1)
+	}
+	println(x.Name)
+	in := yamlin.NewDecoder(bytes.NewReader(data))
+	(*yamlin.Decoder).SetStrict(in, true)
+	var n pinned
+	if err := in.Decode(&n); err != nil {
+		os.Exit(1)
+	}
+	println(n.Name)
+}
+-- yaml/go.mod --
+module gopkg.in/yaml.v3
+
+go 1.27.0
+-- yaml/yaml.go --
+// Package yaml decodes documents from a reader.
+package yaml
+
+import (
+	"errors"
+	"io"
+	"reflect"
+)
+
+// Decoder reads documents from a reader.
+type Decoder struct {
+	r     io.Reader
+	known bool
+}
+
+// NewDecoder returns a Decoder reading r.
+func NewDecoder(r io.Reader) *Decoder { return &Decoder{r: r} }
+
+// KnownFields makes Decode refuse a key the value's type lacks.
+func (d *Decoder) KnownFields(enable bool) { d.known = enable }
+
+// Decode fills v from the next document.
+func (d *Decoder) Decode(v any) error {
+	out := reflect.ValueOf(v)
+	if out.Kind() != reflect.Pointer || d.r == nil {
+		return errors.New("yaml: Decode needs a non-nil pointer")
+	}
+	return nil
+}
+-- yamlv2/go.mod --
+module gopkg.in/yaml.v2
+
+go 1.27.0
+-- yamlv2/yaml.go --
+// Package yaml decodes documents from a reader.
+package yaml
+
+import (
+	"errors"
+	"io"
+	"reflect"
+)
+
+// Decoder reads documents from a reader.
+type Decoder struct {
+	r      io.Reader
+	strict bool
+}
+
+// NewDecoder returns a Decoder reading r.
+func NewDecoder(r io.Reader) *Decoder { return &Decoder{r: r} }
+
+// SetStrict makes Decode refuse a key the value's type lacks.
+func (d *Decoder) SetStrict(strict bool) { d.strict = strict }
+
+// Decode fills v from the next document.
+func (d *Decoder) Decode(v any) error {
+	out := reflect.ValueOf(v)
+	if out.Kind() != reflect.Pointer || d.r == nil {
+		return errors.New("yaml: Decode needs a non-nil pointer")
+	}
+	return nil
+}
+-- yamlin/go.mod --
+module go.yaml.in/yaml/v2
+
+go 1.27.0
+-- yamlin/yaml.go --
+// Package yaml decodes documents from a reader.
+package yaml
+
+import (
+	"errors"
+	"io"
+	"reflect"
+)
+
+// Decoder reads documents from a reader.
+type Decoder struct {
+	r      io.Reader
+	strict bool
+}
+
+// NewDecoder returns a Decoder reading r.
+func NewDecoder(r io.Reader) *Decoder { return &Decoder{r: r} }
+
+// SetStrict makes Decode refuse a key the value's type lacks.
+func (d *Decoder) SetStrict(strict bool) { d.strict = strict }
+
+// Decode fills v from the next document.
+func (d *Decoder) Decode(v any) error {
+	out := reflect.ValueOf(v)
+	if out.Kind() != reflect.Pointer || d.r == nil {
+		return errors.New("yaml: Decode needs a non-nil pointer")
+	}
+	return nil
+}
+-- k8syaml/go.mod --
+module sigs.k8s.io/yaml
+
+go 1.27.0
+-- k8syaml/yaml.go --
+// Package yaml decodes YAML documents through a JSON decoder.
+package yaml
+
+import (
+	"encoding/json"
+	"errors"
+)
+
+// JSONOpt configures the JSON decoder a document is decoded through.
+type JSONOpt func(*json.Decoder) *json.Decoder
+
+// DisallowUnknownFields makes the JSON decoder refuse a key the value's type lacks.
+func DisallowUnknownFields(d *json.Decoder) *json.Decoder {
+	d.DisallowUnknownFields()
+	return d
+}
+
+// Unmarshal fills obj from a document.
+func Unmarshal(y []byte, obj any, opts ...JSONOpt) error {
+	if obj == nil || len(opts) > len(y)+1 {
+		return errors.New("yaml: Unmarshal needs a value")
+	}
+	return nil
+}
+-- goccy/go.mod --
+module github.com/goccy/go-yaml
+
+go 1.27.0
+-- goccy/yaml.go --
+// Package yaml decodes documents from a reader.
+package yaml
+
+import (
+	"errors"
+	"io"
+	"reflect"
+)
+
+// Decoder reads documents from a reader.
+type Decoder struct {
+	r      io.Reader
+	strict bool
+}
+
+// DecodeOption configures a Decoder.
+type DecodeOption func(d *Decoder) error
+
+// DisallowUnknownField makes Decode refuse a key the value's type lacks.
+func DisallowUnknownField() DecodeOption {
+	return func(d *Decoder) error {
+		d.strict = true
+		return nil
+	}
+}
+
+// NewDecoder returns a Decoder reading r.
+func NewDecoder(r io.Reader, opts ...DecodeOption) *Decoder {
+	d := &Decoder{r: r}
+	for _, opt := range opts {
+		if err := opt(d); err != nil {
+			return nil
+		}
+	}
+	return d
+}
+
+// Decode fills v from the next document.
+func (d *Decoder) Decode(v any) error {
+	out := reflect.ValueOf(v)
+	if out.Kind() != reflect.Pointer || d.r == nil {
+		return errors.New("yaml: Decode needs a non-nil pointer")
+	}
+	return nil
+}

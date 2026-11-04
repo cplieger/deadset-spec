@@ -38,7 +38,7 @@ Rules `confidence.1` to `confidence.34` of [the analysis](../analysis.md). A rul
 
 ### Members of sent and received types
 
-**confidence.14** A finding about a field that the `encoding-reflection` class records only as filled by a callee outside the analyzed program, one whose name says it fills its argument, one handed a pointer to the value, or a generic function that makes the value, has the reachability class `possible`, as [`exemptions.json`](../../exemptions.json) states.
+**confidence.14** A finding about a field that the `encoding-reflection` class records only as filled by a callee outside the analyzed program, one whose name says it fills its argument, one handed a pointer to the value, or a generic function that makes the value, or only as emitted by an encoder though nothing writes it, has the reachability class `possible`, as [`exemptions.json`](../../exemptions.json) states.
 
 **confidence.15** One rule holds in both languages for a data member of a type the program sends or receives.
 
