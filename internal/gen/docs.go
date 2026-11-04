@@ -64,10 +64,8 @@ type docsData struct {
 	Ranges     []rangeRow
 	Guide      map[string]guideRow
 	Exemptions struct {
-		//deadset:ignore DS1003 -- read by the authoring/docs templates through ParseFS
 		Exemptions []map[string]any `json:"exemptions"`
-		//deadset:ignore DS1003 -- read by the authoring/docs templates through ParseFS
-		Sinks []map[string]any `json:"sinks"`
+		Sinks      []map[string]any `json:"sinks"`
 	}
 	Exits      map[string]any
 	Confidence struct {
@@ -93,28 +91,25 @@ type kindsDoc struct {
 }
 
 type kindDoc struct {
-	Details map[string]any      `json:"details"`
-	Overlap map[string][]string `json:"overlap"`
-	//deadset:ignore DS1301 -- read by the authoring/docs templates through ParseFS
-	Guide           guideRow `json:"-"`
-	Code            string   `json:"code"`
-	Rule            string   `json:"rule"`
-	Precondition    string   `json:"precondition"`
-	DefaultSeverity string   `json:"default_severity"`
-	MaxClass        string   `json:"max_class"`
-	Fixability      string   `json:"fixability"`
-	Subject         string   `json:"subject"`
-	Name            string   `json:"name"`
-	//deadset:ignore DS1301 -- read by the authoring/docs templates through ParseFS
-	Lowered []evidenceRow `json:"-"`
-	//deadset:ignore DS1301 -- read by the authoring/docs templates through ParseFS
-	OverlapByLanguage [][2]string `json:"-"`
-	FindingFixability []string    `json:"finding_fixabilities"`
-	DerivedFrom       []string    `json:"derived_from"`
-	Languages         []string    `json:"languages"`
-	HoldsLive         bool        `json:"holds_live"`
-	Fixed             bool        `json:"fixed"`
-	DefaultEnabled    bool        `json:"default_enabled"`
+	Details           map[string]any      `json:"details"`
+	Overlap           map[string][]string `json:"overlap"`
+	Guide             guideRow            `json:"-"`
+	Code              string              `json:"code"`
+	Rule              string              `json:"rule"`
+	Precondition      string              `json:"precondition"`
+	DefaultSeverity   string              `json:"default_severity"`
+	MaxClass          string              `json:"max_class"`
+	Fixability        string              `json:"fixability"`
+	Subject           string              `json:"subject"`
+	Name              string              `json:"name"`
+	Lowered           []evidenceRow       `json:"-"`
+	OverlapByLanguage [][2]string         `json:"-"`
+	FindingFixability []string            `json:"finding_fixabilities"`
+	DerivedFrom       []string            `json:"derived_from"`
+	Languages         []string            `json:"languages"`
+	HoldsLive         bool                `json:"holds_live"`
+	Fixed             bool                `json:"fixed"`
+	DefaultEnabled    bool                `json:"default_enabled"`
 }
 
 type remedyRow struct {
@@ -156,7 +151,6 @@ type evidenceRow struct {
 }
 
 type familyPage struct {
-	//deadset:ignore DS1301 -- read by the authoring/docs templates through ParseFS
 	Range *rangeRow
 }
 
