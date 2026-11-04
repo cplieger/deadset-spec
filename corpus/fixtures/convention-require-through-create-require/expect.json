@@ -1,0 +1,26 @@
+{
+  "name": "convention-require-through-create-require",
+  "description": "A configuration file that declares require as the function createRequire returns still binds a top-level require of a row's module as an import of it, because that require is the platform's: the SolidStart plugin's appRoot option is read through it and moves the app directory, so the app file there is an entry. The fixture assumes the analyzer carries a row named solidstart for the package @solidjs/start whose range holds the installed version, whose entries hold <appRoot>/app.ts, and which reads appRoot from the options of solidStart imported from @solidjs/start/config in vite.config.mjs.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "conventions_applied": [
+    {
+      "name": "solidstart",
+      "package": "@solidjs/start",
+      "version": "1.999.0",
+      "manifest": "package.json"
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "AppFile",
+      "report": "none"
+    },
+    {
+      "symbol": "App",
+      "report": "none"
+    }
+  ]
+}

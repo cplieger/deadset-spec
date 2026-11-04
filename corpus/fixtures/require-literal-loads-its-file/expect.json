@@ -1,0 +1,61 @@
+{
+  "name": "require-literal-loads-its-file",
+  "description": "A require() call whose argument is a string literal is an import of the file the specifier resolves to, written where the call is, in a TypeScript file under module commonjs and in a JavaScript file alike: a script it requires is reached with its top level, a call whose value is used reads every export of the file it loads, and a require written in a function nobody calls reaches its file only from dead code.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "PolyfillFile",
+      "report": "none"
+    },
+    {
+      "symbol": "stamp",
+      "report": "none"
+    },
+    {
+      "symbol": "used",
+      "report": "none"
+    },
+    {
+      "symbol": "other",
+      "report": "none"
+    },
+    {
+      "symbol": "later",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "LazyFile",
+      "report": "DS1602",
+      "confidence": "probable",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "ScriptFile",
+      "report": "none"
+    },
+    {
+      "symbol": "configured",
+      "report": "none"
+    },
+    {
+      "symbol": "LoaderFile",
+      "report": "none"
+    },
+    {
+      "symbol": "deferred",
+      "report": "DS1002",
+      "confidence": "probable",
+      "reachability_class": "certain",
+      "symbol_kind": "variable",
+      "liveness_relation": "reachability"
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "symbols": {
+    "PluginFile": {
+      "file": "target/src/plugins/a.ts",
+      "line": 1
+    },
+    "pluginValue": {
+      "file": "target/src/plugins/a.ts",
+      "line": 2
+    },
+    "HomeFile": {
+      "file": "target/src/pages/home.ts",
+      "line": 1
+    },
+    "homeValue": {
+      "file": "target/src/pages/home.ts",
+      "line": 2
+    },
+    "RouteFile": {
+      "file": "target/src/routes/route.ts",
+      "line": 1
+    },
+    "routeValue": {
+      "file": "target/src/routes/route.ts",
+      "line": 2
+    },
+    "KeepFile": {
+      "file": "target/src/mods/keep.ts",
+      "line": 1
+    },
+    "keepValue": {
+      "file": "target/src/mods/keep.ts",
+      "line": 2
+    },
+    "SkipFile": {
+      "file": "target/src/mods/skip.ts",
+      "line": 1
+    },
+    "skipValue": {
+      "file": "target/src/mods/skip.ts",
+      "line": 2
+    }
+  }
+}

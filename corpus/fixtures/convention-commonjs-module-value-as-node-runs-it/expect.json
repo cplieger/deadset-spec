@@ -1,0 +1,46 @@
+{
+  "name": "convention-commonjs-module-value-as-node-runs-it",
+  "description": "A CommonJS configuration file's default export is the module value Node leaves after running its top-level statements in order: a later assignment of module.exports replaces an earlier one, exports = module.exports = value assigns it too, and a later write of a member of module.exports sets that member. The Stryker configuration selects only the runner its last write names, so that runner is used and the runners earlier writes named are reported. The fixture assumes the analyzer carries a row named stryker for the package @stryker-mutator/core whose range holds the installed version and which reads testRunner from stryker.config.cjs as the short name of the package @stryker-mutator/{}-runner.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "conventions_applied": [
+    {
+      "name": "stryker",
+      "package": "@stryker-mutator/core",
+      "version": "9.999.0",
+      "manifest": "package.json"
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "StrykerCore",
+      "report": "none"
+    },
+    {
+      "symbol": "VitestRunner",
+      "report": "none"
+    },
+    {
+      "symbol": "JestRunner",
+      "report": "DS1701",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "dependency",
+      "details": {
+        "dependency_class": "dev-dependency"
+      }
+    },
+    {
+      "symbol": "MochaRunner",
+      "report": "DS1701",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "dependency",
+      "details": {
+        "dependency_class": "dev-dependency"
+      }
+    }
+  ]
+}

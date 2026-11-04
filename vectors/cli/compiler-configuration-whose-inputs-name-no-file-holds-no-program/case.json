@@ -1,0 +1,10 @@
+{
+  "description": "A compiler configuration whose only error is that its inputs name no file reads as written and holds no program: the TypeScript analyzer ends with exit code 3 and the setup failure no-program, as setup-failures.14 leaves it.",
+  "products": ["deadset-ts"],
+  "argv": ["analyze", "--target=@TARGET@", "--report=@OUT@/report.json"],
+  "expect": {
+    "exit": 3,
+    "stderr_contains": ["setup failure: no-program: ", "TS18003"],
+    "report": "absent"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "name": "glob-through-alias-is-unresolved",
+  "description": "An import.meta.glob call whose glob Vite resolves through an alias loads files the analysis cannot resolve, so where the configuration declares the roots complete a declaration only dead declarations reference stays probable, a declaration nothing references stays certain, and the report notes the site.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "closed_world": [
+    "roots"
+  ],
+  "expect": [
+    {
+      "symbol": "deadCaller",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "calledOnlyByDead",
+      "report": "DS1002",
+      "confidence": "probable",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reachability"
+    }
+  ],
+  "notes": [
+    {
+      "kind": "computed-load",
+      "path": "src"
+    }
+  ]
+}

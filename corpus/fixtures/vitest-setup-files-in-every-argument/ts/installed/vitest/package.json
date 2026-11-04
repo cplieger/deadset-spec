@@ -1,0 +1,8 @@
+{
+  "name": "vitest",
+  "version": "3.999.0",
+  "private": true,
+  "bin": {
+    "vitest": "./vitest.mjs"
+  }
+}

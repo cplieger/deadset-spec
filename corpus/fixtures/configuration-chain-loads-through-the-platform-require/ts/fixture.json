@@ -1,0 +1,16 @@
+{
+  "symbols": {
+    "Loaded": {
+      "file": "target/src/loaded.ts",
+      "line": 1
+    },
+    "HeldFile": {
+      "file": "target/src/held.ts",
+      "line": 1
+    },
+    "Held": {
+      "file": "target/src/held.ts",
+      "line": 3
+    }
+  }
+}

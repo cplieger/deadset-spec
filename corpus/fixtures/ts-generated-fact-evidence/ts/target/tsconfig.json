@@ -4,7 +4,10 @@
     "module": "nodenext",
     "moduleResolution": "nodenext",
     "strict": true,
-    "noEmit": true
+    "noEmit": true,
+    "allowJs": true
   },
-  "include": ["**/*.ts"]
+  "include": [
+    "**/*.ts"
+  ]
 }

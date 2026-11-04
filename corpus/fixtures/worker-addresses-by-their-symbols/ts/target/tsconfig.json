@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "es2023",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "allowJs": true,
+    "rootDir": "src",
+    "outDir": "dist",
+    "types": [],
+    "lib": [
+      "es2023",
+      "dom"
+    ]
+  },
+  "include": [
+    "src/**/*"
+  ]
+}

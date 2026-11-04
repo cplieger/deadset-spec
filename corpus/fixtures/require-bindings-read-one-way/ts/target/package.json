@@ -1,0 +1,12 @@
+{
+  "name": "@example/target",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./src/start.cjs",
+  "scripts": {
+    "build": "node scripts/chain.cjs && node scripts/cycle.cjs"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.0"
+  }
+}

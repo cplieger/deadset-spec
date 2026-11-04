@@ -60,7 +60,7 @@
   },
   "go": {},
   "ts": {
-    "test_files": ["**/*.test.{ts,tsx,mts,cts}", "**/*.test-d.{ts,tsx,mts,cts}", "**/*.spec-d.{ts,tsx,mts,cts}", "**/*.spec.*", "**/__tests__/**", "**/__mocks__/**", "**/test-d/**"],
+    "test_files": ["**/*.test.{ts,tsx,mts,cts,js,jsx,mjs,cjs}", "**/*.test-d.{ts,tsx,mts,cts}", "**/*.spec-d.{ts,tsx,mts,cts}", "**/*.spec.*", "**/__tests__/**", "**/__mocks__/**", "**/test-d/**"],
     "entry_files": [],
     "component_extensions": [".vue", ".svelte", ".astro"],
     "disabled_conventions": [],

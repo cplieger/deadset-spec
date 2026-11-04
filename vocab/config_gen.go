@@ -418,7 +418,7 @@ var configKeys = []ConfigKey{
 		Owner:     "ts-analyzer",
 		ReadBy:    []Language{TS},
 		Delivered: []Language{TS},
-		Default:   `["**/*.test.{ts,tsx,mts,cts}","**/*.test-d.{ts,tsx,mts,cts}","**/*.spec-d.{ts,tsx,mts,cts}","**/*.spec.*","**/__tests__/**","**/__mocks__/**","**/test-d/**"]`,
+		Default:   `["**/*.test.{ts,tsx,mts,cts,js,jsx,mjs,cjs}","**/*.test-d.{ts,tsx,mts,cts}","**/*.spec-d.{ts,tsx,mts,cts}","**/*.spec.*","**/__tests__/**","**/__mocks__/**","**/test-d/**"]`,
 		Value:     `{"type":"array","uniqueItems":true,"minItems":1,"items":{"type":"string","minLength":1}}`,
 	},
 	{

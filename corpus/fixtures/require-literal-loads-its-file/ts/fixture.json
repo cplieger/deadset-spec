@@ -1,0 +1,44 @@
+{
+  "symbols": {
+    "PolyfillFile": {
+      "file": "target/src/polyfill.ts",
+      "line": 1
+    },
+    "stamp": {
+      "file": "target/src/polyfill.ts",
+      "line": 2
+    },
+    "other": {
+      "file": "target/src/helpers.ts",
+      "line": 3
+    },
+    "later": {
+      "file": "target/src/main.ts",
+      "line": 8
+    },
+    "LazyFile": {
+      "file": "target/src/lazy.ts",
+      "line": 1
+    },
+    "ScriptFile": {
+      "file": "target/lib/script.js",
+      "line": 1
+    },
+    "configured": {
+      "file": "target/lib/script.js",
+      "line": 2
+    },
+    "used": {
+      "file": "target/src/helpers.ts",
+      "line": 1
+    },
+    "deferred": {
+      "file": "target/src/lazy.ts",
+      "line": 2
+    },
+    "LoaderFile": {
+      "file": "target/lib/loader.js",
+      "line": 1
+    }
+  }
+}

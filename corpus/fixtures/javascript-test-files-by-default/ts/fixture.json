@@ -1,0 +1,24 @@
+{
+  "symbols": {
+    "UnitTestFile": {
+      "file": "target/src/unit.test.js",
+      "line": 1
+    },
+    "ModuleTestFile": {
+      "file": "target/src/module.test.mjs",
+      "line": 1
+    },
+    "ScriptTestFile": {
+      "file": "target/src/smoke.test.cjs",
+      "line": 1
+    },
+    "onlyTested": {
+      "file": "target/src/tested.js",
+      "line": 1
+    },
+    "main": {
+      "file": "target/src/index.js",
+      "line": 1
+    }
+  }
+}

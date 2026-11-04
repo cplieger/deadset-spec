@@ -1,0 +1,16 @@
+{
+  "symbols": {
+    "Packed": {
+      "file": "target/src/packed.ts",
+      "line": 1
+    },
+    "UnpackedFile": {
+      "file": "target/src/unpacked.ts",
+      "line": 1
+    },
+    "Unpacked": {
+      "file": "target/src/unpacked.ts",
+      "line": 3
+    }
+  }
+}

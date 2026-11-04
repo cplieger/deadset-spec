@@ -1,0 +1,24 @@
+{
+  "symbols": {
+    "DashFile": {
+      "file": "target/lib/math-test.js",
+      "line": 1
+    },
+    "TestDirFile": {
+      "file": "target/test/unit/a.mjs",
+      "line": 1
+    },
+    "SmokeFile": {
+      "file": "target/smoke/boot.check.js",
+      "line": 1
+    },
+    "UnrunFile": {
+      "file": "target/smoke/unrun.js",
+      "line": 1
+    },
+    "onlyTested": {
+      "file": "target/lib/tested.js",
+      "line": 1
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "symbols": {
+    "UnitFile": {
+      "file": "target/test/unit.js",
+      "line": 1
+    },
+    "DeepFile": {
+      "file": "target/test/nested/deep.mjs",
+      "line": 1
+    },
+    "FlowFile": {
+      "file": "target/flows/cart.check.js",
+      "line": 1
+    },
+    "IgnoredFile": {
+      "file": "target/test/fixtures/data.js",
+      "line": 1
+    },
+    "HiddenFile": {
+      "file": "target/test/.hidden.js",
+      "line": 1
+    },
+    "UnrunFile": {
+      "file": "target/flows/unrun.js",
+      "line": 1
+    },
+    "onlyTested": {
+      "file": "target/lib/tested.js",
+      "line": 1
+    }
+  }
+}

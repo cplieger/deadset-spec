@@ -1,0 +1,8 @@
+{
+  "name": "@playwright/test",
+  "version": "1.999.0",
+  "private": true,
+  "bin": {
+    "playwright": "./cli.js"
+  }
+}

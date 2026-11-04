@@ -1,0 +1,8 @@
+{
+  "symbols": {
+    "ResetForTest": {
+      "file": "target/src/versions.ts",
+      "line": 6
+    }
+  }
+}

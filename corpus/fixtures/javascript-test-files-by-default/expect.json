@@ -1,0 +1,35 @@
+{
+  "name": "javascript-test-files-by-default",
+  "description": "A JavaScript package with no compiler configuration names its tests as TypeScript ones are named: a file whose name carries a .test qualifier, with a JavaScript extension, is a test file by the default test-file patterns, so it is no file nothing loads, and a function only those tests call is reported as test-only use at possible, as production code only tests use is.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "expect": [
+    {
+      "symbol": "UnitTestFile",
+      "report": "none"
+    },
+    {
+      "symbol": "ModuleTestFile",
+      "report": "none"
+    },
+    {
+      "symbol": "ScriptTestFile",
+      "report": "none"
+    },
+    {
+      "symbol": "onlyTested",
+      "report": "DS1102",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "main",
+      "report": "none"
+    }
+  ]
+}

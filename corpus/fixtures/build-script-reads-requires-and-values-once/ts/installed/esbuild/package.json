@@ -1,0 +1,5 @@
+{
+  "name": "esbuild",
+  "private": true,
+  "version": "0.25.0"
+}

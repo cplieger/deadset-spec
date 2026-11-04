@@ -72,7 +72,7 @@ Rules `program.1` to `program.39` of [the analysis](../analysis.md). A rule is c
 
 ## Unanswered questions
 
-**program.33** A question the analysis asks its type checker that the checker fails to answer is never read as an answer. Every declaration the answer could have made live is held: no finding is reported about it, every liveness relation treats it as live, and a declaration that reads a held binding by name is held too. An unanswered question holds a declared dependency only where its answer is the resolution of a module specifier, and then each dependency a manifest at or above the file that writes the specifier declares. Each configuration in which at least one question went unanswered is listed in the report's `unanswered_questions` with the number of questions and of declarations held.
+**program.33** A question the analysis asks its type checker that the checker fails to answer is never read as an answer. Every declaration the answer could have made live is held: no finding is reported about it, every liveness relation treats it as live, and a declaration that reads a held binding by name is held too. An unanswered question holds a declared dependency only where its answer is the resolution of a module specifier, which holds each dependency a manifest at or above the file that writes the specifier declares, or the binding of the callee of a call whose first argument is literal text, which holds the dependency that text names, since the callee may be a `require`. Each configuration in which at least one question went unanswered is listed in the report's `unanswered_questions` with the number of questions and of declarations held.
 
 ## JavaScript projects
 

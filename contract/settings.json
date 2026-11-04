@@ -514,7 +514,7 @@
       "owner": "ts-analyzer",
       "read_by": ["ts"],
       "delivered": ["ts"],
-      "default": ["**/*.test.{ts,tsx,mts,cts}", "**/*.test-d.{ts,tsx,mts,cts}", "**/*.spec-d.{ts,tsx,mts,cts}", "**/*.spec.*", "**/__tests__/**", "**/__mocks__/**", "**/test-d/**"],
+      "default": ["**/*.test.{ts,tsx,mts,cts,js,jsx,mjs,cjs}", "**/*.test-d.{ts,tsx,mts,cts}", "**/*.spec-d.{ts,tsx,mts,cts}", "**/*.spec.*", "**/__tests__/**", "**/__mocks__/**", "**/test-d/**"],
       "value": {
         "type": "array",
         "uniqueItems": true,

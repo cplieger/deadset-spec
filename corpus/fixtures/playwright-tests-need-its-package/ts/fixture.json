@@ -1,0 +1,24 @@
+{
+  "symbols": {
+    "LoginFile": {
+      "file": "target/e2e/login.flow.ts",
+      "line": 1
+    },
+    "Login": {
+      "file": "target/e2e/login.flow.ts",
+      "line": 3
+    },
+    "CheckoutFile": {
+      "file": "target/app/flows/checkout.flow.ts",
+      "line": 1
+    },
+    "PaymentFile": {
+      "file": "target/app/flows/cart/payment.flow.ts",
+      "line": 1
+    },
+    "RefundFile": {
+      "file": "target/app/flows/Refund.FLOW.ts",
+      "line": 1
+    }
+  }
+}

@@ -1,6 +1,6 @@
 {
   "name": "package-only-commonjs",
-  "description": "A CommonJS package with no compiler configuration is analyzed, and a destructuring of a require call references the export table entry it names, so the file it loads is imported and the entry it reads is used.",
+  "description": "A CommonJS package with no compiler configuration is analyzed, and a destructuring of a require call references the export table entry it names, so the file it loads is imported and the entry it reads is used; a literal require of a script reaches the script and its top level.",
   "pending": "The CommonJS export table and require references land with the JavaScript inventory and reference sources.",
   "languages": [
     "ts"
@@ -13,6 +13,14 @@
     },
     {
       "symbol": "CFile",
+      "report": "none"
+    },
+    {
+      "symbol": "SetupFile",
+      "report": "none"
+    },
+    {
+      "symbol": "configured",
       "report": "none"
     }
   ]

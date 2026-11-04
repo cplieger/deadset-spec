@@ -1,0 +1,12 @@
+{
+  "symbols": {
+    "MergedSetup": {
+      "file": "target/setup/merged.ts",
+      "line": 1
+    },
+    "FakeClock": {
+      "file": "target/src/clock.ts",
+      "line": 3
+    }
+  }
+}

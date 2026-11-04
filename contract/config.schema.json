@@ -490,7 +490,7 @@
       "x-delivered": ["ts"],
       "properties": {
         "test_files": {
-          "description": "Glob patterns, relative to the target root, naming the files classified as test files. The default is the naming the common TypeScript test runners share: a file whose name carries a .test or a .spec qualifier or the .test-d or .spec-d qualifier of a type test, and every file under a __tests__, a __mocks__ or a test-d directory; a project whose tests are named otherwise sets its own so that a symbol only its tests reach is reported as test-only use. A file no pattern names is still test code when it is test-support code, which grammar/analysis/tests.md defines.",
+          "description": "Glob patterns, relative to the target root, naming the files classified as test files. The default is the naming the common TypeScript and JavaScript test runners share: a file whose name carries a .test or a .spec qualifier or the .test-d or .spec-d qualifier of a type test, and every file under a __tests__, a __mocks__ or a test-d directory; a project whose tests are named otherwise sets its own so that a symbol only its tests reach is reported as test-only use. A file no pattern names is still test code when it is test-support code, which grammar/analysis/tests.md defines.",
           "type": "array",
           "uniqueItems": true,
           "minItems": 1,
@@ -498,7 +498,7 @@
             "type": "string",
             "minLength": 1
           },
-          "default": ["**/*.test.{ts,tsx,mts,cts}", "**/*.test-d.{ts,tsx,mts,cts}", "**/*.spec-d.{ts,tsx,mts,cts}", "**/*.spec.*", "**/__tests__/**", "**/__mocks__/**", "**/test-d/**"],
+          "default": ["**/*.test.{ts,tsx,mts,cts,js,jsx,mjs,cjs}", "**/*.test-d.{ts,tsx,mts,cts}", "**/*.spec-d.{ts,tsx,mts,cts}", "**/*.spec.*", "**/__tests__/**", "**/__mocks__/**", "**/test-d/**"],
           "x-owner": "ts-analyzer",
           "x-delivered": ["ts"]
         },

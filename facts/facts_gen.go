@@ -16,6 +16,7 @@ const (
 	EvidenceTag        Evidence = "tag"
 	EvidenceNotice     Evidence = "notice"
 	EvidenceConvention Evidence = "convention"
+	EvidenceMinified   Evidence = "minified"
 )
 
 // Role is a closed vocabulary of the facts schema.

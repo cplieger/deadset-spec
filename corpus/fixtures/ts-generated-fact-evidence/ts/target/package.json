@@ -6,5 +6,8 @@
   "main": "./pages/index.ts",
   "devDependencies": {
     "nuxt": "4.999.0"
+  },
+  "scripts": {
+    "dev": "nuxt dev"
   }
 }

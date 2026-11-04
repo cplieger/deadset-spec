@@ -1,0 +1,24 @@
+{
+  "symbols": {
+    "Created": {
+      "file": "target/src/created.ts",
+      "line": 1
+    },
+    "ShadowedFile": {
+      "file": "target/src/shadowed.ts",
+      "line": 1
+    },
+    "Shadowed": {
+      "file": "target/src/shadowed.ts",
+      "line": 3
+    },
+    "FakeFile": {
+      "file": "target/src/fake.ts",
+      "line": 1
+    },
+    "Fake": {
+      "file": "target/src/fake.ts",
+      "line": 3
+    }
+  }
+}

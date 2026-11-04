@@ -1,0 +1,74 @@
+{
+  "name": "worker-addresses-by-their-symbols",
+  "description": "A worker address is read by what its constructor resolves to: Node's Worker from worker_threads, imported under another name, through a namespace or bound by a require, reads a path against the package's directory, an output path naming the source it is emitted from, and names no file where the eval option makes the string code, while a browser's Worker, SharedWorker and service worker registration, read through globalThis too, read the address against the calling file. A thread a function nobody calls starts reaches its file from dead code only, and a constructor the target writes itself starts nothing.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "EmittedFile",
+      "report": "none"
+    },
+    {
+      "symbol": "DirectFile",
+      "report": "none"
+    },
+    {
+      "symbol": "BesideFile",
+      "report": "DS1602",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "EvaluatedFile",
+      "report": "DS1602",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "WebFile",
+      "report": "none"
+    },
+    {
+      "symbol": "LocatedFile",
+      "report": "none"
+    },
+    {
+      "symbol": "SharedFile",
+      "report": "none"
+    },
+    {
+      "symbol": "RegisteredFile",
+      "report": "none"
+    },
+    {
+      "symbol": "idle",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "IdleFile",
+      "report": "DS1602",
+      "confidence": "probable",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "RequiredFile",
+      "report": "none"
+    },
+    {
+      "symbol": "OwnedFile",
+      "report": "DS1602",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    }
+  ]
+}
