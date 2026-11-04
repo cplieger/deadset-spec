@@ -1,0 +1,17 @@
+{
+  "languages": [
+    {
+      "language": "go",
+      "provenance": "repository: deadset.json"
+    }
+  ],
+  "analyzers": [
+    {
+      "name": "deadset-go",
+      "languages": [
+        "go"
+      ]
+    }
+  ],
+  "left_out": []
+}

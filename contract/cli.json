@@ -252,6 +252,14 @@
           "exit_codes": [0, 2, 3]
         },
         {
+          "verb": "print-languages",
+          "summary": "Print the languages a run puts in scope, the analyzers it runs and the languages it leaves out, as one JSON object, an instance of contract/census.schema.json.",
+          "arguments": [],
+          "options": ["target", "scope", "central", "languages"],
+          "stdout": "census",
+          "exit_codes": [0, 2, 3]
+        },
+        {
           "verb": "version",
           "summary": "Print the product's version and the Contract version it implements.",
           "arguments": [],

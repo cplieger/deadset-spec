@@ -5,6 +5,7 @@ Each case is one invocation of a product's command line over a small tree, and t
 - `exit`: the exit code. A run that ends with exit code 3 must also print exactly one class line on standard error, a line a group prefix of `failure_classes` in `contract/exit-codes.json` opens.
 - `stderr_contains`: strings standard error holds.
 - `stdout_contains`: strings standard output holds.
+- `stdout_json`: the one JSON document standard output holds, compared as decoded values, `@TARGET@` and `@OUT@` replaced in its strings. The module's checks hold it to the schema of what the verb writes there, `contract/census.schema.json` for print-languages.
 - `report`: `valid` when the report file must exist and be an instance of `contract/report.schema.json`, `absent` when no report may be written.
 - `finding_paths`: the paths of the report's findings, in order.
 - `finding_symbols`: the names of the report's findings' symbols, in order.
@@ -20,11 +21,22 @@ A case with `pending` states a rule no product implements yet, named by the reas
 
 The `proto-` cases that need the Protocol Buffers schema reader inside deadset are pending until the deadset release that carries the reader, which removes their `pending`. The `-without-its-reader-` cases pin an orchestrator that does not hold that reader, and the same release removes them.
 
+The `census-` cases pin the print-languages verb: it prints the plan analyze makes over the same target, scope document and configuration, before any analyzer runs, and ends as analyze ends where that plan ends the run.
+
 | Case | What it pins |
 | --- | --- |
 | `analyzer-ends-with-the-failure-code-and-no-class-line` | An admitted analyzer whose analysis ends with exit code 3 and prints no class line is a fault of that analyzer: the run ends with exit code 3 and the run failure product-fault naming the analyzer. |
 | `analyzer-output-shown-under-its-name` | Every line an analyzer printed, from its describe verb or its analysis, opens with its name, so a line that opens with a group prefix opens no second class line beside the run failure product-fault of an analyzer that wrote no report. |
 | `cascade-full-edge-evaluation` | An analyzer's report under reporters.cascade full is an instance of the report schema: a finding an edge evaluation carries lists no component members, and its component is listed in the report's components. |
+| `census-configured-languages-replace-detection` | A language analysis.languages names in the repository configuration replaces detection: the census names that language alone, with the provenance the resolved configuration gives analysis.languages, and only the entry claiming it. |
+| `census-go-module-puts-go-in-scope` | A Go module puts Go alone in scope by the go.mod marker: the census names go as detected and the default deadset-go entry. |
+| `census-language-no-provider-entry-claims-refused` | A language in scope that no provider entry claims is refused by print-languages as analyze refuses it, with the usage code 2 naming the language, and no census is printed. |
+| `census-languages-option-replaces-detection` | The languages option replaces detection and outranks every configuration document: the census names the language it gives with the provenance `flag: --languages`. |
+| `census-lone-javascript-module-puts-typescript-in-scope` | One JavaScript module with no manifest or compiler configuration puts TypeScript alone in scope by the TypeScript row's extensions: the census names ts as detected and the default deadset-ts entry. |
+| `census-mixed-tree-puts-each-language-in-scope` | A Go module holding JavaScript sources puts both languages in scope: the census names go and ts as detected, in languages.json's order, and both default entries in the provider list's order. |
+| `census-schema-language-without-its-reader-left-out` | A schema language the census puts in scope whose reader the orchestrator does not hold is named in left_out with the declared consumer left out with it, its reason the line analyze prints for it without the product name, colon and space that open the line, and the census names go alone. |
+| `census-schema-only-target-without-its-reader-ends-the-verb` | A target holding only schema files whose reader the orchestrator does not hold ends print-languages with exit code 3 and the setup failure unsupported-language, as it ends analyze. |
+| `census-skipped-directories-alone-hold-no-program` | A tree whose only sources sit in directories the rows that read them skip puts no language in scope: print-languages ends with exit code 3 and the setup failure no-program, never with an empty census. |
 | `configured-language-whose-analyzer-finds-no-program-ends-the-run` | A language analysis.languages names is analyzed whatever its analyzer finds: a TypeScript analyzer ending with the setup failure no-program over a Go module whose only JavaScript file git ignores ends the run with exit code 3 and that class line. |
 | `configured-schema-language-without-its-reader-ends-the-run` | A language analysis.languages names is analyzed or the run ends: where it names proto and the orchestrator does not hold the proto reader, the run ends with exit code 3 and the setup failure unsupported-language before any analyzer runs, not with the usage code 2. |
 | `consumer-of-a-left-out-language-alone-left-out-with-it` | A declared consumer every language of which is left out is left out with it, as languages.json states: beside a Go module below the target root whose only JavaScript file git ignores, a consumer holding only TypeScript is named on the line that names TypeScript left out, and the run ends with exit code 0 over the Go analyzer's report, run again. |

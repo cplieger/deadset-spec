@@ -1,0 +1,26 @@
+{
+  "name": "require-from-create-require",
+  "description": "A require the target binds to a value whose body it does not write is the platform's: the require Node's createRequire returns and the require an AMD callback receives as its parameter each load every file below the directory a computed path's literal start names, with its exports, as an undeclared require does.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "PluginFile",
+      "report": "none"
+    },
+    {
+      "symbol": "plugin",
+      "report": "none"
+    },
+    {
+      "symbol": "WidgetFile",
+      "report": "none"
+    },
+    {
+      "symbol": "widget",
+      "report": "none"
+    }
+  ]
+}

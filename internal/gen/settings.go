@@ -589,8 +589,8 @@ func (c *configContext) configVocab(rows []configKey, maxBytes *value) ([]byte, 
 		if g.Versions != nil {
 			low, high = g.Versions.Min, g.Versions.Max
 		}
-		w.f("{ID: %q, Plugin: %q, Language: %s, Header: %q, RuntimeImport: %q, Cell: %q, VersionMin: %q, VersionMax: %q, Major: %d},\n",
-			g.ID, g.Plugin, languageIdent(g.Language), g.Header, g.RuntimeImport, g.Cell, low, high, g.Major)
+		w.f("{ID: %q, Plugin: %q, Language: %s, Header: %q, RuntimeImport: %q, Cell: %q, VersionMin: %q, VersionMax: %q, Major: %d, Registration: %s},\n",
+			g.ID, g.Plugin, languageIdent(g.Language), g.Header, g.RuntimeImport, g.Cell, low, high, g.Major, goStrings(g.Roles.Registration))
 	}
 	w.f("}\n\nvar protoPlugins = %s\n\nvar httpExposurePlugins = %s\n", goStrings(c.generators.plugins()), goStrings(c.generators.HTTPExposurePlugins))
 	w.f("\n// The keys of the closed configuration key list, by their dotted paths.\nconst (\n")

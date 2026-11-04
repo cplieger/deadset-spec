@@ -1,6 +1,6 @@
 {
   "name": "computed-import-meta-glob",
-  "description": "An import.meta.glob call whose argument is a relative literal glob, or an array of them, roots every source file the glob matches against the calling file's directory, with its exports.",
+  "description": "An import.meta.glob call whose argument is a relative literal glob, or an array of them, loads every source file the glob matches against the calling file's directory, with its exports, from the calling file.",
   "languages": [
     "ts"
   ],

@@ -10,9 +10,10 @@
     "exit": 2,
     "stderr_contains": [
       "unknown command \"explain\"",
-      "analyze       Analyze every language in scope and write the merged report.",
-      "print-config  Print the resolved configuration with the provenance of every setting.",
-      "version       Print the product's version and the Contract version it implements."
+      "analyze          Analyze every language in scope and write the merged report.",
+      "print-config     Print the resolved configuration with the provenance of every setting.",
+      "print-languages  Print the languages a run puts in scope, the analyzers it runs and the languages it leaves out, as one JSON object, an instance of contract/census.schema.json.",
+      "version          Print the product's version and the Contract version it implements."
     ]
   }
 }

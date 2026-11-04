@@ -1,0 +1,20 @@
+{
+  "description": "The print-languages verb refuses what analyze refuses: in a tree that puts Go and TypeScript in scope, a provider list naming only an analyzer claiming go leaves ts in scope with no analyzer, so the verb prints no census and ends with the usage code 2, naming the language.",
+  "products": [
+    "deadset"
+  ],
+  "rename": {
+    "go.mod.txt": "go.mod",
+    "main.go.txt": "main.go"
+  },
+  "argv": [
+    "print-languages",
+    "--target=@TARGET@"
+  ],
+  "expect": {
+    "exit": 2,
+    "stderr_contains": [
+      "claiming \"ts\", in scope"
+    ]
+  }
+}

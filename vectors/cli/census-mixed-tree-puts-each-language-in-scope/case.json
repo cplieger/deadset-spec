@@ -1,0 +1,44 @@
+{
+  "description": "The print-languages verb prints the plan analyze makes: a Go module that also holds JavaScript sources puts both Go and TypeScript in scope, each by its own row of languages.json, so the census names both as detected, in that file's order, and the two default entries in the provider list's order.",
+  "products": [
+    "deadset"
+  ],
+  "rename": {
+    "go.mod.txt": "go.mod",
+    "main.go.txt": "main.go"
+  },
+  "argv": [
+    "print-languages",
+    "--target=@TARGET@"
+  ],
+  "expect": {
+    "exit": 0,
+    "stdout_json": {
+      "languages": [
+        {
+          "language": "go",
+          "provenance": "detected"
+        },
+        {
+          "language": "ts",
+          "provenance": "detected"
+        }
+      ],
+      "analyzers": [
+        {
+          "name": "deadset-go",
+          "languages": [
+            "go"
+          ]
+        },
+        {
+          "name": "deadset-ts",
+          "languages": [
+            "ts"
+          ]
+        }
+      ],
+      "left_out": []
+    }
+  }
+}

@@ -1,0 +1,67 @@
+The Go rendering: a command that lists the fields of three struct types by
+reflection, through a type argument handed to a function that walks a
+reflect.Type, through a reflect.Value and through reflect.VisibleFields, and
+prints only the name of a fourth type. No field is written.
+
+-- fixture.json --
+{
+  "symbols": {
+    "row.ID": { "file": "target/main.go", "line": 11 },
+    "row.note": { "file": "target/main.go", "line": 12 },
+    "cell.Value": { "file": "target/main.go", "line": 17 },
+    "cell.hint": { "file": "target/main.go", "line": 18 },
+    "header.Title": { "file": "target/main.go", "line": 23 },
+    "badge.Text": { "file": "target/main.go", "line": 28 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target prints the fields of three types and the name of a fourth.
+package main
+
+import (
+	"fmt"
+	"reflect"
+)
+
+// row's fields are listed by a walk over its reflect.Type.
+type row struct {
+	ID   int
+	note string
+}
+
+// cell's fields are counted on a reflect.Value.
+type cell struct {
+	Value int
+	hint  string
+}
+
+// header's fields are listed through reflect.VisibleFields.
+type header struct {
+	Title string
+}
+
+// badge's type is named and its fields are never walked.
+type badge struct {
+	Text string
+}
+
+func columns(t reflect.Type) []string {
+	var names []string
+	for i := range t.NumField() {
+		names = append(names, t.Field(i).Name)
+	}
+	return names
+}
+
+func main() {
+	fmt.Println(columns(reflect.TypeFor[row]()))
+	fmt.Println(reflect.ValueOf(cell{}).NumField())
+	for _, f := range reflect.VisibleFields(reflect.TypeOf(header{})) {
+		fmt.Println(f.Name)
+	}
+	fmt.Println(reflect.TypeOf(badge{}).Name())
+}

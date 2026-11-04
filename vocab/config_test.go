@@ -1,6 +1,7 @@
 package vocab_test
 
 import (
+	"slices"
 	"testing"
 
 	"github.com/cplieger/deadset-spec/v8/vocab"
@@ -27,5 +28,18 @@ func TestReadsRootReadsAStringWithNoOtherLanguagesPrefix(t *testing.T) {
 	}
 	if !vocab.ReadsRoot([]vocab.Language{vocab.Go, vocab.TS}, "ts://app/src/a.ts#main") {
 		t.Error("ReadsRoot([go ts], a ts:// string) = false, want true")
+	}
+}
+
+func TestGeneratorRowsReturnsACopyOfEachRegistration(t *testing.T) {
+	first := vocab.GeneratorRows()
+	at := slices.IndexFunc(first, func(row vocab.GeneratorRow) bool { return len(row.Registration) > 0 })
+	if at < 0 {
+		t.Fatal("Setup: no generator row names a registration, so this test checks nothing")
+	}
+	want := first[at].Registration[0]
+	first[at].Registration[0] = "Changed"
+	if got := vocab.GeneratorRows()[at].Registration[0]; got != want {
+		t.Errorf("GeneratorRows()[%d].Registration[0] = %q after a caller changed its copy, want %q", at, got, want)
 	}
 }

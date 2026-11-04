@@ -66,6 +66,11 @@ package flags
 // Default is the parser's default option set.
 const Default = 1
 
+// Commander is a command the parser runs when the arguments name it.
+type Commander interface {
+	Execute(args []string) error
+}
+
 // Parser fills a value from the command line.
 type Parser struct{ data any }
 

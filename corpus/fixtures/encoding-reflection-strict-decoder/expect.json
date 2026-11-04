@@ -1,0 +1,121 @@
+{
+  "name": "encoding-reflection-strict-decoder",
+  "description": "A decoding call the program makes refuse a document that names a member the type lacks reads every field it decodes, written or not, because deleting a field makes it refuse a document that names that field. The call is strict where the decoder it runs through took one of its package's strict switches: a YAML decoder's KnownFields with the constant true, here inside a function of the program that hands its parameter on, a JSON decoder's DisallowUnknownFields, the DisallowUnknownFields option of sigs.k8s.io/yaml, the DisallowUnknownField option a goccy YAML decoder is made with, an encoding/json/v2 RejectUnknownMembers option given a flag the command computes, a YAML v2 decoder's SetStrict reached through a method value, and a go.yaml.in YAML v2 decoder's SetStrict called as a method expression, whose flag follows the decoder. A switch taking a flag enables unless the flag is the constant false, because a flag known only when the program runs may be true. A strict decoder skips a field its tag gives the key `-`, which it never decodes. A decoder with no such switch, a YAML decoder whose KnownFields takes false and a second decoder of the same package that takes no switch fill the fields and read none, so a field one of them alone fills and nothing reads is reported, at the reachability class possible where the decoder is outside the analyzed program.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "expect": [
+    {
+      "symbol": "settings.Name",
+      "report": "none"
+    },
+    {
+      "symbol": "settings.Theme",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "settings.Secret",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    },
+    {
+      "symbol": "request.ID",
+      "report": "none"
+    },
+    {
+      "symbol": "request.Note",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "cache.Hits",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "lenient.Name",
+      "report": "none"
+    },
+    {
+      "symbol": "lenient.Extra",
+      "report": "DS1003",
+      "confidence": "possible",
+      "reachability_class": "possible"
+    },
+    {
+      "symbol": "loose.Name",
+      "report": "none"
+    },
+    {
+      "symbol": "loose.Spare",
+      "report": "DS1003",
+      "confidence": "possible",
+      "reachability_class": "possible"
+    },
+    {
+      "symbol": "manifest.Kind",
+      "report": "none"
+    },
+    {
+      "symbol": "manifest.Spec",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "profile.User",
+      "report": "none"
+    },
+    {
+      "symbol": "profile.Shell",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "flagged.Name",
+      "report": "none"
+    },
+    {
+      "symbol": "flagged.Extra",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "relaxed.Name",
+      "report": "none"
+    },
+    {
+      "symbol": "relaxed.Extra",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "pinned.Name",
+      "report": "none"
+    },
+    {
+      "symbol": "pinned.Extra",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    }
+  ]
+}

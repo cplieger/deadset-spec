@@ -1,0 +1,28 @@
+{
+  "symbols": {
+    "PolyfillFile": {
+      "file": "target/src/polyfill.ts",
+      "line": 1
+    },
+    "stamp": {
+      "file": "target/src/polyfill.ts",
+      "line": 2
+    },
+    "AliasedPolyfillFile": {
+      "file": "target/src/aliased-polyfill.ts",
+      "line": 1
+    },
+    "aliasedStamp": {
+      "file": "target/src/aliased-polyfill.ts",
+      "line": 2
+    },
+    "ImportedPolyfillFile": {
+      "file": "target/src/imported-polyfill.ts",
+      "line": 1
+    },
+    "importedStamp": {
+      "file": "target/src/imported-polyfill.ts",
+      "line": 2
+    }
+  }
+}

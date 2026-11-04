@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "deadset language census",
+  "description": "What the orchestrator's print-languages verb writes to standard output: the languages a run of its analyze verb over the same target, scope document and configuration puts in scope, the analyzers that run invokes and the languages it leaves out, as the run plans them before any analyzer runs. The verb plans as the analyze verb does, with the same rules of contract/languages.json and the same refusals of that plan, so the census never differs from that run's plan, and it runs no analyzer, so it needs none installed. It reads none of the documents an analysis reads at the target root, the ignore file, the baseline and the edges document, so the analyze verb over the same target can still end at its check of those documents, with the usage code 2 or the setup failure unreadable-document. A run the plan ends ends the verb the same way, with the same exit code and class line: a tree in which the census finds no language ends with the setup failure no-program, never with an empty census. A language the census puts in scope whose analyzer then ends with the setup failure no-program is still left out by the run, as contract/languages.json states, because only that analyzer can tell. The document is one indented JSON object ending in a newline, members in the order this schema lists them.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["languages", "analyzers", "left_out"],
+  "properties": {
+    "languages": {
+      "description": "Every language in scope, in contract/languages.json's order: the languages analysis.languages names, or, where it names none, those the census of the target puts in scope less those left_out names.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "description": "One language in scope and what put it there.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["language", "provenance"],
+        "properties": {
+          "language": {
+            "description": "The language, as contract/languages.json names it.",
+            "type": "string",
+            "x-enum": "languages"
+          },
+          "provenance": {
+            "description": "detected where the census of the target put the language in scope, analysis.languages naming none, and otherwise the provenance the resolved configuration gives analysis.languages, which names the source that named the language.",
+            "type": "string",
+            "pattern": "^(detected|(repository|central|flag): [^\\r\\n]+)$"
+          }
+        }
+      }
+    },
+    "analyzers": {
+      "description": "Every provider entry the run invokes, in the provider list's order: each entry claiming a language in scope. Empty where every language in scope is one the orchestrator reads in process.",
+      "type": "array",
+      "items": {
+        "description": "One provider entry and the languages in scope it is handed.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "languages"],
+        "properties": {
+          "name": {
+            "description": "The entry's name, as providers.analyzers spells it.",
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$",
+            "not": {
+              "x-enum": "in-process-analyzers"
+            }
+          },
+          "languages": {
+            "description": "Every language in scope the entry claims, in contract/languages.json's order.",
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "x-enum": "process-languages"
+            }
+          }
+        }
+      }
+    },
+    "left_out": {
+      "description": "Every language the census of the target, or of a declared consumer, puts in scope that the run leaves out before any analyzer runs, in contract/languages.json's order: in a run whose analysis.languages names no language, a language whose reader the orchestrator does not hold. Empty where the run leaves none out, as it always is where analysis.languages names a language.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "description": "One language the run leaves out.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["language", "reason", "consumers"],
+        "properties": {
+          "language": {
+            "description": "The language, as contract/languages.json names it.",
+            "type": "string",
+            "x-enum": "languages"
+          },
+          "reason": {
+            "description": "Why the run leaves the language out: the line the analyze verb prints on standard error naming it, without the product name and the colon and space that open the line.",
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[^\\r\\n]+$"
+          },
+          "consumers": {
+            "description": "Every declared consumer the run leaves out with the language, because every language it holds is left out, by its path as the run names it, in the scope document's order, one entry per consumer the scope document declares, so two declarations naming one path name it twice.",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    }
+  }
+}

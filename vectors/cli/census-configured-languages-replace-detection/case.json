@@ -1,0 +1,34 @@
+{
+  "description": "The print-languages verb prints the plan analyze makes: in a tree that puts Go and TypeScript in scope, analysis.languages naming go in the repository configuration replaces detection, so the census names go alone, with the provenance the resolved configuration gives analysis.languages, and only the deadset-go entry.",
+  "products": [
+    "deadset"
+  ],
+  "rename": {
+    "go.mod.txt": "go.mod",
+    "main.go.txt": "main.go"
+  },
+  "argv": [
+    "print-languages",
+    "--target=@TARGET@"
+  ],
+  "expect": {
+    "exit": 0,
+    "stdout_json": {
+      "languages": [
+        {
+          "language": "go",
+          "provenance": "repository: @TARGET@/deadset.json"
+        }
+      ],
+      "analyzers": [
+        {
+          "name": "deadset-go",
+          "languages": [
+            "go"
+          ]
+        }
+      ],
+      "left_out": []
+    }
+  }
+}

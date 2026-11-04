@@ -1,0 +1,99 @@
+{
+  "name": "load-in-dead-function",
+  "description": "A load written in a function nobody calls is read from that function, whatever spells it: a literal import(), a computed import() and a module URL leave the files they name reachable only from dead code, and an import.meta.glob reads the files' exports from the function too, while an eager one evaluates its files from the holding file, because Vite turns it into static imports at the top of the module.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "loadLiteral",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "loadPlugin",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "loadEager",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "workerURL",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "LiteralFile",
+      "report": "DS1602",
+      "confidence": "probable",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "literalValue",
+      "report": "DS1001",
+      "confidence": "probable",
+      "reachability_class": "certain",
+      "symbol_kind": "variable",
+      "liveness_relation": "reachability"
+    },
+    {
+      "symbol": "PluginFile",
+      "report": "DS1602",
+      "confidence": "probable",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "pluginValue",
+      "report": "DS1001",
+      "confidence": "probable",
+      "reachability_class": "certain",
+      "symbol_kind": "variable",
+      "liveness_relation": "reachability"
+    },
+    {
+      "symbol": "EagerFile",
+      "report": "none"
+    },
+    {
+      "symbol": "eagerValue",
+      "report": "DS1001",
+      "confidence": "probable",
+      "reachability_class": "certain",
+      "symbol_kind": "variable",
+      "liveness_relation": "reachability"
+    },
+    {
+      "symbol": "WorkerFile",
+      "report": "DS1602",
+      "confidence": "probable",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "workerValue",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "variable",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

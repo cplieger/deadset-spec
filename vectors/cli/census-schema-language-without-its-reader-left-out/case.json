@@ -1,0 +1,43 @@
+{
+  "description": "The print-languages verb names what analyze leaves out before any analyzer runs: a Go module holding a Protocol Buffers schema file puts proto in scope by its census, and an orchestrator that does not hold the proto reader leaves proto out, with a declared consumer holding only schema files, so the census names go alone and one left-out entry for proto naming the consumer, its reason the line analyze prints for it on standard error, without the product name, colon and space that open the line.",
+  "products": [
+    "deadset"
+  ],
+  "rename": {
+    "app/go.mod.txt": "app/go.mod",
+    "app/main.go.txt": "app/main.go"
+  },
+  "argv": [
+    "print-languages",
+    "--target=@TARGET@/app",
+    "--scope=@TARGET@/scope.json"
+  ],
+  "expect": {
+    "exit": 0,
+    "stdout_json": {
+      "languages": [
+        {
+          "language": "go",
+          "provenance": "detected"
+        }
+      ],
+      "analyzers": [
+        {
+          "name": "deadset-go",
+          "languages": [
+            "go"
+          ]
+        }
+      ],
+      "left_out": [
+        {
+          "language": "proto",
+          "reason": "this build of deadset holds no reader of \"proto\", so the run leaves it out of scope, and with it the consumer @TARGET@/schemas",
+          "consumers": [
+            "@TARGET@/schemas"
+          ]
+        }
+      ]
+    }
+  }
+}

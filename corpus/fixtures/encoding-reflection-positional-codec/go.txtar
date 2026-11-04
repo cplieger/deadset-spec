@@ -1,0 +1,59 @@
+The Go rendering: a command that encodes a key through encoding/asn1, writes a
+frame through encoding/binary and reads it back, each struct with a field nothing
+writes, and an unexported one in the frame.
+
+-- fixture.json --
+{
+  "symbols": {
+    "keyDER.Version": { "file": "target/main.go", "line": 13 },
+    "keyDER.Modulus": { "file": "target/main.go", "line": 14 },
+    "frame.Magic": { "file": "target/main.go", "line": 19 },
+    "frame.Size": { "file": "target/main.go", "line": 20 },
+    "frame.flags": { "file": "target/main.go", "line": 21 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target writes a DER key and a binary frame.
+package main
+
+import (
+	"bytes"
+	"encoding/asn1"
+	"encoding/binary"
+	"os"
+)
+
+// keyDER is encoded by position, its version left zero.
+type keyDER struct {
+	Version int
+	Modulus []byte
+}
+
+// frame is written and read by position.
+type frame struct {
+	Magic uint32
+	Size  uint16
+	flags uint16
+}
+
+func main() {
+	der, err := asn1.Marshal(keyDER{Modulus: []byte{1}})
+	if err != nil {
+		os.Exit(1)
+	}
+	var buf bytes.Buffer
+	if err := binary.Write(&buf, binary.BigEndian, frame{Size: 2}); err != nil {
+		os.Exit(1)
+	}
+	var back frame
+	if err := binary.Read(bytes.NewReader(buf.Bytes()), binary.BigEndian, &back); err != nil {
+		os.Exit(1)
+	}
+	if _, err := os.Stdout.Write(append(der, buf.Bytes()...)); err != nil {
+		os.Exit(1)
+	}
+}

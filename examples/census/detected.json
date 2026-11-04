@@ -1,0 +1,27 @@
+{
+  "languages": [
+    {
+      "language": "go",
+      "provenance": "detected"
+    },
+    {
+      "language": "ts",
+      "provenance": "detected"
+    }
+  ],
+  "analyzers": [
+    {
+      "name": "deadset-go",
+      "languages": [
+        "go"
+      ]
+    },
+    {
+      "name": "deadset-ts",
+      "languages": [
+        "ts"
+      ]
+    }
+  ],
+  "left_out": []
+}

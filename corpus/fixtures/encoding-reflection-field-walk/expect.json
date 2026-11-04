@@ -1,0 +1,52 @@
+{
+  "name": "encoding-reflection-field-walk",
+  "description": "A reflective walk over a type's fields reads every field of that type, exported or not, written or not, because what it checks or prints is the set of fields itself: a reflect call whose result may reach NumField, Field or FieldByIndex of a reflect.Type or a reflect.Value, or reflect.VisibleFields, reflect.TypeFor's type argument included. A reflect call whose result reaches none of them reads the fields the program writes, so a field nothing writes is still reported.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "row.ID",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "row.note",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "cell.Value",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "cell.hint",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "header.Title",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "badge.Text",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

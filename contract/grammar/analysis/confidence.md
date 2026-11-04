@@ -38,7 +38,7 @@ Rules `confidence.1` to `confidence.34` of [the analysis](../analysis.md). A rul
 
 ### Members of sent and received types
 
-**confidence.14** A finding about a field that the `encoding-reflection` class records only as filled by a callee outside the analyzed program, one whose name says it fills its argument, one handed a pointer to the value, or a generic function that makes the value, has the reachability class `possible`, as [`exemptions.json`](../../exemptions.json) states.
+**confidence.14** A finding about a field that the `encoding-reflection` class records only as filled by a callee outside the analyzed program, one whose name says it fills its argument, one handed a pointer to the value, or a generic function that makes the value, or only as emitted by an encoder though nothing writes it, has the reachability class `possible`, as [`exemptions.json`](../../exemptions.json) states.
 
 **confidence.15** One rule holds in both languages for a data member of a type the program sends or receives.
 
@@ -70,7 +70,7 @@ Rules `confidence.1` to `confidence.34` of [the analysis](../analysis.md). A rul
 
 **confidence.25** A TypeScript finding about a declaration found dead under reachability alone, one that only declarations themselves dead reference, and a `DS1602` finding about a file only dead code imports, is capped as well at `probable` unless `ts.roots_complete` is `true`: a root the analysis does not see, a framework's convention or a computed load, would make the subject live, and only the maintainer can declare that none exists.
 
-**confidence.26** A TypeScript `import()` or `require()` call in a production file whose argument is no string literal, and whose path starts with no relative literal ending in `/` that names a directory below the calling file's, and with no literal naming a package, loads a file the analysis cannot resolve, so in each configuration that compiles that file `ts.roots_complete` lifts no cap: a finding this cap applies to whose subject such a configuration holds is `probable` at most, and the run states a `computed-load` note per call. A `require` the target declares loads nothing, as Computed loads states.
+**confidence.26** A TypeScript `import()` or `require()` call in a production file whose argument is no string literal, and whose path starts with no relative literal ending in `/` that names a directory below the calling file's, and with no literal naming a package, loads a file the analysis cannot resolve, so in each configuration that compiles that file `ts.roots_complete` lifts no cap: a finding this cap applies to whose subject such a configuration holds is `probable` at most, and the run states a `computed-load` note per call. A `require()` call that `roots.23` reads as a call of the target's own function loads nothing; any other `require` is the platform's, one the target declares only ambiently, one a parameter receives and one Node's `createRequire` returns among them, so a call of it is read as above.
 
 **confidence.27** A finding about a declaration nothing references and an intra-function finding are not capped by it.
 
