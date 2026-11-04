@@ -1,6 +1,6 @@
 {
   "name": "encoding-reflection-encoder-fields",
-  "description": "A struct field no source reads is retained by the encoding-reflection class when a value of its struct type is an argument of an encoder and production code writes the field, because the encoder reads the field by name at runtime and the receiver reads what the program wrote. A field of the same encoded type that nothing writes holds no value the program gave it, so it is reported as an unused member though the type is encoded, and so is the same field on a struct type whose values reach no encoder.",
+  "description": "A struct field no source reads is retained by the encoding-reflection class when a value of its struct type is an argument of an encoder and production code writes the field, because the encoder reads the field by name at runtime and the receiver reads what the program wrote. A field of the same encoded type that nothing writes holds no value the program gave it, so it is reported as an unused member though the type is encoded, at the reachability class possible because the encoder still writes its key, and the same field on a struct type whose values reach no encoder is reported as certain.",
   "languages": [
     "go"
   ],
@@ -8,6 +8,7 @@
   "consumers": [
     "consumer"
   ],
+  "min_confidence": "possible",
   "expect": [
     {
       "symbol": "Record.Name",
@@ -19,8 +20,8 @@
     {
       "symbol": "Record.Spare",
       "report": "DS1003",
-      "confidence": "certain",
-      "reachability_class": "certain",
+      "confidence": "possible",
+      "reachability_class": "possible",
       "liveness_relation": "reference-counting"
     },
     {

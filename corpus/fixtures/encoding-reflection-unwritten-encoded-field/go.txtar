@@ -1,0 +1,438 @@
+The Go rendering: a command that encodes values each with a field nothing writes,
+through json.Marshal, through a function of the program that hands its parameter to
+json.Marshal, through a dependency module's function named Marshal, through
+xml.Marshal and through encoding/json/v2, some fields tagged to leave a zero value
+out, among them fields of types with methods. It hands other values to three
+dependency functions whose names say nothing of encoding but that call
+json.Marshal: a wrapper named Render, a request context's JSON method, and Emit,
+which encodes what a method of the command returns through the dependency's
+interface. It prints another value through fmt. A test encodes a value of its own,
+and encodes and fills a value of the command. The dependency is a local module the
+target requires and replaces, so the rendering loads with no network access.
+
+-- fixture.json --
+{
+  "symbols": {
+    "agent.Name": { "file": "target/main.go", "line": 17 },
+    "agent.Description": { "file": "target/main.go", "line": 18 },
+    "wrapped.Zero": { "file": "target/main.go", "line": 24 },
+    "doc.Draft": { "file": "target/main.go", "line": 30 },
+    "doc.Due": { "file": "target/main.go", "line": 31 },
+    "line.Width": { "file": "target/main.go", "line": 36 },
+    "sparse.Note": { "file": "target/main.go", "line": 42 },
+    "sparse.Count": { "file": "target/main.go", "line": 43 },
+    "sparse.Inner": { "file": "target/main.go", "line": 44 },
+    "part.Spare": { "file": "target/main.go", "line": 50 },
+    "part.Size": { "file": "target/main.go", "line": 51 },
+    "config.Name": { "file": "target/main.go", "line": 56 },
+    "config.Debug": { "file": "target/main.go", "line": 57 },
+    "probe.Zero": { "file": "target/main_test.go", "line": 12 },
+    "counter.Hits": { "file": "target/main.go", "line": 64 },
+    "counter.Quiet": { "file": "target/main.go", "line": 65 },
+    "counter.Level": { "file": "target/main.go", "line": 66 },
+    "counter.Mode": { "file": "target/main.go", "line": 67 },
+    "counter.Tally": { "file": "target/main.go", "line": 68 },
+    "counter.At": { "file": "target/main.go", "line": 69 },
+    "counter.Tag": { "file": "target/main.go", "line": 70 },
+    "counter.State": { "file": "target/main.go", "line": 71 },
+    "counter.Unit": { "file": "target/main.go", "line": 72 },
+    "counter.Pair": { "file": "target/main.go", "line": 73 },
+    "flags.On": { "file": "target/main.go", "line": 80 },
+    "flags.Tone": { "file": "target/main.go", "line": 81 },
+    "flags.Code": { "file": "target/main.go", "line": 82 },
+    "flags.Tick": { "file": "target/main.go", "line": 83 },
+    "shared.Flag": { "file": "target/main.go", "line": 89 },
+    "due.IsZero": { "file": "target/main.go", "line": 133 },
+    "count.IsZero": { "file": "target/main.go", "line": 138 },
+    "size.IsZero": { "file": "target/main.go", "line": 143 },
+    "mark.IsZero": { "file": "target/main.go", "line": 190 },
+    "pmark.IsZero": { "file": "target/main.go", "line": 197 },
+    "tick.IsZero": { "file": "target/main.go", "line": 204 },
+    "clock.IsZero": { "file": "target/main.go", "line": 211 },
+    "holder.Time": { "file": "target/main.go", "line": 227 },
+    "reply.Note": { "file": "target/main.go", "line": 95 },
+    "answer.Extra": { "file": "target/main.go", "line": 102 },
+    "answer.Until": { "file": "target/main.go", "line": 104 },
+    "ticket.Seat": { "file": "target/main.go", "line": 110 },
+    "since.IsZero": { "file": "target/main.go", "line": 218 },
+    "sealed.label": { "file": "target/main.go", "line": 232 },
+    "label": { "file": "target/main.go", "line": 238 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+
+require example.com/codec v0.0.0
+
+replace example.com/codec => ../codec
+-- target/main.go --
+// Command target writes encoded values and prints others.
+package main
+
+import (
+	"encoding/json"
+	jsonv2 "encoding/json/v2"
+	"encoding/xml"
+	"fmt"
+	"os"
+	"time"
+
+	"example.com/codec"
+)
+
+// agent is encoded with its description left empty.
+type agent struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+}
+
+// wrapped reaches the encoder through encode.
+type wrapped struct {
+	ID   string `json:"id"`
+	Zero int    `json:"zero"`
+}
+
+// doc reaches a dependency's encoder.
+type doc struct {
+	Title string
+	Draft bool
+	Due   due `yaml:"due,omitempty"`
+}
+
+// line is printed, which reads no field by name.
+type line struct {
+	Width int
+}
+
+// sparse is encoded with fields whose tags leave a zero value out.
+type sparse struct {
+	ID    string   `json:"id"`
+	Note  string   `json:"note,omitempty"`
+	Count int      `json:"count,omitzero"`
+	Inner struct{} `json:"inner,omitempty"`
+}
+
+// part is encoded as XML with a field whose tag leaves an empty value out.
+type part struct {
+	Name  string `xml:"name"`
+	Spare string `xml:"spare,omitempty"`
+	Size  size   `xml:"size,omitempty"`
+}
+
+// config is read by name here, and a test encodes and fills it whole.
+type config struct {
+	Name  string
+	Debug bool
+}
+
+// counter is encoded by encoding/json, which leaves a false, a zero number and an
+// empty string out under omitempty whatever methods their types have.
+type counter struct {
+	ID    string `json:"id"`
+	Hits  int    `json:"hits,omitempty"`
+	Quiet bool   `json:"quiet,omitempty"`
+	Level level  `json:"level,omitempty"`
+	Mode  code   `json:"mode,omitempty"`
+	Tally count  `json:"omitzero_tally,omitempty"`
+	At    stamp  `json:"at,omitzero"`
+	Tag   tag    `json:"tag,omitzero"`
+	State state  `json:"state,omitzero"`
+	Unit  unit   `json:"unit,omitzero"`
+	Pair  pair   `json:"pair,omitzero"`
+}
+
+// flags is encoded by encoding/json/v2, which writes a false, and a value a method
+// encodes, under omitempty.
+type flags struct {
+	ID   string `json:"id"`
+	On   bool   `json:"on,omitempty"`
+	Tone level  `json:"tone,omitempty"`
+	Code code   `json:"code,omitempty"`
+	Tick tick   `json:"tick,omitzero"`
+}
+
+// shared is encoded by both JSON packages.
+type shared struct {
+	ID   string `json:"id"`
+	Flag bool   `json:"flag,omitempty"`
+}
+
+// reply reaches a dependency's JSON wrapper, whose name says nothing of encoding.
+type reply struct {
+	ID   string `json:"id"`
+	Note string `json:"note"`
+	At   clock  `json:"at,omitzero"`
+}
+
+// answer reaches a method of a dependency's request context that encodes it.
+type answer struct {
+	ID    string `json:"id"`
+	Extra int    `json:"extra"`
+	Since since  `json:"since,omitzero"`
+	Until since  `json:"until,omitzero"`
+}
+
+// ticket is returned through a dependency's interface, whose caller encodes it.
+type ticket struct {
+	ID   string `json:"id"`
+	Seat int    `json:"seat"`
+}
+
+// event is encoded with the values it is given.
+type event struct {
+	When mark   `json:"when,omitzero"`
+	Kept pmark  `json:"kept,omitzero"`
+	Held holder `json:"held,omitzero"`
+}
+
+// level prints itself, which no encoder calls.
+type level string
+
+func (l level) String() string { return "level " + string(l) }
+
+// code encodes itself as text.
+type code string
+
+func (c code) MarshalText() ([]byte, error) { return []byte("code " + string(c)), nil }
+
+// due says it is zero, which a YAML encoder calls under omitempty.
+type due int
+
+func (due) IsZero() bool { return true }
+
+// count says it is zero, though encoding/json decides omitempty by kind.
+type count int
+
+func (count) IsZero() bool { return true }
+
+// size says it is zero, though encoding/xml decides omitempty by kind.
+type size int
+
+func (size) IsZero() bool { return true }
+
+// stamp says it is never zero.
+type stamp struct{}
+
+func (stamp) IsZero() bool { return false }
+
+// tag compares a boolean it boxes with a string, which is never equal.
+type tag struct{}
+
+func (tag) kind() any { return true }
+
+func (t tag) IsZero() bool { return t.kind() == "x" }
+
+// fault is an error whose nil pointer an interface holds.
+type fault struct{}
+
+func (*fault) Error() string { return "fault" }
+
+// state compares a nil *fault boxed in an error with nil, which is never equal.
+type state struct {
+	p *fault
+}
+
+func (s state) err() error { return s.p }
+
+func (s state) IsZero() bool { return s.err() == nil }
+
+// unit compares an int64 boxed in any with the int 0, which is never equal.
+type unit struct{}
+
+func (unit) kind() any { return int64(0) }
+
+func (u unit) IsZero() bool { return u.kind() == 0 }
+
+// pair measures an array a call returns, whose length is never 0.
+type pair struct{}
+
+func (pair) make() [2]int { return [2]int{} }
+
+func (p pair) IsZero() bool { return len(p.make()) == 0 }
+
+// mark is zero where its count is.
+type mark struct {
+	n int
+}
+
+func (m mark) IsZero() bool { return m.n == 0 }
+
+// pmark is zero where it equals its zero value.
+type pmark struct {
+	n int
+}
+
+func (m *pmark) IsZero() bool { return *m == pmark{} }
+
+// tick is zero where its count is.
+type tick struct {
+	n int
+}
+
+func (t tick) IsZero() bool { return t.n == 0 }
+
+// clock is zero where its count is, which the encoder behind the wrapper calls.
+type clock struct {
+	n int
+}
+
+func (c clock) IsZero() bool { return c.n == 0 }
+
+// since is zero where its count is, which the encoder behind the context calls.
+type since struct {
+	n int
+}
+
+func (s since) IsZero() bool { return s.n == 0 }
+
+// source hands a ticket to the dependency that asks it for a value.
+type source struct{}
+
+func (source) Value() any { return ticket{ID: "t"} }
+
+// holder encodes itself through the time it embeds.
+type holder struct {
+	time.Time
+}
+
+// sealed encodes itself, so the text method the value it embeds promotes is not called.
+type sealed struct {
+	label
+}
+
+func (sealed) MarshalJSON() ([]byte, error) { return []byte(`"sealed"`), nil }
+
+// label encodes itself as text.
+type label struct{}
+
+func (label) MarshalText() ([]byte, error) { return []byte("text"), nil }
+
+func encode(v any) ([]byte, error) { return json.Marshal(v) }
+
+func main() {
+	a, err := json.Marshal(agent{Name: "a"})
+	if err != nil {
+		os.Exit(1)
+	}
+	w, err := encode(wrapped{ID: "w"})
+	if err != nil {
+		os.Exit(1)
+	}
+	s, err := json.Marshal(sparse{ID: "s"})
+	if err != nil {
+		os.Exit(1)
+	}
+	p, err := xml.Marshal(part{Name: "p"})
+	if err != nil {
+		os.Exit(1)
+	}
+	d := codec.Marshal(doc{Title: "d"})
+	r := codec.Render(reply{ID: "r", At: clock{n: 1}})
+	fmt.Println(line{}, config{Name: "c"}.Name, level("l"), stamp{}, count(1), size(1), due(1))
+	if _, err := os.Stdout.Write(append(append(append(append(append(a, w...), d...), s...), p...), r...)); err != nil {
+		os.Exit(1)
+	}
+	c := &codec.Context{}
+	c.JSON(200, answer{ID: "g", Since: since{n: 1}})
+	for _, b := range [][]byte{
+		c.Out,
+		codec.Emit(source{}),
+		must(json.Marshal(counter{ID: "c"})),
+		must(json.Marshal(shared{ID: "h"})),
+		must(json.Marshal(event{When: mark{n: 1}, Kept: pmark{n: 1}, Held: holder{Time: time.Unix(1, 0)}})),
+		must(json.Marshal(sealed{})),
+		must(jsonv2.Marshal(flags{ID: "f"})),
+		must(jsonv2.Marshal(shared{ID: "h"})),
+	} {
+		if _, err := os.Stdout.Write(b); err != nil {
+			os.Exit(1)
+		}
+	}
+}
+
+func must(b []byte, err error) []byte {
+	if err != nil {
+		os.Exit(1)
+	}
+	return b
+}
+-- target/main_test.go --
+package main
+
+import (
+	"encoding/json"
+	"testing"
+
+	"example.com/codec"
+)
+
+// probe is a test's own value, encoded with a field nothing writes.
+type probe struct {
+	Zero int `json:"zero"`
+}
+
+func TestEncode(t *testing.T) {
+	if _, err := json.Marshal(probe{}); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := json.Marshal(config{}); err != nil {
+		t.Fatal(err)
+	}
+	if err := codec.Decode(&config{}); err != nil {
+		t.Fatal(err)
+	}
+}
+-- codec/go.mod --
+module example.com/codec
+
+go 1.27.0
+-- codec/codec.go --
+// Package codec encodes values as text or JSON and fills them from nothing.
+package codec
+
+import (
+	"encoding/json"
+	"errors"
+	"fmt"
+)
+
+// Marshal encodes v.
+func Marshal(v any) []byte { return fmt.Appendf(nil, "%+v", v) }
+
+// Render encodes v as JSON.
+func Render(v any) []byte {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return nil
+	}
+	return b
+}
+
+// Context answers one request.
+type Context struct {
+	Out []byte
+}
+
+// JSON writes the status code and obj encoded as JSON.
+func (c *Context) JSON(code int, obj any) {
+	c.Out = fmt.Appendf(c.Out, "%d ", code)
+	c.Out = append(c.Out, Render(obj)...)
+}
+
+// Source hands over a value to encode.
+type Source interface {
+	Value() any
+}
+
+// Emit encodes as JSON the value s hands over.
+func Emit(s Source) []byte { return Render(s.Value()) }
+
+// Decode fills v.
+func Decode(v any) error {
+	if v == nil {
+		return errors.New("codec: Decode needs a value")
+	}
+	return nil
+}
