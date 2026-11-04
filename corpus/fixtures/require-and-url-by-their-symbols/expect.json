@@ -1,0 +1,81 @@
+{
+  "name": "require-and-url-by-their-symbols",
+  "description": "A require() call and a module URL are read by what their callee resolves to, not only by the name they are written with: a require createRequire returns, under its binding's name, through a parenthesized callee or through another binding of it, and a URL written in parentheses, as a renamed import of node:url's URL, as url.URL and as globalThis.URL, each load the file they name. A call of the target's own function with a body loads nothing, so the file only it names is reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "CreatedFile",
+      "report": "none"
+    },
+    {
+      "symbol": "createdValue",
+      "report": "none"
+    },
+    {
+      "symbol": "ParenthesizedFile",
+      "report": "none"
+    },
+    {
+      "symbol": "parenthesizedValue",
+      "report": "none"
+    },
+    {
+      "symbol": "AliasedFile",
+      "report": "none"
+    },
+    {
+      "symbol": "aliasedValue",
+      "report": "none"
+    },
+    {
+      "symbol": "ParenthesizedUrlFile",
+      "report": "none"
+    },
+    {
+      "symbol": "parenthesizedUrlValue",
+      "report": "none"
+    },
+    {
+      "symbol": "RenamedUrlFile",
+      "report": "none"
+    },
+    {
+      "symbol": "renamedUrlValue",
+      "report": "none"
+    },
+    {
+      "symbol": "NamespaceUrlFile",
+      "report": "none"
+    },
+    {
+      "symbol": "namespaceUrlValue",
+      "report": "none"
+    },
+    {
+      "symbol": "GlobalUrlFile",
+      "report": "none"
+    },
+    {
+      "symbol": "globalUrlValue",
+      "report": "none"
+    },
+    {
+      "symbol": "OwnFile",
+      "report": "DS1602",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "ownValue",
+      "report": "DS1002",
+      "confidence": "probable",
+      "reachability_class": "certain",
+      "symbol_kind": "variable",
+      "liveness_relation": "reachability"
+    }
+  ]
+}

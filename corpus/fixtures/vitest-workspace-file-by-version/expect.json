@@ -1,0 +1,37 @@
+{
+  "name": "vitest-workspace-file-by-version",
+  "description": "Vitest's workspace file is read through its convention row: where the installed Vitest is 3.2 or later before 4, vitest.workspace.ts is an entry and the setup files of each inline project it lists are test files, while a package that declares no Vitest enters no workspace file. The fixture assumes the analyzer carries a row named vitest for the package vitest from 3.2.0 up to 4.0.0 that roots vitest.workspace.ts and reads setupFiles from each inline project of its default export.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "conventions_applied": [
+    {
+      "name": "vitest",
+      "package": "vitest",
+      "version": "3.999.0",
+      "manifest": "package.json"
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "UnitSetup",
+      "report": "none"
+    },
+    {
+      "symbol": "PlainWorkspace",
+      "report": "DS1602",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "PlainWorkspaceDefault",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "export-alias",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

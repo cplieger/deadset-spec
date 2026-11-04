@@ -1,0 +1,41 @@
+{
+  "name": "computed-load-in-a-javascript-package",
+  "description": "In a JavaScript package with no compiler configuration, a computed load is read from the reference pass's load sites as in TypeScript: an import() whose template starts with a relative literal naming another directory, and a require() whose concatenation does, load every source file below that directory with its exports, ES module and CommonJS alike, while a file no load names is a file nothing loads.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "PluginFile",
+      "report": "none"
+    },
+    {
+      "symbol": "report",
+      "report": "none"
+    },
+    {
+      "symbol": "TaskFile",
+      "report": "none"
+    },
+    {
+      "symbol": "build",
+      "report": "none"
+    },
+    {
+      "symbol": "OrphanFile",
+      "report": "DS1602",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "orphan",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "variable",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

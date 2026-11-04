@@ -1,0 +1,24 @@
+{
+  "symbols": {
+    "NextSetup": {
+      "file": "target/setup/next.ts",
+      "line": 1
+    },
+    "OldSetup": {
+      "file": "target/setup/old.ts",
+      "line": 1
+    },
+    "OldWorkspace": {
+      "file": "target/vitest.workspace.ts",
+      "line": 1
+    },
+    "FakeClock": {
+      "file": "target/src/clock.ts",
+      "line": 3
+    },
+    "OldWorkspaceDefault": {
+      "file": "target/vitest.workspace.ts",
+      "line": 3
+    }
+  }
+}

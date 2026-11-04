@@ -1,0 +1,52 @@
+{
+  "name": "vitest-4-reads-no-workspace-file",
+  "description": "Vitest 4 reads no workspace file, so where the installed Vitest is 4 or later vitest.workspace.ts is no entry and the setup files only it names are not test files, while the setup files of each inline project of the configuration's test.projects are, so a helper only such a setup file calls is used only by tests, which is production code only tests use and so carries the class possible. The fixture assumes the analyzer carries a row named vitest for the package vitest from 4.0.0 that does not root vitest.workspace.ts and reads setupFiles from the configuration's test object and from each inline project of test.projects.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "conventions_applied": [
+    {
+      "name": "vitest",
+      "package": "vitest",
+      "version": "4.999.0",
+      "manifest": "package.json"
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "NextSetup",
+      "report": "none"
+    },
+    {
+      "symbol": "FakeClock",
+      "report": "DS1102",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "OldSetup",
+      "report": "DS1602",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "OldWorkspace",
+      "report": "DS1602",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "OldWorkspaceDefault",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "export-alias",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

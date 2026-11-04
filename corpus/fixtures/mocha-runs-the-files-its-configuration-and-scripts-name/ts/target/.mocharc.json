@@ -1,0 +1,6 @@
+{
+  "recursive": true,
+  "ignore": [
+    "test/fixtures/**"
+  ]
+}

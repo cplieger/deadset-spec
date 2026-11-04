@@ -1,0 +1,11 @@
+{
+  "name": "@example/target",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "node scripts/pack.js && node scripts/own.mjs"
+  },
+  "devDependencies": {
+    "webpack": "5.99.0"
+  }
+}

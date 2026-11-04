@@ -7,6 +7,14 @@
     "liveC": {
       "file": "target/c.js",
       "line": 2
+    },
+    "SetupFile": {
+      "file": "target/setup.js",
+      "line": 1
+    },
+    "configured": {
+      "file": "target/setup.js",
+      "line": 2
     }
   }
 }

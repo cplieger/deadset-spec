@@ -1,0 +1,36 @@
+{
+  "name": "jest-runs-the-files-its-roots-and-test-match-name",
+  "description": "Jest runs the files below each of its roots that its testMatch globs match over the whole path, read from a CommonJS configuration file as Node leaves its module value. Each such file is a test file in a JavaScript package with no compiler configuration, so a function only those tests call is reported as test-only use, while a file the globs match outside the roots is a file nothing loads. The fixture assumes the analyzer carries a row named jest for the package jest whose range holds the installed version.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "conventions_applied": [
+    {
+      "name": "jest",
+      "package": "jest",
+      "version": "29.7.0",
+      "manifest": "package.json"
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "CheckFile",
+      "report": "none"
+    },
+    {
+      "symbol": "OutsideFile",
+      "report": "DS1602",
+      "confidence": "certain"
+    },
+    {
+      "symbol": "onlyTested",
+      "report": "DS1102",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

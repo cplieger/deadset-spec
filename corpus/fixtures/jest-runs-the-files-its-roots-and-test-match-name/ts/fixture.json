@@ -1,0 +1,16 @@
+{
+  "symbols": {
+    "CheckFile": {
+      "file": "target/lib/math.check.js",
+      "line": 1
+    },
+    "OutsideFile": {
+      "file": "target/other/outside.check.js",
+      "line": 1
+    },
+    "onlyTested": {
+      "file": "target/lib/tested.js",
+      "line": 1
+    }
+  }
+}

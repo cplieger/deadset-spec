@@ -1,6 +1,6 @@
 {
   "name": "worker-in-dead-function",
-  "description": "A worker address roots the file it names wherever the call is written: a new Worker call in a function nobody calls leaves its file a root, while the function and the file's export nothing imports are reported.",
+  "description": "A worker address is an import of the file it names, written where the call is: a new Worker call in a function nobody calls reaches its file from dead code only, so the function, the file and the file's export nothing imports are reported.",
   "languages": [
     "ts"
   ],
@@ -16,7 +16,10 @@
     },
     {
       "symbol": "WorkerFile",
-      "report": "none"
+      "report": "DS1602",
+      "confidence": "probable",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
     },
     {
       "symbol": "workerValue",

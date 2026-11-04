@@ -1,0 +1,49 @@
+{
+  "name": "ava-runs-its-default-globs-by-version",
+  "description": "AVA 6 runs the files its default globs name with the extensions cjs, mjs and js, less its helper and fixture directories and every file whose name starts with an underscore. Each such file is a test file in a JavaScript package with no compiler configuration, so a function only those tests call is reported as test-only use, while a file below its test directory that AVA does not run is a file nothing loads. The fixture assumes the analyzer carries a row named ava for the package ava whose range holds the installed version.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "conventions_applied": [
+    {
+      "name": "ava",
+      "package": "ava",
+      "version": "6.4.0",
+      "manifest": "package.json"
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "RootTestFile",
+      "report": "none"
+    },
+    {
+      "symbol": "MathFile",
+      "report": "none"
+    },
+    {
+      "symbol": "LegacyFile",
+      "report": "none"
+    },
+    {
+      "symbol": "HelperFile",
+      "report": "DS1602",
+      "confidence": "certain"
+    },
+    {
+      "symbol": "PrivateFile",
+      "report": "DS1602",
+      "confidence": "certain"
+    },
+    {
+      "symbol": "onlyTested",
+      "report": "DS1102",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

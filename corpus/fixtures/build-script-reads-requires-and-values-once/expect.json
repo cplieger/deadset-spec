@@ -1,0 +1,37 @@
+{
+  "name": "build-script-reads-requires-and-values-once",
+  "description": "A build script is read under the one static-module rule: a require that createRequire returns is the platform's and binds the bundler, an options object in a top-level let binding is read through to its initializer, a call through the script's own require function binds the bundler too, since a script read without a type checker proves no require its own, and a call through a parameter that shadows the bundler's binding is no build call.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Created",
+      "report": "none"
+    },
+    {
+      "symbol": "ShadowedFile",
+      "report": "DS1602",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "Shadowed",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "FakeFile",
+      "report": "none"
+    },
+    {
+      "symbol": "Fake",
+      "report": "none"
+    }
+  ]
+}

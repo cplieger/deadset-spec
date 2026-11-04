@@ -1,0 +1,5 @@
+{
+  "name": "@stryker-mutator/vitest-runner",
+  "version": "9.999.0",
+  "private": true
+}

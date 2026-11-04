@@ -1,0 +1,30 @@
+{
+  "name": "vitest-setup-files-in-every-argument",
+  "description": "A configuration file's default export written as a call is read in every argument of the call, so a Vitest configuration that merges a base object with its test options names its setup files in the second argument: each is a test file, and a helper only it calls is used only by tests, which is production code only tests use and so carries the class possible. The fixture assumes the analyzer carries a row named vitest for the package vitest whose range holds the installed version and which reads setupFiles from the test object of vitest.config.ts.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "conventions_applied": [
+    {
+      "name": "vitest",
+      "package": "vitest",
+      "version": "3.999.0",
+      "manifest": "package.json"
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "MergedSetup",
+      "report": "none"
+    },
+    {
+      "symbol": "FakeClock",
+      "report": "DS1102",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "function"
+    }
+  ]
+}

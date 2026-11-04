@@ -1,0 +1,22 @@
+{
+  "name": "configuration-chain-loads-through-the-platform-require",
+  "description": "A configuration file no program holds is read through the files it loads by a relative specifier, under the one require rule: a require that createRequire returns loads the file it names, so the strings there root what they name, and so does a require the configuration file writes itself as a function, since a file read without a type checker proves no require its own.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Loaded",
+      "report": "none"
+    },
+    {
+      "symbol": "HeldFile",
+      "report": "none"
+    },
+    {
+      "symbol": "Held",
+      "report": "none"
+    }
+  ]
+}

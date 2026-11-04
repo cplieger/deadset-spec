@@ -69,6 +69,12 @@
           "fix": "Name the target root and the files the language reads a program from, and tell the user to run from the directory that holds them or to name the languages to analyze."
         },
         {
+          "class": "unreadable-configuration",
+          "languages": ["ts"],
+          "meaning": "A compiler configuration the run opens is present and the compiler cannot read it: it does not parse, names an option or a value the compiler refuses, extends a file the compiler cannot read, or its extends chain returns to a configuration it already passed.",
+          "fix": "Name the configuration and the compiler's error, and tell the user to correct the configuration, or to name the configurations to analyze."
+        },
+        {
           "class": "unreadable-document",
           "languages": ["go", "ts"],
           "meaning": "A document the analysis reads at the target root, the ignore file, the baseline or the edges document, is present and cannot be read: its name resolves outside the target root or to anything but a regular file, or the read fails.",

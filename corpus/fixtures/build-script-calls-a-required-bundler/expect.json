@@ -1,0 +1,22 @@
+{
+  "name": "build-script-calls-a-required-bundler",
+  "description": "A build script that calls the value a require of webpack returns, with no binding between them, runs webpack, so the entry its options object names is built, and so does a call through a require the script writes itself, since a script read without a type checker proves no require its own.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Packed",
+      "report": "none"
+    },
+    {
+      "symbol": "UnpackedFile",
+      "report": "none"
+    },
+    {
+      "symbol": "Unpacked",
+      "report": "none"
+    }
+  ]
+}

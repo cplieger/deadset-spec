@@ -1,0 +1,28 @@
+{
+  "symbols": {
+    "RootTestFile": {
+      "file": "target/test.js",
+      "line": 1
+    },
+    "MathFile": {
+      "file": "target/tests/math.js",
+      "line": 1
+    },
+    "LegacyFile": {
+      "file": "target/tests/legacy.cjs",
+      "line": 1
+    },
+    "HelperFile": {
+      "file": "target/tests/helpers/unused.js",
+      "line": 1
+    },
+    "PrivateFile": {
+      "file": "target/tests/_private.js",
+      "line": 1
+    },
+    "onlyTested": {
+      "file": "target/lib/tested.js",
+      "line": 1
+    }
+  }
+}

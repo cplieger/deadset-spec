@@ -492,7 +492,7 @@
           "evidence": {
             "description": "The evidence the entry must name.",
             "type": "string",
-            "enum": ["header", "tag", "notice", "convention"]
+            "enum": ["header", "tag", "notice", "convention", "minified"]
           },
           "detail": {
             "description": "The detail the entry must name.",

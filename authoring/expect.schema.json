@@ -332,7 +332,7 @@
             "pattern": "^(?:[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.\\.[^/\\x00-\\x1f\\x7f]+)(?:/(?:[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.\\.[^/\\x00-\\x1f\\x7f]+))*$"
           },
           "line": { "description": "The line the entry must name.", "type": "integer", "minimum": 1 },
-          "evidence": { "description": "The evidence the entry must name.", "type": "string", "enum": ["header", "tag", "notice", "convention"] },
+          "evidence": { "description": "The evidence the entry must name.", "type": "string", "enum": ["header", "tag", "notice", "convention", "minified"] },
           "detail": { "description": "The detail the entry must name.", "type": "string", "minLength": 1 },
           "generator": {
             "description": "The generator the entry must name; absent where it must name none.",

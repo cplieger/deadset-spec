@@ -1,0 +1,36 @@
+{
+  "name": "node-test-runs-its-patterns-from-the-scripts",
+  "description": "A script that runs node --test with no operand runs the files Node's default test patterns name, and one with operands runs the files its globs name. Each such file is a test file in a JavaScript package with no compiler configuration, so a function only those tests call is reported as test-only use, while a file no pattern names is a file nothing loads.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "expect": [
+    {
+      "symbol": "DashFile",
+      "report": "none"
+    },
+    {
+      "symbol": "TestDirFile",
+      "report": "none"
+    },
+    {
+      "symbol": "SmokeFile",
+      "report": "none"
+    },
+    {
+      "symbol": "UnrunFile",
+      "report": "DS1602",
+      "confidence": "certain"
+    },
+    {
+      "symbol": "onlyTested",
+      "report": "DS1102",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

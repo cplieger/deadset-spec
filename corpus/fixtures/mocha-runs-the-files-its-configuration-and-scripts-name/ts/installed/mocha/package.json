@@ -1,0 +1,8 @@
+{
+  "name": "mocha",
+  "version": "11.7.5",
+  "private": true,
+  "bin": {
+    "mocha": "./mocha.js"
+  }
+}
