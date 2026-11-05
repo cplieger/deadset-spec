@@ -1,0 +1,80 @@
+The Go rendering: a target whose root is a module, an application calling one
+function of its lib package and one of a package below node_modules, which
+calls back into lib, and a function nothing calls in each of that package, a
+second node_modules package at the root, a node_modules directory below lib, a
+.cache directory, an _examples directory and a testdata directory.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Used": { "file": "target/lib/lib.go", "line": 4 },
+    "Unused": { "file": "target/lib/lib.go", "line": 7 },
+    "Installed": { "file": "target/node_modules/tool/golang/tool.go", "line": 4 },
+    "Callback": { "file": "target/lib/lib.go", "line": 10 },
+    "Imported": { "file": "target/node_modules/helper/helper.go", "line": 6 },
+    "ImportedSpare": { "file": "target/node_modules/helper/helper.go", "line": 9 },
+    "Deep": { "file": "target/lib/node_modules/deep/deep.go", "line": 4 },
+    "Cached": { "file": "target/.cache/cached/cached.go", "line": 4 },
+    "Underscored": { "file": "target/_examples/demo/demo.go", "line": 4 },
+    "Fixture": { "file": "target/testdata/fixture/fixture.go", "line": 4 }
+  }
+}
+-- target/go.mod --
+module example.com/m
+
+go 1.27.0
+-- target/main.go --
+package main
+
+import (
+	"example.com/m/lib"
+	"example.com/m/node_modules/helper"
+)
+
+func main() { lib.Used(); helper.Imported() }
+-- target/lib/lib.go --
+package lib
+
+// Used is what main calls.
+func Used() {}
+
+// Unused is called by nothing.
+func Unused() {}
+
+// Callback is called by installed code alone.
+func Callback() {}
+-- target/node_modules/helper/helper.go --
+package helper
+
+import "example.com/m/lib"
+
+// Imported is installed code main calls, which calls back into the module.
+func Imported() { lib.Callback() }
+
+// ImportedSpare is installed code nothing calls.
+func ImportedSpare() {}
+-- target/node_modules/tool/golang/tool.go --
+package tool
+
+// Installed is installed code, called by nothing.
+func Installed() {}
+-- target/lib/node_modules/deep/deep.go --
+package deep
+
+// Deep is installed code, called by nothing.
+func Deep() {}
+-- target/.cache/cached/cached.go --
+package cached
+
+// Cached is a cache's copy, called by nothing.
+func Cached() {}
+-- target/_examples/demo/demo.go --
+package demo
+
+// Underscored is an example's, called by nothing.
+func Underscored() {}
+-- target/testdata/fixture/fixture.go --
+package fixture
+
+// Fixture is a test input, called by nothing.
+func Fixture() {}

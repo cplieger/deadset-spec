@@ -1,0 +1,13 @@
+{
+  "name": "walked-module-imports-a-node-modules-package",
+  "description": "A package below node_modules that a module of the target imports is no package of it, so nothing in it is reported, and the module's build compiles it all the same, so its calls back into the module count. Neither it nor a package below an underscore directory of the module, which the run reads as the module's consumer, holds the module's own files: a string literal in them still spells a declaration's name and lowers its finding.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "expect": [
+    { "symbol": "Back", "report": "none" },
+    { "symbol": "Shown", "report": "none" },
+    { "symbol": "Spare", "report": "none" },
+    { "symbol": "Named", "report": "DS1001", "confidence": "possible", "reachability_class": "possible", "symbol_kind": "function", "liveness_relation": "reference-counting" }
+  ]
+}

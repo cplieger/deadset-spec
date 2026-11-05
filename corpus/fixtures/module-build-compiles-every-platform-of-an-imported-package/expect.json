@@ -1,0 +1,13 @@
+{
+  "name": "module-build-compiles-every-platform-of-an-imported-package",
+  "description": "A package of the module below node_modules, or in a directory its ignore directive names, that its production code imports is compiled by the module's build under every configuration the build takes, so a file of it that only one platform builds still derives that platform, and its calls back into the module count there.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "expect": [
+    { "symbol": "Any", "report": "none" },
+    { "symbol": "WinOnly", "report": "none" },
+    { "symbol": "PlanOnly", "report": "none" },
+    { "symbol": "Unused", "report": "DS1001", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "function", "liveness_relation": "reference-counting" }
+  ]
+}

@@ -1,0 +1,52 @@
+The Go rendering: a target root holding no go.mod and one module, app, whose main
+imports a package below app/node_modules that calls back into app's lib and
+prints a string literal spelling the name of a lib function nothing calls. An
+example program below app/_examples calls a third lib function, and the installed
+package declares a function nothing calls.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Back": { "file": "target/app/lib/lib.go", "line": 4 },
+    "Shown": { "file": "target/app/lib/lib.go", "line": 7 },
+    "Named": { "file": "target/app/lib/lib.go", "line": 10 },
+    "Spare": { "file": "target/app/node_modules/helper/helper.go", "line": 9 }
+  }
+}
+-- target/app/go.mod --
+module example.com/app
+
+go 1.27.0
+-- target/app/main.go --
+package main
+
+import "example.com/app/node_modules/helper"
+
+func main() { helper.Run(); println("Named") }
+-- target/app/lib/lib.go --
+package lib
+
+// Back is called by the installed package alone.
+func Back() {}
+
+// Shown is called by the example alone.
+func Shown() {}
+
+// Named is called by nothing, and main prints its name.
+func Named() {}
+-- target/app/node_modules/helper/helper.go --
+package helper
+
+import "example.com/app/lib"
+
+// Run is what main calls.
+func Run() { lib.Back() }
+
+// Spare is installed code nothing calls.
+func Spare() {}
+-- target/app/_examples/demo/main.go --
+package main
+
+import "example.com/app/lib"
+
+func main() { lib.Shown() }
