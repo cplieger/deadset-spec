@@ -1,0 +1,86 @@
+The Go rendering: a module at the target root that ignores ./gen, whose main
+imports a package below node_modules and the package in gen. Each imported
+package calls back into lib from a file only one platform builds: windows for the
+installed package, plan9 for the ignored one. A lib function nothing calls stays
+reported.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Any": { "file": "target/lib/lib.go", "line": 4 },
+    "WinOnly": { "file": "target/lib/lib.go", "line": 7 },
+    "PlanOnly": { "file": "target/lib/lib.go", "line": 10 },
+    "Unused": { "file": "target/lib/lib.go", "line": 13 }
+  }
+}
+-- target/go.mod --
+module example.com/m
+
+go 1.27.0
+
+ignore ./gen
+-- target/main.go --
+package main
+
+import (
+	"example.com/m/gen"
+	"example.com/m/node_modules/helper"
+)
+
+func main() {
+	helper.Run()
+	gen.Run()
+}
+-- target/lib/lib.go --
+package lib
+
+// Any is called by the installed package on every platform.
+func Any() {}
+
+// WinOnly is called by the installed package's windows file alone.
+func WinOnly() {}
+
+// PlanOnly is called by the ignored package's plan9 file alone.
+func PlanOnly() {}
+
+// Unused is called by nothing.
+func Unused() {}
+-- target/node_modules/helper/helper.go --
+package helper
+
+import "example.com/m/lib"
+
+// Run is what main calls.
+func Run() {
+	lib.Any()
+	run()
+}
+-- target/node_modules/helper/helper_windows.go --
+package helper
+
+import "example.com/m/lib"
+
+func run() { lib.WinOnly() }
+-- target/node_modules/helper/helper_other.go --
+//go:build !windows
+
+package helper
+
+func run() {}
+-- target/gen/gen.go --
+package gen
+
+// Run is what main calls.
+func Run() { run() }
+-- target/gen/gen_plan9.go --
+package gen
+
+import "example.com/m/lib"
+
+func run() { lib.PlanOnly() }
+-- target/gen/gen_other.go --
+//go:build !plan9
+
+package gen
+
+func run() {}
