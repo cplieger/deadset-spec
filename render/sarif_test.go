@@ -12,6 +12,7 @@ import (
 	"strings"
 	"testing"
 
+	spec "github.com/cplieger/deadset-spec/v8"
 	"github.com/cplieger/deadset-spec/v8/report"
 	"github.com/cplieger/deadset-spec/v8/vocab"
 )
@@ -424,5 +425,32 @@ func TestSARIFPlacesAStaleSuppressionNamingNoAnalyzerInTheMergesRun(t *testing.T
 		len(last.Results) != 1 || last.Results[0].RuleID != "DS9003" {
 		t.Errorf("SARIF(a stale suppression naming no analyzer) holds %d runs, the last %q with %d results, "+
 			"want the merge's own run after the inputs' holding the DS9003 result", len(log.Runs), last.Tool.Driver.Name, len(last.Results))
+	}
+}
+
+// A report merged from none renders as the merge's own run alone, holding no
+// result, so the log still names the product that wrote it.
+func TestSARIFOfAReportMergedFromNoneIsTheMergesRunAlone(t *testing.T) {
+	t.Parallel()
+
+	data, err := spec.Examples.ReadFile("examples/reports/merged-from-none.json")
+	if err != nil {
+		t.Fatalf("Setup: read the example: %v", err)
+	}
+	r, err := report.Decode(data)
+	if err != nil {
+		t.Fatalf("Setup: decode the example: %v", err)
+	}
+	var out bytes.Buffer
+	if err := SARIF(&out, r, synthesizedSource); err != nil {
+		t.Fatalf("SARIF(merged from none) = %v", err)
+	}
+	var log checkedLog
+	if err := json.Unmarshal(out.Bytes(), &log); err != nil {
+		t.Fatalf("decode SARIF(merged from none): %v", err)
+	}
+	if len(log.Runs) != 1 || log.Runs[0].Tool.Driver.Name != r.Analyzer.Name ||
+		log.Runs[0].AutomationDetails["id"] != mergeAutomation || len(log.Runs[0].Results) != 0 || log.Properties.Totals == nil {
+		t.Errorf("SARIF(merged from none) = %s, want the merge's own run alone, %s, holding no result, and the log's totals", out.Bytes(), mergeAutomation)
 	}
 }

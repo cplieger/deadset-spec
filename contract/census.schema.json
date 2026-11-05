@@ -25,7 +25,7 @@
           "provenance": {
             "description": "detected where the census of the target put the language in scope, analysis.languages naming none, and otherwise the provenance the resolved configuration gives analysis.languages, which names the source that named the language.",
             "type": "string",
-            "pattern": "^(detected|(repository|central|flag): [^\\r\\n]+)$"
+            "pattern": "^(detected|(repository|central|flag): ([^\\r\\n]|[\\r\\n])+)$"
           }
         }
       }
@@ -78,8 +78,7 @@
           "reason": {
             "description": "Why the run leaves the language out: the line the analyze verb prints on standard error naming it, without the product name and the colon and space that open the line.",
             "type": "string",
-            "minLength": 1,
-            "pattern": "^[^\\r\\n]+$"
+            "minLength": 1
           },
           "consumers": {
             "description": "Every declared consumer the run leaves out with the language, because every language it holds is left out, by its path as the run names it, in the scope document's order, one entry per consumer the scope document declares, so two declarations naming one path name it twice.",

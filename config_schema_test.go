@@ -394,3 +394,10 @@ func TestConfigSchema_AConfigurationEntryIsOnePlatformOrOneProject(t *testing.T)
 		})
 	}
 }
+
+// A printed provenance names the file or flag that supplied a setting, and a
+// file's path may hold a carriage return or a line feed, so the printout reads
+// back as a configuration whatever path it names.
+func TestProvenanceAdmitsALineBreakInThePathItNames(t *testing.T) {
+	validateAgainst(t, "contract/config.schema.json", []byte(`{"provenance": {"target.kind": "central: /w/a\nb\r.json"}}`))
+}

@@ -888,7 +888,7 @@
       "patternProperties": {
         "^[a-z][a-z_]*(\\.[A-Za-z0-9_]+)*$": {
           "type": "string",
-          "pattern": "^(default|(repository|central|flag): [^\\r\\n]+)$"
+          "pattern": "^(default|(repository|central|flag): ([^\\r\\n]|[\\r\\n])+)$"
         }
       },
       "x-ignored-by-resolution": true,

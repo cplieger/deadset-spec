@@ -80,14 +80,18 @@ func counted(n int, one, many string) string {
 	return strconv.Itoa(n) + " " + many
 }
 
-// sentence joins languages as a sentence lists them: "go", "go and ts".
+// sentence joins languages as a sentence lists them: "no language", "go",
+// "go and ts".
 func sentence(languages []vocab.Language) string {
 	names := make([]string, len(languages))
 	for i, language := range languages {
 		names[i] = string(language)
 	}
-	if len(names) < 2 {
-		return strings.Join(names, "")
+	switch len(names) {
+	case 0:
+		return "no language"
+	case 1:
+		return names[0]
 	}
 	return strings.Join(names[:len(names)-1], ", ") + " and " + names[len(names)-1]
 }

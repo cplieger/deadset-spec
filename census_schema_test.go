@@ -69,3 +69,14 @@ func withoutAnnotations(schema map[string]any) map[string]any {
 	}
 	return kept
 }
+
+// A provenance and a left-out reason name the paths the run was handed, and a
+// path may hold a carriage return or a line feed, so the census admits both:
+// JSON escapes them, and the document stays one line per member.
+func TestCensusAdmitsALineBreakInAPathItNames(t *testing.T) {
+	validateAgainst(t, censusSchemaPath, []byte(`{
+  "languages": [{"language": "go", "provenance": "central: /w/a\nb\r.json"}],
+  "analyzers": [{"name": "deadset-go", "languages": ["go"]}],
+  "left_out": [{"language": "proto", "reason": "the consumer /w/sche\nma", "consumers": ["/w/sche\nma"]}]
+}`))
+}

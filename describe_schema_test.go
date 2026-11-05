@@ -112,6 +112,13 @@ func TestDescribeSchemaStatesEachMemberAsTheReportsAnalyzerDoes(t *testing.T) {
 	for member, at := range shared {
 		t.Run(member, func(t *testing.T) {
 			got, want := withoutDescriptions(schemaAt(t, describe, member)), withoutDescriptions(schemaAt(t, report, at...))
+			if member == "languages" {
+				// The report schema's allOf holds every report but one merged
+				// from none to at least one language, because that one names none.
+				branches, _ := report["allOf"].([]any)
+				analyzerReport, _ := branches[len(branches)-1].(map[string]any)["else"].(map[string]any)
+				want.(map[string]any)["minItems"] = schemaAt(t, analyzerReport, "analyzer", "languages")["minItems"]
+			}
 			if !reflect.DeepEqual(got, want) {
 				t.Errorf("describe schema %s = %v, want the report schema's %v", member, got, want)
 			}

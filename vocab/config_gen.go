@@ -535,7 +535,7 @@ var configKeys = []ConfigKey{
 		Owner:      "analysis",
 		ReadBy:     []Language{Go, TS, Proto},
 		Delivered:  []Language{Go, TS},
-		Value:      `{"type":"string","pattern":"^(default|(repository|central|flag): [^\\r\\n]+)$"}`,
+		Value:      `{"type":"string","pattern":"^(default|(repository|central|flag): ([^\\r\\n]|[\\r\\n])+)$"}`,
 		KeyPattern: `^[a-z][a-z_]*(\.[A-Za-z0-9_]+)*$`,
 	},
 }

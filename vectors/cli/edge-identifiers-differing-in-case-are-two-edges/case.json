@@ -1,0 +1,28 @@
+{
+  "description": "An edge identifier is compared as bytes, so identifiers differing only in case name two edges: an edges document declaring Foo and foo is read, not refused as a key written twice, and a stub analyzer that enumerates neither side's Go symbol gives one stale-edge finding per edge, Foo before foo.",
+  "products": [
+    "deadset"
+  ],
+  "rename": {
+    "go.mod.txt": "go.mod",
+    "main.go.txt": "main.go"
+  },
+  "executables": [
+    "bin/analyzer"
+  ],
+  "report_file": "@OUT@/run/report.json",
+  "argv": [
+    "analyze",
+    "--target=@TARGET@",
+    "--run-dir=@OUT@/run",
+    "--exit-code=off"
+  ],
+  "expect": {
+    "exit": 0,
+    "report": "valid",
+    "finding_symbols": [
+      "Foo",
+      "foo"
+    ]
+  }
+}
