@@ -21,16 +21,14 @@ type Input struct {
 	Loaded                 []LoadedConsumer
 	Unavailable            []UnavailableConsumer
 
-	// Findings is every finding the run reports, the stale suppressions among
-	// them under their own code: Build moves each into the record the report
-	// declares for it.
-	Findings        []Finding
-	EdgeEvaluations []EdgeEvaluation
-	DeclaredGaps    []DeclaredGap
-	ExcludedByCgo   []string
-	TestFileRules   []TestFileRule
-	TypeErrorSkips  []TypeErrorSkip
-	Notes           []Note
+	Findings          []Finding
+	StaleSuppressions []StaleSuppression
+	EdgeEvaluations   []EdgeEvaluation
+	DeclaredGaps      []DeclaredGap
+	ExcludedByCgo     []string
+	TestFileRules     []TestFileRule
+	TypeErrorSkips    []TypeErrorSkip
+	Notes             []Note
 
 	UnansweredQuestions []UnansweredQuestion
 	ConventionsApplied  []ConventionApplied
@@ -54,7 +52,6 @@ func Build(in *Input) (*Report, error) {
 			return nil, fmt.Errorf("%w: the configuration %s is named as built and as not built", ErrInvalid, dropped)
 		}
 	}
-	findings, stale := partition(in.Findings)
 	r := &Report{
 		SchemaVersion:   vocab.SchemaVersion,
 		ContractVersion: vocab.ContractVersion,
@@ -67,9 +64,9 @@ func Build(in *Input) (*Report, error) {
 			Unavailable: listed(in.Unavailable),
 		},
 		ConfigurationsNotBuilt: listed(in.ConfigurationsNotBuilt),
-		Findings:               findings,
+		Findings:               listed(in.Findings),
 		EdgeEvaluations:        listed(in.EdgeEvaluations),
-		StaleSuppressions:      stale,
+		StaleSuppressions:      listed(in.StaleSuppressions),
 		DeclaredGaps:           listed(in.DeclaredGaps),
 		ExcludedByCgo:          listed(in.ExcludedByCgo),
 		TestFileRules:          listed(in.TestFileRules),
@@ -103,32 +100,6 @@ func Build(in *Input) (*Report, error) {
 
 // consumerRole is the one role the schema admits on a consumer entry.
 const consumerRole = "consumer"
-
-// partition moves every stale-suppression finding out of findings into the
-// record of its own the report declares for it.
-func partition(findings []Finding) ([]Finding, []StaleSuppression) {
-	kept := make([]Finding, 0, len(findings))
-	stale := []StaleSuppression{}
-	for i := range findings {
-		found := &findings[i]
-		if found.Code != vocab.StaleSuppression {
-			kept = append(kept, *found)
-			continue
-		}
-		record := StaleSuppression{
-			Code:      found.Code,
-			Mechanism: found.Details.Mechanism,
-			Position:  SuppressionPosition{Path: found.Position.Path, Line: found.Position.Line, Column: found.Position.Column},
-			Symbol:    found.Symbol.Ref,
-			Message:   found.Message,
-		}
-		if entry := found.Details.Entry; entry != nil {
-			record.Entry = SuppressionEntry{Code: entry.Code, Symbol: entry.Symbol, Path: entry.Path, Reason: entry.Reason}
-		}
-		stale = append(stale, record)
-	}
-	return kept, stale
-}
 
 // listed is a copy of items, empty rather than nil, because the schemas admit
 // no absent array.
