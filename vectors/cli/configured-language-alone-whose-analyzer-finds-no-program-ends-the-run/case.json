@@ -1,0 +1,25 @@
+{
+  "description": "A language analysis.languages names is analyzed whatever its analyzer finds, also where it is the only language in scope: over a compiler configuration that names no input, the TypeScript analyzer's setup failure no-program ends the run with exit code 3 and that class line, and no merged report is written, as languages.json states.",
+  "products": [
+    "deadset"
+  ],
+  "rename": {
+    "tsconfig.json.txt": "tsconfig.json"
+  },
+  "executables": [
+    "bin/ts/analyzer"
+  ],
+  "report_file": "@OUT@/run/report.json",
+  "argv": [
+    "analyze",
+    "--target=@TARGET@",
+    "--run-dir=@OUT@/run"
+  ],
+  "expect": {
+    "exit": 3,
+    "report": "absent",
+    "stderr_contains": [
+      "\nsetup failure: no-program: no configuration discovery derived could be built"
+    ]
+  }
+}

@@ -41,10 +41,11 @@ whose state is `dead`, `stale-suppressions.json` for a run whose suppressions no
 build it and dropped it from the matrix, `typescript-configurations.json` for a run whose matrix is
 a set of compiler configurations rather than a set of platforms, with a configuration whose checker
 left questions unanswered and a convention row it applied, `setup-records.json` for a run that
-skipped a function holding a type error, classified test-support code and carries a note, and
-`merged.json` for the report a merge writes over two analyzers' reports, and
+skipped a function holding a type error, classified test-support code and carries a note,
+`merged.json` for the report a merge writes over two analyzers' reports,
 `merged-kinds-per-language.json` for the same merge over a target whose Go code is an application
-and whose TypeScript code is a library.
+and whose TypeScript code is a library, and `merged-from-none.json` for the report of a run that
+analyzed nothing because every analyzer found no program: it names no language and no input report.
 
 Every finding inside a report here is also an instance of the finding schema on its own, and every
 count in `totals` is the count of the array it describes.

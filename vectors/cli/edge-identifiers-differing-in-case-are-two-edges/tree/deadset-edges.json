@@ -1,0 +1,15 @@
+{
+  "description": "Two wire types the web client was generated from, since removed.",
+  "edges": {
+    "Foo": {
+      "because": "generated",
+      "provides": "go://example.com/target#Foo",
+      "used_by": "ts://@example/web/src/wire.ts#Foo"
+    },
+    "foo": {
+      "because": "generated",
+      "provides": "go://example.com/target#foo",
+      "used_by": "ts://@example/web/src/wire.ts#foo"
+    }
+  }
+}

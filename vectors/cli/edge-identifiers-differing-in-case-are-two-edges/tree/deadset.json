@@ -1,0 +1,16 @@
+{
+  "target": {
+    "kind": "application"
+  },
+  "providers": {
+    "analyzers": [
+      {
+        "name": "deadset-go",
+        "command": "@TARGET@/bin/analyzer",
+        "languages": [
+          "go"
+        ]
+      }
+    ]
+  }
+}

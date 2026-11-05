@@ -1,0 +1,26 @@
+{
+  "description": "A tree whose census puts TypeScript in scope by a compiler configuration that names no input, beside Protocol Buffers schema files, leaves proto out before any analyzer runs where the orchestrator does not hold its reader, and then TypeScript out when its analyzer ends with the setup failure no-program as its one failure: the census without TypeScript puts only proto in scope, so the run ends as a schema-only target does, with exit code 3 and the setup failure unsupported-language, and no merged report is written, as languages.json states.",
+  "products": [
+    "deadset"
+  ],
+  "rename": {
+    "tsconfig.json.txt": "tsconfig.json"
+  },
+  "executables": [
+    "bin/ts/analyzer"
+  ],
+  "report_file": "@OUT@/run/report.json",
+  "argv": [
+    "analyze",
+    "--target=@TARGET@",
+    "--run-dir=@OUT@/run"
+  ],
+  "expect": {
+    "exit": 3,
+    "report": "absent",
+    "stderr_contains": [
+      "deadset: deadset-ts found no program, so the run leaves \"ts\" out of scope\n",
+      "\nsetup failure: unsupported-language: "
+    ]
+  }
+}

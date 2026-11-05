@@ -1,0 +1,85 @@
+{
+  "schema_version": "9.0.0",
+  "contract_version": "8.0.0",
+  "analyzer": {
+    "name": "deadset-go",
+    "version": "0.0.0-devel",
+    "languages": [
+      "go"
+    ],
+    "schema_versions_accepted": [
+      "9.0.0"
+    ],
+    "conformance": {
+      "corpus_version": "6.0.0",
+      "result": "pass",
+      "digest": "sha256:a5d64f79ddefbf55b1022f01333ed99ff3c1cc150ca040579d392c39a64f9837"
+    }
+  },
+  "target": {
+    "kind": "application",
+    "root": ".",
+    "identity": "example.com/target"
+  },
+  "configurations": [
+    {
+      "id": "linux-amd64",
+      "os": "linux",
+      "arch": "amd64",
+      "tags": []
+    }
+  ],
+  "configurations_not_built": [],
+  "consumers": {
+    "declared": 0,
+    "loaded": [],
+    "unavailable": []
+  },
+  "findings": [],
+  "edge_evaluations": [
+    {
+      "edge": "Foo",
+      "side": "provides",
+      "symbol": "go://example.com/target#Foo",
+      "state": "absent"
+    },
+    {
+      "edge": "foo",
+      "side": "provides",
+      "symbol": "go://example.com/target#foo",
+      "state": "absent"
+    }
+  ],
+  "stale_suppressions": [],
+  "declared_gaps": [],
+  "excluded_by_cgo": [],
+  "test_file_rules": [
+    {
+      "rule": "go-test-suffix",
+      "matched": 0
+    }
+  ],
+  "type_error_skips": [],
+  "notes": [],
+  "unanswered_questions": [],
+  "conventions_applied": [],
+  "totals": {
+    "findings": 0,
+    "by_severity": {
+      "allow": 0,
+      "warn": 0,
+      "deny": 0
+    },
+    "deletable_lines": 0,
+    "suppressions_in_effect": 0,
+    "reasons_recorded": 0,
+    "stale_suppressions": 0,
+    "pending": 0,
+    "omitted": 0,
+    "withheld": {
+      "certain": 0,
+      "probable": 0,
+      "possible": 0
+    }
+  }
+}

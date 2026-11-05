@@ -289,3 +289,27 @@ func TestTheStaleSuppressionTitleIsTheContractsKindName(t *testing.T) {
 		t.Errorf("Annotations(stale-suppression-carried) = %q, want it to carry %q", got, want)
 	}
 }
+
+// A report merged from none names no analyzer line, and its summary line ends
+// with no language.
+func TestTheSummaryOfAReportMergedFromNoneNamesNoLanguage(t *testing.T) {
+	t.Parallel()
+
+	data, err := spec.Examples.ReadFile("examples/reports/merged-from-none.json")
+	if err != nil {
+		t.Fatalf("Setup: read the example: %v", err)
+	}
+	r, err := report.Decode(data)
+	if err != nil {
+		t.Fatalf("Setup: decode the example: %v", err)
+	}
+	var written strings.Builder
+	if err := render.Summary(&written, r); err != nil {
+		t.Fatalf("Summary(merged from none) = error %v", err)
+	}
+	want := "summary: 0 findings (0 allow, 0 warn, 0 deny), 0 deletable lines, 0 suppressions in effect, " +
+		"0 reasons recorded, 0 stale suppressions, 0 pending, 0 omitted, across no language\n"
+	if got := written.String(); got != want {
+		t.Errorf("Summary(merged from none) =\n%s\nwant\n%s", got, want)
+	}
+}

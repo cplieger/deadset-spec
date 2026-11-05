@@ -1,0 +1,34 @@
+{
+  "description": "A provenance names the file that supplied the setting by the path the run was handed, whatever characters it holds: a central configuration whose path holds a line feed and names Go gives the census the provenance central: followed by that path, line feed included, which JSON escapes, and the verb ends with exit code 0.",
+  "products": [
+    "deadset"
+  ],
+  "rename": {
+    "central.json": "cen\ntral.json"
+  },
+  "argv": [
+    "print-languages",
+    "--target=@TARGET@",
+    "--central=@TARGET@/cen\ntral.json"
+  ],
+  "expect": {
+    "exit": 0,
+    "stdout_json": {
+      "languages": [
+        {
+          "language": "go",
+          "provenance": "central: @TARGET@/cen\ntral.json"
+        }
+      ],
+      "analyzers": [
+        {
+          "name": "deadset-go",
+          "languages": [
+            "go"
+          ]
+        }
+      ],
+      "left_out": []
+    }
+  }
+}

@@ -49,12 +49,13 @@ var errUnplaced = errors.New("render: a record names an analyzer the merged repo
 // SARIF writes r as one SARIF 2.1.0 log, reading each file a result names
 // through read for its line fingerprint. An analyzer's report is one run; a
 // merged report is one run per merged_from entry, by name, under its languages
-// and totals, then the merge's own run for records naming no analyzer. A record
-// no run holds, an unreadable file and a line the file lacks fail the rendering,
-// because a fingerprint from other bytes opens a second alert.
+// and totals, then the merge's own run for records naming no analyzer, which a
+// report merged from none holds alone. A record no run holds, an unreadable
+// file and a line the file lacks fail the rendering, because a fingerprint
+// from other bytes opens a second alert.
 func SARIF(w io.Writer, r *report.Report, read func(path string) ([]byte, error)) error {
 	hashes := &lineHashCache{read: read, held: make(map[string][]string)}
-	if len(r.MergedFrom) == 0 {
+	if r.MergedFrom == nil {
 		run := newRun(r.Analyzer.Name, r.Analyzer.Version, automationOf(r.Analyzer.Languages), r.Analyzer.Languages, &r.Totals)
 		if err := run.add(r, "", hashes); err != nil {
 			return err
@@ -72,7 +73,8 @@ func SARIF(w io.Writer, r *report.Report, read func(path string) ([]byte, error)
 }
 
 // mergedRuns is the runs of a merged report: one per report it was merged
-// from, by name, then the merge's own when a record names no analyzer.
+// from, by name, then the merge's own when a record names no analyzer or it
+// was merged from none.
 func mergedRuns(r *report.Report, hashes *lineHashCache) ([]sarifRun, error) {
 	if err := everyRecordPlaced(r); err != nil {
 		return nil, err
@@ -88,7 +90,7 @@ func mergedRuns(r *report.Report, hashes *lineHashCache) ([]sarifRun, error) {
 		}
 		runs = append(runs, run.sarifRun)
 	}
-	if slices.ContainsFunc(r.Findings, func(f report.Finding) bool { return f.Analyzer == "" }) ||
+	if len(from) == 0 || slices.ContainsFunc(r.Findings, func(f report.Finding) bool { return f.Analyzer == "" }) ||
 		slices.ContainsFunc(r.StaleSuppressions, func(s report.StaleSuppression) bool { return s.Analyzer == "" }) {
 		run := newRun(r.Analyzer.Name, r.Analyzer.Version, mergeAutomation, nil, &r.Totals)
 		if err := run.add(r, "", hashes); err != nil {

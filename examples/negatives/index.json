@@ -401,6 +401,13 @@
       "violates": "a report of an analyzed language omits the target kind"
     },
     {
+      "file": "report-analyzer-languages-empty.json",
+      "schema": "contract/report.schema.json",
+      "constraint": "minItems",
+      "instance_path": "/analyzer/languages",
+      "violates": "an analyzer's own report names no language, and an analyzer names at least the one language it claims"
+    },
+    {
       "file": "report-configuration-mixed-shape.json",
       "schema": "contract/report.schema.json",
       "constraint": "oneOf",
@@ -413,6 +420,13 @@
       "constraint": "pattern",
       "instance_path": "/conventions_applied/0/name",
       "violates": "the applied convention row's name is not lowercase words joined by hyphens, so the configuration cannot spell it to disable the row"
+    },
+    {
+      "file": "report-merged-from-none-names-a-language.json",
+      "schema": "contract/report.schema.json",
+      "constraint": "maxItems",
+      "instance_path": "/analyzer/languages",
+      "violates": "a merged report merged from no report names a language, and a run that merged none analyzed no language"
     },
     {
       "file": "report-note-kind-outside-vocabulary.json",
