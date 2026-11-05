@@ -64,10 +64,8 @@ type docsData struct {
 	Ranges     []rangeRow
 	Guide      map[string]guideRow
 	Exemptions struct {
-		//deadset:ignore DS1003 -- read by the authoring/docs templates through ParseFS
 		Exemptions []map[string]any `json:"exemptions"`
-		//deadset:ignore DS1003 -- read by the authoring/docs templates through ParseFS
-		Sinks []map[string]any `json:"sinks"`
+		Sinks      []map[string]any `json:"sinks"`
 	}
 	Exits      map[string]any
 	Confidence struct {
@@ -86,38 +84,32 @@ type kindsDoc struct {
 	SymbolKinds         json.RawMessage `json:"symbol_kinds"`
 	Ranges              []rangeRow      `json:"ranges"`
 	Kinds               []kindDoc       `json:"kinds"`
-	//deadset:ignore DS1003 -- read by the authoring/docs templates through ParseFS
-	Retired []struct {
-		//deadset:ignore DS1004 -- read by the authoring/docs templates through ParseFS
+	Retired             []struct {
 		Code string `json:"code"`
-		//deadset:ignore DS1004 -- read by the authoring/docs templates through ParseFS
 		Name string `json:"name"`
 	} `json:"retired"`
 }
 
 type kindDoc struct {
-	Details map[string]any      `json:"details"`
-	Overlap map[string][]string `json:"overlap"`
-	//deadset:ignore DS1301 -- read by the authoring/docs templates through ParseFS
-	Guide           guideRow `json:"-"`
-	Code            string   `json:"code"`
-	Rule            string   `json:"rule"`
-	Precondition    string   `json:"precondition"`
-	DefaultSeverity string   `json:"default_severity"`
-	MaxClass        string   `json:"max_class"`
-	Fixability      string   `json:"fixability"`
-	Subject         string   `json:"subject"`
-	Name            string   `json:"name"`
-	//deadset:ignore DS1301 -- read by the authoring/docs templates through ParseFS
-	Lowered []evidenceRow `json:"-"`
-	//deadset:ignore DS1301 -- read by the authoring/docs templates through ParseFS
-	OverlapByLanguage [][2]string `json:"-"`
-	FindingFixability []string    `json:"finding_fixabilities"`
-	DerivedFrom       []string    `json:"derived_from"`
-	Languages         []string    `json:"languages"`
-	HoldsLive         bool        `json:"holds_live"`
-	Fixed             bool        `json:"fixed"`
-	DefaultEnabled    bool        `json:"default_enabled"`
+	Details           map[string]any      `json:"details"`
+	Overlap           map[string][]string `json:"overlap"`
+	Guide             guideRow            `json:"-"`
+	Code              string              `json:"code"`
+	Rule              string              `json:"rule"`
+	Precondition      string              `json:"precondition"`
+	DefaultSeverity   string              `json:"default_severity"`
+	MaxClass          string              `json:"max_class"`
+	Fixability        string              `json:"fixability"`
+	Subject           string              `json:"subject"`
+	Name              string              `json:"name"`
+	Lowered           []evidenceRow       `json:"-"`
+	OverlapByLanguage [][2]string         `json:"-"`
+	FindingFixability []string            `json:"finding_fixabilities"`
+	DerivedFrom       []string            `json:"derived_from"`
+	Languages         []string            `json:"languages"`
+	HoldsLive         bool                `json:"holds_live"`
+	Fixed             bool                `json:"fixed"`
+	DefaultEnabled    bool                `json:"default_enabled"`
 }
 
 type remedyRow struct {
@@ -128,47 +120,37 @@ type remedyRow struct {
 }
 
 type rangeRow struct {
-	Start    string `json:"start"`
-	End      string `json:"end"`
-	Family   string `json:"family"`
-	Title    string `json:"title"`
-	Question string `json:"question"`
-	Status   string `json:"status"`
-	//deadset:ignore DS1003 -- read by the authoring/docs templates through ParseFS
+	Start       string `json:"start"`
+	End         string `json:"end"`
+	Family      string `json:"family"`
+	Title       string `json:"title"`
+	Question    string `json:"question"`
+	Status      string `json:"status"`
 	Description string `json:"description"`
-	//deadset:ignore DS1301 -- read by the authoring/docs templates through ParseFS
-	Kinds []kindDoc
+	Kinds       []kindDoc
 }
 
 type guideRow struct {
-	Code string `json:"code"`
-	//deadset:ignore DS1003 -- read by the authoring/docs templates through ParseFS
-	Why string `json:"why"`
-	//deadset:ignore DS1003 -- read by the authoring/docs templates through ParseFS
-	Fix string `json:"fix"`
-	//deadset:ignore DS1003 -- read by the authoring/docs templates through ParseFS
+	Code    string `json:"code"`
+	Why     string `json:"why"`
+	Fix     string `json:"fix"`
 	Example struct {
-		//deadset:ignore DS1003 -- read by the authoring/docs templates through ParseFS
 		Language string `json:"language"`
-		//deadset:ignore DS1003 -- read by the authoring/docs templates through ParseFS
-		Before string `json:"before"`
-		//deadset:ignore DS1003 -- read by the authoring/docs templates through ParseFS
-		After string `json:"after"`
+		Before   string `json:"before"`
+		After    string `json:"after"`
 	} `json:"example"`
 }
 
 type evidenceRow struct {
-	Evidence string `json:"evidence"`
-	Rule     string `json:"rule"`
-	Class    string `json:"class"`
-	//deadset:ignore DS1003 -- read by the authoring/docs templates through ParseFS
+	Evidence    string   `json:"evidence"`
+	Rule        string   `json:"rule"`
+	Class       string   `json:"class"`
 	Description string   `json:"description"`
 	Languages   []string `json:"languages"`
 	Codes       []string `json:"codes"`
 }
 
 type familyPage struct {
-	//deadset:ignore DS1301 -- read by the authoring/docs templates through ParseFS
 	Range *rangeRow
 }
 
