@@ -1,0 +1,19 @@
+{
+  "name": "module-packages-leave-out-skipped-directories",
+  "description": "The packages of a module are its own directories outside the directories the Go program leaves out. A Go file below a node_modules directory, at the module root or deeper, one the module's own code imports among them, whose calls back into the module count, below a directory whose name starts with a full stop or an underscore, or below a testdata directory, is in no package of the module, so nothing in it is reported, while a dead function of the module's own package is.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "expect": [
+    { "symbol": "Used", "report": "none" },
+    { "symbol": "Unused", "report": "DS1001", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "function", "liveness_relation": "reference-counting" },
+    { "symbol": "Installed", "report": "none" },
+    { "symbol": "Callback", "report": "none" },
+    { "symbol": "Imported", "report": "none" },
+    { "symbol": "ImportedSpare", "report": "none" },
+    { "symbol": "Deep", "report": "none" },
+    { "symbol": "Cached", "report": "none" },
+    { "symbol": "Underscored", "report": "none" },
+    { "symbol": "Fixture", "report": "none" }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "name": "@example/app",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "node --test",
+    "test:smoke": "node --test \"smoke/*.check.js\""
+  }
+}

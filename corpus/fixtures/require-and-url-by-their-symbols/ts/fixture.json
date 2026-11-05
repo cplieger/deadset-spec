@@ -1,0 +1,68 @@
+{
+  "symbols": {
+    "CreatedFile": {
+      "file": "target/src/loaded/created.ts",
+      "line": 1
+    },
+    "createdValue": {
+      "file": "target/src/loaded/created.ts",
+      "line": 2
+    },
+    "ParenthesizedFile": {
+      "file": "target/src/loaded/parenthesized.ts",
+      "line": 1
+    },
+    "parenthesizedValue": {
+      "file": "target/src/loaded/parenthesized.ts",
+      "line": 2
+    },
+    "AliasedFile": {
+      "file": "target/src/loaded/aliased.ts",
+      "line": 1
+    },
+    "aliasedValue": {
+      "file": "target/src/loaded/aliased.ts",
+      "line": 2
+    },
+    "ParenthesizedUrlFile": {
+      "file": "target/src/loaded/parenthesized-url.ts",
+      "line": 1
+    },
+    "parenthesizedUrlValue": {
+      "file": "target/src/loaded/parenthesized-url.ts",
+      "line": 2
+    },
+    "RenamedUrlFile": {
+      "file": "target/src/loaded/renamed-url.ts",
+      "line": 1
+    },
+    "renamedUrlValue": {
+      "file": "target/src/loaded/renamed-url.ts",
+      "line": 2
+    },
+    "NamespaceUrlFile": {
+      "file": "target/src/loaded/namespace-url.ts",
+      "line": 1
+    },
+    "namespaceUrlValue": {
+      "file": "target/src/loaded/namespace-url.ts",
+      "line": 2
+    },
+    "GlobalUrlFile": {
+      "file": "target/src/loaded/global-url.ts",
+      "line": 1
+    },
+    "globalUrlValue": {
+      "file": "target/src/loaded/global-url.ts",
+      "line": 2
+    },
+    "OwnFile": {
+      "file": "target/src/loaded/own.ts",
+      "line": 1
+    },
+    "ownValue": {
+      "file": "target/src/loaded/own.ts",
+      "line": 2
+    }
+  }
+}

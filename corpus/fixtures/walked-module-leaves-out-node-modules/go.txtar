@@ -1,0 +1,31 @@
+The Go rendering: a target whose root holds no module file, a module alpha
+declaring one function nothing calls, and a module web-ignore beside an npm
+project whose only Go file is one an installed npm package ships.
+
+-- fixture.json --
+{
+  "symbols": {
+    "F": { "file": "target/alpha/a.go", "line": 4 },
+    "ToJSON": { "file": "target/web/node_modules/flatted/golang/pkg/flatted/flatted.go", "line": 4 }
+  }
+}
+-- target/alpha/go.mod --
+module example.com/alpha
+
+go 1.27.0
+-- target/alpha/a.go --
+package alpha
+
+// F is called by nothing.
+func F() {}
+-- target/web/go.mod --
+module web-ignore
+
+go 1.27.0
+-- target/web/package.json --
+{"name":"web","private":true}
+-- target/web/node_modules/flatted/golang/pkg/flatted/flatted.go --
+package flatted
+
+// ToJSON is installed code, called by nothing.
+func ToJSON() {}

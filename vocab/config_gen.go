@@ -418,7 +418,7 @@ var configKeys = []ConfigKey{
 		Owner:     "ts-analyzer",
 		ReadBy:    []Language{TS},
 		Delivered: []Language{TS},
-		Default:   `["**/*.test.{ts,tsx,mts,cts}","**/*.test-d.{ts,tsx,mts,cts}","**/*.spec-d.{ts,tsx,mts,cts}","**/*.spec.*","**/__tests__/**","**/__mocks__/**","**/test-d/**"]`,
+		Default:   `["**/*.test.{ts,tsx,mts,cts,js,jsx,mjs,cjs}","**/*.test-d.{ts,tsx,mts,cts}","**/*.spec-d.{ts,tsx,mts,cts}","**/*.spec.*","**/__tests__/**","**/__mocks__/**","**/test-d/**"]`,
 		Value:     `{"type":"array","uniqueItems":true,"minItems":1,"items":{"type":"string","minLength":1}}`,
 	},
 	{
@@ -535,7 +535,7 @@ var configKeys = []ConfigKey{
 		Owner:      "analysis",
 		ReadBy:     []Language{Go, TS, Proto},
 		Delivered:  []Language{Go, TS},
-		Value:      `{"type":"string","pattern":"^(default|(repository|central|flag): [^\\r\\n]+)$"}`,
+		Value:      `{"type":"string","pattern":"^(default|(repository|central|flag): ([^\\r\\n]|[\\r\\n])+)$"}`,
 		KeyPattern: `^[a-z][a-z_]*(\.[A-Za-z0-9_]+)*$`,
 	},
 }

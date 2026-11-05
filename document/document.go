@@ -1,13 +1,10 @@
 package document
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"strings"
-
-	"github.com/cplieger/jsoncap/v2"
 )
 
 // ErrMalformed reports a document that is not one strict JSON value: a syntax
@@ -50,9 +47,6 @@ func (s *Schema) CheckValue(v any) []Error {
 // Decode reads data as one strict JSON value with its numbers kept exact, the
 // value [Schema.CheckValue] reads. A refusal wraps [ErrMalformed].
 func Decode(data []byte) (any, error) {
-	if err := jsoncap.Preflight(bytes.NewReader(data)); err != nil {
-		return nil, fmt.Errorf("%w: %w", ErrMalformed, err)
-	}
 	v, err := decode(data)
 	if err != nil {
 		return nil, fmt.Errorf("%w: %w", ErrMalformed, err)

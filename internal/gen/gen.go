@@ -3,8 +3,9 @@
 // authoring source, the configuration key table derived from it and the
 // configuration vectors' resolved configurations, the per-code branches of the
 // finding schema, the closed lists the x-enum members of every authoring source
-// name, the reference pages under docs/, the vocab package's data and the
-// report and facts packages' document types. A freshness test regenerates and
+// name, the reference pages under docs/, the vocab package's data, the
+// suppress package's grammar data and the report and facts packages' document
+// types. A freshness test regenerates and
 // compares, so a derived file never drifts from the data it is derived from.
 package gen
 
@@ -26,6 +27,7 @@ func Generate(fsys fs.FS) (map[string][]byte, error) {
 		docsPages,
 		readmeCounts,
 		vocabSource,
+		grammarSource,
 		reportTypes,
 		factsTypes,
 	}

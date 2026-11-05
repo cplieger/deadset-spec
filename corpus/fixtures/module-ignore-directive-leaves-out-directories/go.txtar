@@ -1,0 +1,106 @@
+The Go rendering: a target module whose file ignores ./gen and assets. Its main
+calls a function of gen that calls one method. gen also holds a function nothing
+calls and an example program below gen/_examples calling a second method, and
+web/assets a function nothing calls. Below the target, a module that replaces the
+target's module with its directory and ignores ./old holds two scripts in its
+root, so its package does not build, and two more in old; one script in each
+calls a method.
+
+-- fixture.json --
+{
+  "symbols": {
+    "All": { "file": "target/repo/repo.go", "line": 8 },
+    "Helper": { "file": "target/repo/repo.go", "line": 11 },
+    "Legacy": { "file": "target/repo/repo.go", "line": 14 },
+    "Wired": { "file": "target/repo/repo.go", "line": 17 },
+    "Gen": { "file": "target/gen/gen.go", "line": 9 },
+    "Asset": { "file": "target/web/assets/asset.go", "line": 4 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+
+ignore (
+	./gen
+	assets
+)
+-- target/main.go --
+package main
+
+import (
+	"example.com/target/gen"
+	"example.com/target/repo"
+)
+
+func main() { _ = repo.New(); gen.Wire() }
+-- target/repo/repo.go --
+package repo
+
+type Repo struct{}
+
+func New() *Repo { return &Repo{} }
+
+// All is called by a script of the dropped module.
+func (*Repo) All() int { return 1 }
+
+// Helper is called by an example in an ignored directory alone.
+func (*Repo) Helper() int { return 2 }
+
+// Legacy is called by a script in a directory the dropped module ignores alone.
+func (*Repo) Legacy() int { return 3 }
+
+// Wired is called by the ignored package main imports alone.
+func (*Repo) Wired() int { return 4 }
+-- target/gen/gen.go --
+package gen
+
+import "example.com/target/repo"
+
+// Wire is what main calls.
+func Wire() { _ = repo.New().Wired() }
+
+// Gen is generated code, called by nothing.
+func Gen() {}
+-- target/gen/_examples/demo/main.go --
+package main
+
+import "example.com/target/repo"
+
+func main() { println(repo.New().Helper()) }
+-- target/web/assets/asset.go --
+package assets
+
+// Asset is called by nothing.
+func Asset() {}
+-- target/scripts/go.mod --
+module example.com/target/scripts
+
+go 1.27.0
+
+require example.com/target v0.0.0
+
+replace example.com/target v0.0.0 => ../
+
+ignore ./old
+-- target/scripts/migrate.go --
+package main
+
+import "example.com/target/repo"
+
+func main() { println(repo.New().All()) }
+-- target/scripts/check.go --
+package main
+
+func main() { println("check") }
+-- target/scripts/old/legacy.go --
+package main
+
+import "example.com/target/repo"
+
+func main() { println(repo.New().Legacy()) }
+-- target/scripts/old/other.go --
+package main
+
+func main() { println("other") }

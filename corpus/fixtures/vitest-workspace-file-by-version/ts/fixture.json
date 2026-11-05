@@ -1,0 +1,16 @@
+{
+  "symbols": {
+    "UnitSetup": {
+      "file": "target/setup/unit.ts",
+      "line": 1
+    },
+    "PlainWorkspace": {
+      "file": "target/plain/vitest.workspace.ts",
+      "line": 1
+    },
+    "PlainWorkspaceDefault": {
+      "file": "target/plain/vitest.workspace.ts",
+      "line": 3
+    }
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "description": "A left-out reason names the declared consumer left out by the path the scope document gives it, whatever characters it holds: beside a Go module, a consumer holding only schema files whose directory name holds a line feed is named in left_out with that path, line feed included, in its reason and among its consumers, and the verb ends with exit code 0.",
+  "products": [
+    "deadset"
+  ],
+  "rename": {
+    "app/go.mod.txt": "app/go.mod",
+    "app/main.go.txt": "app/main.go",
+    "schemas/shared.proto": "sche\nmas/shared.proto"
+  },
+  "argv": [
+    "print-languages",
+    "--target=@TARGET@/app",
+    "--scope=@TARGET@/scope.json"
+  ],
+  "expect": {
+    "exit": 0,
+    "stdout_json": {
+      "languages": [
+        {
+          "language": "go",
+          "provenance": "detected"
+        }
+      ],
+      "analyzers": [
+        {
+          "name": "deadset-go",
+          "languages": [
+            "go"
+          ]
+        }
+      ],
+      "left_out": [
+        {
+          "language": "proto",
+          "reason": "this build of deadset holds no reader of \"proto\", so the run leaves it out of scope, and with it the consumer @TARGET@/sche\nmas",
+          "consumers": [
+            "@TARGET@/sche\nmas"
+          ]
+        }
+      ]
+    }
+  }
+}

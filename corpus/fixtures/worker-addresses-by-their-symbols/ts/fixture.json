@@ -1,0 +1,52 @@
+{
+  "symbols": {
+    "EmittedFile": {
+      "file": "target/src/pool/emitted.ts",
+      "line": 1
+    },
+    "DirectFile": {
+      "file": "target/src/pool/direct.ts",
+      "line": 1
+    },
+    "BesideFile": {
+      "file": "target/src/beside.ts",
+      "line": 1
+    },
+    "EvaluatedFile": {
+      "file": "target/src/pool/evaluated.ts",
+      "line": 1
+    },
+    "WebFile": {
+      "file": "target/src/pool/web.ts",
+      "line": 1
+    },
+    "SharedFile": {
+      "file": "target/src/shared.ts",
+      "line": 1
+    },
+    "RegisteredFile": {
+      "file": "target/src/registered.ts",
+      "line": 1
+    },
+    "IdleFile": {
+      "file": "target/src/pool/idle.ts",
+      "line": 1
+    },
+    "RequiredFile": {
+      "file": "target/src/pool/required.js",
+      "line": 1
+    },
+    "OwnedFile": {
+      "file": "target/src/pool/owned.ts",
+      "line": 1
+    },
+    "idle": {
+      "file": "target/src/main.ts",
+      "line": 19
+    },
+    "LocatedFile": {
+      "file": "target/src/pool/located.ts",
+      "line": 1
+    }
+  }
+}

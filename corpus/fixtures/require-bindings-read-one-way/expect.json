@@ -1,0 +1,40 @@
+{
+  "name": "require-bindings-read-one-way",
+  "description": "Every reader of a require binding reads the require one way: the require Node's createRequire returns is the platform's whether the script calls createRequire as a name or as a member and however many names hold it in turn, so a build script runs esbuild through it and a file starts Node's Worker through it, while a call through names that hold only each other runs nothing, and a Worker the file's own require returns starts no thread.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Chained",
+      "report": "none"
+    },
+    {
+      "symbol": "HeldFile",
+      "report": "DS1602",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "Held",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "ThreadFile",
+      "report": "none"
+    },
+    {
+      "symbol": "UnthreadedFile",
+      "report": "DS1602",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    }
+  ]
+}

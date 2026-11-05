@@ -41,15 +41,28 @@ func Names(subject vocab.Subject, mechanism Mechanism) bool {
 // and column, counting UTF-16 code units, of its first character. A site naming
 // the document alone has no line.
 type Site struct {
-	Path   string
+	Path string
+
+	// Written is where a reader whose line directives render two sites at one
+	// position writes this one, in any spelling that tells the two apart, and
+	// empty where the position is where the site is written.
+	Written string
+
+	// File is the file the site is written in, whatever path a line directive
+	// renders it under, and empty for an entry or a row.
+	File string
+
 	Line   int
 	Column int
 }
 
-// key is the site's identity, as a position renders it.
-func (s Site) key() string {
+// at is the site as a position renders it.
+func (s Site) at() string {
 	return s.Path + ":" + strconv.Itoa(s.Line) + ":" + strconv.Itoa(s.Column)
 }
+
+// key is the site's identity: where it renders and where it is written.
+func (s Site) key() string { return s.at() + "\x00" + s.Written }
 
 // Record is one suppression: one code bound to one site, with the reason it
 // carries. A directive naming two codes is two records with one reason, and an
@@ -60,20 +73,19 @@ type Record struct {
 	Path   string
 	Reason string
 
-	// Bound is the key of the declaration the record bound, as [Finding.Key]
-	// spells a finding's, and empty where it bound none.
+	// Bound is the identity of the declaration the record bound, as
+	// [Finding.Decl] spells it, and empty where it bound none.
 	Bound     string
 	Mechanism Mechanism
 	Site      Site
 }
 
 // MarksLive reports whether the record keeps its declaration live before the
-// sweep: a bound record does, unless its code reports a part, which says the
-// part is wanted and not the declaration, or a dependency row, which is no
-// declaration.
+// sweep: a bound record does when its code reports a declaration. A part
+// kind's record says the part is wanted and not the declaration, and a code
+// about any other subject names no declaration at all.
 func (r *Record) MarksLive() bool {
-	subject := r.Code.Subject()
-	return r.Bound != "" && subject != vocab.SubjectPart && subject != vocab.SubjectDependency
+	return r.Bound != "" && r.Code.Subject() == vocab.SubjectDeclaration
 }
 
 // Refusal is one suppression the grammar refuses with a finding of its own: one
@@ -110,7 +122,7 @@ type MalformedError struct {
 func (e *MalformedError) Error() string {
 	at := e.Site.Path
 	if e.Site.Line > 0 {
-		at = e.Site.key()
+		at = e.Site.at()
 	}
 	message := fmt.Sprintf("suppress: %s %s: %s", e.Mechanism, at, e.Text)
 	if e.Err != nil {
@@ -147,10 +159,6 @@ type Binder struct {
 	// names, and false where the reference names no part.
 	Holder func(symbol string) (string, bool)
 
-	// Valid reports whether a reference of the scheme is in the analyzer's
-	// grammar; one that is not is malformed.
-	Valid func(symbol string) bool
-
 	// Scheme opens every reference of the analyzer's language, "go://" for one.
 	Scheme string
 }
@@ -158,9 +166,9 @@ type Binder struct {
 // Bind resolves the entries of the binder's scheme to records, binding each to
 // the declarations its reference and path name; an entry under a part kind
 // naming a part binds the declaration holding it. An entry of another scheme
-// belongs to another analyzer and resolves to nothing. An entry with no reason,
-// or naming no path, is a refusal and binds nothing, and one whose reference is
-// outside the grammar is a [*MalformedError].
+// belongs to another analyzer and resolves to nothing, unread. An entry with no
+// reason, or naming no path, is a refusal and binds nothing, and one whose
+// reference takes no form [ValidReference] admits is a [*MalformedError].
 func (b *Binder) Bind(entries []Entry, mechanism Mechanism) ([]Record, []Refusal, error) {
 	var records []Record
 	var refusals []Refusal
@@ -169,7 +177,7 @@ func (b *Binder) Bind(entries []Entry, mechanism Mechanism) ([]Record, []Refusal
 		if !ofScheme(entry.Symbol, b.Scheme) {
 			continue
 		}
-		if !b.Valid(entry.Symbol) {
+		if !ValidReference(entry.Symbol) {
 			return nil, nil, &MalformedError{Text: strconv.Quote(entry.Symbol), Want: "a stable symbol reference of " + b.Scheme, Site: entry.Site, Mechanism: mechanism}
 		}
 		if refused := refusalsOf(entry, mechanism); refused != nil {

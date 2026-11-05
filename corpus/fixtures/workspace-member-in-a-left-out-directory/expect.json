@@ -1,0 +1,11 @@
+{
+  "name": "workspace-member-in-a-left-out-directory",
+  "description": "A directory the Go program leaves out is one met below the directory a search or a load starts from. A module the workspace file listing the target lists is a module of the target whatever its directory's name, so a member in a directory whose name starts with an underscore loads as the target's own and its dead code is reported.",
+  "languages": ["go"],
+  "target_kind": "library",
+  "min_confidence": "possible",
+  "expect": [
+    { "symbol": "R", "report": "DS1001", "confidence": "possible", "reachability_class": "possible", "symbol_kind": "function", "liveness_relation": "reference-counting" },
+    { "symbol": "T", "report": "DS1001", "confidence": "possible", "reachability_class": "possible", "symbol_kind": "function", "liveness_relation": "reference-counting" }
+  ]
+}

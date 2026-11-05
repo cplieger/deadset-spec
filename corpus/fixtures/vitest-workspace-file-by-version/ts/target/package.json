@@ -1,0 +1,12 @@
+{
+  "name": "@example/target",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "vitest": "3.999.0"
+  },
+  "scripts": {
+    "test": "vitest run"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "symbols": {
+    "Chained": {
+      "file": "target/src/chained.ts",
+      "line": 1
+    },
+    "HeldFile": {
+      "file": "target/src/held.ts",
+      "line": 1
+    },
+    "Held": {
+      "file": "target/src/held.ts",
+      "line": 3
+    },
+    "ThreadFile": {
+      "file": "target/src/thread.js",
+      "line": 1
+    },
+    "UnthreadedFile": {
+      "file": "target/src/unthreaded.js",
+      "line": 1
+    }
+  }
+}

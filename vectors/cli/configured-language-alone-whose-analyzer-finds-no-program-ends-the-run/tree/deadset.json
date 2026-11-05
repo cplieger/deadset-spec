@@ -1,0 +1,21 @@
+{
+  "target": {
+    "kind": "application"
+  },
+  "analysis": {
+    "languages": [
+      "ts"
+    ]
+  },
+  "providers": {
+    "analyzers": [
+      {
+        "name": "deadset-ts",
+        "command": "@TARGET@/bin/ts/analyzer",
+        "languages": [
+          "ts"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "@example/app",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "lib/index.js",
+  "devDependencies": {
+    "mocha": "11.7.5"
+  },
+  "scripts": {
+    "test": "mocha",
+    "test:flows": "mocha \"flows/*.check.js\""
+  }
+}

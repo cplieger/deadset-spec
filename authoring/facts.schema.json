@@ -210,16 +210,16 @@
           "$ref": "finding.schema.json#/$defs/relative_path"
         },
         "line": {
-          "description": "The 1-based line of the comment line that marks the file: for notice the first line either word of the notice is on; 1 for convention.",
+          "description": "The 1-based line of the comment line that marks the file: for notice the first line either word of the notice is on; 1 for convention and minified.",
           "type": "integer",
           "minimum": 1
         },
         "evidence": {
-          "description": "header: the Go generated-file header form. tag: an @generated tag. notice: a do-not-edit notice, or a first comment naming its generator. convention: a convention row's generated directory.",
-          "enum": ["header", "tag", "notice", "convention"]
+          "description": "header: the Go generated-file header form. tag: an @generated tag. notice: a do-not-edit notice, or a first comment naming its generator. convention: a convention row's generated directory. minified: a minified JavaScript file, by its name or by its line lengths.",
+          "enum": ["header", "tag", "notice", "convention", "minified"]
         },
         "detail": {
-          "description": "The text of the comment line at line, or the convention row's name.",
+          "description": "The text of the comment line at line, the convention row's name, or for minified the skipped_files pattern of the language's row the file's name matches, else long lines.",
           "type": "string",
           "minLength": 1
         },

@@ -78,6 +78,25 @@ func TestAPlantedKindsEditMovesTheGeneratedFiles(t *testing.T) {
 	}
 }
 
+// TestAPlantedGrammarEditMovesTheSuppressData proves the suppress package's
+// grammar data is written from the pages: a planted building block and a
+// planted directive expression each reach the generated file.
+func TestAPlantedGrammarEditMovesTheSuppressData(t *testing.T) {
+	const generated = "suppress/grammar_gen.go"
+	inputs := generatorInputs(t)
+	plant(t, inputs, "contract/grammar/symbol-ref.md", "| `GO_VERSION` | `[A-Za-z0-9.+-]+` |", "| `GO_VERSION` | `[planted]+` |")
+	plant(t, inputs, "contract/grammar/suppression.md", "```text\n^//[ \\t]*deadset:\n```", "```text\n^//[ \\t]*planted:\n```")
+	files, err := gen.Generate(inputs)
+	if err != nil {
+		t.Fatalf("gen.Generate(planted) = %v", err)
+	}
+	for _, want := range []string{"(?:@[planted]+)?:require$", `"^//[ \\t]*planted:"`} {
+		if !bytes.Contains(files[generated], []byte(want)) {
+			t.Errorf("%s carries no %s, want it written from the planted page", generated, want)
+		}
+	}
+}
+
 // TestAPlantedEdgeIdentifierEditReachesEveryCorpusSchema proves the edge
 // identifier form has one authored source: a planted edit of the finding
 // schema's definition reaches every inline copy the corpus schemas state.

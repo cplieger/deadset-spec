@@ -1,0 +1,6 @@
+{
+  "symbols": {
+    "AppFile": { "file": "target/web/app.ts", "line": 1 },
+    "App": { "file": "target/web/app.ts", "line": 3 }
+  }
+}

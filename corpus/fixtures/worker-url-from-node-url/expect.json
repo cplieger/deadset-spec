@@ -1,6 +1,6 @@
 {
   "name": "worker-url-from-node-url",
-  "description": "A worker address built with a URL imported from node:url, the platform's URL class, roots the file it names as one built with the global URL does, wherever the call is written: the worker's file is not reported, while the function nobody calls and the file's export nothing imports are.",
+  "description": "A worker address built with a URL imported from node:url, the platform's URL class, names the file it names as one built with the global URL does, written where the call is: a worker a function nobody calls starts reaches its file from dead code only, so the file is reported as probable rather than as a file nothing names, beside the function and the file's export nothing imports.",
   "languages": [
     "ts"
   ],
@@ -16,7 +16,10 @@
     },
     {
       "symbol": "WorkerFile",
-      "report": "none"
+      "report": "DS1602",
+      "confidence": "probable",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
     },
     {
       "symbol": "workerValue",

@@ -3,7 +3,9 @@ package document
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
 	"maps"
 	"math/big"
 	"slices"
@@ -11,15 +13,78 @@ import (
 	"unicode/utf8"
 )
 
-// decode reads one JSON value with its numbers kept exact.
+// decode reads one strict JSON value with its numbers kept exact: data after
+// it, or an object naming one member twice, is refused. Member names compare
+// as bytes, as the Contract compares keys, so Foo and foo are two members.
 func decode(body []byte) (any, error) {
 	dec := json.NewDecoder(bytes.NewReader(body))
 	dec.UseNumber()
-	var v any
-	if err := dec.Decode(&v); err != nil {
+	v, err := decodeValue(dec, "")
+	if err != nil {
 		return nil, err
 	}
+	if _, err := dec.Token(); !errors.Is(err, io.EOF) {
+		return nil, errors.New("data follows the value")
+	}
 	return v, nil
+}
+
+// decodeValue reads the value at dec's position, whose JSON Pointer is at.
+func decodeValue(dec *json.Decoder, at string) (any, error) {
+	tok, err := dec.Token()
+	if err != nil {
+		return nil, err
+	}
+	switch tok {
+	case json.Delim('{'):
+		return decodeObject(dec, at)
+	case json.Delim('['):
+		return decodeArray(dec, at)
+	}
+	return tok, nil
+}
+
+// decodeObject reads the members of the object whose opening brace dec has
+// read, and its closing brace.
+func decodeObject(dec *json.Decoder, at string) (map[string]any, error) {
+	members := map[string]any{}
+	for dec.More() {
+		tok, err := dec.Token()
+		if err != nil {
+			return nil, err
+		}
+		name, isName := tok.(string)
+		if !isName {
+			return nil, fmt.Errorf("want a member name, got %v", tok)
+		}
+		if _, held := members[name]; held {
+			where := "the document"
+			if at != "" {
+				where = "the object at " + at
+			}
+			return nil, fmt.Errorf("%s names the member %q twice", where, name)
+		}
+		if members[name], err = decodeValue(dec, at+"/"+Escape(name)); err != nil {
+			return nil, err
+		}
+	}
+	_, err := dec.Token()
+	return members, err
+}
+
+// decodeArray reads the items of the array whose opening bracket dec has
+// read, and its closing bracket.
+func decodeArray(dec *json.Decoder, at string) ([]any, error) {
+	items := []any{}
+	for i := 0; dec.More(); i++ {
+		v, err := decodeValue(dec, at+"/"+strconv.Itoa(i))
+		if err != nil {
+			return nil, err
+		}
+		items = append(items, v)
+	}
+	_, err := dec.Token()
+	return items, err
 }
 
 // check appends what n refuses in v to found.

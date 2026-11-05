@@ -1,0 +1,10 @@
+{
+  "ignore": [
+    {
+      "code": "DS1602",
+      "symbol": "ts://@example/files/src/orphan.ts#",
+      "path": "src/orphan.ts",
+      "reason": "kept for a tool"
+    }
+  ]
+}

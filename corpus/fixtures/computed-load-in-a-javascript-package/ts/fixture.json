@@ -1,0 +1,28 @@
+{
+  "symbols": {
+    "PluginFile": {
+      "file": "target/plugins/report.js",
+      "line": 1
+    },
+    "report": {
+      "file": "target/plugins/report.js",
+      "line": 2
+    },
+    "TaskFile": {
+      "file": "target/tasks/build.cjs",
+      "line": 1
+    },
+    "build": {
+      "file": "target/tasks/build.cjs",
+      "line": 2
+    },
+    "OrphanFile": {
+      "file": "target/lib/orphan.js",
+      "line": 1
+    },
+    "orphan": {
+      "file": "target/lib/orphan.js",
+      "line": 2
+    }
+  }
+}

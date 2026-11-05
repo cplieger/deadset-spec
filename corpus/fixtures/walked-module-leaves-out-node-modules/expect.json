@@ -1,0 +1,11 @@
+{
+  "name": "walked-module-leaves-out-node-modules",
+  "description": "A target whose root holds no module file is every module below it, and the packages of each are its own directories outside the directories the Go program leaves out. A sentinel module beside an npm project holds no package of its own, so the Go file a package manager installed below its node_modules directory is no package of the target and nothing in it is reported, while the other module's dead function is.",
+  "languages": ["go"],
+  "target_kind": "library",
+  "min_confidence": "possible",
+  "expect": [
+    { "symbol": "F", "report": "DS1001", "confidence": "possible", "reachability_class": "possible", "symbol_kind": "function", "liveness_relation": "reference-counting" },
+    { "symbol": "ToJSON", "report": "none" }
+  ]
+}

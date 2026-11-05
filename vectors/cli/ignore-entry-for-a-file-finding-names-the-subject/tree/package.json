@@ -1,0 +1,5 @@
+{
+  "name": "@example/files",
+  "private": true,
+  "main": "./src/main.ts"
+}

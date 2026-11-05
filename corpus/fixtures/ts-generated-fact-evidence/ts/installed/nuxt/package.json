@@ -1,5 +1,8 @@
 {
   "name": "nuxt",
   "version": "4.999.0",
-  "private": true
+  "private": true,
+  "bin": {
+    "nuxt": "./bin/nuxt.mjs"
+  }
 }

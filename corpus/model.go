@@ -11,6 +11,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"slices"
 
 	"github.com/cplieger/deadset-spec/v8/facts"
@@ -333,7 +334,8 @@ func DecodeStrict(data []byte, v any) error {
 	if err := dec.Decode(v); err != nil {
 		return err
 	}
-	if dec.More() {
+	// More reports false before a stray ] or }, so only io.EOF ends the input.
+	if _, err := dec.Token(); !errors.Is(err, io.EOF) {
 		return errors.New("data after the document")
 	}
 	return nil

@@ -1,0 +1,9 @@
+{
+  "name": "@example/app",
+  "private": true,
+  "type": "module",
+  "main": "main.js",
+  "bin": {
+    "app": "cli.cjs"
+  }
+}

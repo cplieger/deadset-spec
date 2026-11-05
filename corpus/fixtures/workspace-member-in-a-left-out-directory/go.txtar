@@ -1,0 +1,36 @@
+The Go rendering: a target whose root is a module and holds a go.work file that
+lists the root and a second module in _tools, each declaring a function nothing
+calls.
+
+-- fixture.json --
+{
+  "symbols": {
+    "R": { "file": "target/r.go", "line": 4 },
+    "T": { "file": "target/_tools/t.go", "line": 4 }
+  }
+}
+-- target/go.work --
+go 1.27.0
+
+use (
+	.
+	./_tools
+)
+-- target/go.mod --
+module example.com/root
+
+go 1.27.0
+-- target/r.go --
+package root
+
+// R is called by nothing.
+func R() {}
+-- target/_tools/go.mod --
+module example.com/tools
+
+go 1.27.0
+-- target/_tools/t.go --
+package tools
+
+// T is called by nothing.
+func T() {}

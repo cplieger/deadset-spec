@@ -1,0 +1,10 @@
+{
+  "description": "A derived compiler configuration that names an option the compiler does not know is broken, not empty: with no other configuration to analyze, the TypeScript analyzer ends with exit code 3 and the setup failure unreadable-configuration naming the configuration and the compiler's error, never no-program, as setup-failures.14 states.",
+  "products": ["deadset-ts"],
+  "argv": ["analyze", "--target=@TARGET@", "--report=@OUT@/report.json"],
+  "expect": {
+    "exit": 3,
+    "stderr_contains": ["setup failure: unreadable-configuration: ", "TS5025"],
+    "report": "absent"
+  }
+}

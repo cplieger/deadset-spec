@@ -1,0 +1,45 @@
+{
+  "name": "playwright-tests-need-its-package",
+  "description": "Playwright's test files are read through a convention row, so only a package that declares @playwright/test has them: there each project's own testDir and testMatch name its test files, read against the configuration's directory and matched as Playwright matches a pattern, anywhere below the test directory and without regard to case, while a Playwright configuration in a package that declares no Playwright enters no test file. The fixture assumes the analyzer carries a row named playwright for the package @playwright/test whose range holds the installed version, which roots playwright.config.ts and reads the test files its testDir and testMatch, and those of each element of its projects, name.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "conventions_applied": [
+    {
+      "name": "playwright",
+      "package": "@playwright/test",
+      "version": "1.999.0",
+      "manifest": "app/package.json"
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "CheckoutFile",
+      "report": "none"
+    },
+    {
+      "symbol": "PaymentFile",
+      "report": "none"
+    },
+    {
+      "symbol": "RefundFile",
+      "report": "none"
+    },
+    {
+      "symbol": "LoginFile",
+      "report": "DS1602",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "Login",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

@@ -361,6 +361,8 @@ func TestRunCasesHoldsTheStandardOutputToTheExpectedDocument(t *testing.T) {
 		{name: "the target unreplaced", script: `printf '{"at": "@TARGET@/a", "n": [1, "b"]}'`, want: `"at":"@TARGET@/a"`},
 		{name: "a member added", script: `printf '{"at": "%s/a", "n": [1, "b"], "m": 0}' "$PWD"`, want: `"m":0`},
 		{name: "a second document", script: `printf '{"at": "%s/a", "n": [1, "b"]} {}' "$PWD"`, want: "data after the document"},
+		{name: "a closer after the document", script: `printf '{"at": "%s/a", "n": [1, "b"]}}' "$PWD"`, want: "data after the document"},
+		{name: "a bracket after the document", script: `printf '{"at": "%s/a", "n": [1, "b"]}\n]\n' "$PWD"`, want: "data after the document"},
 		{name: "no document", script: `echo 'go'`, want: "is not one JSON document"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {

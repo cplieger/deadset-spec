@@ -173,10 +173,76 @@ func TestMinPropertiesRefusesAnObjectWithTooFewMembers(t *testing.T) {
 func TestDecodeRefusesWhatJSONToleratesAndMore(t *testing.T) {
 	t.Parallel()
 
-	for _, data := range []string{`{} {}`, `{"a": 1, "a": 2}`, `{"a": [{"b": 1, "b": 1}]}`, `{`} {
+	for _, data := range []string{`{} {}`, `{}}`, `{}]`, `{} nonsense`, `{"a": 1, "a": 2}`, `{"a": [{"b": 1, "b": 1}]}`, `{`} {
 		if _, err := Decode([]byte(data)); !errors.Is(err, ErrMalformed) {
 			t.Errorf("Decode(%s) = %v, want ErrMalformed", data, err)
 		}
+	}
+}
+
+// Member names compare as bytes, as the Contract compares keys: names that
+// differ only in case are two members, and an escape spelling a name already
+// written is that name written twice.
+func TestDecodeComparesMemberNamesAsBytes(t *testing.T) {
+	t.Parallel()
+
+	value, err := Decode([]byte(`{"edges": {"Foo": 1, "foo": 2}, "ID": [{"id": 3, "Id": 4}]}`))
+	if err != nil {
+		t.Fatalf("Decode(members differing in case) = %v, want them decoded", err)
+	}
+	edges, _ := value.(map[string]any)["edges"].(map[string]any)
+	if len(edges) != 2 {
+		t.Errorf("Decode(edges Foo and foo) = %v, want two members", edges)
+	}
+	if _, err := Decode([]byte(`{"a": 1, "\u0061": 2}`)); !errors.Is(err, ErrMalformed) {
+		t.Errorf(`Decode(a and \u0061) = %v, want ErrMalformed`, err)
+	}
+}
+
+// A refusal of a member named twice names the object holding it and the
+// member, at whatever depth the object sits.
+func TestDecodeNamesTheMemberNamedTwice(t *testing.T) {
+	t.Parallel()
+
+	cases := []struct{ document, want string }{
+		{`{"a": 1, "a": 2}`, `the document names the member "a" twice`},
+		{`{"a": {"b": 1, "b": 2}}`, `the object at /a names the member "b" twice`},
+		{`{"a": [0, {"b": 1, "b": 2}]}`, `the object at /a/1 names the member "b" twice`},
+		{`{"a/b": {"c": 1, "c": 2}}`, `the object at /a~1b names the member "c" twice`},
+	}
+	for _, tc := range cases {
+		if _, err := Decode([]byte(tc.document)); !errors.Is(err, ErrMalformed) || !strings.HasSuffix(err.Error(), tc.want) {
+			t.Errorf("Decode(%s) = %v, want ErrMalformed ending %q", tc.document, err, tc.want)
+		}
+	}
+}
+
+// A schema is one strict JSON document too, so a closer or a value after it,
+// or a member named twice, fails the compile, and properties whose names
+// differ only in case are two properties.
+func TestCompileBytesRefusesWhatJSONTolerates(t *testing.T) {
+	t.Parallel()
+
+	for _, data := range []string{
+		`{"type": "string"}}`, `{"type": "string"} ]`, `{"type": "string"} {}`,
+		`{"type": "string", "type": "number"}`, `{"properties": {"a": {"minLength": 1, "minLength": 2}}}`,
+	} {
+		if _, err := CompileBytes("value", []byte(data)); err == nil {
+			t.Errorf("CompileBytes(%s) = nil, want a refusal", data)
+		}
+	}
+	if _, err := CompileBytes("value", []byte("{\"type\": \"string\"}\n")); err != nil {
+		t.Errorf("CompileBytes(a schema and a line feed) = %v, want it compiled", err)
+	}
+	cased, err := CompileBytes("value", []byte(`{"properties": {"ID": {"type": "string"}, "id": {"type": "number"}}}`))
+	if err != nil {
+		t.Fatalf("CompileBytes(properties ID and id) = %v, want it compiled", err)
+	}
+	if refused := cased.CheckValue(map[string]any{"ID": "x", "id": json.Number("1")}); len(refused) != 0 {
+		t.Errorf("CheckValue(ID a string, id a number) = %v, want an instance", refused)
+	}
+	if refused := cased.CheckValue(map[string]any{"ID": json.Number("1")}); len(refused) != 1 {
+		t.Errorf("CheckValue(ID a number) = %v, want one refusal", refused)
 	}
 }
 

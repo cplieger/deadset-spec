@@ -1,0 +1,6 @@
+#!/bin/sh
+if [ "$1" = describe ]; then
+	exec cat "$(dirname "$0")/describe.json"
+fi
+echo 'setup failure: no-program: no configuration discovery derived could be built; tsconfig.json: TS18003: No inputs were found in config file 'tsconfig.json': run from the directory that holds the sources, or name the languages to analyze' >&2
+exit 3

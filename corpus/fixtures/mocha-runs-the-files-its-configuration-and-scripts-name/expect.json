@@ -1,0 +1,54 @@
+{
+  "name": "mocha-runs-the-files-its-configuration-and-scripts-name",
+  "description": "Mocha runs the files of ./test, below it at any depth where its configuration sets recursive, a glob a script hands it, and no file its ignore patterns name or whose name starts with a dot. Each such file is a test file in a JavaScript package with no compiler configuration, so a function only those tests call is reported as test-only use, while a file below the test directory that Mocha does not run is a file nothing loads. The fixture assumes the analyzer carries a row named mocha for the package mocha whose range holds the installed version.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "conventions_applied": [
+    {
+      "name": "mocha",
+      "package": "mocha",
+      "version": "11.7.5",
+      "manifest": "package.json"
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "UnitFile",
+      "report": "none"
+    },
+    {
+      "symbol": "DeepFile",
+      "report": "none"
+    },
+    {
+      "symbol": "FlowFile",
+      "report": "none"
+    },
+    {
+      "symbol": "IgnoredFile",
+      "report": "DS1602",
+      "confidence": "certain"
+    },
+    {
+      "symbol": "HiddenFile",
+      "report": "DS1602",
+      "confidence": "certain"
+    },
+    {
+      "symbol": "UnrunFile",
+      "report": "DS1602",
+      "confidence": "certain"
+    },
+    {
+      "symbol": "onlyTested",
+      "report": "DS1102",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

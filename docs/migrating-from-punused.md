@@ -25,7 +25,7 @@ Three codes take precedence over `DS1001` where they apply, and a finding is rep
 - `DS1104`, `deprecated-unused`, when the symbol carries a deprecation marker.
 - `DS1102`, `test-only-use`, when every reference is a test reference.
 
-Expect findings the old file has no line for, because two families have no `EU` counterpart and both are on by default. `DS1002`, `unused-unexported`, reports an unexported symbol nothing references. The kinds in the `DS1800` to `DS1899` range report inside a function body. The source is `contract/kinds.json`, row `DS1002` and the `intra-function` range.
+Expect findings the old file has no line for, because two families have no `EU` counterpart and both are on by default. `DS1002`, `unused-unexported`, reports an unexported symbol nothing references. The kinds in the `DS1400` to `DS1499` range report inside a function body. The source is `contract/kinds.json`, row `DS1002` and the `inside-functions` range.
 
 ## The pass
 

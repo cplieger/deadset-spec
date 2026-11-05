@@ -1,0 +1,57 @@
+{
+  "name": "glob-forms-vite-reads",
+  "description": "An import.meta.glob call reads its globs as Vite does: a glob that starts with / against the project root, the directory of the nearest Vite configuration, a relative glob against the base option, itself relative to the calling file or, starting with /, to the project root, and a glob that starts with ! removing what it matches, so each file a glob matches is loaded with its exports and a file only a negated glob names is reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "PluginFile",
+      "report": "none"
+    },
+    {
+      "symbol": "pluginValue",
+      "report": "none"
+    },
+    {
+      "symbol": "HomeFile",
+      "report": "none"
+    },
+    {
+      "symbol": "homeValue",
+      "report": "none"
+    },
+    {
+      "symbol": "RouteFile",
+      "report": "none"
+    },
+    {
+      "symbol": "routeValue",
+      "report": "none"
+    },
+    {
+      "symbol": "KeepFile",
+      "report": "none"
+    },
+    {
+      "symbol": "keepValue",
+      "report": "none"
+    },
+    {
+      "symbol": "SkipFile",
+      "report": "DS1602",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "skipValue",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "variable",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}
