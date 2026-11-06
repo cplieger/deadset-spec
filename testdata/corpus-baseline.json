@@ -4,6 +4,7 @@
   "fixtures": [
     "abstract-member-through-this",
     "ambient-wildcard-module-imported-by-a-test",
+    "amd-define-and-require-load-their-files",
     "annotated-callback-parameter",
     "applied-replace-local-dependency",
     "ava-runs-its-default-globs-by-version",
@@ -87,6 +88,7 @@
     "convention-top-level-spread",
     "convention-yaml-configuration-document",
     "conversion-reads-struct-fields",
+    "custom-element-reactions-are-platform-calls",
     "dead-container-deletable-lines",
     "dead-store-around-a-closure",
     "dead-store-closure-only-local",
@@ -520,6 +522,7 @@
     "worker-augmented-platform-constructor",
     "worker-bare-relative-address",
     "worker-in-dead-function",
+    "worker-thread-path-of-its-own-directory",
     "worker-url-from-node-url",
     "workflow-command-written-with-yaml-escapes",
     "workflow-directory-is-where-its-commands-run",

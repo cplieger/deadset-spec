@@ -1,0 +1,8 @@
+{
+  "name": "@example/app",
+  "main": "index.js",
+  "dependencies": {
+    "left-pad": "1.3.0",
+    "unused-pkg": "1.0.0"
+  }
+}

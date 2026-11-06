@@ -539,7 +539,7 @@
           "x-delivered": ["ts"]
         },
         "injection_registrations": {
-          "description": "The declarations whose call registers a class with a dependency-injection container, read by the injection-container exemption: a registration function or method, and a decorator whose call lists the classes a container provides. Every class passed to a call of one of them is registered, so its constructor and the members the container injects are retained. An empty array, the default, registers no class through a call; the exemption's other half, a constructor parameter or a property that carries an injection decorator, needs no key and applies whatever this key holds.",
+          "description": "The declarations whose call registers a class with a dependency-injection container, read by the injection-container exemption: a registration function or method, and a decorator whose call lists the classes a container provides. Every class passed to a call of one of them, named or named through a variable whose initializer names it, is registered, so its constructor and the members the container injects are retained. An empty array, the default, registers no class through a call; the exemption's other half, a constructor parameter or a property that carries an injection decorator, needs no key and applies whatever this key holds.",
           "type": "array",
           "items": {
             "description": "One declaration, in exactly one of the three shapes the ts section states.",
@@ -599,7 +599,7 @@
           "x-delivered": ["ts"]
         },
         "lifecycle_contracts": {
-          "description": "The lifecycle contracts of the frameworks the project declares, read by the framework-lifecycle exemption, one entry per framework: the declarations that make a class one of the framework's components, the classes whose subclasses are its components, and the names of the members the framework calls on a component. An entry names at least one of the first two. A member of a component whose name an entry lists is retained. An empty array, the default, declares no framework, so the exemption retains nothing.",
+          "description": "The lifecycle contracts of the frameworks the project declares, read by the framework-lifecycle exemption, one entry per framework: the declarations that make a class one of the framework's components, the classes whose subclasses are its components, and the names of the members the framework calls on a component. An entry names at least one of the first two. A member of a component whose name an entry lists is retained. An empty array, the default, declares no framework, so the exemption retains only the members of the platform's custom elements, which references-ts.38 declares for every project.",
           "type": "array",
           "items": {
             "description": "One framework's lifecycle contract.",
@@ -626,7 +626,7 @@
             ],
             "properties": {
               "components": {
-                "description": "The declarations whose use makes a class a component of the framework: a decorator, which makes the class it is applied to a component when the decorator expression is the declaration or a call to it, and a registration function or method, which makes every class passed to a call of it a component.",
+                "description": "The declarations whose use makes a class a component of the framework: a decorator, which makes the class it is applied to a component when the decorator expression is the declaration or a call to it, and a registration function or method, which makes every class passed to a call of it a component, named or named through a variable whose initializer names it.",
                 "type": "array",
                 "default": [],
                 "items": {

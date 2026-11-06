@@ -1,0 +1,30 @@
+{
+  "name": "worker-thread-path-of-its-own-directory",
+  "description": "A Node thread whose address is a path.join or path.resolve of the calling file's own directory, __dirname or import.meta.dirname, and literals starts the file those literals name against that directory; a thread a function nobody calls starts reaches its file from dead code only.",
+  "rules": [
+    "references-ts.2"
+  ],
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    { "symbol": "JoinedFile", "report": "none" },
+    { "symbol": "ResolvedFile", "report": "none" },
+    {
+      "symbol": "idle",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "IdleFile",
+      "report": "DS1602",
+      "confidence": "probable",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    }
+  ]
+}
