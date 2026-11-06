@@ -1,0 +1,40 @@
+{
+  "symbols": {
+    "AFile": {
+      "file": "target/a.js",
+      "line": 1
+    },
+    "BFile": {
+      "file": "target/lib/b.js",
+      "line": 1
+    },
+    "RunnerFile": {
+      "file": "target/own/runner.js",
+      "line": 1
+    },
+    "LazyFile": {
+      "file": "target/lazy.js",
+      "line": 1
+    },
+    "SkippedFile": {
+      "file": "target/own/skipped.js",
+      "line": 1
+    },
+    "LeftPad": {
+      "file": "target/package.json",
+      "line": 5
+    },
+    "UnusedPkg": {
+      "file": "target/package.json",
+      "line": 6
+    },
+    "never": {
+      "file": "target/own/skipped.js",
+      "line": 2
+    },
+    "later": {
+      "file": "target/index.js",
+      "line": 8
+    }
+  }
+}

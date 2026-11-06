@@ -1,7 +1,6 @@
 {
   "name": "decode-only-member-through-a-generic-client",
   "description": "A member only a decode fills is reported at possible where the value comes untyped from outside through the target's own generic client: the client returns what a fetch response's json() gives as its type parameter, so the analysis cannot see whether the caller of the outside call reads the member.",
-  "pending": "confidence.19 through an in-repo generic client: the TypeScript analyzer reports a member an untyped outside value fills through the target's own generic function at certain.",
   "rules": [
     "confidence.19"
   ],

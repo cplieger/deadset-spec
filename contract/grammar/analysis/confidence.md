@@ -48,7 +48,7 @@ Rules `confidence.1` to `confidence.34` of [the analysis](../analysis.md). A rul
 
 **confidence.18** A member of a type the program only decodes into, a standard decoder filling it or a `JSON.parse` result read as the type, that production code never reads is dead at the class `certain`, because the decoder reads none of it.
 
-**confidence.19** Where the value comes from a function or method outside the analysis, a Go decoding callee or a TypeScript generic declared outside the analysis or only ambiently whose type parameter its result names and none of its parameters does, such as `get<T>()`, or from a TypeScript call or property other than `JSON.parse` that types it `any` or `unknown`, the finding has the class `possible`, because that callee fills the member and may read it where the analysis cannot see.
+**confidence.19** Where the value comes from a function or method outside the analysis, a Go decoding callee or a TypeScript generic declared outside the analysis or only ambiently whose type parameter its result names and none of its parameters does, such as `get<T>()`, or such a generic of the analysis's own that reads a value of the next clause as that type parameter, such as `(await res.json()) as T`, or from a TypeScript call or property other than `JSON.parse` that types it `any` or `unknown`, the finding has the class `possible`, because that callee fills the member and may read it where the analysis cannot see.
 
 ### Production code only tests use
 

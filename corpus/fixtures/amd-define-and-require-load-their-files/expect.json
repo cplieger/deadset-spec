@@ -1,0 +1,67 @@
+{
+  "name": "amd-define-and-require-load-their-files",
+  "description": "An AMD define or require of a dependency list is an import of each file a relative id names, with .js appended, written where the call is: a file only a define or an AMD require names is reached, one only a call in a function nobody calls names is reached from dead code only, an id that names a package keeps the dependency, and a define the file writes itself loads nothing.",
+  "rules": [
+    "references-ts.37"
+  ],
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "AFile",
+      "report": "none"
+    },
+    {
+      "symbol": "BFile",
+      "report": "none"
+    },
+    {
+      "symbol": "RunnerFile",
+      "report": "none"
+    },
+    {
+      "symbol": "LeftPad",
+      "report": "none"
+    },
+    {
+      "symbol": "LazyFile",
+      "report": "DS1602",
+      "confidence": "probable",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "SkippedFile",
+      "report": "DS1602",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "UnusedPkg",
+      "report": "DS1701",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "dependency",
+      "details": {
+        "dependency_class": "dependency"
+      }
+    },
+    {
+      "symbol": "never",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "variable"
+    },
+    {
+      "symbol": "later",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "symbols": {
+    "JoinedFile": { "file": "target/src/pool/joined.ts", "line": 1 },
+    "ResolvedFile": { "file": "target/src/pool/resolved.ts", "line": 1 },
+    "IdleFile": { "file": "target/src/pool/idle.ts", "line": 1 },
+    "idle": { "file": "target/src/main.ts", "line": 13 }
+  }
+}

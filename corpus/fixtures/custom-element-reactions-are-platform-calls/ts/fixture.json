@@ -1,0 +1,64 @@
+{
+  "symbols": {
+    "WATCHED": {
+      "file": "target/src/elements.ts",
+      "line": 1
+    },
+    "TRACKED": {
+      "file": "target/src/elements.ts",
+      "line": 2
+    },
+    "probeAttr": {
+      "file": "target/src/elements.ts",
+      "line": 3
+    },
+    "stateOf": {
+      "file": "target/src/elements.ts",
+      "line": 4
+    },
+    "SizeBox.observedAttributes": {
+      "file": "target/src/elements.ts",
+      "line": 7
+    },
+    "SizeBox.attributeChangedCallback": {
+      "file": "target/src/elements.ts",
+      "line": 8
+    },
+    "SizeBox.unused": {
+      "file": "target/src/elements.ts",
+      "line": 9
+    },
+    "Field.observedAttributes": {
+      "file": "target/src/elements.ts",
+      "line": 13
+    },
+    "Field.formAssociated": {
+      "file": "target/src/elements.ts",
+      "line": 14
+    },
+    "Field.attributeChangedCallback": {
+      "file": "target/src/elements.ts",
+      "line": 15
+    },
+    "Field.formStateRestoreCallback": {
+      "file": "target/src/elements.ts",
+      "line": 16
+    },
+    "Base.connectedCallback": {
+      "file": "target/src/elements.ts",
+      "line": 20
+    },
+    "Leaf.adoptedCallback": {
+      "file": "target/src/elements.ts",
+      "line": 24
+    },
+    "Unregistered.connectedCallback": {
+      "file": "target/src/elements.ts",
+      "line": 28
+    },
+    "Sub.connectedCallback": {
+      "file": "target/src/elements.ts",
+      "line": 32
+    }
+  }
+}

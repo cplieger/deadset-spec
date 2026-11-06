@@ -1,0 +1,109 @@
+{
+  "name": "custom-element-reactions-are-platform-calls",
+  "description": "A class passed to the platform's customElements.define, named or through a variable, has the static members the registry reads and the reaction callbacks it calls retained with no configured lifecycle contract, in the getter and the static field shape, on the class and on a class it extends, and what those members reference is live. A member the registry neither reads nor calls is reported, and so is a callback of a class no define registers, a subclass of a registered class included, because the platform constructs only a class define registers.",
+  "rules": [
+    "references-ts.38"
+  ],
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "WATCHED",
+      "report": "none"
+    },
+    {
+      "symbol": "TRACKED",
+      "report": "none"
+    },
+    {
+      "symbol": "probeAttr",
+      "report": "none"
+    },
+    {
+      "symbol": "stateOf",
+      "report": "none"
+    },
+    {
+      "symbol": "SizeBox.observedAttributes",
+      "report": "none",
+      "retained_by": [
+        "framework-lifecycle"
+      ]
+    },
+    {
+      "symbol": "SizeBox.attributeChangedCallback",
+      "report": "none",
+      "retained_by": [
+        "framework-lifecycle"
+      ]
+    },
+    {
+      "symbol": "SizeBox.unused",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Field.observedAttributes",
+      "report": "none",
+      "retained_by": [
+        "framework-lifecycle"
+      ]
+    },
+    {
+      "symbol": "Field.formAssociated",
+      "report": "none",
+      "retained_by": [
+        "framework-lifecycle"
+      ]
+    },
+    {
+      "symbol": "Field.attributeChangedCallback",
+      "report": "none",
+      "retained_by": [
+        "framework-lifecycle"
+      ]
+    },
+    {
+      "symbol": "Field.formStateRestoreCallback",
+      "report": "none",
+      "retained_by": [
+        "framework-lifecycle"
+      ]
+    },
+    {
+      "symbol": "Base.connectedCallback",
+      "report": "none",
+      "retained_by": [
+        "framework-lifecycle"
+      ]
+    },
+    {
+      "symbol": "Leaf.adoptedCallback",
+      "report": "none",
+      "retained_by": [
+        "framework-lifecycle"
+      ]
+    },
+    {
+      "symbol": "Unregistered.connectedCallback",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Sub.connectedCallback",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}
