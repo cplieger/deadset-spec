@@ -390,6 +390,20 @@ func TestRunCasesGivesTheRunTheCaseEnvironment(t *testing.T) {
 	}
 }
 
+func TestRunCasesGivesTheRunTheCorpusHostWhateverTheCallersPlatform(t *testing.T) {
+	t.Setenv("GOOS", "darwin")
+	t.Setenv("GOARCH", "arm64")
+	vectors := fstest.MapFS{
+		"vectors/cli/host/case.json": {Data: []byte(`{"description": "d", "products": ["p"], "argv": ["x"], "expect": {"exit": 0}}`)},
+		"vectors/cli/host/tree/a":    {Data: []byte("a\n")},
+	}
+	reading := Analyzer{Command: []string{"/bin/sh", "-c", `[ "$GOOS-$GOARCH" = linux-amd64 ] || exit 9`, "sh"}}
+	got, err := RunCases(t.Context(), vectors, "p", reading)
+	if err != nil || len(got) != 1 || got[0].Result != Pass {
+		t.Errorf("RunCases(a caller on darwin-arm64) = %+v, %v, want the run to see GOOS=linux GOARCH=amd64", got, err)
+	}
+}
+
 func TestRunCasesHoldsARunEndingWithTheFailureCodeToOneClassLine(t *testing.T) {
 	vectors := fstest.MapFS{
 		"vectors/cli/ended/case.json": {Data: []byte(`{"description": "d", "products": ["p"], "argv": ["x"], "expect": {"exit": 3}}`)},

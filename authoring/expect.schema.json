@@ -486,7 +486,8 @@
             "missing-consumer",
             "workspace-member-without-source",
             "convention-not-literal",
-            "missing-import-path"
+            "missing-import-path",
+            "no-program"
           ]
         },
         "names": {

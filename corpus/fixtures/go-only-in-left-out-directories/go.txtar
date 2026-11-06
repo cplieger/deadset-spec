@@ -1,0 +1,21 @@
+The Go rendering: a module below the target root whose Go files are an
+installed package below node_modules and a fixture below testdata.
+
+-- fixture.json --
+{
+  "symbols": {}
+}
+-- target/app/go.mod --
+module example.com/app
+
+go 1.27.0
+-- target/app/node_modules/dep/dep.go --
+package dep
+
+// Value is installed third-party code.
+var Value = 1
+-- target/app/testdata/fixture/fixture.go --
+package fixture
+
+// Value is fixture data.
+var Value = 2

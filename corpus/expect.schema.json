@@ -678,7 +678,7 @@
         "class": {
           "description": "The class of the failure, drawn from the class field of the setup group of contract/exit-codes.json's failure_classes.",
           "type": "string",
-          "enum": ["missing-module", "incomplete-module-sum", "missing-consumer", "workspace-member-without-source", "convention-not-literal", "missing-import-path"]
+          "enum": ["missing-module", "incomplete-module-sum", "missing-consumer", "workspace-member-without-source", "convention-not-literal", "missing-import-path", "no-program"]
         },
         "names": {
           "description": "The strings the line on standard error contains: what is missing, spelled as the rendering spells it.",
