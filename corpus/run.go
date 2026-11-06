@@ -24,6 +24,11 @@ import (
 	"github.com/cplieger/deadset-spec/v8/vocab"
 )
 
+// corpusHost is the platform every fixture's expectations name as the host's,
+// set for the run as the go command reads its default target, so a Go analyzer
+// derives the same host configuration on every machine (runner.load).
+var corpusHost = []string{"GOOS=linux", "GOARCH=amd64"}
+
 // Analyzer is the product a run answers the corpus through. Command is the
 // program and any leading arguments; a verb and its options follow.
 type Analyzer struct {
@@ -184,7 +189,7 @@ func invoke(ctx context.Context, analyzer Analyzer, dir, interrupt string, args 
 	argv := append(slices.Clone(analyzer.Command[1:]), args...)
 	cmd := exec.CommandContext(ctx, analyzer.Command[0], argv...) //nolint:gosec // the analyzer under test, named by its caller
 	cmd.Dir = dir
-	cmd.Env = append(os.Environ(), analyzer.Env...)
+	cmd.Env = append(append(os.Environ(), corpusHost...), analyzer.Env...)
 	var out, errOut bytes.Buffer
 	cmd.Stdout, cmd.Stderr = &out, &errOut
 	if err := cmd.Start(); err != nil {

@@ -1,0 +1,15 @@
+{
+  "name": "go-only-in-left-out-directories",
+  "description": "A target with no module file of its own holds one module whose only Go files sit below node_modules and testdata, directories the Go program leaves out. The module holds no package, so the run holds no Go program and ends with the setup failure no-program, and reports nothing.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "setup_failure": {
+    "class": "no-program",
+    "names": [
+      ".go"
+    ]
+  },
+  "expect": []
+}

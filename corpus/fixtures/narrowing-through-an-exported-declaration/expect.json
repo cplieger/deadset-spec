@@ -1,0 +1,70 @@
+{
+  "name": "narrowing-through-an-exported-declaration",
+  "description": "An application, a closed world. A type of one package that another package reaches through its own package's exported declarations without naming it, as the type of a field, a slice element or a map value of what an exported function returns, a field promoted from an embedded type, the type of a parameter, of an exported variable, the element of an exported result type, or an exported field of an unexported type an exported function returns, is not reported as a candidate for unexporting, because that code holds values of the type. A type only an unexported field names, and one only its own file names, are reported.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Hint",
+      "report": "none"
+    },
+    {
+      "symbol": "Card",
+      "report": "none"
+    },
+    {
+      "symbol": "Note",
+      "report": "none"
+    },
+    {
+      "symbol": "Badge",
+      "report": "none"
+    },
+    {
+      "symbol": "Request",
+      "report": "none"
+    },
+    {
+      "symbol": "Config",
+      "report": "none"
+    },
+    {
+      "symbol": "Job",
+      "report": "none"
+    },
+    {
+      "symbol": "Queue",
+      "report": "none"
+    },
+    {
+      "symbol": "Me",
+      "report": "none"
+    },
+    {
+      "symbol": "Tag",
+      "report": "none"
+    },
+    {
+      "symbol": "Inner",
+      "report": "DS1501",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type",
+      "details": {
+        "narrower_visibility": "file"
+      }
+    },
+    {
+      "symbol": "Local",
+      "report": "DS1501",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type",
+      "details": {
+        "narrower_visibility": "file"
+      }
+    }
+  ]
+}
