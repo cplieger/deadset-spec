@@ -1,0 +1,144 @@
+{
+  "name": "narrowing-through-a-published-declaration",
+  "description": "A library whose consumer set the fixture declares complete. A published type that the consumer reaches through the package's exported declarations without naming it, as the type of a property, an array element or a map value of what an exported function returns, a class that type extends, the type of a parameter, of an exported constant, the element of an exported result type alias, a property of an unexported class an exported function returns, the inferred result of an exported function, a class or an interface an unexported type an exported function returns extends, the element of an unexported alias an exported function returns, the value of an index signature of a returned interface, the result of a namespace's exported function, the type a guard or an assertion function narrows to, the constraint or the default of an exported function's type parameter, a branch of a conditional type or the template of a mapped type an exported function returns, an alias the compiler reads as the type it aliases, an interface a returned class implements, or the constraint of a returned class's type parameter, is not reported as a candidate for unexporting, because the consumer holds values of the type. A type only a private property names, and one only the package names, are reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "library",
+  "consumers": [
+    "consumer"
+  ],
+  "closed_world": [
+    "consumers"
+  ],
+  "expect": [
+    {
+      "symbol": "Hint",
+      "report": "none"
+    },
+    {
+      "symbol": "Card",
+      "report": "none"
+    },
+    {
+      "symbol": "Note",
+      "report": "none"
+    },
+    {
+      "symbol": "Badge",
+      "report": "none"
+    },
+    {
+      "symbol": "Inner",
+      "report": "DS1501",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "class",
+      "details": {
+        "narrower_visibility": "package"
+      }
+    },
+    {
+      "symbol": "Me",
+      "report": "none"
+    },
+    {
+      "symbol": "Request",
+      "report": "none"
+    },
+    {
+      "symbol": "Config",
+      "report": "none"
+    },
+    {
+      "symbol": "Job",
+      "report": "none"
+    },
+    {
+      "symbol": "Queue",
+      "report": "none"
+    },
+    {
+      "symbol": "Local",
+      "report": "DS1501",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "class",
+      "details": {
+        "narrower_visibility": "package"
+      }
+    },
+    {
+      "symbol": "Tag",
+      "report": "none"
+    },
+    {
+      "symbol": "Made",
+      "report": "none"
+    },
+    {
+      "symbol": "Base",
+      "report": "none"
+    },
+    {
+      "symbol": "Elem",
+      "report": "none"
+    },
+    {
+      "symbol": "Shape",
+      "report": "none"
+    },
+    {
+      "symbol": "Indexed",
+      "report": "none"
+    },
+    {
+      "symbol": "Bucket",
+      "report": "none"
+    },
+    {
+      "symbol": "Held",
+      "report": "none"
+    },
+    {
+      "symbol": "Pred",
+      "report": "none"
+    },
+    {
+      "symbol": "Asserted",
+      "report": "none"
+    },
+    {
+      "symbol": "Bound",
+      "report": "none"
+    },
+    {
+      "symbol": "Fallback",
+      "report": "none"
+    },
+    {
+      "symbol": "Yes",
+      "report": "none"
+    },
+    {
+      "symbol": "No",
+      "report": "none"
+    },
+    {
+      "symbol": "Template",
+      "report": "none"
+    },
+    {
+      "symbol": "Id",
+      "report": "none"
+    },
+    {
+      "symbol": "Contract",
+      "report": "none"
+    },
+    {
+      "symbol": "Limit",
+      "report": "none"
+    }
+  ]
+}

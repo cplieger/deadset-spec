@@ -1,0 +1,108 @@
+{
+  "symbols": {
+    "ByFunction.connectedCallback": {
+      "file": "target/src/elements.ts",
+      "line": 2
+    },
+    "ByArrow.connectedCallback": {
+      "file": "target/src/elements.ts",
+      "line": 6
+    },
+    "ByMethod.connectedCallback": {
+      "file": "target/src/elements.ts",
+      "line": 10
+    },
+    "ByTwoWrappers.connectedCallback": {
+      "file": "target/src/elements.ts",
+      "line": 14
+    },
+    "ByRest.connectedCallback": {
+      "file": "target/src/elements.ts",
+      "line": 18
+    },
+    "Described.connectedCallback": {
+      "file": "target/src/elements.ts",
+      "line": 22
+    },
+    "ByProperty.connectedCallback": {
+      "file": "target/src/elements.ts",
+      "line": 26
+    },
+    "ByExpression.connectedCallback": {
+      "file": "target/src/elements.ts",
+      "line": 30
+    },
+    "ByAlias.connectedCallback": {
+      "file": "target/src/elements.ts",
+      "line": 34
+    },
+    "ByArray.connectedCallback": {
+      "file": "target/src/elements.ts",
+      "line": 38
+    },
+    "ByThis.connectedCallback": {
+      "file": "target/src/elements.ts",
+      "line": 42
+    },
+    "ByCondA.connectedCallback": {
+      "file": "target/src/elements.ts",
+      "line": 46
+    },
+    "ByCondB.connectedCallback": {
+      "file": "target/src/elements.ts",
+      "line": 50
+    },
+    "ByNullish.connectedCallback": {
+      "file": "target/src/elements.ts",
+      "line": 54
+    },
+    "ByPropCopy.connectedCallback": {
+      "file": "target/src/elements.ts",
+      "line": 58
+    },
+    "ByDirectCond.connectedCallback": {
+      "file": "target/src/elements.ts",
+      "line": 62
+    },
+    "ByField.connectedCallback": {
+      "file": "target/src/elements.ts",
+      "line": 66
+    },
+    "ByBag.connectedCallback": {
+      "file": "target/src/elements.ts",
+      "line": 70
+    },
+    "ByDestructure.connectedCallback": {
+      "file": "target/src/elements.ts",
+      "line": 74
+    },
+    "ByParam.connectedCallback": {
+      "file": "target/src/elements.ts",
+      "line": 78
+    },
+    "ByArrayCopy.connectedCallback": {
+      "file": "target/src/elements.ts",
+      "line": 82
+    },
+    "ByReturned.connectedCallback": {
+      "file": "target/src/elements.ts",
+      "line": 86
+    },
+    "ByLater.connectedCallback": {
+      "file": "target/src/elements.ts",
+      "line": 90
+    },
+    "ByAnonymous.connectedCallback": {
+      "file": "target/src/elements.ts",
+      "line": 94
+    },
+    "ByArrayBranch.connectedCallback": {
+      "file": "target/src/elements.ts",
+      "line": 98
+    },
+    "ByObjectBranch.connectedCallback": {
+      "file": "target/src/elements.ts",
+      "line": 102
+    }
+  }
+}

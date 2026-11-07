@@ -423,7 +423,7 @@
           "x-owner": "ts-analyzer"
         },
         "injection_registrations": {
-          "description": "The declarations whose call registers a class with a dependency-injection container, read by the injection-container exemption: a registration function or method, and a decorator whose call lists the classes a container provides. Every class passed to a call of one of them, named or named through a variable whose initializer names it, is registered, so its constructor and the members the container injects are retained. An empty array, the default, registers no class through a call; the exemption's other half, a constructor parameter or a property that carries an injection decorator, needs no key and applies whatever this key holds.",
+          "description": "The declarations whose call registers a class with a dependency-injection container, read by the injection-container exemption: a registration function or method, and a decorator whose call lists the classes a container provides. Every class passed to a call of one of them, named as grammar/analysis/references-ts.md references-ts.39 states, is registered, so its constructor and the members the container injects are retained. An empty array, the default, registers no class through a call; the exemption's other half, a constructor parameter or a property that carries an injection decorator, needs no key and applies whatever this key holds.",
           "type": "array",
           "items": {
             "description": "One declaration, in exactly one of the three shapes the ts section states.",
@@ -456,7 +456,7 @@
             ],
             "properties": {
               "components": {
-                "description": "The declarations whose use makes a class a component of the framework: a decorator, which makes the class it is applied to a component when the decorator expression is the declaration or a call to it, and a registration function or method, which makes every class passed to a call of it a component, named or named through a variable whose initializer names it.",
+                "description": "The declarations whose use makes a class a component of the framework: a decorator, which makes the class it is applied to a component when the decorator expression is the declaration or a call to it, and a registration function or method, which makes every class passed to a call of it a component, named as grammar/analysis/references-ts.md references-ts.39 states.",
                 "type": "array",
                 "default": [],
                 "items": {

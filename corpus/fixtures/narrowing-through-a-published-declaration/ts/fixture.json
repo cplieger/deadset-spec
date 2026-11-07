@@ -1,0 +1,120 @@
+{
+  "symbols": {
+    "Hint": {
+      "file": "target/src/index.ts",
+      "line": 4
+    },
+    "Card": {
+      "file": "target/src/index.ts",
+      "line": 6
+    },
+    "Note": {
+      "file": "target/src/index.ts",
+      "line": 8
+    },
+    "Badge": {
+      "file": "target/src/index.ts",
+      "line": 10
+    },
+    "Inner": {
+      "file": "target/src/index.ts",
+      "line": 12
+    },
+    "Me": {
+      "file": "target/src/index.ts",
+      "line": 15
+    },
+    "Request": {
+      "file": "target/src/index.ts",
+      "line": 26
+    },
+    "Config": {
+      "file": "target/src/index.ts",
+      "line": 31
+    },
+    "Job": {
+      "file": "target/src/index.ts",
+      "line": 37
+    },
+    "Queue": {
+      "file": "target/src/index.ts",
+      "line": 38
+    },
+    "Local": {
+      "file": "target/src/index.ts",
+      "line": 41
+    },
+    "Tag": {
+      "file": "target/src/index.ts",
+      "line": 44
+    },
+    "Made": {
+      "file": "target/src/index.ts",
+      "line": 50
+    },
+    "Base": {
+      "file": "target/src/index.ts",
+      "line": 69
+    },
+    "Elem": {
+      "file": "target/src/index.ts",
+      "line": 73
+    },
+    "Shape": {
+      "file": "target/src/index.ts",
+      "line": 77
+    },
+    "Indexed": {
+      "file": "target/src/index.ts",
+      "line": 85
+    },
+    "Bucket": {
+      "file": "target/src/index.ts",
+      "line": 86
+    },
+    "Held": {
+      "file": "target/src/index.ts",
+      "line": 91
+    },
+    "Pred": {
+      "file": "target/src/index.ts",
+      "line": 112
+    },
+    "Asserted": {
+      "file": "target/src/index.ts",
+      "line": 114
+    },
+    "Bound": {
+      "file": "target/src/index.ts",
+      "line": 116
+    },
+    "Fallback": {
+      "file": "target/src/index.ts",
+      "line": 118
+    },
+    "Yes": {
+      "file": "target/src/index.ts",
+      "line": 120
+    },
+    "No": {
+      "file": "target/src/index.ts",
+      "line": 121
+    },
+    "Template": {
+      "file": "target/src/index.ts",
+      "line": 124
+    },
+    "Id": {
+      "file": "target/src/index.ts",
+      "line": 127
+    },
+    "Contract": {
+      "file": "target/src/index.ts",
+      "line": 129
+    },
+    "Limit": {
+      "file": "target/src/index.ts",
+      "line": 136
+    }
+  }
+}
