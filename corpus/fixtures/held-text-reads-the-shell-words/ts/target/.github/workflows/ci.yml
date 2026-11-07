@@ -1,0 +1,14 @@
+on: push
+permissions: {}
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        gen: [web]
+    steps:
+      - run: node scripts/l?nt.js
+      - run: node tools/{check,other}.mjs
+      - run: node gen/"${{ matrix.gen }}".js
+      - run: files=$(ls build/$PART*.js)
+      - run: rel="$dir/$name" && go run ./$d

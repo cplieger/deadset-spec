@@ -1,0 +1,35 @@
+{
+  "name": "workflow-value-runs-an-unwritten-entry",
+  "description": "A workflow value that is no run command is read as a quoted text is, so a runtime's entry in it may write the file the action that reads the value runs. An action input that starts a runtime with an expression as its entry writes no path, so the package's file findings are possible at most, the file's exports falling with it, and the package has one note.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "notes": [
+    {
+      "kind": "unread-command",
+      "path": "."
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "MainFile",
+      "report": "none"
+    },
+    {
+      "symbol": "ServerFile",
+      "report": "DS1602",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "Serve",
+      "report": "DS1001",
+      "confidence": "possible",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    }
+  ]
+}

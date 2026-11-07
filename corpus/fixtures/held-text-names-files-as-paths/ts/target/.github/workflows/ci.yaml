@@ -1,0 +1,12 @@
+name: review
+on: push
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # re-tags the newest builds under fresh pre-release versions
+      # src/notify.ts sends nothing in this job
+      - run: echo versions
+        env:
+          SEAM: src/held.ts

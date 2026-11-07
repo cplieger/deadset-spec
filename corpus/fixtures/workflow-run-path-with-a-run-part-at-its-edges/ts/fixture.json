@@ -1,0 +1,40 @@
+{
+  "symbols": {
+    "MainFile": {
+      "file": "target/main.js",
+      "line": 1
+    },
+    "BuildFile": {
+      "file": "target/@tools/build-web.mjs",
+      "line": 1
+    },
+    "Build": {
+      "file": "target/@tools/build-web.mjs",
+      "line": 2
+    },
+    "OtherFile": {
+      "file": "target/@tools/other.mjs",
+      "line": 1
+    },
+    "Other": {
+      "file": "target/@tools/other.mjs",
+      "line": 2
+    },
+    "SubFile": {
+      "file": "target/scripts/sub/index.js",
+      "line": 1
+    },
+    "Sub": {
+      "file": "target/scripts/sub/index.js",
+      "line": 2
+    },
+    "LintFile": {
+      "file": "target/scripts/lint.js",
+      "line": 1
+    },
+    "Lint": {
+      "file": "target/scripts/lint.js",
+      "line": 2
+    }
+  }
+}

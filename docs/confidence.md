@@ -16,6 +16,7 @@ The evidence that lowers a finding's reachability class, generated from `contrac
 | `possible-class` | `possible` | `go`, `ts` | [`confidence.23`](../contract/grammar/analysis/confidence.md) | A member that only records of exemption classes whose confidence is possible hold. |
 | `roots-incomplete` | `probable` | `ts` | [`confidence.25`](../contract/grammar/analysis/confidence.md) | A TypeScript declaration found dead under reachability alone, or a file only dead code imports, while ts.roots_complete is not true. |
 | `computed-load` | `probable` | `ts` | [`confidence.26`](../contract/grammar/analysis/confidence.md) | A finding the roots cap applies to, in a configuration that compiles a load by a computed path. |
+| `unwritten-run-path` | `possible` | `ts` | [`confidence.35`](../contract/grammar/analysis/confidence.md) | A file of a package one of whose command strings may run a file whose path no word of it writes. |
 | `schema-operation-default` | `possible` | `proto` | [`schemas.10`](../contract/grammar/analysis/schemas.md) | A schema service or operation, whose callers may run in programs the run does not analyze. |
 | `http-exposure` | `possible` | `proto` | [`schemas.11`](../contract/grammar/analysis/schemas.md) | A schema declaration a service reaches that the generation configuration exposes over HTTP. |
 | `descriptor-exposure` | `possible` | `proto` | [`schemas.12`](../contract/grammar/analysis/schemas.md) | A schema declaration a consumer binding of which carries the descriptor-exposure cap. |

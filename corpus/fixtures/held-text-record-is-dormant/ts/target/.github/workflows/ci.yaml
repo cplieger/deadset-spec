@@ -1,4 +1,6 @@
 on: push
+env:
+  RELEASE_SOURCE: src/versions.ts
 jobs:
   test:
     runs-on: ubuntu-latest

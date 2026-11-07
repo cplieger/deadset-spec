@@ -1,0 +1,43 @@
+{
+  "name": "held-text-reads-a-line-a-launcher-hands-on",
+  "description": "A quoted text a command hands a shell as its command line, the operand of `sh -c` among them, is read with the program-word rule: its dynamic first word may be any runtime, so the bare word after it names the file that runtime may run, which is held, and since that word writes no path the package's file findings are possible at most, with one note. The same text handed to `echo` is no command line, so it names nothing.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "notes": [
+    {
+      "kind": "unread-command",
+      "path": "."
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "MainFile",
+      "report": "none"
+    },
+    {
+      "symbol": "LintFile",
+      "report": "none"
+    },
+    {
+      "symbol": "Lint",
+      "report": "none"
+    },
+    {
+      "symbol": "StrayFile",
+      "report": "DS1602",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "Stray",
+      "report": "DS1001",
+      "confidence": "possible",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    }
+  ]
+}

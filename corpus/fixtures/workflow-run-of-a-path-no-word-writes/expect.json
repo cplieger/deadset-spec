@@ -1,0 +1,35 @@
+{
+  "name": "workflow-run-of-a-path-no-word-writes",
+  "description": "A step runs node on a path whose only written text is a separator between two variables the runner's environment sets, which may stand for any file. The word holds no file, and the finding that a file of the package is never imported is reported at the class possible, the file's exports falling with it, with one note for the package.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "notes": [
+    {
+      "kind": "unread-command",
+      "path": "."
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "MainFile",
+      "report": "none"
+    },
+    {
+      "symbol": "LintFile",
+      "report": "DS1602",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "Lint",
+      "report": "DS1001",
+      "confidence": "possible",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    }
+  ]
+}

@@ -1,11 +1,17 @@
 {
   "name": "package-only-unread-node-command",
-  "description": "A package whose only Node evidence would be a script that runs node behind env --frobnicate, an option the env reader does not handle, holds none for program.36: the command is not understood, so its JavaScript resolves as a bundler does, the extensionless relative specifier names its file and raises no unresolved-specifier note. The held text names index.js, which the static word index.js already roots with all it exports, so the manifest raises no unread-command note.",
+  "description": "A package whose only Node evidence would be a script that runs node behind env --frobnicate, an option the env reader does not handle, holds none for program.36: the command is not understood, so its JavaScript resolves as a bundler does, the extensionless relative specifier names its file and raises no unresolved-specifier note. The held text names index.js, which the static word index.js already roots with all it exports; the manifest is noted because an option no table lists may make the command run any file.",
   "languages": [
     "ts"
   ],
   "target_kind": "application",
   "min_confidence": "possible",
+  "notes": [
+    {
+      "kind": "unread-command",
+      "path": "."
+    }
+  ],
   "expect": [
     {
       "symbol": "helper",

@@ -1,0 +1,66 @@
+{
+  "name": "held-text-reads-the-shell-words",
+  "description": "Held text reads the words the shell parser reads in each run command, after the shell removes their quotes: a glob character stands for any text, each alternative of a brace expansion is a word of its own, a part quoted inside a word stays in it, and a word inside a command substitution is read too, so each file such a word may write is held, nothing it exports is reported, and the package has one note. A word whose written text is only separators and . names no file, and outside the file a command runs it makes no finding possible, so a file no word names is reported at the class certain.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "notes": [
+    {
+      "kind": "unread-command",
+      "path": "."
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "MainFile",
+      "report": "none"
+    },
+    {
+      "symbol": "LintFile",
+      "report": "none"
+    },
+    {
+      "symbol": "Lint",
+      "report": "none"
+    },
+    {
+      "symbol": "CheckFile",
+      "report": "none"
+    },
+    {
+      "symbol": "Check",
+      "report": "none"
+    },
+    {
+      "symbol": "WebFile",
+      "report": "none"
+    },
+    {
+      "symbol": "Web",
+      "report": "none"
+    },
+    {
+      "symbol": "OutFile",
+      "report": "none"
+    },
+    {
+      "symbol": "Out",
+      "report": "none"
+    },
+    {
+      "symbol": "StrayFile",
+      "report": "DS1602",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "Stray",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    }
+  ]
+}

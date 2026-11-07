@@ -1,0 +1,10 @@
+on: push
+permissions: {}
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        tool: [lint]
+    steps:
+      - run: node ./${{ matrix.tool }}

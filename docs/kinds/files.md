@@ -34,6 +34,7 @@ Before reporting: Reported only when the configuration declares the build matrix
 What lowers its confidence:
 
 - The kind's ceiling, `max_class`, is `certain`.
+- `possible` ([`confidence.35`](../../contract/grammar/analysis/confidence.md)): A file of a package one of whose command strings may run a file whose path no word of it writes.
 - A finding about a member of a dead component carries no higher confidence than the component's root members.
 
 ## DS1602 file-never-imported
@@ -63,4 +64,5 @@ What lowers its confidence:
 - `possible` ([`confidence.20`](../../contract/grammar/analysis/confidence.md)): A declaration of a TypeScript file only tests reach that is no test-support file, and each dead declaration it reaches through dead declarations.
 - `probable` ([`confidence.25`](../../contract/grammar/analysis/confidence.md)): A TypeScript declaration found dead under reachability alone, or a file only dead code imports, while ts.roots_complete is not true.
 - `probable` ([`confidence.26`](../../contract/grammar/analysis/confidence.md)): A finding the roots cap applies to, in a configuration that compiles a load by a computed path.
+- `possible` ([`confidence.35`](../../contract/grammar/analysis/confidence.md)): A file of a package one of whose command strings may run a file whose path no word of it writes.
 - A finding about a member of a dead component carries no higher confidence than the component's root members.

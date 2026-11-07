@@ -98,6 +98,14 @@
       "description": "A finding the roots cap applies to, in a configuration that compiles a load by a computed path."
     },
     {
+      "evidence": "unwritten-run-path",
+      "rule": "confidence.35",
+      "class": "possible",
+      "languages": ["ts"],
+      "codes": ["DS1601", "DS1602"],
+      "description": "A file of a package one of whose command strings may run a file whose path no word of it writes."
+    },
+    {
       "evidence": "schema-operation-default",
       "rule": "schemas.10",
       "class": "possible",

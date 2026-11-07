@@ -1,0 +1,24 @@
+{
+  "symbols": {
+    "MainFile": {
+      "file": "target/main.js",
+      "line": 1
+    },
+    "CheckFile": {
+      "file": "target/scripts/hooks/pre-commit/check.js",
+      "line": 1
+    },
+    "PushFile": {
+      "file": "target/scripts/hooks/pre-push/push.mjs",
+      "line": 1
+    },
+    "StrayFile": {
+      "file": "target/other/stray.js",
+      "line": 1
+    },
+    "Stray": {
+      "file": "target/other/stray.js",
+      "line": 2
+    }
+  }
+}

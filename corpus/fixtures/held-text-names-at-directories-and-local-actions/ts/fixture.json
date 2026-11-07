@@ -1,0 +1,32 @@
+{
+  "symbols": {
+    "MainFile": {
+      "file": "target/main.js",
+      "line": 1
+    },
+    "AppFile": {
+      "file": "target/apps/web/@app/main.js",
+      "line": 1
+    },
+    "App": {
+      "file": "target/apps/web/@app/main.js",
+      "line": 2
+    },
+    "NotifyFile": {
+      "file": "target/tools/notify/index.js",
+      "line": 1
+    },
+    "Notify": {
+      "file": "target/tools/notify/index.js",
+      "line": 2
+    },
+    "Unacted": {
+      "file": "target/unacted.js",
+      "line": 2
+    },
+    "UnactedFile": {
+      "file": "target/unacted.js",
+      "line": 1
+    }
+  }
+}

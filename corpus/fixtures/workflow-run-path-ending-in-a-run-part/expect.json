@@ -1,0 +1,58 @@
+{
+  "name": "workflow-run-path-ending-in-a-run-part",
+  "description": "A run path whose last segment is only a part the run fills in, a matrix value or a positional parameter, after a written directory, roots nothing, but its held text names every file below that directory, as the part may hold separators and Node adds the extension the path leaves out. So scripts/lint.js, scripts/build/web.js and tools/check.js are held, nothing they export is reported, and the package has one note, while lib/deep.js, whose directory no step writes, is reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "notes": [
+    {
+      "kind": "unread-command",
+      "path": "."
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "MainFile",
+      "report": "none"
+    },
+    {
+      "symbol": "LintFile",
+      "report": "none"
+    },
+    {
+      "symbol": "Lint",
+      "report": "none"
+    },
+    {
+      "symbol": "WebFile",
+      "report": "none"
+    },
+    {
+      "symbol": "Web",
+      "report": "none"
+    },
+    {
+      "symbol": "CheckFile",
+      "report": "none"
+    },
+    {
+      "symbol": "Check",
+      "report": "none"
+    },
+    {
+      "symbol": "DeepFile",
+      "report": "DS1602",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "Deep",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    }
+  ]
+}

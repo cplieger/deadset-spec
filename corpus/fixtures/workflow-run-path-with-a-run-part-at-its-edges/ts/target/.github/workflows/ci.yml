@@ -1,0 +1,12 @@
+on: push
+permissions: {}
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target: [web]
+        tool: [sub]
+    steps:
+      - run: node @tools/build-${{ matrix.target }}.mjs
+      - run: node scripts/${{ matrix.tool }}//

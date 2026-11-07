@@ -1,0 +1,16 @@
+{
+  "symbols": {
+    "MainFile": {
+      "file": "target/main.js",
+      "line": 1
+    },
+    "ServerFile": {
+      "file": "target/scripts/server.js",
+      "line": 1
+    },
+    "Serve": {
+      "file": "target/scripts/server.js",
+      "line": 2
+    }
+  }
+}

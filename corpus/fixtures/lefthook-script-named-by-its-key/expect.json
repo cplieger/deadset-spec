@@ -1,0 +1,36 @@
+{
+  "name": "lefthook-script-named-by-its-key",
+  "description": "A lefthook file names a script by a key of a hook's scripts mapping and by a job's script value, and lefthook runs it from its source_dir below a directory named after the hook, with its runner. Each such script is a root as the path of the command lefthook runs, so neither file is reported, though no value of the file writes its path, while a file nothing names is reported at the class certain.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "MainFile",
+      "report": "none"
+    },
+    {
+      "symbol": "CheckFile",
+      "report": "none"
+    },
+    {
+      "symbol": "PushFile",
+      "report": "none"
+    },
+    {
+      "symbol": "StrayFile",
+      "report": "DS1602",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "Stray",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    }
+  ]
+}

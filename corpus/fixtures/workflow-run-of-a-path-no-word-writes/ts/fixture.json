@@ -1,0 +1,16 @@
+{
+  "symbols": {
+    "MainFile": {
+      "file": "target/main.js",
+      "line": 1
+    },
+    "LintFile": {
+      "file": "target/scripts/lint.js",
+      "line": 1
+    },
+    "Lint": {
+      "file": "target/scripts/lint.js",
+      "line": 2
+    }
+  }
+}

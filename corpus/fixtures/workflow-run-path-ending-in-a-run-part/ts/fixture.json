@@ -1,0 +1,40 @@
+{
+  "symbols": {
+    "MainFile": {
+      "file": "target/main.js",
+      "line": 1
+    },
+    "LintFile": {
+      "file": "target/scripts/lint.js",
+      "line": 1
+    },
+    "Lint": {
+      "file": "target/scripts/lint.js",
+      "line": 2
+    },
+    "CheckFile": {
+      "file": "target/tools/check.js",
+      "line": 1
+    },
+    "Check": {
+      "file": "target/tools/check.js",
+      "line": 2
+    },
+    "DeepFile": {
+      "file": "target/lib/deep.js",
+      "line": 1
+    },
+    "Deep": {
+      "file": "target/lib/deep.js",
+      "line": 2
+    },
+    "WebFile": {
+      "file": "target/scripts/build/web.js",
+      "line": 1
+    },
+    "Web": {
+      "file": "target/scripts/build/web.js",
+      "line": 2
+    }
+  }
+}

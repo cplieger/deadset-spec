@@ -1,0 +1,24 @@
+{
+  "symbols": {
+    "ResetForTest": {
+      "file": "target/src/versions.ts",
+      "line": 8
+    },
+    "ResetHeldForTest": {
+      "file": "target/src/held.ts",
+      "line": 8
+    },
+    "Unsent": {
+      "file": "target/src/notify.ts",
+      "line": 5
+    },
+    "Hide": {
+      "file": "target/src/toast/view.ts",
+      "line": 5
+    },
+    "Unacted": {
+      "file": "target/src/actions/index.ts",
+      "line": 5
+    }
+  }
+}
