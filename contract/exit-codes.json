@@ -119,8 +119,8 @@
         {
           "class": "memory-exhausted",
           "products": ["deadset-go"],
-          "meaning": "The analysis needs more memory than the machine makes available. The run ends before it writes a report.",
-          "fix": "Open with \"at least N GB were needed, M GB are available\", where N is the memory the analysis was about to need when it stopped, rounded up, and M is the memory the machine made available to it, rounded down, each a decimal number with at most one digit after the point, so N is greater than M, and tell the user to run on a machine with more memory or to narrow the scope."
+          "meaning": "The analysis needs more memory than the machine makes available, even once it holds one build configuration at a time, runs one task at a time and keeps nothing it can rebuild, which it does under memory pressure before it judges whether the run fits. A run that fits only that way finishes slower and writes the same report. The run ends before it writes a report.",
+          "fix": "Open with \"at least N GB were needed, M GB are available\", where N is the least memory the analysis would have fitted in when it stopped, rounded up, and M is the memory the machine made available to it, rounded down, each a decimal number with at most one digit after the point, so N is greater than M, and tell the user to run on a machine with more memory or to narrow the scope."
         },
         {
           "class": "missing-analyzer",
