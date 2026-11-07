@@ -1,0 +1,197 @@
+{
+  "name": "custom-element-registered-through-a-wrapper",
+  "description": "A class a call hands to a wrapper whose parameter reaches the platform's customElements.define is registered: a function, an arrow function bound to a variable or to a property of an object literal, a function expression bound to a variable, a method, one with a this parameter, a wrapper calling another wrapper, a wrapper called through an import that renames it, a rest parameter spread into the call, an array a variable holds spread into the call, a conditional or a nullish-coalescing argument, a wrapper held by a property of an object literal, a class field, a shorthand property or a renamed destructured binding, a wrapper reached through a parameter typed as it, an array destructuring, a call's result or a later assignment, an arrow function with no name of its own held in an array, a conditional inside an array or an object literal argument, and a conditional argument to customElements.define itself, so the reaction callback the registry calls is retained. A class handed to a function that registers nothing keeps its callback reported.",
+  "rules": [
+    "references-ts.38",
+    "references-ts.39"
+  ],
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "ByFunction.connectedCallback",
+      "report": "none",
+      "retained_by": [
+        "framework-lifecycle"
+      ]
+    },
+    {
+      "symbol": "ByArrow.connectedCallback",
+      "report": "none",
+      "retained_by": [
+        "framework-lifecycle"
+      ]
+    },
+    {
+      "symbol": "ByMethod.connectedCallback",
+      "report": "none",
+      "retained_by": [
+        "framework-lifecycle"
+      ]
+    },
+    {
+      "symbol": "ByTwoWrappers.connectedCallback",
+      "report": "none",
+      "retained_by": [
+        "framework-lifecycle"
+      ]
+    },
+    {
+      "symbol": "ByRest.connectedCallback",
+      "report": "none",
+      "retained_by": [
+        "framework-lifecycle"
+      ]
+    },
+    {
+      "symbol": "ByProperty.connectedCallback",
+      "report": "none",
+      "retained_by": [
+        "framework-lifecycle"
+      ]
+    },
+    {
+      "symbol": "ByExpression.connectedCallback",
+      "report": "none",
+      "retained_by": [
+        "framework-lifecycle"
+      ]
+    },
+    {
+      "symbol": "ByAlias.connectedCallback",
+      "report": "none",
+      "retained_by": [
+        "framework-lifecycle"
+      ]
+    },
+    {
+      "symbol": "ByArray.connectedCallback",
+      "report": "none",
+      "retained_by": [
+        "framework-lifecycle"
+      ]
+    },
+    {
+      "symbol": "ByThis.connectedCallback",
+      "report": "none",
+      "retained_by": [
+        "framework-lifecycle"
+      ]
+    },
+    {
+      "symbol": "ByCondA.connectedCallback",
+      "report": "none",
+      "retained_by": [
+        "framework-lifecycle"
+      ]
+    },
+    {
+      "symbol": "ByCondB.connectedCallback",
+      "report": "none",
+      "retained_by": [
+        "framework-lifecycle"
+      ]
+    },
+    {
+      "symbol": "ByNullish.connectedCallback",
+      "report": "none",
+      "retained_by": [
+        "framework-lifecycle"
+      ]
+    },
+    {
+      "symbol": "ByPropCopy.connectedCallback",
+      "report": "none",
+      "retained_by": [
+        "framework-lifecycle"
+      ]
+    },
+    {
+      "symbol": "ByDirectCond.connectedCallback",
+      "report": "none",
+      "retained_by": [
+        "framework-lifecycle"
+      ]
+    },
+    {
+      "symbol": "ByField.connectedCallback",
+      "report": "none",
+      "retained_by": [
+        "framework-lifecycle"
+      ]
+    },
+    {
+      "symbol": "ByBag.connectedCallback",
+      "report": "none",
+      "retained_by": [
+        "framework-lifecycle"
+      ]
+    },
+    {
+      "symbol": "ByDestructure.connectedCallback",
+      "report": "none",
+      "retained_by": [
+        "framework-lifecycle"
+      ]
+    },
+    {
+      "symbol": "ByParam.connectedCallback",
+      "report": "none",
+      "retained_by": [
+        "framework-lifecycle"
+      ]
+    },
+    {
+      "symbol": "ByArrayCopy.connectedCallback",
+      "report": "none",
+      "retained_by": [
+        "framework-lifecycle"
+      ]
+    },
+    {
+      "symbol": "ByReturned.connectedCallback",
+      "report": "none",
+      "retained_by": [
+        "framework-lifecycle"
+      ]
+    },
+    {
+      "symbol": "ByLater.connectedCallback",
+      "report": "none",
+      "retained_by": [
+        "framework-lifecycle"
+      ]
+    },
+    {
+      "symbol": "ByAnonymous.connectedCallback",
+      "report": "none",
+      "retained_by": [
+        "framework-lifecycle"
+      ]
+    },
+    {
+      "symbol": "ByArrayBranch.connectedCallback",
+      "report": "none",
+      "retained_by": [
+        "framework-lifecycle"
+      ]
+    },
+    {
+      "symbol": "ByObjectBranch.connectedCallback",
+      "report": "none",
+      "retained_by": [
+        "framework-lifecycle"
+      ]
+    },
+    {
+      "symbol": "Described.connectedCallback",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

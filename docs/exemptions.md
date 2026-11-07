@@ -142,7 +142,7 @@ Where the project configures a dependency-injection container, a class the conta
 
 Retains: The class's constructor and every injected member: each property and accessor of the class, or of a class it extends, that carries a decorator, and each parameter property of the constructor of the class or of a class it extends.
 
-In `ts`: The class is passed to a call of a declaration `ts.injection_registrations` names, named or named through a variable whose initializer names it, or a parameter of its constructor carries a decorator. A decorated property or accessor of a class that neither route reaches makes no class container-constructed. For a class either route reaches, retain the constructor, each property and accessor that carries a decorator, and each parameter property its constructor declares, on the class and on every class it extends.
+In `ts`: The class is passed to a call of a declaration `ts.injection_registrations` names, named as grammar/analysis/references-ts.md references-ts.39 states, or a parameter of its constructor carries a decorator. A decorated property or accessor of a class that neither route reaches makes no class container-constructed. For a class either route reaches, retain the constructor, each property and accessor that carries a decorator, and each parameter property its constructor declares, on the class and on every class it extends.
 
 ## framework-lifecycle
 
@@ -150,7 +150,7 @@ Where the project declares a framework, a member whose name matches that framewo
 
 Retains: The lifecycle member.
 
-In `ts`: The project declares a framework and that framework's lifecycle member names as an entry of `ts.lifecycle_contracts`, and the platform's custom elements are declared for every project as `references-ts.38` states. A member whose name is in a contract's list is retained when its class is reachable as a component of that framework, by registration, by a decorator or by extending a declaration the entry's `bases` names. A class is registered when a call of a registration declaration passes it, named or named through a variable whose initializer names it.
+In `ts`: The project declares a framework and that framework's lifecycle member names as an entry of `ts.lifecycle_contracts`, and the platform's custom elements are declared for every project as `references-ts.38` states. A member whose name is in a contract's list is retained when its class is reachable as a component of that framework, by registration, by a decorator or by extending a declaration the entry's `bases` names. A class is registered when a call of a registration declaration passes it, as grammar/analysis/references-ts.md references-ts.39 states.
 
 ## serialization-contract
 
