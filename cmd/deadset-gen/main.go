@@ -10,8 +10,8 @@ import (
 	"os/signal"
 	"path/filepath"
 
-	"github.com/cplieger/atomicfile/v4"
 	"github.com/cplieger/deadset-spec/v8/internal/gen"
+	"github.com/cplieger/go/filesafe"
 )
 
 func main() {
@@ -49,7 +49,7 @@ func run(ctx context.Context, root string, baseline bool) error {
 		if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
 			return err
 		}
-		if _, err := atomicfile.WriteFile(ctx, path, files[name]); err != nil {
+		if _, err := filesafe.WriteFile(ctx, path, files[name]); err != nil {
 			return err
 		}
 	}

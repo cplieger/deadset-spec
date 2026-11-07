@@ -25,9 +25,9 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/cplieger/atomicfile/v4"
 	spec "github.com/cplieger/deadset-spec/v8"
 	"github.com/cplieger/deadset-spec/v8/corpus"
+	"github.com/cplieger/go/filesafe"
 )
 
 const usage = "usage: deadset-corpus run --language=LANG [--gaps=FILE] [--fixture=NAME ...] [--jobs=N] [--out=FILE] -- ANALYZER [ARG ...]\n" +
@@ -149,7 +149,7 @@ func writeResults(ctx context.Context, stdout io.Writer, out string, data []byte
 	if err != nil {
 		return err
 	}
-	_, err = atomicfile.WriteFile(ctx, absolute, data)
+	_, err = filesafe.WriteFile(ctx, absolute, data)
 	return err
 }
 
