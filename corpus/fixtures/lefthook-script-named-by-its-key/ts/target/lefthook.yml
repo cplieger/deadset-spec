@@ -1,0 +1,9 @@
+source_dir: scripts/hooks/
+pre-commit:
+  scripts:
+    "check.js":
+      runner: node
+pre-push:
+  jobs:
+    - script: push.mjs
+      runner: node

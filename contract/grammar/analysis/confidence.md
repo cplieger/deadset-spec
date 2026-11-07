@@ -1,6 +1,6 @@
 # Confidence
 
-Rules `confidence.1` to `confidence.34` of [the analysis](../analysis.md). A rule is cited by its id, which is never reused for another rule.
+Rules `confidence.1` to `confidence.35` of [the analysis](../analysis.md). A rule is cited by its id, which is never reused for another rule.
 
 ## The reachability class
 
@@ -93,3 +93,7 @@ Rules `confidence.1` to `confidence.34` of [the analysis](../analysis.md). A rul
 **confidence.33** The report's `totals.withheld` counts the findings the minimum withheld, each at the confidence this run assigns it, so its `certain` count is always 0. The text and SARIF outputs name the counts in one line with the setting that shows them, as [`text-line.md`](../text-line.md) states.
 
 **confidence.34** The minimum and the severities are read before any cross-language edge is evaluated: a finding they withhold is the dead side of no edge evaluation, and an edge evaluation names only a finding the run reports.
+
+## A file a command may run
+
+**confidence.35** A finding that a file is never built or never imported, `DS1601` or `DS1602`, about a file below the directory of a package one of whose words, as `roots.13` reads a package's command strings and values, may write the file a command runs and writes no path, `node $1`, `node ./${{ matrix.tool }}` and `$1` as a program word among them, has the reachability class `possible`, because that command may run the file and only its run knows which. Such a word holds no file, so the package's other findings keep their class but where the component cap lowers them, and the report carries the package's `unread-command` note, which `notes.7` defines.

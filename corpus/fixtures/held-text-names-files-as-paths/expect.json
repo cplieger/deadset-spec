@@ -1,0 +1,49 @@
+{
+  "name": "held-text-names-files-as-paths",
+  "description": "Held text names a file only where one of its names appears as a path in a word: a word of a workflow comment, a path a comment writes, a job key, the word a command echoes, a name inside a longer word and the action a step uses hold nothing, because no comment and no key is read, so the test-only export of the file a comment names only by a word is reported and its directive is in effect, and the unused exports of the files a comment's path, a job key, a longer word and an action reference spell are reported. A file a step's env value names by its path is held, so the directive on its test-only export is dormant, not stale.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "suppressions_in_effect": 1,
+  "notes": [
+    {
+      "kind": "unread-command",
+      "path": "."
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "ResetForTest",
+      "report": "none"
+    },
+    {
+      "symbol": "ResetHeldForTest",
+      "report": "none"
+    },
+    {
+      "symbol": "Unsent",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Hide",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Unacted",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

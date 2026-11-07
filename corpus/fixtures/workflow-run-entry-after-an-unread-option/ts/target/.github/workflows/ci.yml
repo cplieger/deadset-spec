@@ -1,0 +1,8 @@
+on: push
+permissions: {}
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - run: node -C development lint
+      - run: npx tsx@4 $TOOL

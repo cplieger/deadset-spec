@@ -1,0 +1,43 @@
+{
+  "name": "workflow-run-entry-after-an-unread-option",
+  "description": "A runtime's entry is the word its reader reads as one, and where the reader does not read an option written before it, every later word may be. A static stem there names the file the runtime tries with each extension, so that file is held and nothing it exports is reported, and a pinned runtime a package runner launches is read as that runtime, so the dynamic word after it, which writes no path, makes the package's file findings possible at most, the file's exports falling with it, with one note for the package.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "notes": [
+    {
+      "kind": "unread-command",
+      "path": "."
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "MainFile",
+      "report": "none"
+    },
+    {
+      "symbol": "LintFile",
+      "report": "none"
+    },
+    {
+      "symbol": "Lint",
+      "report": "none"
+    },
+    {
+      "symbol": "StrayFile",
+      "report": "DS1602",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "Stray",
+      "report": "DS1001",
+      "confidence": "possible",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    }
+  ]
+}

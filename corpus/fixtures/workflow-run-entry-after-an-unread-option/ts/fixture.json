@@ -1,0 +1,24 @@
+{
+  "symbols": {
+    "MainFile": {
+      "file": "target/main.js",
+      "line": 1
+    },
+    "LintFile": {
+      "file": "target/lint.js",
+      "line": 1
+    },
+    "Lint": {
+      "file": "target/lint.js",
+      "line": 2
+    },
+    "StrayFile": {
+      "file": "target/scripts/stray.js",
+      "line": 1
+    },
+    "Stray": {
+      "file": "target/scripts/stray.js",
+      "line": 2
+    }
+  }
+}

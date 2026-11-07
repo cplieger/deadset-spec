@@ -1,0 +1,28 @@
+{
+  "symbols": {
+    "MainFile": {
+      "file": "target/main.js",
+      "line": 1
+    },
+    "LintFile": {
+      "file": "target/lint.js",
+      "line": 1
+    },
+    "Lint": {
+      "file": "target/lint.js",
+      "line": 2
+    },
+    "Helper": {
+      "file": "target/lint.js",
+      "line": 4
+    },
+    "CheckFile": {
+      "file": "target/tools/check.js",
+      "line": 1
+    },
+    "Check": {
+      "file": "target/tools/check.js",
+      "line": 2
+    }
+  }
+}

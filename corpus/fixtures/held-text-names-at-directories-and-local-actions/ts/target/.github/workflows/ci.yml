@@ -1,0 +1,10 @@
+on: push
+permissions: {}
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: acme/tools@release/unacted
+      - uses: ./tools/notify
+      - run: echo "see apps/web/@app/main.js"

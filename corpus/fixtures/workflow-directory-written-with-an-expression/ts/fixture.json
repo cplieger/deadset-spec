@@ -21,11 +21,11 @@
       "line": 2
     },
     "StrayFile": {
-      "file": "target/packages/a/stray.js",
+      "file": "target/lib/stray.js",
       "line": 1
     },
     "Stray": {
-      "file": "target/packages/a/stray.js",
+      "file": "target/lib/stray.js",
       "line": 2
     }
   }

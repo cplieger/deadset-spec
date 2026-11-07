@@ -15,6 +15,14 @@
     "unused": {
       "file": "target/tools/unused.ts",
       "line": 2
+    },
+    "CheckFile": {
+      "file": "target/tools/check.ts",
+      "line": 1
+    },
+    "check": {
+      "file": "target/tools/check.ts",
+      "line": 2
     }
   }
 }

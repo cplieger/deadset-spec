@@ -1,0 +1,8 @@
+on: push
+permissions: {}
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - run: sh -c '$RUNNER lint'
+      - run: echo '$PRINTER stray'

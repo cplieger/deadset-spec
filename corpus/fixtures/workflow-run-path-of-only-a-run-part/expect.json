@@ -1,0 +1,56 @@
+{
+  "name": "workflow-run-path-of-only-a-run-part",
+  "description": "A run path whose only written text is a leading ./ before a part the run fills in, a matrix value, roots nothing and holds nothing, because it may stand for any file. Node runs whatever file the value names, so each finding that a file of the package is never imported is reported at the class possible, the rest of each such file falls with it, and the package has one note. The file the manifest names is live.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "notes": [
+    {
+      "kind": "unread-command",
+      "path": "."
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "MainFile",
+      "report": "none"
+    },
+    {
+      "symbol": "LintFile",
+      "report": "DS1602",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "Lint",
+      "report": "DS1001",
+      "confidence": "possible",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "Helper",
+      "report": "DS1002",
+      "confidence": "possible",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "CheckFile",
+      "report": "DS1602",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "Check",
+      "report": "DS1001",
+      "confidence": "possible",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    }
+  ],
+  "min_confidence": "possible"
+}

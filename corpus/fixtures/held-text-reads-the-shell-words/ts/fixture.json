@@ -1,0 +1,48 @@
+{
+  "symbols": {
+    "MainFile": {
+      "file": "target/main.js",
+      "line": 1
+    },
+    "LintFile": {
+      "file": "target/scripts/lint.js",
+      "line": 1
+    },
+    "Lint": {
+      "file": "target/scripts/lint.js",
+      "line": 2
+    },
+    "CheckFile": {
+      "file": "target/tools/check.mjs",
+      "line": 1
+    },
+    "Check": {
+      "file": "target/tools/check.mjs",
+      "line": 2
+    },
+    "WebFile": {
+      "file": "target/gen/web.js",
+      "line": 1
+    },
+    "Web": {
+      "file": "target/gen/web.js",
+      "line": 2
+    },
+    "OutFile": {
+      "file": "target/build/out.js",
+      "line": 1
+    },
+    "Out": {
+      "file": "target/build/out.js",
+      "line": 2
+    },
+    "StrayFile": {
+      "file": "target/other/stray.js",
+      "line": 1
+    },
+    "Stray": {
+      "file": "target/other/stray.js",
+      "line": 2
+    }
+  }
+}

@@ -1,0 +1,10 @@
+on:
+  push:
+    paths: ['other/**', 'other/stray.js']
+permissions: {}
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - run: ls scripts | xargs -I % node scripts/%
+      - run: find . -name '*.md' -exec cp {} docs/ \;

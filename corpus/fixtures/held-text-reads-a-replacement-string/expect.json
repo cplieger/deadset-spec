@@ -1,0 +1,42 @@
+{
+  "name": "held-text-reads-a-replacement-string",
+  "description": "A text that `xargs`, `find` or `parallel` replaces with each path it finds is a part only the run knows in each word of the command it runs, so `xargs -I % node scripts/%` holds every file below `scripts` and makes no finding possible, while `{}` in a command no runtime runs names nothing. A workflow's trigger filter names the files whose change starts it and runs none, so a file only such a filter names is reported at the class certain, and the package has one note for the file it holds.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "notes": [
+    {
+      "kind": "unread-command",
+      "path": "."
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "MainFile",
+      "report": "none"
+    },
+    {
+      "symbol": "LintFile",
+      "report": "none"
+    },
+    {
+      "symbol": "Lint",
+      "report": "none"
+    },
+    {
+      "symbol": "StrayFile",
+      "report": "DS1602",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "Stray",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    }
+  ]
+}

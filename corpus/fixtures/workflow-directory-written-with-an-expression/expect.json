@@ -1,6 +1,6 @@
 {
   "name": "workflow-directory-written-with-an-expression",
-  "description": "A step whose working-directory is written with an expression, which GitHub Actions evaluates per matrix entry, runs its command in a directory the analysis does not know, so the command roots nothing and its text holds every file it names in each directory: packages/a/build.js and packages/b/build.js are held, nothing they export is reported, and the package is noted. A file no command names is still reported.",
+  "description": "A step whose working-directory is written with an expression, which GitHub Actions evaluates per matrix entry, runs its command in a directory the analysis does not know, so the command roots nothing and its text holds every file it names in each directory: packages/a/build.js and packages/b/build.js are held, nothing they export is reported, and the package is noted. A file outside the directory the expression is written in, which no command names, is still reported.",
   "languages": [
     "ts"
   ],

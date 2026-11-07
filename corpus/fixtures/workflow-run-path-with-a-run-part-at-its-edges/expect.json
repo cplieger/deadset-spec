@@ -1,0 +1,64 @@
+{
+  "name": "workflow-run-path-with-a-run-part-at-its-edges",
+  "description": "Held text names files through a run path whose part follows a directory whose name starts with @, which is a path and not a scoped package because the part goes on with it, and through a run path that ends in a doubled separator, which names a directory as one separator does. So @tools/build-web.mjs and scripts/sub/index.js are held and nothing they export is reported, while @tools/other.mjs, which no step writes, and scripts/lint.js, which a path naming a directory does not name, are reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "notes": [
+    {
+      "kind": "unread-command",
+      "path": "."
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "MainFile",
+      "report": "none"
+    },
+    {
+      "symbol": "BuildFile",
+      "report": "none"
+    },
+    {
+      "symbol": "Build",
+      "report": "none"
+    },
+    {
+      "symbol": "SubFile",
+      "report": "none"
+    },
+    {
+      "symbol": "Sub",
+      "report": "none"
+    },
+    {
+      "symbol": "OtherFile",
+      "report": "DS1602",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "Other",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    },
+    {
+      "symbol": "LintFile",
+      "report": "DS1602",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "Lint",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function"
+    }
+  ]
+}

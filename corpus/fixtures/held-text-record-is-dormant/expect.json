@@ -1,6 +1,6 @@
 {
   "name": "held-text-record-is-dormant",
-  "description": "A word of a workflow comment, versions, is the name of a file of the program, so the held text holds that file and its exports. The directive on its test-only export is then neither in effect nor stale: a hold is a question the analysis leaves open, not evidence that the code changed, so the record is dormant, nothing is reported about the export and the run fails on no stale suppression.",
+  "description": "A workflow value, src/versions.ts, names a file of the program as a path, so the held text holds that file and its exports, while the word versions in a comment names none. The directive on its test-only export is then neither in effect nor stale: a hold is a question the analysis leaves open, not evidence that the code changed, so the record is dormant, nothing is reported about the export and the run fails on no stale suppression.",
   "languages": [
     "ts"
   ],

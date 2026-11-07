@@ -1,10 +1,16 @@
 {
   "name": "dependency-preloaded-after-a-launcher",
-  "description": "A runtime flag that preloads a module counts in a command whose program is node behind a launcher the analysis reads: env with -- and -u, cross-env with an assignment, and npx with --yes, -p and a -c command. A command the analysis does not read, behind env -S or an npx option that is not one of the few it reads, as --version is, is held: the dependency its text names is used, so no dependency a command names is reported.",
+  "description": "A runtime flag that preloads a module counts in a command whose program is node behind a launcher the analysis reads: env with -- and -u, cross-env with an assignment, npx with --yes, -p and a -c command, and env -S, whose value env splits in place before its later words. A command behind an npx option the analysis does not read, as --version is, is held: the dependency its text names is used, so no dependency a command names is reported, and since an option no table lists may run any file, the manifest is noted.",
   "languages": [
     "ts"
   ],
   "target_kind": "application",
+  "notes": [
+    {
+      "kind": "unread-command",
+      "path": "."
+    }
+  ],
   "expect": [
     {
       "symbol": "TsNode",

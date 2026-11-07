@@ -1,0 +1,51 @@
+{
+  "name": "held-text-names-at-directories-and-local-actions",
+  "description": "Held text names a file through a directory whose name starts with @ past a path's first segment, and a local action's uses: value names the index file of the directory it writes, so apps/web/@app/main.js and tools/notify/index.js are held and nothing they export is reported. An action in another repository names no file, even where its ref ends in a file's name, so unacted.js, which uses: acme/tools@release/unacted would otherwise name and nothing imports, and its unused export are reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "notes": [
+    {
+      "kind": "unread-command",
+      "path": "."
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "MainFile",
+      "report": "none"
+    },
+    {
+      "symbol": "AppFile",
+      "report": "none"
+    },
+    {
+      "symbol": "App",
+      "report": "none"
+    },
+    {
+      "symbol": "NotifyFile",
+      "report": "none"
+    },
+    {
+      "symbol": "Notify",
+      "report": "none"
+    },
+    {
+      "symbol": "UnactedFile",
+      "report": "DS1602",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file"
+    },
+    {
+      "symbol": "Unacted",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}
