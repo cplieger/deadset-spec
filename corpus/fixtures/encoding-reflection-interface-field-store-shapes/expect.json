@@ -1,0 +1,51 @@
+{
+  "name": "encoding-reflection-interface-field-store-shapes",
+  "description": "A value the program stores in an interface-typed field, element or value of a type an encoder walks reaches the encoder whatever expression stores it: a conversion to an interface type, a call of several results assigned to the field or to an index of a container, a call returning a container of interface values, and a variable the value was first stored in. Each such type keeps the fields the encoder reads. A value stored the same way in a struct nothing encodes keeps nothing, and its field written once is reported write-only.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "converted.A",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "paired.B",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "indexed.C",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "listed.D",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "held.E",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "unsent.F",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    }
+  ]
+}
