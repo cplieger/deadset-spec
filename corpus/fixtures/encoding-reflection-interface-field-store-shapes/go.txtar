@@ -1,0 +1,110 @@
+The Go rendering: a command that fills the interface-typed fields of a body
+through a conversion, calls of two results, a call returning a slice and a
+variable, hands the body to the encoder in another interface-typed field, and
+fills a struct nothing encodes the same way.
+
+-- fixture.json --
+{
+  "symbols": {
+    "converted.A": { "file": "target/main.go", "line": 35 },
+    "paired.B": { "file": "target/main.go", "line": 40 },
+    "indexed.C": { "file": "target/main.go", "line": 45 },
+    "listed.D": { "file": "target/main.go", "line": 50 },
+    "held.E": { "file": "target/main.go", "line": 55 },
+    "unsent.F": { "file": "target/main.go", "line": 60 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target encodes one request whose body carries values in its
+// interface-typed fields.
+package main
+
+import (
+	"encoding/json"
+	"os"
+)
+
+// request carries its body in an interface-typed field, as a client hands it to the encoder.
+type request struct {
+	Body any `json:"body"`
+}
+
+// body is what the request carries.
+type body struct {
+	To    any            `json:"to"`
+	Items []any          `json:"items"`
+	Named map[string]any `json:"named"`
+	Inner inner          `json:"inner"`
+}
+
+// inner holds one more value.
+type inner struct {
+	Held any `json:"held"`
+}
+
+// kept is like body, and nothing encodes it.
+type kept struct {
+	To any
+}
+
+// converted reaches body.To through a conversion to any.
+type converted struct {
+	A string `json:"a"`
+}
+
+// paired reaches body.To through a call of two results.
+type paired struct {
+	B string `json:"b"`
+}
+
+// indexed reaches body.Named through a call of two results assigned to an index.
+type indexed struct {
+	C string `json:"c"`
+}
+
+// listed reaches body.Items through a slice a call returns.
+type listed struct {
+	D string `json:"d"`
+}
+
+// held reaches inner.Held through a variable.
+type held struct {
+	E string `json:"e"`
+}
+
+// unsent is stored in a kept, which nothing encodes.
+type unsent struct {
+	F string
+}
+
+func pair(s string) (any, error) { return &paired{B: s}, nil }
+
+func index(s string) (any, error) { return &indexed{C: s}, nil }
+
+func list() []any { return []any{&listed{D: "d"}} }
+
+func main() {
+	var b body
+	var err error
+	b.To = any(&converted{A: "a"})
+	if b.To, err = pair(os.Args[0]); err != nil {
+		panic(err)
+	}
+	b.Named = map[string]any{}
+	if b.Named["c"], err = index(os.Args[0]); err != nil {
+		panic(err)
+	}
+	b.Items = list()
+	var v any = &held{E: "e"}
+	b.Inner.Held = v
+	k := kept{}
+	k.To = &unsent{F: "f"}
+	println(k.To != nil)
+	if err := json.NewEncoder(os.Stdout).Encode(request{Body: b}); err != nil {
+		panic(err)
+	}
+}

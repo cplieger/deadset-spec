@@ -1,0 +1,40 @@
+{
+  "name": "go-test-entry-point-another-test-calls",
+  "description": "The Go test driver finds a test, a benchmark, a fuzz test and an example by its exported name, so none of them is reported as an unnecessary export when another test of its package calls it by name too. An exported function of the command that main and the same test call is no entry point, and its export is reported as unnecessary.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Run",
+      "report": "DS1501",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "details": {
+        "narrower_visibility": "package"
+      }
+    },
+    {
+      "symbol": "TestA",
+      "report": "none"
+    },
+    {
+      "symbol": "TestB",
+      "report": "none"
+    },
+    {
+      "symbol": "BenchmarkC",
+      "report": "none"
+    },
+    {
+      "symbol": "FuzzD",
+      "report": "none"
+    },
+    {
+      "symbol": "Example",
+      "report": "none"
+    }
+  ]
+}

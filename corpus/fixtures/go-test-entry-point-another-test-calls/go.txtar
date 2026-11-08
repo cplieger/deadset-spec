@@ -1,0 +1,52 @@
+The Go rendering: a command whose test file holds one test that runs the file's
+other entry points as its own steps, and calls the command's exported function.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Run": { "file": "target/main.go", "line": 6 },
+    "TestA": { "file": "target/main_test.go", "line": 6 },
+    "TestB": { "file": "target/main_test.go", "line": 15 },
+    "BenchmarkC": { "file": "target/main_test.go", "line": 18 },
+    "FuzzD": { "file": "target/main_test.go", "line": 21 },
+    "Example": { "file": "target/main_test.go", "line": 24 }
+  }
+}
+-- target/go.mod --
+module example.com/app
+
+go 1.27.0
+-- target/main.go --
+package main
+
+func main() { Run() }
+
+// Run is no entry point: main and TestA call it, so its export reaches nobody.
+func Run() {}
+-- target/main_test.go --
+package main
+
+import "testing"
+
+// TestA runs the file's other entry points as its own steps, and Run.
+func TestA(t *testing.T) {
+	TestB(t)
+	BenchmarkC(nil)
+	FuzzD(nil)
+	Example()
+	Run()
+}
+
+// TestB is a test the driver runs, and TestA calls it by name too.
+func TestB(t *testing.T) {}
+
+// BenchmarkC is a benchmark the driver runs.
+func BenchmarkC(b *testing.B) {}
+
+// FuzzD is a fuzz test the driver runs.
+func FuzzD(f *testing.F) {}
+
+// Example is the package example the driver runs.
+func Example() {
+	// Output:
+}

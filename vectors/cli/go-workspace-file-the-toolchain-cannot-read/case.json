@@ -1,0 +1,14 @@
+{
+  "description": "A Go workspace file the toolchain cannot parse is the project's to correct: analyzing a member of it, the Go analyzer ends with exit code 3 and the setup failure unreadable-configuration naming the file and the toolchain's error, never a product fault, as setup-failures.15 states.",
+  "products": ["deadset-go"],
+  "rename": {
+    "app/go.mod.txt": "app/go.mod",
+    "app/main.go.txt": "app/main.go"
+  },
+  "argv": ["analyze", "--target=@TARGET@/app", "--report=@OUT@/report.json"],
+  "expect": {
+    "exit": 3,
+    "stderr_contains": ["setup failure: unreadable-configuration: ", "go.work", "unknown directive: unknowndirective"],
+    "report": "absent"
+  }
+}

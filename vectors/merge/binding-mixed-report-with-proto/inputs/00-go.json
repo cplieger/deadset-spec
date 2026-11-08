@@ -13,7 +13,7 @@
       "9.0.0"
     ],
     "conformance": {
-      "corpus_version": "6.0.0",
+      "corpus_version": "6.1.0",
       "result": "pass",
       "digest": "sha256:6f3ec32716440839d537ebca9502e2208ab32c6d61c461521aa0734726815a90"
     }

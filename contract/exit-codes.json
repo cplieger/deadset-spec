@@ -70,8 +70,8 @@
         },
         {
           "class": "unreadable-configuration",
-          "languages": ["ts"],
-          "meaning": "A compiler configuration the run opens is present and the compiler cannot read it: it does not parse, names an option or a value the compiler refuses, extends a file the compiler cannot read, or its extends chain returns to a configuration it already passed.",
+          "languages": ["go", "ts"],
+          "meaning": "A compiler configuration the run opens is present and the compiler cannot read it: it does not parse, names an option or a value the compiler refuses, extends a file the compiler cannot read, or its extends chain returns to a configuration it already passed. For Go, the configuration is a module file or a workspace file the toolchain cannot parse.",
           "fix": "Name the configuration and the compiler's error, and tell the user to correct the configuration, or to name the configurations to analyze."
         },
         {
