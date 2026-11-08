@@ -10,6 +10,7 @@ import (
 	"path"
 	"path/filepath"
 	"reflect"
+	"runtime"
 	"slices"
 	"strings"
 
@@ -80,6 +81,10 @@ func RunCases(ctx context.Context, vectors fs.FS, product string, analyzer Analy
 		if !slices.Contains(c.Products, product) {
 			continue
 		}
+		if reason := unrunnable(c, &analyzer, runtime.GOOS); reason != "" {
+			results = append(results, CaseResult{Case: entry.Name(), Result: Unsupported, Message: reason})
+			continue
+		}
 		message, err := runCase(ctx, vectors, entry.Name(), c, product, analyzer)
 		if err != nil {
 			return nil, fmt.Errorf("%s: %w", entry.Name(), err)
@@ -94,6 +99,22 @@ func RunCases(ctx context.Context, vectors fs.FS, product string, analyzer Analy
 		results = append(results, result)
 	}
 	return results, nil
+}
+
+// unrunnable is why a host of operating system goos cannot run case c through
+// analyzer, or "": Windows starts no #! script, which every stub a case makes
+// executable is, and delivers no interrupt to another process (os.Process.Signal).
+func unrunnable(c *Case, analyzer *Analyzer, goos string) string {
+	if goos != "windows" {
+		return ""
+	}
+	switch {
+	case len(c.Executables) > 0:
+		return "the case's executables are #! scripts, which " + goos + " does not start"
+	case c.Interrupt != "" && analyzer.InProcess == nil:
+		return goos + " delivers no interrupt to another process"
+	}
+	return ""
 }
 
 // readCase decodes one case's case.json strictly.
@@ -166,9 +187,11 @@ func runOnce(ctx context.Context, vectors fs.FS, name string, c *Case, argv []st
 }
 
 // copyTree copies a case's tree to dir, naming each file its rename gives it,
-// writing @TARGET@ in its text as dir and making each of its executables one.
+// writing @TARGET@ in its text as dir in forward slashes and making each of its
+// executables one. Every operating system's paths accept forward slashes, and a
+// backslash would open an escape in a JSON or shell file.
 func copyTree(vectors fs.FS, root, dir string, c *Case) error {
-	replace := strings.NewReplacer("@TARGET@", dir)
+	replace := strings.NewReplacer("@TARGET@", filepath.ToSlash(dir))
 	return fs.WalkDir(vectors, root, func(p string, d fs.DirEntry, err error) error {
 		if err != nil || d.IsDir() {
 			return err

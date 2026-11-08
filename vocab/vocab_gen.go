@@ -850,6 +850,7 @@ const (
 	RunUnwrittenOutput    = "unwritten-output"
 	RunUnreportablePath   = "unreportable-path"
 	RunMemoryExhausted    = "memory-exhausted"
+	RunMissingToolchain   = "missing-toolchain"
 	RunMissingAnalyzer    = "missing-analyzer"
 	RunUnadmittedAnalyzer = "unadmitted-analyzer"
 	RunUnresolvedEdge     = "unresolved-edge"
@@ -881,6 +882,7 @@ var runClasses = []RunClass{
 	{Name: RunUnwrittenOutput, Products: []string{"deadset", "deadset-go", "deadset-ts"}},
 	{Name: RunUnreportablePath, Products: []string{"deadset-go", "deadset-ts"}},
 	{Name: RunMemoryExhausted, Products: []string{"deadset-go"}},
+	{Name: RunMissingToolchain, Products: []string{"deadset-go"}},
 	{Name: RunMissingAnalyzer, Products: []string{"deadset"}},
 	{Name: RunUnadmittedAnalyzer, Products: []string{"deadset"}},
 	{Name: RunUnresolvedEdge, Products: []string{"deadset"}},

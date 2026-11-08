@@ -1,0 +1,23 @@
+{
+  "description": "A scope document the invocation names that is not one instance of the scope schema ends the run with the usage code 2, the file named, before any analysis.",
+  "products": [
+    "deadset-go"
+  ],
+  "rename": {
+    "go.mod.txt": "go.mod",
+    "main.go.txt": "main.go"
+  },
+  "argv": [
+    "analyze",
+    "--target=@TARGET@",
+    "--scope=@TARGET@/scope.json",
+    "--report=@OUT@/report.json"
+  ],
+  "expect": {
+    "exit": 2,
+    "stderr_contains": [
+      "scope.json"
+    ],
+    "report": "absent"
+  }
+}

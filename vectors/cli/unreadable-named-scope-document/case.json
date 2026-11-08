@@ -2,6 +2,7 @@
   "description": "A scope document the invocation names that cannot be read ends the run with the usage code 2, the file named, before any analysis.",
   "products": [
     "deadset",
+    "deadset-go",
     "deadset-ts"
   ],
   "argv": [
@@ -10,6 +11,12 @@
     "--scope=@TARGET@/missing-scope.json"
   ],
   "argv_by_product": {
+    "deadset-go": [
+      "analyze",
+      "--target=@TARGET@",
+      "--scope=@TARGET@/missing-scope.json",
+      "--report=@OUT@/report.json"
+    ],
     "deadset-ts": [
       "analyze",
       "--target=@TARGET@",

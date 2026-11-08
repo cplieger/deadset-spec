@@ -1,0 +1,26 @@
+{
+  "description": "A run whose search path holds no go command ends with exit code 3 and the run failure missing-toolchain naming the command, before any report is written.",
+  "products": [
+    "deadset-go"
+  ],
+  "rename": {
+    "go.mod.txt": "go.mod",
+    "main.go.txt": "main.go"
+  },
+  "env": {
+    "PATH": "@TARGET@/bin"
+  },
+  "argv": [
+    "analyze",
+    "--target=@TARGET@",
+    "--report=@OUT@/report.json"
+  ],
+  "expect": {
+    "exit": 3,
+    "stderr_contains": [
+      "run failure: missing-toolchain: ",
+      "go"
+    ],
+    "report": "absent"
+  }
+}

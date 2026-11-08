@@ -6,6 +6,7 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"runtime"
 	"slices"
 	"strings"
 	"testing"
@@ -542,5 +543,58 @@ func TestRunAnswersAnInProcessProductAndHandsEveryProductFacts(t *testing.T) {
 	differing.Expect.Facts[1].Report = "DS1801"
 	if got := r.answerFixture(t.Context(), differing); got.Result != Fail || !strings.Contains(got.Message, "finding want DS1801") {
 		t.Errorf("answerFixture(a facts entry the document answers otherwise) = %+v, want a failure naming the finding", got)
+	}
+}
+
+func TestCopyTreeWritesTheTargetInATreeFileAsAJSONStringHoldsIt(t *testing.T) {
+	vectors := fstest.MapFS{"vectors/cli/doc/tree/scope.json": {Data: []byte(`{"target": {"path": "@TARGET@/lib"}}`)}}
+	dir := filepath.Join(t.TempDir(), "target")
+	if err := copyTree(vectors, "vectors/cli/doc/tree", dir, &Case{}); err != nil {
+		t.Fatalf("copyTree = %v", err)
+	}
+	data, err := os.ReadFile(filepath.Join(dir, "scope.json"))
+	if err != nil {
+		t.Fatalf("Setup: %v", err)
+	}
+	var doc struct {
+		Target struct{ Path string } `json:"target"`
+	}
+	if err := json.Unmarshal(data, &doc); err != nil || filepath.Clean(doc.Target.Path) != filepath.Join(dir, "lib") {
+		t.Errorf("copyTree wrote %s (decode: %v), want a JSON document naming %s", data, err, filepath.Join(dir, "lib"))
+	}
+}
+
+func TestACaseNeedingAScriptOrAnInterruptToAProcessIsUnsupportedOnWindows(t *testing.T) {
+	inProcess := Analyzer{InProcess: func(context.Context, string, []string) ([]byte, string, int) { return nil, "", 0 }}
+	tests := []struct {
+		name, goos string
+		c          Case
+		analyzer   Analyzer
+		want       string
+	}{
+		{"executables on windows", "windows", Case{Executables: []string{"bin/go"}}, Analyzer{}, "#! scripts"},
+		{"executables run in process on windows", "windows", Case{Executables: []string{"bin/go"}}, inProcess, "#! scripts"},
+		{"an interrupt to a process on windows", "windows", Case{Interrupt: "@TARGET@/started"}, Analyzer{}, "no interrupt"},
+		{"an interrupt in process on windows", "windows", Case{Interrupt: "@TARGET@/started"}, inProcess, ""},
+		{"executables and an interrupt on darwin", "darwin", Case{Executables: []string{"bin/go"}, Interrupt: "@TARGET@/started"}, Analyzer{}, ""},
+		{"a plain case on windows", "windows", Case{}, Analyzer{}, ""},
+	}
+	for _, tc := range tests {
+		got := unrunnable(&tc.c, &tc.analyzer, tc.goos)
+		if tc.want == "" && got != "" || !strings.Contains(got, tc.want) {
+			t.Errorf("unrunnable(%s) = %q, want %q", tc.name, got, tc.want)
+		}
+	}
+	vectors := fstest.MapFS{
+		"vectors/cli/stub/case.json":     {Data: []byte(`{"description": "d", "products": ["p"], "argv": ["x"], "executables": ["bin/stub"], "expect": {"exit": 0}}`)},
+		"vectors/cli/stub/tree/bin/stub": {Data: []byte("#!/bin/sh\n")},
+	}
+	got, err := RunCases(t.Context(), vectors, "p", Analyzer{Command: []string{"/bin/sh", "-c", "./bin/stub"}})
+	want := Pass
+	if runtime.GOOS == "windows" {
+		want = Unsupported
+	}
+	if err != nil || len(got) != 1 || got[0].Result != want {
+		t.Errorf("RunCases(a case with an executable stub) on %s = %+v, %v, want %s", runtime.GOOS, got, err, want)
 	}
 }
