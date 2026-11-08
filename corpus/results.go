@@ -8,12 +8,14 @@ import (
 	"slices"
 )
 
-// The results a fixture and an expectation end as.
+// The results a fixture and an expectation end as, and Unsupported a command-line
+// case the host cannot run.
 const (
-	Pass    = "pass"
-	Gap     = "gap"
-	Fail    = "fail"
-	Pending = "pending"
+	Pass        = "pass"
+	Gap         = "gap"
+	Fail        = "fail"
+	Pending     = "pending"
+	Unsupported = "unsupported"
 )
 
 // Gaps is the conformance.json a product commits: the capabilities it declines.
