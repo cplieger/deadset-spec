@@ -1,0 +1,64 @@
+{
+  "name": "exemption-values-through-function-methods-and-this",
+  "description": "A class a call through Function.prototype's call, apply or bind hands to customElements.define, directly or through a wrapper, is registered, so the reaction callback the registry calls is retained. Of an && argument only the right operand is passed, because the left is its value only where it is falsy, so the left operand's class keeps its callback reported. A value of a class's polymorphic this type passed to JSON.stringify is an instance of the class, so the class's data member is retained.",
+  "rules": [
+    "references-ts.38",
+    "references-ts.39"
+  ],
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "ByCall.connectedCallback",
+      "report": "none",
+      "retained_by": [
+        "framework-lifecycle"
+      ]
+    },
+    {
+      "symbol": "ByApply.connectedCallback",
+      "report": "none",
+      "retained_by": [
+        "framework-lifecycle"
+      ]
+    },
+    {
+      "symbol": "ByBind.connectedCallback",
+      "report": "none",
+      "retained_by": [
+        "framework-lifecycle"
+      ]
+    },
+    {
+      "symbol": "ByWrapper.connectedCallback",
+      "report": "none",
+      "retained_by": [
+        "framework-lifecycle"
+      ]
+    },
+    {
+      "symbol": "ByRight.connectedCallback",
+      "report": "none",
+      "retained_by": [
+        "framework-lifecycle"
+      ]
+    },
+    {
+      "symbol": "ByLeft.connectedCallback",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Record.key",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    }
+  ]
+}

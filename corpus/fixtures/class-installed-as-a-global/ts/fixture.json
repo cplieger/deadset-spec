@@ -1,0 +1,60 @@
+{
+  "symbols": {
+    "ByGlobalThis.send": {
+      "file": "target/src/main.ts",
+      "line": 5
+    },
+    "ByGlobalThis.spare": {
+      "file": "target/src/main.ts",
+      "line": 8
+    },
+    "ByWindow.send": {
+      "file": "target/src/main.ts",
+      "line": 12
+    },
+    "ByWindow.spare": {
+      "file": "target/src/main.ts",
+      "line": 15
+    },
+    "BySelf.send": {
+      "file": "target/src/main.ts",
+      "line": 19
+    },
+    "BySelf.spare": {
+      "file": "target/src/main.ts",
+      "line": 22
+    },
+    "ByErasedReceiver.send": {
+      "file": "target/src/main.ts",
+      "line": 26
+    },
+    "ByErasedReceiver.spare": {
+      "file": "target/src/main.ts",
+      "line": 29
+    },
+    "ByDefineProperty.send": {
+      "file": "target/src/main.ts",
+      "line": 33
+    },
+    "ByDefineProperty.spare": {
+      "file": "target/src/main.ts",
+      "line": 36
+    },
+    "ByStubGlobal.send": {
+      "file": "target/src/main.ts",
+      "line": 40
+    },
+    "ByStubGlobal.spare": {
+      "file": "target/src/main.ts",
+      "line": 43
+    },
+    "ByReplaceProperty.send": {
+      "file": "target/src/main.ts",
+      "line": 47
+    },
+    "ByReplaceProperty.spare": {
+      "file": "target/src/main.ts",
+      "line": 50
+    }
+  }
+}
