@@ -1,0 +1,22 @@
+{
+  "description": "A target the invocation names that does not exist ends the run with the usage code 2, the target named, before any configuration is read or any analysis runs.",
+  "products": [
+    "deadset-go"
+  ],
+  "rename": {
+    "go.mod.txt": "go.mod",
+    "main.go.txt": "main.go"
+  },
+  "argv": [
+    "analyze",
+    "--target=@TARGET@/absent",
+    "--report=@OUT@/report.json"
+  ],
+  "expect": {
+    "exit": 2,
+    "stderr_contains": [
+      "absent"
+    ],
+    "report": "absent"
+  }
+}

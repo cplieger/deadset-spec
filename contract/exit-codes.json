@@ -14,7 +14,7 @@
     {
       "code": 2,
       "name": "usage",
-      "meaning": "The invocation is malformed, no configuration source supplies the target kind, a configuration source names a key the product does not implement, an explanation request names a symbol that does not exist, a file the invocation names, a configuration document, a scope document or a template, cannot be read, a template the invocation names does not parse, or the invocation gives a verb an option its closed list in contract/cli.json does not name, a request to edit source among them. The usage text is printed and no analysis runs."
+      "meaning": "The invocation is malformed, no configuration source supplies the target kind, a configuration source names a key the product does not implement, an explanation request names a symbol that does not exist, a target the invocation names is not an existing directory, a file the invocation names, a configuration document, a scope document or a template, cannot be read, a template the invocation names does not parse, or the invocation gives a verb an option its closed list in contract/cli.json does not name, a request to edit source among them. The usage text is printed and no analysis runs."
     },
     {
       "code": 3,
