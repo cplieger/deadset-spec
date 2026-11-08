@@ -1,0 +1,32 @@
+{
+  "symbols": {
+    "ByCall.connectedCallback": {
+      "file": "target/src/main.ts",
+      "line": 2
+    },
+    "ByApply.connectedCallback": {
+      "file": "target/src/main.ts",
+      "line": 6
+    },
+    "ByBind.connectedCallback": {
+      "file": "target/src/main.ts",
+      "line": 10
+    },
+    "ByWrapper.connectedCallback": {
+      "file": "target/src/main.ts",
+      "line": 14
+    },
+    "ByLeft.connectedCallback": {
+      "file": "target/src/main.ts",
+      "line": 18
+    },
+    "ByRight.connectedCallback": {
+      "file": "target/src/main.ts",
+      "line": 22
+    },
+    "Record.key": {
+      "file": "target/src/main.ts",
+      "line": 26
+    }
+  }
+}
