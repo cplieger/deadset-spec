@@ -4,6 +4,7 @@
     "deadset"
   ],
   "rename": {
+    "buf-gen.yaml.txt": "buf.gen.yaml",
     "go.mod.txt": "go.mod",
     "main.go.txt": "main.go",
     "tsconfig.json.txt": "tsconfig.json"

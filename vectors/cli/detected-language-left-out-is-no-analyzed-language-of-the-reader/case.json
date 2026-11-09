@@ -4,6 +4,7 @@
     "deadset"
   ],
   "rename": {
+    "buf-gen.yaml.txt": "buf.gen.yaml",
     "tsconfig.json.txt": "tsconfig.json"
   },
   "stubs": [
