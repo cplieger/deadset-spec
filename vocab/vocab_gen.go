@@ -7,7 +7,7 @@ const (
 	ContractVersion = "8.0.0"
 	SchemaVersion   = "9.0.0"
 	FactsVersion    = "1.0.0"
-	CorpusVersion   = "6.1.0"
+	CorpusVersion   = "6.2.0"
 	Prefix          = "DS"
 )
 

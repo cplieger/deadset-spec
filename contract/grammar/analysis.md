@@ -12,7 +12,7 @@ Each family of rules is one page, and each rule is a numbered paragraph cited by
 | [The build matrix](analysis/matrix.md) | The derived Go matrix |
 | [Test code](analysis/tests.md) | Test code |
 | [References in Go](analysis/references-go.md) | Uses through memory layout, Conversions an outside program writes, References in Go, Schema bindings in Go |
-| [References in TypeScript](analysis/references-ts.md) | References in TypeScript, Module URLs, Module namespace objects, Module declarations, Overrides of outside classes, Overrides in the target's own classes, Members reached through types, Object spreads, Indexed-access types, Element access by a literal type, Schema bindings in TypeScript |
+| [References in TypeScript](analysis/references-ts.md) | References in TypeScript, Module URLs, Module namespace objects, Module declarations, Overrides of outside classes, Overrides in the target's own classes, Members reached through types, Object spreads, Indexed-access types, Element access by a literal type, Schema bindings in TypeScript, Literal requires, Generated output in TypeScript, AMD modules, Custom elements, Globals a program installs, Serialized values whose type is not concrete |
 | [Roots](analysis/roots.md) | Roots, Configuration files by name, Strings in configuration, Script entries, Workflow steps, Manifest entries, Release tags, HTML entry files, Markdown and MDX documents, Computed loads, Type-query aliases, Go packages no build links, Go generators |
 | [Convention rows](analysis/conventions.md) | Convention rows |
 | [Confidence](analysis/confidence.md) | Confidence |

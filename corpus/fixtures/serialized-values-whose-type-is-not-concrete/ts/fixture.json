@@ -1,0 +1,64 @@
+{
+  "symbols": {
+    "Frozen.secret": {
+      "file": "target/src/main.ts",
+      "line": 4
+    },
+    "Frozen.id": {
+      "file": "target/src/main.ts",
+      "line": 5
+    },
+    "Copied.secret": {
+      "file": "target/src/main.ts",
+      "line": 8
+    },
+    "Copied.id": {
+      "file": "target/src/main.ts",
+      "line": 9
+    },
+    "Boxed.secret": {
+      "file": "target/src/main.ts",
+      "line": 12
+    },
+    "Boxed.id": {
+      "file": "target/src/main.ts",
+      "line": 13
+    },
+    "Deep.secret": {
+      "file": "target/src/main.ts",
+      "line": 16
+    },
+    "Deep.id": {
+      "file": "target/src/main.ts",
+      "line": 17
+    },
+    "Stored.secret": {
+      "file": "target/src/main.ts",
+      "line": 20
+    },
+    "Stored.id": {
+      "file": "target/src/main.ts",
+      "line": 21
+    },
+    "Base.base": {
+      "file": "target/src/main.ts",
+      "line": 24
+    },
+    "Derived.secret": {
+      "file": "target/src/main.ts",
+      "line": 30
+    },
+    "Derived.id": {
+      "file": "target/src/main.ts",
+      "line": 31
+    },
+    "Precise.secret": {
+      "file": "target/src/main.ts",
+      "line": 34
+    },
+    "Precise.id": {
+      "file": "target/src/main.ts",
+      "line": 35
+    }
+  }
+}

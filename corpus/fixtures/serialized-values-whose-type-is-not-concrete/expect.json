@@ -1,0 +1,116 @@
+{
+  "name": "serialized-values-whose-type-is-not-concrete",
+  "description": "A value that reaches a serializer through an argument whose static type is not fully concrete holds back every data member of every class the value can be, a private one included: a library's mapped result, an outside result the checker infers through a mapped place, an outside place whose mapped type's template is an object type over a type parameter, a type parameter four type arguments deep, a class's type parameter, and a polymorphic this whose value is an instance of a class that extends its class. A fully concrete argument keeps the precise reach, so a member an object literal does not carry is reported.",
+  "rules": [
+    "references-ts.41"
+  ],
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Frozen.secret",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    },
+    {
+      "symbol": "Frozen.id",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    },
+    {
+      "symbol": "Copied.secret",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    },
+    {
+      "symbol": "Copied.id",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    },
+    {
+      "symbol": "Boxed.secret",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    },
+    {
+      "symbol": "Boxed.id",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    },
+    {
+      "symbol": "Deep.secret",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    },
+    {
+      "symbol": "Deep.id",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    },
+    {
+      "symbol": "Stored.secret",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    },
+    {
+      "symbol": "Stored.id",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    },
+    {
+      "symbol": "Base.base",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    },
+    {
+      "symbol": "Derived.secret",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    },
+    {
+      "symbol": "Derived.id",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    },
+    {
+      "symbol": "Precise.secret",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "class-member",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Precise.id",
+      "report": "none"
+    }
+  ]
+}
