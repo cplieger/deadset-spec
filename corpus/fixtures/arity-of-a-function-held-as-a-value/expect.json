@@ -1,0 +1,53 @@
+{
+  "name": "arity-of-a-function-held-as-a-value",
+  "description": "A function's length counts each parameter before the first one with a default or a rest, and code holding the function may read it, so in a JavaScript package an unread parameter the length counts is reported at probable in a function passed as a value, an unread parameter after a default keeps its class, a function whose length the program reads through its own name reports no parameter, and a function only called by name reports its unread parameter at certain.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "HeldSecond",
+      "report": "DS1401",
+      "confidence": "probable",
+      "reachability_class": "probable",
+      "symbol_kind": "parameter",
+      "details": {
+        "overlap": [
+          "tsc --noUnusedParameters",
+          "@typescript-eslint/no-unused-vars"
+        ]
+      }
+    },
+    {
+      "symbol": "UncountedThird",
+      "report": "DS1401",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "parameter",
+      "details": {
+        "overlap": [
+          "tsc --noUnusedParameters",
+          "@typescript-eslint/no-unused-vars"
+        ]
+      }
+    },
+    {
+      "symbol": "MeasuredSecond",
+      "report": "none"
+    },
+    {
+      "symbol": "LocalSecond",
+      "report": "DS1401",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "parameter",
+      "details": {
+        "overlap": [
+          "tsc --noUnusedParameters",
+          "@typescript-eslint/no-unused-vars"
+        ]
+      }
+    }
+  ]
+}

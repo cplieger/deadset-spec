@@ -1,0 +1,20 @@
+{
+  "symbols": {
+    "HeldSecond": {
+      "file": "target/main.js",
+      "line": 17
+    },
+    "UncountedThird": {
+      "file": "target/main.js",
+      "line": 20
+    },
+    "MeasuredSecond": {
+      "file": "target/main.js",
+      "line": 7
+    },
+    "LocalSecond": {
+      "file": "target/main.js",
+      "line": 12
+    }
+  }
+}

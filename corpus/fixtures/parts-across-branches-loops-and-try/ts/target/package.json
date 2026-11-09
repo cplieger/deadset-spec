@@ -1,0 +1,6 @@
+{
+  "name": "@example/flow",
+  "private": true,
+  "type": "module",
+  "exports": "./main.ts"
+}

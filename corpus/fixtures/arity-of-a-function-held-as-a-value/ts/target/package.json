@@ -1,0 +1,6 @@
+{
+  "name": "@example/arity",
+  "private": true,
+  "type": "module",
+  "main": "main.js"
+}

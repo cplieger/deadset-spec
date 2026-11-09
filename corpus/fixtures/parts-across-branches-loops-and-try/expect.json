@@ -1,0 +1,100 @@
+{
+  "name": "parts-across-branches-loops-and-try",
+  "description": "A write is a dead store where every path from it reaches another write before any read: both branches of an if statement, the code after a loop, and the next clause a switch clause falls into overwrite it, while a branch with no write keeps it. A statement after a try statement whose block leaves through its finally block is unreachable, and one after a catch block that falls through is not.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "library",
+  "expect": [
+    {
+      "symbol": "BranchesOverwrite",
+      "report": "DS1404",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "store",
+      "details": {
+        "overlap": [
+          "eslint no-useless-assignment",
+          "@typescript-eslint/no-unused-vars"
+        ]
+      }
+    },
+    {
+      "symbol": "BranchMayKeep",
+      "report": "none"
+    },
+    {
+      "symbol": "LoopInitial",
+      "report": "DS1404",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "store",
+      "details": {
+        "overlap": [
+          "eslint no-useless-assignment",
+          "@typescript-eslint/no-unused-vars"
+        ]
+      }
+    },
+    {
+      "symbol": "LoopWrite",
+      "report": "DS1404",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "store",
+      "details": {
+        "overlap": [
+          "eslint no-useless-assignment",
+          "@typescript-eslint/no-unused-vars"
+        ]
+      }
+    },
+    {
+      "symbol": "SwitchInitial",
+      "report": "DS1404",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "store",
+      "details": {
+        "overlap": [
+          "eslint no-useless-assignment",
+          "@typescript-eslint/no-unused-vars"
+        ]
+      }
+    },
+    {
+      "symbol": "FallThroughWrite",
+      "report": "DS1404",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "store",
+      "details": {
+        "overlap": [
+          "eslint no-useless-assignment",
+          "@typescript-eslint/no-unused-vars"
+        ]
+      }
+    },
+    {
+      "symbol": "SwitchBreakWrite",
+      "report": "none"
+    },
+    {
+      "symbol": "AfterTryFinally",
+      "report": "DS1405",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "statement",
+      "details": {
+        "overlap": [
+          "tsc allowUnreachableCode",
+          "eslint no-unreachable"
+        ]
+      }
+    },
+    {
+      "symbol": "AfterCatch",
+      "report": "none"
+    }
+  ]
+}
