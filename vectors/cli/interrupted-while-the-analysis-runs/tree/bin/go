@@ -1,3 +1,8 @@
-#!/bin/sh
-touch "@TARGET@/started"
-exec sleep 60
+{
+  "arms": [
+    {
+      "touch": "@TARGET@/started",
+      "sleep_seconds": 60
+    }
+  ]
+}

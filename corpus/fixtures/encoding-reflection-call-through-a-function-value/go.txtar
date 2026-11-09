@@ -1,0 +1,93 @@
+The Go rendering: a command that calls a function encoding its any-typed
+parameter, and one that only stores it, through package and local variables,
+a struct field, a map entry, a method value, a variable assigned two
+functions, a function-typed parameter and a variable a function literal is
+assigned to.
+
+-- fixture.json --
+{
+  "symbols": {
+    "viaPackageVar.A": { "file": "target/main.go", "line": 33 },
+    "viaLocalVar.B": { "file": "target/main.go", "line": 34 },
+    "viaField.C": { "file": "target/main.go", "line": 35 },
+    "viaMapEntry.D": { "file": "target/main.go", "line": 36 },
+    "viaMethodValue.E": { "file": "target/main.go", "line": 37 },
+    "viaEitherFunction.F": { "file": "target/main.go", "line": 38 },
+    "viaParameter.G": { "file": "target/main.go", "line": 39 },
+    "viaLiteralVar.H": { "file": "target/main.go", "line": 40 },
+    "viaStoringVar.I": { "file": "target/main.go", "line": 41 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target calls an encoder through function values.
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"os"
+)
+
+func encode(v any) error { return json.NewEncoder(os.Stdout).Encode(v) }
+
+var held []any
+
+func keep(v any) error {
+	held = append(held, v)
+	return nil
+}
+
+type writer struct{}
+
+func (writer) write(v any) error { return encode(v) }
+
+type sinks struct{ write func(any) error }
+
+var (
+	viaVar  = encode
+	storing = keep
+	byName  = map[string]func(any) error{"json": encode}
+	either  = keep
+	literal = keep
+)
+
+type viaPackageVar struct{ A int }
+type viaLocalVar struct{ B int }
+type viaField struct{ C int }
+type viaMapEntry struct{ D int }
+type viaMethodValue struct{ E int }
+type viaEitherFunction struct{ F int }
+type viaParameter struct{ G int }
+type viaLiteralVar struct{ H int }
+type viaStoringVar struct{ I int }
+
+func apply(f func(any) error, v any) error { return f(v) }
+
+func main() {
+	if len(os.Args) > 1 {
+		either = encode
+		literal = func(v any) error {
+			held = append(held, v)
+			return nil
+		}
+	}
+	local := encode
+	s := sinks{write: encode}
+	method := writer{}.write
+	errs := []error{
+		viaVar(viaPackageVar{A: 1}),
+		local(viaLocalVar{B: 2}),
+		s.write(viaField{C: 3}),
+		byName["json"](viaMapEntry{D: 4}),
+		method(viaMethodValue{E: 5}),
+		either(viaEitherFunction{F: 6}),
+		apply(keep, viaParameter{G: 7}),
+		literal(viaLiteralVar{H: 8}),
+		storing(viaStoringVar{I: 9}),
+	}
+	fmt.Println(len(errs), len(held))
+}

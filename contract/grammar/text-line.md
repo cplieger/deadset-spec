@@ -11,8 +11,8 @@ path:line:col: kind name: message [confidence] (CODE)
 Two findings rendered, one from each language:
 
 ```text
-catalog.go:214:6: method (*Catalog).ResolveAlias: exported method has no reference in the target and none from any loaded consumer [probable] (DS1001)
-src/features/tabs/index.ts:1182:11: class-member TabStrip.cachedLayout: private member is written and never read [certain] (DS1301)
+catalog.go:214:6: method (*Catalog).ResolveAlias: exported method (*Catalog).ResolveAlias has no reference in the target and none from any loaded consumer [probable] (DS1001)
+src/features/tabs/index.ts:1182:11: class-member TabStrip.cachedLayout: private member TabStrip.cachedLayout is written and never read [certain] (DS1301)
 ```
 
 Each line is one finding object from the JSON report, rendered from eight of its fields and nothing else. The mapping is fixed; a reporter adds no field and drops none.
@@ -111,8 +111,8 @@ The expression is the format's definition: a product's text reporter conforms wh
 ### Accepted
 
 ```text
-catalog.go:214:6: method (*Catalog).ResolveAlias: exported method has no reference in the target and none from any loaded consumer [probable] (DS1001)
-src/features/tabs/index.ts:1182:11: class-member TabStrip.cachedLayout: private member is written and never read [certain] (DS1301)
+catalog.go:214:6: method (*Catalog).ResolveAlias: exported method (*Catalog).ResolveAlias has no reference in the target and none from any loaded consumer [probable] (DS1001)
+src/features/tabs/index.ts:1182:11: class-member TabStrip.cachedLayout: private member TabStrip.cachedLayout is written and never read [certain] (DS1301)
 go.mod:12:2: dependency github.com/example/left: required by no package in the build list [certain] (DS1701)
 internal/legacy/render_windows.go:1:1: file internal/legacy/render_windows.go: built under no declared configuration [certain] (DS1601)
 catalog.go:213:1: suppression go://example.com/app#Catalog.ResolveAlias: inline directive for DS1001 matches no current finding [certain] (DS9003)

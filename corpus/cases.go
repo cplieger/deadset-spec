@@ -36,7 +36,7 @@ type Case struct {
 	ReportFile    string              `json:"report_file"`
 	Products      []string            `json:"products"`
 	Argv          []string            `json:"argv"`
-	Executables   []string            `json:"executables"`
+	Stubs         []string            `json:"stubs"`
 	Expect        CaseOutcome         `json:"expect"`
 }
 
@@ -63,12 +63,15 @@ type CaseResult struct {
 }
 
 // RunCases runs every command-line vector of the vectors tree that names the
-// product through the product's command line, each in a fresh copy of its tree.
+// product through the product's command line, each in a fresh copy of its tree. A
+// case listing stubs needs the go command, which builds the stub program once.
 func RunCases(ctx context.Context, vectors fs.FS, product string, analyzer Analyzer) ([]CaseResult, error) {
 	entries, err := fs.ReadDir(vectors, casesDir)
 	if err != nil {
 		return nil, err
 	}
+	stubs := &stubBuild{}
+	defer stubs.remove()
 	var results []CaseResult
 	for _, entry := range entries {
 		if !entry.IsDir() {
@@ -85,7 +88,7 @@ func RunCases(ctx context.Context, vectors fs.FS, product string, analyzer Analy
 			results = append(results, CaseResult{Case: entry.Name(), Result: Unsupported, Message: reason})
 			continue
 		}
-		message, err := runCase(ctx, vectors, entry.Name(), c, product, analyzer)
+		message, err := runCase(ctx, vectors, entry.Name(), c, product, analyzer, stubs)
 		if err != nil {
 			return nil, fmt.Errorf("%s: %w", entry.Name(), err)
 		}
@@ -102,16 +105,10 @@ func RunCases(ctx context.Context, vectors fs.FS, product string, analyzer Analy
 }
 
 // unrunnable is why a host of operating system goos cannot run case c through
-// analyzer, or "": Windows starts no #! script, which every stub a case makes
-// executable is, and delivers no interrupt to another process (os.Process.Signal).
+// analyzer, or "": Windows delivers no interrupt to another process
+// (os.Process.Signal), so only a product answered in process takes one there.
 func unrunnable(c *Case, analyzer *Analyzer, goos string) string {
-	if goos != "windows" {
-		return ""
-	}
-	switch {
-	case len(c.Executables) > 0:
-		return "the case's executables are #! scripts, which " + goos + " does not start"
-	case c.Interrupt != "" && analyzer.InProcess == nil:
+	if goos == "windows" && c.Interrupt != "" && analyzer.InProcess == nil {
 		return goos + " delivers no interrupt to another process"
 	}
 	return ""
@@ -132,13 +129,13 @@ func readCase(vectors fs.FS, name string) (*Case, error) {
 
 // runCase runs one case as many times as it repeats and returns the first way a
 // run departs from the outcome, or "".
-func runCase(ctx context.Context, vectors fs.FS, name string, c *Case, product string, analyzer Analyzer) (string, error) {
+func runCase(ctx context.Context, vectors fs.FS, name string, c *Case, product string, analyzer Analyzer, stubs *stubBuild) (string, error) {
 	argv := c.Argv
 	if own, ok := c.ArgvByProduct[product]; ok {
 		argv = own
 	}
 	for range max(c.Expect.Repeat, 1) {
-		message, err := runOnce(ctx, vectors, name, c, argv, analyzer)
+		message, err := runOnce(ctx, vectors, name, c, argv, analyzer, stubs)
 		if err != nil || message != "" {
 			return message, err
 		}
@@ -146,7 +143,7 @@ func runCase(ctx context.Context, vectors fs.FS, name string, c *Case, product s
 	return "", nil
 }
 
-func runOnce(ctx context.Context, vectors fs.FS, name string, c *Case, argv []string, analyzer Analyzer) (string, error) {
+func runOnce(ctx context.Context, vectors fs.FS, name string, c *Case, argv []string, analyzer Analyzer, stubs *stubBuild) (string, error) {
 	dir, err := os.MkdirTemp("", "deadset-case-")
 	if err != nil {
 		return "", err
@@ -156,7 +153,13 @@ func runOnce(ctx context.Context, vectors fs.FS, name string, c *Case, argv []st
 	if mkErr := os.MkdirAll(out, 0o750); mkErr != nil {
 		return "", mkErr
 	}
-	if copyErr := copyTree(vectors, path.Join(casesDir, name, "tree"), target, c); copyErr != nil {
+	program := ""
+	if len(c.Stubs) > 0 {
+		if program, err = stubs.program(ctx); err != nil {
+			return "", err
+		}
+	}
+	if copyErr := copyTree(vectors, path.Join(casesDir, name, "tree"), target, c, program); copyErr != nil {
 		return "", copyErr
 	}
 	replace := strings.NewReplacer("@TARGET@", target, "@OUT@", out)
@@ -186,11 +189,12 @@ func runOnce(ctx context.Context, vectors fs.FS, name string, c *Case, argv []st
 	return strings.Join(held, "; "), nil
 }
 
-// copyTree copies a case's tree to dir, naming each file its rename gives it,
-// writing @TARGET@ in its text as dir in forward slashes and making each of its
-// executables one. Every operating system's paths accept forward slashes, and a
-// backslash would open an escape in a JSON or shell file.
-func copyTree(vectors fs.FS, root, dir string, c *Case) error {
+// copyTree copies a case's tree to dir, naming each file its rename gives it and
+// writing @TARGET@ in its text as dir in forward slashes. Every operating system's
+// paths accept forward slashes, and a backslash would open an escape in a JSON
+// file. Each of the case's stubs is a stub document, written as <path>.stub.json
+// beside a copy of the stub program at path (path.exe on Windows).
+func copyTree(vectors fs.FS, root, dir string, c *Case, program string) error {
 	replace := strings.NewReplacer("@TARGET@", filepath.ToSlash(dir))
 	return fs.WalkDir(vectors, root, func(p string, d fs.DirEntry, err error) error {
 		if err != nil || d.IsDir() {
@@ -204,15 +208,21 @@ func copyTree(vectors fs.FS, root, dir string, c *Case) error {
 		if renamed, ok := c.Rename[rel]; ok {
 			rel = renamed
 		}
-		mode := os.FileMode(0o600)
-		if slices.Contains(c.Executables, rel) {
-			mode = 0o700
-		}
 		file := filepath.Join(dir, filepath.FromSlash(rel))
 		if err := os.MkdirAll(filepath.Dir(file), 0o750); err != nil {
 			return err
 		}
-		return os.WriteFile(file, []byte(replace.Replace(string(data))), mode)
+		text := []byte(replace.Replace(string(data)))
+		if !slices.Contains(c.Stubs, rel) {
+			return os.WriteFile(file, text, 0o600)
+		}
+		if err := checkStub(text); err != nil {
+			return fmt.Errorf("stub %s: %w", rel, err)
+		}
+		if err := os.WriteFile(file+stubDocumentSuffix, text, 0o600); err != nil {
+			return err
+		}
+		return copyProgram(program, file+executableSuffix)
 	})
 }
 

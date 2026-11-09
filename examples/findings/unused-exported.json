@@ -28,7 +28,7 @@
   "consumers_loaded": ["example.com/consumer"],
   "fixability": "deletable",
   "severity": "deny",
-  "message": "exported method has no reference in the target and none from any loaded consumer",
+  "message": "exported method (*Catalog).ResolveAlias has no reference in the target and none from any loaded consumer",
   "details": {
     "removes_last_use_of": ["example.com/fold", "example.com/normalize"]
   }

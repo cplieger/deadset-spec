@@ -138,7 +138,7 @@
       "consumers_loaded": [],
       "fixability": "deletable",
       "severity": "deny",
-      "message": "exported method has no reference in the target",
+      "message": "exported method (*Catalog).ResolveAlias has no reference in the target",
       "analyzer": "deadset-go",
       "details": {}
     },
@@ -173,7 +173,7 @@
       "consumers_loaded": [],
       "fixability": "none",
       "severity": "deny",
-      "message": "no analyzer that ran enumerates the symbol the used_by side of the edge names",
+      "message": "no analyzer that ran enumerates the symbol the used_by side of edge wire/ServerEvent names",
       "details": {
         "edge": "wire/ServerEvent",
         "sides": [
@@ -226,7 +226,7 @@
       "consumers_loaded": [],
       "fixability": "deletable",
       "severity": "deny",
-      "message": "exported variable has no reference in the target",
+      "message": "exported variable legacyFrame has no reference in the target",
       "analyzer": "deadset-ts",
       "details": {}
     }

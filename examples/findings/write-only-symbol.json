@@ -22,7 +22,7 @@
   "consumers_loaded": [],
   "fixability": "deletable",
   "severity": "deny",
-  "message": "package-level variable is written and never read by production code",
+  "message": "package-level variable lastScan is written and never read by production code",
   "details": {
     "write_positions": [
       { "path": "scan.go", "line": 41, "column": 2, "end_line": 41 },

@@ -19,6 +19,6 @@
   "consumers_loaded": [],
   "fixability": "manual",
   "severity": "deny",
-  "message": "no import in the target needs the declared dependency",
+  "message": "no import in the target needs the declared dependency lodash",
   "details": { "dependency_class": "dependency" }
 }

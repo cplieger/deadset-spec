@@ -19,7 +19,7 @@
   "consumers_loaded": [],
   "fixability": "none",
   "severity": "deny",
-  "message": "no analyzer that ran enumerates the symbol the used_by side of the edge names",
+  "message": "no analyzer that ran enumerates the symbol the used_by side of edge wire/ServerEvent names",
   "details": {
     "edge": "wire/ServerEvent",
     "sides": [

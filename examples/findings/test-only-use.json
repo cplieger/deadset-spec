@@ -28,6 +28,6 @@
   "consumers_loaded": ["example.com/consumer"],
   "fixability": "deletable",
   "severity": "deny",
-  "message": "exported method is referenced only by tests",
+  "message": "exported method (*Catalog).ResolveAlias is referenced only by tests",
   "details": {}
 }

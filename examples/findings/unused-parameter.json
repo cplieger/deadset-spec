@@ -20,7 +20,7 @@
   "consumers_loaded": [],
   "fixability": "manual",
   "severity": "warn",
-  "message": "no reference to the parameter exists inside the function body",
+  "message": "no reference to parameter opts exists inside the body of function Resolve",
   "details": {
     "overlap": ["revive unused-parameter", "gopls unusedparams", "unparam"]
   }

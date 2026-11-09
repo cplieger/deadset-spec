@@ -9,7 +9,7 @@
     "app/gitignore.txt": "app/.gitignore",
     "web/tsconfig.json.txt": "web/tsconfig.json"
   },
-  "executables": [
+  "stubs": [
     "bin/go/analyzer",
     "bin/ts/analyzer"
   ],

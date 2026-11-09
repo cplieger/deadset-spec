@@ -22,6 +22,6 @@
   "consumers_loaded": ["example.com/consumer"],
   "fixability": "narrowable",
   "severity": "warn",
-  "message": "exported function is referenced only inside the package that declares it",
+  "message": "exported function Normalize is referenced only inside the package that declares it",
   "details": { "narrower_visibility": "package" }
 }
