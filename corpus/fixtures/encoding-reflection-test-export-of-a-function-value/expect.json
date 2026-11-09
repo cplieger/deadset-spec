@@ -1,0 +1,39 @@
+{
+  "name": "encoding-reflection-test-export-of-a-function-value",
+  "description": "A call through a package variable whose value is a function of the program hands its arguments to that function's parameters as a direct call does: a test passing a pointer to a value through the variable a test file initialises to a function that hands its empty-interface parameter to a reader outside the analyzed program sends the value out of the analysis as a direct call of a wrapper does, so a field of it nothing writes is reported at the reachability class possible, which the outside callee may fill, and not as certain.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "library",
+  "min_confidence": "possible",
+  "expect": [
+    {
+      "symbol": "probeConfig.Name",
+      "report": "DS1003",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "field"
+    },
+    {
+      "symbol": "probeConfig.Nested",
+      "report": "DS1003",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "field"
+    },
+    {
+      "symbol": "directProbe.Name",
+      "report": "DS1003",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "field"
+    },
+    {
+      "symbol": "Read",
+      "report": "DS1001",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "function"
+    }
+  ]
+}

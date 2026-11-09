@@ -1,0 +1,72 @@
+{
+  "name": "encoding-reflection-call-through-a-function-value",
+  "description": "A call through a variable, a struct field, a map entry or a method value whose every value is a known function of the program hands its arguments to each such function's parameters as a direct call does, so a value one of them encodes keeps its fields, and a value only a function that stores it is handed reports a field it writes and nothing reads. A call through a function-typed parameter, or through a variable a function literal is assigned to, holds a function the analysis does not follow, so its empty-interface argument has left the analysis and keeps its fields.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "viaPackageVar.A",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "viaLocalVar.B",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "viaField.C",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "viaMapEntry.D",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "viaMethodValue.E",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "viaEitherFunction.F",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "viaParameter.G",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "viaLiteralVar.H",
+      "report": "none",
+      "retained_by": [
+        "encoding-reflection"
+      ]
+    },
+    {
+      "symbol": "viaStoringVar.I",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    }
+  ]
+}

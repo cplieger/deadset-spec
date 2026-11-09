@@ -22,7 +22,7 @@
   "consumers_loaded": [],
   "fixability": "manual",
   "severity": "warn",
-  "message": "no call site invokes the method through the interface that declares it",
+  "message": "no call site invokes interface method Fetcher.fetch through the interface that declares it",
   "details": {
     "implementations": [
       {

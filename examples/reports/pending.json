@@ -48,7 +48,7 @@
         "consumers_loaded": [],
         "fixability": "deletable",
         "severity": "deny",
-        "message": "exported type has no reference in the target and waits on the used_by side of a declared edge",
+        "message": "exported type ServerEvent has no reference in the target and waits on the used_by side of a declared edge",
         "details": {}
       }
     }

@@ -170,8 +170,8 @@ func TestCliCaseProblemsNameAMissingArgvBesideAnExpectedDocument(t *testing.T) {
 
 // cliCaseProblems holds one command-line case to its layout: a case.json that
 // decodes strictly, names products the Contract's command-line surface lists and
-// an exit code of the table, and a tree holding every file it renames or makes
-// executable, each describe document of which a run of this contract admits,
+// an exit code of the table, and a tree holding every file it renames or names as
+// a stub, each describe document of which a run of this contract admits,
 // and each report and facts document of which the Contract's schemas admit.
 func cliCaseProblems(t *testing.T, fsys fs.FS, dir string) []string {
 	t.Helper()
@@ -237,9 +237,9 @@ func cliCaseProblems(t *testing.T, fsys fs.FS, dir string) []string {
 	if walkErr != nil {
 		problems = append(problems, walkErr.Error())
 	}
-	for _, file := range c.Executables {
+	for _, file := range c.Stubs {
 		if !held[file] {
-			problems = append(problems, "makes "+file+" executable, which the tree does not hold")
+			problems = append(problems, "names the stub "+file+", which the tree does not hold")
 		}
 	}
 	return problems

@@ -156,7 +156,7 @@
       "x-enum": "severities"
     },
     "message": {
-      "description": "The finding's own sentence, rendered verbatim by a text line and by a SARIF result. It holds no carriage return and no line feed, and it does not end with a full stop, so a consumer appends a clause to the same sentence.",
+      "description": "The finding's own sentence, rendered verbatim by a text line, by a SARIF result and by a GitHub annotation. It names its subject by the word for the subject's kind followed by symbol.name, so a reader shown the message alone knows what it is about: a member by the name that holds its owner, as Payload.Secret, a part, whose symbol.name is its own, together with the declaration it is a part of, by that declaration's word and name, and a file, a dependency or a record by the name symbol.name gives it. It holds no carriage return and no line feed, and it does not end with a full stop, so a consumer appends a clause to the same sentence.",
       "type": "string",
       "pattern": "^[^\\r\\n]*[^.\\r\\n]$"
     },

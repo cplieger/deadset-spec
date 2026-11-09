@@ -1,0 +1,67 @@
+{
+  "name": "reach-rules-through-a-function-value",
+  "description": "A call through a variable whose value is a known function reaches what a direct call of that function reaches, for each rule below: a value formatted through a variable holding a formatting function keeps the String method the format verb calls, and a method a string names in a call through a variable holding a function outside the analyzed program is kept. A call through a variable holding a method expression reads its first argument as the receiver and the rest as the method's parameters, so a value formatted through a logger method expression, directly or through a wrapper, keeps its String method, and a method a string names through reflect.Value.MethodByName held that way is kept. A method no string names is reported. A variable that can hold two lookups makes both, whichever is written first, so a field one of them names is kept.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "label.String",
+      "report": "none",
+      "retained_by": [
+        "format-verb-contract"
+      ]
+    },
+    {
+      "symbol": "controller.Login",
+      "report": "none",
+      "retained_by": [
+        "reflective-lookup"
+      ]
+    },
+    {
+      "symbol": "controller.Archive",
+      "report": "DS1101",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "controller.Logout",
+      "report": "none",
+      "retained_by": [
+        "reflective-lookup"
+      ]
+    },
+    {
+      "symbol": "badge.String",
+      "report": "none",
+      "retained_by": [
+        "format-verb-contract"
+      ]
+    },
+    {
+      "symbol": "stamp.String",
+      "report": "none",
+      "retained_by": [
+        "format-verb-contract"
+      ]
+    },
+    {
+      "symbol": "rec.alias",
+      "report": "none",
+      "retained_by": [
+        "reflective-lookup"
+      ]
+    },
+    {
+      "symbol": "row.title",
+      "report": "none",
+      "retained_by": [
+        "reflective-lookup"
+      ]
+    }
+  ]
+}

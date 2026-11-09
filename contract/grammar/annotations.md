@@ -20,7 +20,7 @@ The command follows the record's severity alone, never the failing severity a ru
 Records are written in this order: the findings, then the stale suppressions, then the type-error skips, then the notes, each in the order the report lists them.
 
 ```text
-::error file=src/model.ts,line=12,col=3,endLine=12,title=DS1003 unused-member::type member has no reference in the target
+::error file=src/model.ts,line=12,col=3,endLine=12,title=DS1003 unused-member::type member Model.label has no reference in the target
 ::warning file=src/main.ts,line=9,title=type error skipped::the analysis did not evaluate the function or statement holding this type error: Type 'string' is not assignable to type 'number'.
 ::warning file=packages/cli,title=unmapped-entry::the manifest's bin names ./dist/cli.js, which reads back to no source file of the target: name the file it is built from in ts.entry_files
 ```

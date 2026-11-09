@@ -1,0 +1,83 @@
+The Go rendering: a command that reads the fields of three configurations by
+reflection through method values of Interface, Field and Elem, and asserts each
+field's value to an interface it calls.
+
+-- fixture.json --
+{
+  "symbols": {
+    "email.Validate": { "file": "target/main.go", "line": 18 },
+    "chat.Validate": { "file": "target/main.go", "line": 24 },
+    "chat.Mute": { "file": "target/main.go", "line": 27 },
+    "pager.Validate": { "file": "target/main.go", "line": 33 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target validates each provider its configurations hold.
+package main
+
+import (
+	"os"
+	"reflect"
+)
+
+// provider is what each field of a configuration holds.
+type provider interface {
+	Validate() error
+}
+
+// email is read through a method value of Interface.
+type email struct{}
+
+// Validate is called through provider.
+func (*email) Validate() error { return nil }
+
+// chat is read through a method value of Field.
+type chat struct{}
+
+// Validate is called through provider.
+func (*chat) Validate() error { return nil }
+
+// Mute is called by nothing.
+func (*chat) Mute() {}
+
+// pager is read through a method value of Elem.
+type pager struct{}
+
+// Validate is called through provider.
+func (*pager) Validate() error { return nil }
+
+// mailConfig, chatConfig and pageConfig each hold one provider.
+type (
+	mailConfig struct{ Email *email }
+	chatConfig struct{ Chat *chat }
+	pageConfig struct{ Pager *pager }
+)
+
+func main() {
+	mail := reflect.ValueOf(&mailConfig{Email: &email{}}).Elem()
+	for i := range mail.NumField() {
+		value := mail.Field(i).Interface
+		check(value().(provider))
+	}
+	chats := reflect.ValueOf(&chatConfig{Chat: &chat{}}).Elem()
+	field := chats.Field
+	for i := range chats.NumField() {
+		check(field(i).Interface().(provider))
+	}
+	elem := reflect.ValueOf(&pageConfig{Pager: &pager{}}).Elem
+	pages := elem()
+	for i := range pages.NumField() {
+		check(pages.Field(i).Interface().(provider))
+	}
+}
+
+// check exits when a provider does not validate.
+func check(p provider) {
+	if p.Validate() != nil {
+		os.Exit(1)
+	}
+}

@@ -1,0 +1,115 @@
+The Go rendering: a command that formats a value and registers a handler by its
+method name with a router module, each through a local variable holding the
+function; and that formats a value, looks a method up by name on the router's
+current handler, and formats through a wrapper, each through a variable holding
+a method expression; and that looks an unexported field up by name through a
+variable holding two lookups, each written first in one of two variables.
+
+-- fixture.json --
+{
+  "symbols": {
+    "label.String": { "file": "target/main.go", "line": 16 },
+    "controller.Login": { "file": "target/main.go", "line": 21 },
+    "controller.Archive": { "file": "target/main.go", "line": 24 },
+    "controller.Logout": { "file": "target/main.go", "line": 27 },
+    "badge.String": { "file": "target/main.go", "line": 32 },
+    "stamp.String": { "file": "target/main.go", "line": 37 },
+    "rec.alias": { "file": "target/main.go", "line": 39 },
+    "row.title": { "file": "target/main.go", "line": 41 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+
+require example.com/router v0.0.0
+
+replace example.com/router => ../router
+-- target/main.go --
+// Command target formats and registers through function values.
+package main
+
+import (
+	"fmt"
+	"log"
+	"os"
+	"reflect"
+
+	"example.com/router"
+)
+
+type label struct{ text string }
+
+// String is called by the formatting package.
+func (l label) String() string { return l.text }
+
+type controller struct{}
+
+// Login is registered by name.
+func (*controller) Login() {}
+
+// Archive is named by no string.
+func (*controller) Archive() {}
+
+// Logout is looked up by name.
+func (*controller) Logout() {}
+
+type badge struct{ text string }
+
+// String is called by the logger's formatting.
+func (b badge) String() string { return b.text }
+
+type stamp struct{ text string }
+
+// String is called by the logger's formatting through note.
+func (s stamp) String() string { return s.text }
+
+type rec struct{ alias string }
+
+type row struct{ title string }
+
+var logTo = (*log.Logger).Printf
+
+// note formats its operands through logTo.
+func note(format string, args ...any) {
+	logTo(log.Default(), format, args...)
+}
+
+func main() {
+	printf := fmt.Sprintf
+	register := router.Handle
+	register("Login", &controller{})
+	logf := (*log.Logger).Printf
+	logf(log.Default(), "%s", badge{text: "b"})
+	note("%s", stamp{text: "s"})
+	byName := reflect.Value.MethodByName
+	byName(router.Current(), "Logout").Call(nil)
+	pick := reflect.Value.MethodByName
+	if len(os.Args) > 1 {
+		pick = reflect.Value.FieldByName
+	}
+	other := reflect.Value.FieldByName
+	if len(os.Args) > 2 {
+		other = reflect.Value.MethodByName
+	}
+	fmt.Println(pick(reflect.ValueOf(rec{}), "alias"), other(reflect.ValueOf(row{}), "title"))
+	fmt.Println(printf("%s", label{text: "t"}))
+}
+-- router/go.mod --
+module example.com/router
+
+go 1.27.0
+-- router/router.go --
+// Package router maps a route to a method of a handler by name.
+package router
+
+import "reflect"
+
+// Handle registers the method of handler that name spells.
+func Handle(name string, handler any) {
+	_, _ = name, handler
+}
+
+// Current is the handler of the route being served.
+func Current() reflect.Value { return reflect.Value{} }

@@ -1,0 +1,92 @@
+The Go rendering: a library whose external test calls an unexported check
+through the variable an export_test.go file initialises to it, and directly
+through a wrapper, the check handing its argument to a loader module the
+analysis does not hold the code of.
+
+-- fixture.json --
+{
+  "symbols": {
+    "probeConfig.Name": { "file": "target/conf/strict_test.go", "line": 10 },
+    "probeConfig.Nested": { "file": "target/conf/strict_test.go", "line": 11 },
+    "directProbe.Name": { "file": "target/conf/strict_test.go", "line": 17 },
+    "Read": { "file": "target/conf/strict.go", "line": 7 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+
+require example.com/loader v0.0.0
+
+replace example.com/loader => ../loader
+-- target/conf/strict.go --
+// Package conf reads a configuration document.
+package conf
+
+import "example.com/loader"
+
+// Read refuses a document naming a key the configuration lacks.
+func Read(data []byte, cfg any) error {
+	return checkUnknownKeys(data, cfg)
+}
+
+func checkUnknownKeys(data []byte, probe any) error {
+	return loader.New(data).Load(probe)
+}
+-- target/conf/export_test.go --
+package conf
+
+var CheckUnknownKeys = checkUnknownKeys
+
+func CheckDirect(data []byte, probe any) error { return checkUnknownKeys(data, probe) }
+-- target/conf/strict_test.go --
+package conf_test
+
+import (
+	"testing"
+
+	"example.com/target/conf"
+)
+
+type probeConfig struct {
+	Name   string `yaml:"name"`
+	Nested struct {
+		Level int `yaml:"level"`
+	} `yaml:"nested"`
+}
+
+type directProbe struct {
+	Name string `yaml:"name"`
+}
+
+func TestCheckUnknownKeys(t *testing.T) {
+	if err := conf.CheckUnknownKeys([]byte("name: a\n"), &probeConfig{}); err != nil {
+		t.Fatal(err)
+	}
+	if err := conf.CheckDirect([]byte("name: a\n"), &directProbe{}); err != nil {
+		t.Fatal(err)
+	}
+}
+-- loader/go.mod --
+module example.com/loader
+
+go 1.27.0
+-- loader/loader.go --
+// Package loader decodes a document into a value by reflection.
+package loader
+
+// Loader decodes one document.
+type Loader struct {
+	data []byte
+}
+
+// New returns a loader over data.
+func New(data []byte) *Loader { return &Loader{data: data} }
+
+// Load decodes the document into v.
+func (l *Loader) Load(v any) error {
+	_ = l.data
+	_ = v
+	return nil
+}

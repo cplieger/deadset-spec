@@ -6,7 +6,7 @@
   "rename": {
     "tsconfig.json.txt": "tsconfig.json"
   },
-  "executables": [
+  "stubs": [
     "bin/ts/analyzer"
   ],
   "report_file": "@OUT@/run/report.json",

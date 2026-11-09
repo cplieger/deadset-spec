@@ -1,5 +1,10 @@
-#!/bin/sh
-if [ "$1" = describe ]; then
-	exec cat "$(dirname "$0")/describe.json"
-fi
-exit 3
+{
+  "describe": {
+    "stdout": "describe.json"
+  },
+  "arms": [
+    {
+      "exit": 3
+    }
+  ]
+}

@@ -4,8 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"go/ast"
+	"go/parser"
+	"go/token"
+	"io/fs"
 	"os"
+	"path"
 	"path/filepath"
+	"reflect"
 	"runtime"
 	"slices"
 	"strings"
@@ -440,18 +446,147 @@ func TestSetupFailureDifferenceHoldsTheRunToOneClassLine(t *testing.T) {
 	}
 }
 
-func TestRunCasesRunsTheTreeExecutablesAndInterruptsAtTheMarker(t *testing.T) {
+func TestRunCasesRunsTheTreeStubsAndInterruptsAtTheMarker(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("Windows delivers no interrupt to another process; unrunnable's table holds the case unsupported there")
+	}
 	ctx, cancel := context.WithTimeout(t.Context(), time.Minute)
 	defer cancel()
 	vectors := fstest.MapFS{
-		"vectors/cli/stub/case.json": {Data: []byte(`{"description": "d", "products": ["p"], "argv": ["x"], "executables": ["bin/stub"],
+		"vectors/cli/stub/case.json": {Data: []byte(`{"description": "d", "products": ["p"], "argv": ["x"], "stubs": ["bin/stub"],
 			"interrupt": "@TARGET@/started", "expect": {"exit": 4}}`)},
-		"vectors/cli/stub/tree/bin/stub": {Data: []byte("#!/bin/sh\ntouch \"$PWD/started\"\n")},
+		"vectors/cli/stub/tree/bin/stub": {Data: []byte(`{"arms": [{"touch": "@TARGET@/started"}]}`)},
 	}
 	waiting := Analyzer{Command: []string{"/bin/sh", "-c", `trap 'exit 4' INT; ./bin/stub || exit 9; while :; do sleep 0.05; done`, "sh"}}
 	got, err := RunCases(ctx, vectors, "p", waiting)
 	if err != nil || len(got) != 1 || got[0].Result != Pass {
-		t.Errorf("RunCases(an executable stub writing the interrupt marker) = %+v, %v, want the run interrupted at the marker", got, err)
+		t.Errorf("RunCases(a stub writing the interrupt marker) = %+v, %v, want the run interrupted at the marker", got, err)
+	}
+}
+
+// TestRunCasesStartsAStubAsItsDocumentAnswers runs the stub program itself as the
+// product, on every host, through each member of a stub document.
+func TestRunCasesStartsAStubAsItsDocumentAnswers(t *testing.T) {
+	ctx, cancel := context.WithTimeout(t.Context(), 2*time.Minute)
+	defer cancel()
+	stub := `{
+		"describe": {"stderr": ["described"], "stdout": "describe.json"},
+		"arms": [
+			{"when": {"flag": "refuse"}, "stderr": ["handed {arg}"], "exit": 2},
+			{"when": {"scope_contains": "/again/"}, "stderr": ["again"], "exit": 5},
+			{"writes": {"report": "report.json"}, "identity": {"from_scope": true, "default": "default.example"},
+				"stdout": "out.txt", "touch": "@TARGET@/touched", "exit": 4}
+		]
+	}`
+	tree := map[string]string{
+		"bin/tool":            stub,
+		"bin/describe.json":   `{"name": "stub"}`,
+		"bin/out.txt":         "printed",
+		"bin/report.json":     `{"identity": "IDENTITY"}`,
+		"scope.json":          `{"target": {"id": "scoped.example"}}`,
+		"again/scope.json":    `{"target": {}}`,
+		"unscoped/scope.json": `{"target": {}}`,
+	}
+	cases := map[string]string{
+		"describe":         `"argv": ["describe"], "expect": {"exit": 0, "stdout_contains": ["{\"name\": \"stub\"}"], "stderr_contains": ["described\n"]}`,
+		"refuse":           `"argv": ["analyze", "--refuse=yes"], "expect": {"exit": 2, "stderr_contains": ["handed --refuse=yes\n"]}`,
+		"again":            `"argv": ["analyze", "--scope=@TARGET@/again/scope.json"], "expect": {"exit": 5, "stderr_contains": ["again\n"]}`,
+		"scoped":           `"argv": ["analyze", "--scope=@TARGET@/scope.json", "--report=@OUT@/r.json"], "expect": {"exit": 4, "stdout_contains": ["printed"], "files_contain": {"@OUT@/r.json": ["\"identity\": \"scoped.example\""], "@TARGET@/touched": [""]}}`,
+		"default-identity": `"argv": ["analyze", "--scope=@TARGET@/unscoped/scope.json", "--report=@OUT@/r.json"], "expect": {"exit": 4, "files_contain": {"@OUT@/r.json": ["\"identity\": \"default.example\""]}}`,
+	}
+	vectors := fstest.MapFS{}
+	for name, body := range cases {
+		vectors["vectors/cli/"+name+"/case.json"] = &fstest.MapFile{Data: []byte(`{"description": "d", "products": ["p"], "stubs": ["bin/tool"], ` + body + `}`)}
+		for file, data := range tree {
+			vectors["vectors/cli/"+name+"/tree/"+file] = &fstest.MapFile{Data: []byte(data)}
+		}
+	}
+	got, err := RunCases(ctx, vectors, "p", Analyzer{Command: []string{filepath.Join(".", "bin", "tool")}})
+	if err != nil || len(got) != len(cases) {
+		t.Fatalf("RunCases(the stub as the product) = %+v, %v, want one result per case", got, err)
+	}
+	for _, result := range got {
+		if result.Result != Pass {
+			t.Errorf("%s: %s %s, want pass", result.Case, result.Result, result.Message)
+		}
+	}
+}
+
+func TestRunCasesRefusesAStubDocumentTheProgramCannotRun(t *testing.T) {
+	for name, doc := range map[string]string{
+		"an unknown member":            `{"arms": [{"exit": 0, "shell": "echo"}]}`,
+		"no arm":                       `{"describe": {"stdout": "describe.json"}}`,
+		"a condition naming no test":   `{"arms": [{"when": {}, "exit": 0}]}`,
+		"a condition naming two tests": `{"arms": [{"when": {"flag": "a", "scope_contains": "b"}, "exit": 0}]}`,
+	} {
+		t.Run(strings.ReplaceAll(name, " ", "_"), func(t *testing.T) {
+			if err := checkStub([]byte(doc)); err == nil {
+				t.Errorf("checkStub(%s) = nil, want a refusal", doc)
+			}
+		})
+	}
+	if err := checkStub([]byte(`{"arms": [{"when": {"flag": "a"}, "exit": 3}, {"exit": 0}]}`)); err != nil {
+		t.Errorf("checkStub(a document the program runs) = %v, want nil", err)
+	}
+}
+
+// TestEveryCaseStubIsADocumentTheStubProgramReads holds every stub a published case
+// names to the document shape, and the runner's copy of that shape to the one the
+// stub program decodes, member for member.
+func TestEveryCaseStubIsADocumentTheStubProgramReads(t *testing.T) {
+	entries, err := fs.ReadDir(spec.Vectors, casesDir)
+	if err != nil {
+		t.Fatalf("Setup: %v", err)
+	}
+	stubs := 0
+	for _, entry := range entries {
+		if !entry.IsDir() {
+			continue
+		}
+		c, err := readCase(spec.Vectors, entry.Name())
+		if err != nil {
+			t.Fatalf("Setup: %v", err)
+		}
+		for _, rel := range c.Stubs {
+			stubs++
+			data, err := fs.ReadFile(spec.Vectors, path.Join(casesDir, entry.Name(), "tree", rel))
+			if err == nil {
+				err = checkStub(data)
+			}
+			if err != nil {
+				t.Errorf("%s: stub %s: %v", entry.Name(), rel, err)
+			}
+		}
+	}
+	if stubs == 0 {
+		t.Error("no published case names a stub, want the stub cases checked")
+	}
+
+	program, err := parser.ParseFile(token.NewFileSet(), "main.go", stubSource, parser.SkipObjectResolution)
+	if err != nil {
+		t.Fatalf("Setup: parse the stub program: %v", err)
+	}
+	read := map[string][]string{}
+	ast.Inspect(program, func(n ast.Node) bool {
+		if spec, isType := n.(*ast.TypeSpec); isType {
+			if st, isStruct := spec.Type.(*ast.StructType); isStruct {
+				for _, field := range st.Fields.List {
+					if field.Tag != nil {
+						read[spec.Name.Name] = append(read[spec.Name.Name], reflect.StructTag(strings.Trim(field.Tag.Value, "`")).Get("json"))
+					}
+				}
+			}
+		}
+		return true
+	})
+	for program, runner := range map[string]any{"document": stubDocument{}, "arm": stubArm{}, "condition": stubCondition{}, "identity": stubIdentity{}} {
+		var checked []string
+		for field := range reflect.TypeOf(runner).Fields() {
+			checked = append(checked, field.Tag.Get("json"))
+		}
+		if !slices.Equal(read[program], checked) {
+			t.Errorf("the stub program's %s reads %q, the runner checks %q", program, read[program], checked)
+		}
 	}
 }
 
@@ -549,7 +684,7 @@ func TestRunAnswersAnInProcessProductAndHandsEveryProductFacts(t *testing.T) {
 func TestCopyTreeWritesTheTargetInATreeFileAsAJSONStringHoldsIt(t *testing.T) {
 	vectors := fstest.MapFS{"vectors/cli/doc/tree/scope.json": {Data: []byte(`{"target": {"path": "@TARGET@/lib"}}`)}}
 	dir := filepath.Join(t.TempDir(), "target")
-	if err := copyTree(vectors, "vectors/cli/doc/tree", dir, &Case{}); err != nil {
+	if err := copyTree(vectors, "vectors/cli/doc/tree", dir, &Case{}, ""); err != nil {
 		t.Fatalf("copyTree = %v", err)
 	}
 	data, err := os.ReadFile(filepath.Join(dir, "scope.json"))
@@ -564,7 +699,7 @@ func TestCopyTreeWritesTheTargetInATreeFileAsAJSONStringHoldsIt(t *testing.T) {
 	}
 }
 
-func TestACaseNeedingAScriptOrAnInterruptToAProcessIsUnsupportedOnWindows(t *testing.T) {
+func TestACaseNeedingAnInterruptToAProcessIsUnsupportedOnWindows(t *testing.T) {
 	inProcess := Analyzer{InProcess: func(context.Context, string, []string) ([]byte, string, int) { return nil, "", 0 }}
 	tests := []struct {
 		name, goos string
@@ -572,11 +707,10 @@ func TestACaseNeedingAScriptOrAnInterruptToAProcessIsUnsupportedOnWindows(t *tes
 		analyzer   Analyzer
 		want       string
 	}{
-		{"executables on windows", "windows", Case{Executables: []string{"bin/go"}}, Analyzer{}, "#! scripts"},
-		{"executables run in process on windows", "windows", Case{Executables: []string{"bin/go"}}, inProcess, "#! scripts"},
+		{"stubs on windows", "windows", Case{Stubs: []string{"bin/go"}}, Analyzer{}, ""},
 		{"an interrupt to a process on windows", "windows", Case{Interrupt: "@TARGET@/started"}, Analyzer{}, "no interrupt"},
 		{"an interrupt in process on windows", "windows", Case{Interrupt: "@TARGET@/started"}, inProcess, ""},
-		{"executables and an interrupt on darwin", "darwin", Case{Executables: []string{"bin/go"}, Interrupt: "@TARGET@/started"}, Analyzer{}, ""},
+		{"stubs and an interrupt on darwin", "darwin", Case{Stubs: []string{"bin/go"}, Interrupt: "@TARGET@/started"}, Analyzer{}, ""},
 		{"a plain case on windows", "windows", Case{}, Analyzer{}, ""},
 	}
 	for _, tc := range tests {
@@ -584,17 +718,5 @@ func TestACaseNeedingAScriptOrAnInterruptToAProcessIsUnsupportedOnWindows(t *tes
 		if tc.want == "" && got != "" || !strings.Contains(got, tc.want) {
 			t.Errorf("unrunnable(%s) = %q, want %q", tc.name, got, tc.want)
 		}
-	}
-	vectors := fstest.MapFS{
-		"vectors/cli/stub/case.json":     {Data: []byte(`{"description": "d", "products": ["p"], "argv": ["x"], "executables": ["bin/stub"], "expect": {"exit": 0}}`)},
-		"vectors/cli/stub/tree/bin/stub": {Data: []byte("#!/bin/sh\n")},
-	}
-	got, err := RunCases(t.Context(), vectors, "p", Analyzer{Command: []string{"/bin/sh", "-c", "./bin/stub"}})
-	want := Pass
-	if runtime.GOOS == "windows" {
-		want = Unsupported
-	}
-	if err != nil || len(got) != 1 || got[0].Result != want {
-		t.Errorf("RunCases(a case with an executable stub) on %s = %+v, %v, want %s", runtime.GOOS, got, err, want)
 	}
 }

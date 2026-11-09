@@ -7,7 +7,7 @@
     "go.mod.txt": "go.mod",
     "main.go.txt": "main.go"
   },
-  "executables": [
+  "stubs": [
     "bin/empty/analyzer",
     "bin/go/analyzer"
   ],

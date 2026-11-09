@@ -8,7 +8,7 @@
     "go.mod.txt": "go.mod",
     "main.go.txt": "main.go"
   },
-  "executables": [
+  "stubs": [
     "bin/analyzer"
   ],
   "report_file": "@OUT@/run/report.json",

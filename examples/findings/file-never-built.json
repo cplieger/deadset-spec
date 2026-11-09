@@ -20,6 +20,6 @@
   "consumers_loaded": [],
   "fixability": "deletable",
   "severity": "deny",
-  "message": "no configuration in the declared complete matrix builds the file",
+  "message": "no configuration in the declared complete matrix builds file render_windows.go",
   "details": { "excluded_by": "//go:build windows" }
 }

@@ -7,11 +7,11 @@
     "go.mod.txt": "go.mod",
     "main.go.txt": "main.go"
   },
-  "executables": [
+  "stubs": [
     "bin/go"
   ],
   "env": {
-    "PATH": "@TARGET@/bin:/usr/bin:/bin"
+    "PATH": "@TARGET@/bin"
   },
   "interrupt": "@TARGET@/started",
   "argv": [

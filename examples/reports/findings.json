@@ -49,7 +49,7 @@
       "consumers_loaded": ["example.com/consumer"],
       "fixability": "deletable",
       "severity": "deny",
-      "message": "exported method has no reference in the target and none from any loaded consumer",
+      "message": "exported method (*Catalog).ResolveAlias has no reference in the target and none from any loaded consumer",
       "details": {}
     },
     {
@@ -76,7 +76,7 @@
       "consumers_loaded": ["example.com/consumer"],
       "fixability": "narrowable",
       "severity": "warn",
-      "message": "exported function is referenced only inside the package that declares it",
+      "message": "exported function Normalize is referenced only inside the package that declares it",
       "details": { "narrower_visibility": "package" }
     },
     {
@@ -101,7 +101,7 @@
       "consumers_loaded": ["example.com/consumer"],
       "fixability": "manual",
       "severity": "warn",
-      "message": "no reference to the parameter exists inside the function body",
+      "message": "no reference to parameter opts exists inside the body of function Resolve",
       "details": { "overlap": ["revive unused-parameter", "gopls unusedparams", "unparam"] }
     }
   ],

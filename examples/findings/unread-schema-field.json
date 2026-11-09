@@ -27,6 +27,6 @@
   "consumers_loaded": [],
   "fixability": "manual",
   "severity": "deny",
-  "message": "schema field is read by no binding in any analyzed language",
+  "message": "schema field PingRequest.trace_hint is read by no binding in any analyzed language",
   "details": {}
 }

@@ -8,7 +8,7 @@
     "services/api/main.go.txt": "services/api/main.go",
     "gitignore.txt": ".gitignore"
   },
-  "executables": [
+  "stubs": [
     "bin/go/analyzer",
     "bin/other/analyzer",
     "bin/ts/analyzer"

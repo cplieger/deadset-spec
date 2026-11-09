@@ -8,7 +8,7 @@
     "both/tsconfig.json.txt": "both/tsconfig.json",
     "both/go.mod.txt": "both/go.mod"
   },
-  "executables": [
+  "stubs": [
     "bin/go/analyzer",
     "bin/ts/analyzer"
   ],
