@@ -1,0 +1,29 @@
+-- fixture.json --
+{
+  "symbols": {
+    "B": {
+      "file": "target/b.proto",
+      "line": 5,
+      "ref": "proto://p#B"
+    },
+    "C": {
+      "file": "target/c.proto",
+      "line": 5,
+      "ref": "proto://p#C"
+    }
+  }
+}
+-- target/b.proto --
+syntax = "proto3";
+
+package p;
+
+message B {
+  int32 y = 1 [(no.opt) = 1];
+}
+-- target/c.proto --
+syntax = "proto3";
+
+package p;
+
+message C {}

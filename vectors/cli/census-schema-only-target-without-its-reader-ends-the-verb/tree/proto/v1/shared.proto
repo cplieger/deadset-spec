@@ -1,7 +1,0 @@
-syntax = "proto3";
-
-package fixture.v1;
-
-message Sample {
-  string name = 1;
-}

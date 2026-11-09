@@ -1,0 +1,38 @@
+{
+  "description": "The orchestrator holds the proto reader, so a schema language the census puts in scope stays in it: a Go module holding a Protocol Buffers schema file puts go and proto in scope, the census names both languages as detected and only the deadset-go entry, since no provider entry claims a language read in process, and it leaves nothing out.",
+  "products": [
+    "deadset"
+  ],
+  "rename": {
+    "app/go.mod.txt": "app/go.mod",
+    "app/main.go.txt": "app/main.go"
+  },
+  "argv": [
+    "print-languages",
+    "--target=@TARGET@/app"
+  ],
+  "expect": {
+    "exit": 0,
+    "stdout_json": {
+      "languages": [
+        {
+          "language": "go",
+          "provenance": "detected"
+        },
+        {
+          "language": "proto",
+          "provenance": "detected"
+        }
+      ],
+      "analyzers": [
+        {
+          "name": "deadset-go",
+          "languages": [
+            "go"
+          ]
+        }
+      ],
+      "left_out": []
+    }
+  }
+}

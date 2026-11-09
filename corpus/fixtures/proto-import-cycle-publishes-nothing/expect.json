@@ -1,0 +1,50 @@
+{
+  "name": "proto-import-cycle-publishes-nothing",
+  "description": "Every file of an import cycle fails, the one the compiler reaches first with the recursive-import error and the other with its import of a file that fails, and so does a file importing one of them: none of the three publishes a declaration, a schema-unparsed note names each, and a file outside the cycle is published. Since a schema file that could not be read may use any declaration, every record of the target is published live, and a schema-findings-withheld note names the target root.",
+  "rules": ["schemas.4"],
+  "languages": ["proto"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "notes": [
+    {
+      "kind": "schema-findings-withheld",
+      "path": "."
+    },
+    {
+      "kind": "schema-unparsed",
+      "path": "m.proto"
+    },
+    {
+      "kind": "schema-unparsed",
+      "path": "n.proto"
+    },
+    {
+      "kind": "schema-unparsed",
+      "path": "x.proto"
+    }
+  ],
+  "facts": [
+    {
+      "symbol": "M",
+      "role": "schema",
+      "absent": true
+    },
+    {
+      "symbol": "N",
+      "role": "schema",
+      "absent": true
+    },
+    {
+      "symbol": "X",
+      "role": "schema",
+      "absent": true
+    },
+    {
+      "symbol": "Alone",
+      "role": "schema",
+      "schema": "proto://app#Alone",
+      "state": "live"
+    }
+  ],
+  "expect": []
+}

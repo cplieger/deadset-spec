@@ -176,7 +176,7 @@ A declaration of a schema file that is a copy of an upstream schema is retained,
 
 Retains: Every declaration in the file.
 
-In `proto`: The file's import path and its package together match an upstream file grammar/analysis/schemas.md lists, or its target-relative path matches a pattern of proto.vendored_paths. A file of another path declaring one of those packages is no copy.
+In `proto`: The file's package and its import path, or the end of its import path after any /, together match an upstream file grammar/analysis/schemas.md lists, or its target-relative path matches a pattern of proto.vendored_paths. A file of another path declaring one of those packages is no copy.
 
 ## schema-default-value
 

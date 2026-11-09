@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+package fixture.v1;
+
+message Case {
+  string name = 1;
+}

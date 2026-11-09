@@ -1,0 +1,42 @@
+{
+  "name": "proto-upstream-copies-differing-in-an-option-value",
+  "description": "With no buf.yaml and no proto.import_paths, the import roots are buf's for a directory with no buf.yaml, the target root, besides the include roots of upstream copies: where two directory trees keep copies of one upstream option schema that differ in an enum value, the second tree's option naming the value only its own copy declares fails with protoc's error, because every import of the upstream path reads the first tree's copy: that file publishes nothing and a schema-unparsed note names it. Since a schema file that could not be read may use any declaration, every record of the target is published live, and a schema-findings-withheld note names the target root.",
+  "rules": [
+    "schemas.3",
+    "schemas.4",
+    "schemas.6"
+  ],
+  "languages": [
+    "proto"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "notes": [
+    {
+      "kind": "schema-findings-withheld",
+      "path": "."
+    },
+    {
+      "kind": "schema-unparsed",
+      "path": "svc-b/proto/api/v1/service.proto"
+    },
+    {
+      "kind": "schema-unparsed",
+      "path": "svc-b/proto/google/api/field_behavior.proto"
+    }
+  ],
+  "facts": [
+    {
+      "symbol": "ReqA.name",
+      "role": "schema",
+      "schema": "proto://svc_a.api.v1#Req.name",
+      "state": "live"
+    },
+    {
+      "symbol": "ReqB",
+      "role": "schema",
+      "absent": true
+    }
+  ],
+  "expect": []
+}

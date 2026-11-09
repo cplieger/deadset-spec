@@ -1,0 +1,43 @@
+-- fixture.json --
+{
+  "symbols": {
+    "A": {
+      "file": "target/a.proto",
+      "line": 7,
+      "ref": "proto://p#A"
+    },
+    "B": {
+      "file": "target/b.proto",
+      "line": 5,
+      "ref": "proto://p#B"
+    }
+  }
+}
+-- target/a.proto --
+syntax = "proto3";
+
+package p;
+
+import "missing.proto";
+
+message A {}
+-- target/b.proto --
+syntax = "proto3";
+
+package p;
+
+message B {}
+-- target/deadset-edges.json --
+{
+  "description": "Edges whose provides sides are schema messages.",
+  "edges": {
+    "only-unclean": {
+      "because": "generated",
+      "provides": "proto://p#A"
+    },
+    "readable": {
+      "because": "generated",
+      "provides": "proto://p#B"
+    }
+  }
+}

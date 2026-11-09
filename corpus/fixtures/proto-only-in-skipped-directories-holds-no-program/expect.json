@@ -1,0 +1,14 @@
+{
+  "name": "proto-only-in-skipped-directories-holds-no-program",
+  "description": "A target whose schema files all lie below testdata, a directory the proto row skips, or below a directory its buf.yaml module excludes holds no schema file, so it holds no Protocol Buffers program: the reader ends with the setup failure no-program and reports nothing.",
+  "rules": ["schemas.1"],
+  "languages": ["proto"],
+  "target_kind": "application",
+  "setup_failure": {
+    "class": "no-program",
+    "names": [
+      ".proto"
+    ]
+  },
+  "expect": []
+}

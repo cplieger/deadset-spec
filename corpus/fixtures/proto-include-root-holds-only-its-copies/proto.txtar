@@ -1,0 +1,44 @@
+-- fixture.json --
+{
+  "symbols": {
+    "Cart.item": {
+      "file": "target/proto/shop/cart.proto",
+      "line": 8,
+      "ref": "proto://shop#Cart.item"
+    },
+    "HttpRule": {
+      "file": "target/proto/google/api/http.proto",
+      "line": 5,
+      "ref": "proto://google.api#HttpRule"
+    },
+    "Item": {
+      "file": "target/proto/shop/item.proto",
+      "line": 5,
+      "ref": "proto://shop#Item"
+    }
+  }
+}
+-- target/proto/google/api/http.proto --
+syntax = "proto3";
+
+package google.api;
+
+message HttpRule {
+  string get = 2;
+}
+-- target/proto/shop/cart.proto --
+syntax = "proto3";
+
+package shop;
+
+import "shop/item.proto";
+
+message Cart {
+  Item item = 1;
+}
+-- target/proto/shop/item.proto --
+syntax = "proto3";
+
+package shop;
+
+message Item {}

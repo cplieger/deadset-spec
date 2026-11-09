@@ -1,11 +1,23 @@
 {
   "name": "proto-unresolved-import",
-  "description": "An import no import root resolves holds every declaration whose type it would supply, published live, and an unresolved-import note names the importing file; a declaration that needs nothing from the import is published as any other.",
-  "rules": ["schemas.5"],
-  "languages": ["proto"],
+  "description": "Under proto.import_paths, an import no import root resolves holds every declaration whose type it would supply, published live, and an unresolved-import note names the importing file; a declaration that needs nothing from the import is published too. Since a schema file that could not be read may use any declaration, every record of the target is published live, and a schema-findings-withheld note names the target root.",
+  "rules": [
+    "schemas.4",
+    "schemas.5"
+  ],
+  "languages": [
+    "proto"
+  ],
   "target_kind": "application",
   "min_confidence": "possible",
+  "import_paths": [
+    "."
+  ],
   "notes": [
+    {
+      "kind": "schema-findings-withheld",
+      "path": "."
+    },
     {
       "kind": "unresolved-import",
       "path": "v1/wrap.proto"
@@ -22,9 +34,10 @@
       "symbol": "Alone",
       "role": "schema",
       "schema": "proto://v1#Alone",
-      "state": "dead",
-      "report": "DS1801",
-      "members": ["proto://v1#Alone.count"]
+      "state": "live",
+      "members": [
+        "proto://v1#Alone.count"
+      ]
     }
   ],
   "expect": []

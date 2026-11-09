@@ -29,7 +29,7 @@ To run a case, place `repository.json` at the target root as the repository conf
 
 A case applies to every product unless its `case.json` lists `products`, the products whose run of the case has the outcome it states. The orchestrator checks the whole document; an analyzer checks and resolves only what its own language's analysis reads, the keys [`settings.json`](../../contract/settings.json) `read_by` names its language for and, of a key written per language, its own member, and accepts every other key unread. So a refusal of a key only another product reads lists the products that read it, and an analyzer compares a resolved case on the keys its language reads alone: those keys of `expected.json`, a key written per language narrowed to its own member, and their `provenance` entries.
 
-A case with `pending` states a rule no product implements yet, named by the reason: a product reports it pending rather than comparing its outcome. The cases that need the Protocol Buffers schema reader inside deadset are pending until the deadset release that carries the reader, which removes their `pending`.
+A case with `pending` states a rule no product implements yet, named by the reason: a product reports it pending rather than comparing its outcome.
 
 ## How the cases resolve
 

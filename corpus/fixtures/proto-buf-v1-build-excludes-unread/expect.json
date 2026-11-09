@@ -1,0 +1,23 @@
+{
+  "name": "proto-buf-v1-build-excludes-unread",
+  "description": "A version 1 buf.yaml's build excludes, relative to the module root its directory is, leave the schema files below them out of the module, so the reader publishes no record of their declarations, and the module's other files are published as any others.",
+  "rules": ["schemas.3"],
+  "languages": ["proto"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "facts": [
+    {
+      "symbol": "Order",
+      "role": "schema",
+      "schema": "proto://shop.v1#Order",
+      "state": "dead",
+      "report": "DS1801"
+    },
+    {
+      "symbol": "Probe",
+      "role": "schema",
+      "absent": true
+    }
+  ],
+  "expect": []
+}

@@ -1,0 +1,46 @@
+{
+  "name": "proto-default-roots-import-unresolved-beside-a-resolved-one",
+  "description": "With no buf.yaml and no proto.import_paths, a file one of whose imports resolves under no root fails as protoc fails it, though its other import resolves and supplies the types its service names: the file publishes nothing and carries an unresolved-import note. Since a schema file that could not be read may use any declaration, every record of the target is published live, and a schema-findings-withheld note names the target root.",
+  "rules": [
+    "schemas.3",
+    "schemas.4"
+  ],
+  "languages": [
+    "proto"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "notes": [
+    {
+      "kind": "schema-findings-withheld",
+      "path": "."
+    },
+    {
+      "kind": "unresolved-import",
+      "path": "proto/v1/rpc.proto"
+    }
+  ],
+  "facts": [
+    {
+      "symbol": "PingResponse",
+      "role": "schema",
+      "schema": "proto://v1#PingResponse",
+      "state": "live",
+      "members": [
+        "proto://v1#PingResponse.number"
+      ]
+    },
+    {
+      "symbol": "PingResponse.number",
+      "role": "schema",
+      "schema": "proto://v1#PingResponse.number",
+      "state": "live"
+    },
+    {
+      "symbol": "PingService",
+      "role": "schema",
+      "absent": true
+    }
+  ],
+  "expect": []
+}

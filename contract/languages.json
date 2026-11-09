@@ -41,7 +41,7 @@
       "markers": ["buf.yaml", "buf.work.yaml"],
       "extensions": [".proto"],
       "skipped_files": [],
-      "skipped_directories": ["node_modules", "vendor", ".*"],
+      "skipped_directories": ["__fixtures__", "fixtures", "node_modules", "testdata", "vendor", ".*"],
       "workspace_files": [],
       "takes_target_kind": false
     }

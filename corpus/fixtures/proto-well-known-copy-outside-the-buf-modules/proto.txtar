@@ -1,0 +1,52 @@
+-- fixture.json --
+{
+  "symbols": {
+    "Event.at": {
+      "file": "target/api/v1/event.proto",
+      "line": 8,
+      "ref": "proto://api.v1#Event.at"
+    },
+    "Duration": {
+      "file": "target/google/protobuf/duration.proto",
+      "line": 5,
+      "ref": "proto://google.protobuf#Duration"
+    },
+    "Timestamp": {
+      "file": "target/google/protobuf/timestamp.proto",
+      "line": 5,
+      "ref": "proto://google.protobuf#Timestamp"
+    }
+  }
+}
+-- target/api/v1/event.proto --
+syntax = "proto3";
+
+package api.v1;
+
+import "google/protobuf/timestamp.proto";
+
+message Event {
+  google.protobuf.Timestamp at = 1;
+}
+-- target/buf.yaml --
+version: v2
+modules:
+  - path: api
+-- target/google/protobuf/duration.proto --
+syntax = "proto3";
+
+package google.protobuf;
+
+message Duration {
+  int64 seconds = 1;
+  int32 nanos = 2;
+}
+-- target/google/protobuf/timestamp.proto --
+syntax = "proto3";
+
+package google.protobuf;
+
+message Timestamp {
+  int64 seconds = 1;
+  int32 nanos = 2;
+}

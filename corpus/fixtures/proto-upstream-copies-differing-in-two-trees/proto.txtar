@@ -1,0 +1,70 @@
+-- fixture.json --
+{
+  "symbols": {
+    "HttpRule": {
+      "file": "target/svc-b/proto/google/api/http.proto",
+      "line": 8,
+      "ref": "proto://google.api#HttpRule"
+    },
+    "ReqB.r": {
+      "file": "target/svc-b/proto/api/v1/service.proto",
+      "line": 8,
+      "ref": "proto://svc_b.api.v1#Req.r"
+    },
+    "Unuseda": {
+      "file": "target/svc-a/proto/api/v1/service.proto",
+      "line": 10,
+      "ref": "proto://svc_a.api.v1#Unuseda"
+    },
+    "Unusedb": {
+      "file": "target/svc-b/proto/api/v1/service.proto",
+      "line": 10,
+      "ref": "proto://svc_b.api.v1#Unusedb"
+    }
+  }
+}
+-- target/svc-a/proto/api/v1/service.proto --
+syntax = "proto3";
+
+package svc_a.api.v1;
+
+import "google/api/http.proto";
+
+message Req {
+  google.api.Http h = 1;
+}
+message Unuseda {
+  int32 x = 1;
+}
+-- target/svc-a/proto/google/api/http.proto --
+syntax = "proto3";
+
+package google.api;
+
+message Http {
+  string x = 1;
+}
+-- target/svc-b/proto/api/v1/service.proto --
+syntax = "proto3";
+
+package svc_b.api.v1;
+
+import "google/api/http.proto";
+
+message Req {
+  google.api.HttpRule r = 1;
+}
+message Unusedb {
+  int32 x = 1;
+}
+-- target/svc-b/proto/google/api/http.proto --
+syntax = "proto3";
+
+package google.api;
+
+message Http {
+  string x = 1;
+}
+message HttpRule {
+  string selector = 1;
+}

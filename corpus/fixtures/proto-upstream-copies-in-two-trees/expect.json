@@ -1,0 +1,56 @@
+{
+  "name": "proto-upstream-copies-in-two-trees",
+  "description": "With no buf.yaml and no proto.import_paths, the include root of an upstream copy holds that copy alone: two directory trees that each keep a copy of one upstream schema and a schema file at one path below it, as a monorepo builds one service at a time, publish both files under their paths from the target root, each package decided by its bindings with no note on either file; the second tree's copy is shadowed by the first, which every import of the upstream path reads. Since a schema file not read cleanly, a shadowed one included, may use any declaration, every record of the target is published live, and a schema-findings-withheld note names the target root.",
+  "rules": ["schemas.3", "schemas.4", "schemas.7"],
+  "languages": ["proto"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "notes": [
+    {
+      "kind": "schema-findings-withheld",
+      "path": "."
+    },
+    {
+      "kind": "schema-unparsed",
+      "path": "svc-b/proto/google/api/http.proto"
+    }
+  ],
+  "facts": [
+    {
+      "symbol": "RouteA",
+      "role": "schema",
+      "schema": "proto://svc_a.api.v1#Route",
+      "state": "live",
+      "members": ["proto://svc_a.api.v1#Route.rule"]
+    },
+    {
+      "symbol": "RouteA.rule",
+      "role": "schema",
+      "schema": "proto://svc_a.api.v1#Route.rule",
+      "state": "live",
+      "uses": ["proto://google.api#HttpRule"]
+    },
+    {
+      "symbol": "RouteB",
+      "role": "schema",
+      "schema": "proto://svc_b.api.v1#Route",
+      "state": "live",
+      "members": ["proto://svc_b.api.v1#Route.rule"]
+    },
+    {
+      "symbol": "RouteB.rule",
+      "role": "schema",
+      "schema": "proto://svc_b.api.v1#Route.rule",
+      "state": "live",
+      "uses": ["proto://google.api#HttpRule"]
+    },
+    {
+      "symbol": "HttpRule",
+      "role": "schema",
+      "schema": "proto://google.api#HttpRule",
+      "state": "live",
+      "members": ["proto://google.api#HttpRule.get"]
+    }
+  ],
+  "expect": []
+}

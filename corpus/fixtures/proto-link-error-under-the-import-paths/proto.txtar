@@ -1,0 +1,43 @@
+-- fixture.json --
+{
+  "symbols": {
+    "PingResponse": {
+      "file": "target/proto/v1/service.proto",
+      "line": 6,
+      "ref": "proto://v1#PingResponse"
+    },
+    "PingResponse.number": {
+      "file": "target/proto/v1/service.proto",
+      "line": 7,
+      "ref": "proto://v1#PingResponse.number"
+    },
+    "PingService": {
+      "file": "target/proto/v1/rpc.proto",
+      "line": 11,
+      "ref": "proto://v1#PingService"
+    }
+  }
+}
+-- target/proto/v1/rpc.proto --
+syntax = "proto3";
+
+package v1;
+
+import "proto/v1/service.proto";
+
+message Dup {
+  int32 a = 1;
+  int32 b = 1;
+}
+service PingService {
+  rpc Ping(PingRequest) returns (PingResponse);
+}
+-- target/proto/v1/service.proto --
+syntax = "proto3";
+
+package v1;
+
+message PingRequest {}
+message PingResponse {
+  int32 number = 1;
+}

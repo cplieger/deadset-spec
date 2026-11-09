@@ -227,7 +227,7 @@ proto://.#Ping
 
 ### A schema file
 
-A schema file is its import path followed by the `:file` selector, scoped by the package it declares: `proto://v1#v1/service.proto:file`. The import path is relative to the import root that resolves the file ([`schemas.md`](analysis/schemas.md), `schemas.3`), so a change of `proto.import_paths` or of a `buf.yaml` module root changes the reference.
+A schema file is its import path followed by the `:file` selector, scoped by the package it declares: `proto://v1#v1/service.proto:file`. The import path is relative to the import root that holds the file, or to the target root where no import root holds it ([`schemas.md`](analysis/schemas.md), `schemas.3`), so a change of `proto.import_paths` or of a `buf.yaml` module root changes the reference.
 
 ### Deliberately not representable in Protocol Buffers
 

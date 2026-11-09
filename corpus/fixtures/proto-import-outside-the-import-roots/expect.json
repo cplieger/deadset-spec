@@ -1,0 +1,34 @@
+{
+  "name": "proto-import-outside-the-import-roots",
+  "description": "Only the import roots proto.import_paths names are searched: an import of a schema file outside them is unresolved, so the declaration whose type it would supply is published live with an unresolved-import note on the importing file, and the file outside them is still published under its path from the target root. Since a schema file that could not be read may use any declaration, every record of the target is published live, and a schema-findings-withheld note names the target root.",
+  "rules": ["schemas.3", "schemas.4", "schemas.5"],
+  "languages": ["proto"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "import_paths": ["api"],
+  "notes": [
+    {
+      "kind": "schema-findings-withheld",
+      "path": "."
+    },
+    {
+      "kind": "unresolved-import",
+      "path": "api/shop/v1/order.proto"
+    }
+  ],
+  "facts": [
+    {
+      "symbol": "Order.tag",
+      "role": "schema",
+      "schema": "proto://shop.v1#Order.tag",
+      "state": "live"
+    },
+    {
+      "symbol": "Tag",
+      "role": "schema",
+      "schema": "proto://stray#Tag",
+      "state": "live"
+    }
+  ],
+  "expect": []
+}

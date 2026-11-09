@@ -1,0 +1,24 @@
+-- fixture.json --
+{
+  "symbols": {
+    "Order": { "file": "target/proto/shop/v1/order.proto", "line": 5, "ref": "proto://shop.v1#Order" },
+    "Probe": { "file": "target/proto/conformance/probe.proto", "line": 5, "ref": "proto://conformance#Probe" }
+  }
+}
+-- target/proto/buf.yaml --
+version: v1
+build:
+  excludes:
+    - conformance
+-- target/proto/conformance/probe.proto --
+syntax = "proto3";
+
+package conformance;
+
+message Probe {}
+-- target/proto/shop/v1/order.proto --
+syntax = "proto3";
+
+package shop.v1;
+
+message Order {}

@@ -1,0 +1,54 @@
+-- fixture.json --
+{
+  "symbols": {
+    "Alone": {
+      "file": "target/v1/wrap.proto",
+      "line": 10,
+      "ref": "proto://v1#Alone"
+    },
+    "Other": {
+      "file": "target/v1/other.proto",
+      "line": 5,
+      "ref": "proto://v1#Other"
+    },
+    "Use": {
+      "file": "target/v1/use.proto",
+      "line": 7,
+      "ref": "proto://v1#Use"
+    },
+    "Wrapper.inner": {
+      "file": "target/v1/wrap.proto",
+      "line": 8,
+      "ref": "proto://v1#Wrapper.inner"
+    }
+  }
+}
+-- target/v1/other.proto --
+syntax = "proto3";
+
+package v1;
+
+message Other {}
+-- target/v1/use.proto --
+syntax = "proto3";
+
+package v1;
+
+import "v1/wrap.proto";
+
+message Use {
+  Alone alone = 1;
+}
+-- target/v1/wrap.proto --
+syntax = "proto3";
+
+package v1;
+
+import "other/missing.proto";
+
+message Wrapper {
+  other.Missing inner = 1;
+}
+message Alone {
+  int32 count = 1;
+}

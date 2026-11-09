@@ -1,0 +1,21 @@
+{
+  "name": "proto-facts-leave-report-unchanged",
+  "description": "Asking for facts leaves the report and the exit code byte-identical in every language, beside a generated file of a row that binds and one whose declarations bind nothing: a protoc-gen-go-grpc v1.0.1 file, which states no version, in Go, and a protoc-gen-es v0.5.0 file of the unsupported row in TypeScript. Neither publishes a consumer record of its declarations.",
+  "rules": [
+    "bindings.1"
+  ],
+  "languages": [
+    "go",
+    "ts"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "facts": [
+    {
+      "symbol": "Unbound",
+      "role": "consumer",
+      "absent": true
+    }
+  ],
+  "expect": []
+}

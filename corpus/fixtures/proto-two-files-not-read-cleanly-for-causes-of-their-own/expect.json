@@ -1,0 +1,46 @@
+{
+  "name": "proto-two-files-not-read-cleanly-for-causes-of-their-own",
+  "description": "With no buf.yaml and no proto.import_paths, one file whose import no root resolves and another that fails over a duplicate field number each publish nothing, the first with an unresolved-import note and the second with a schema-unparsed note. Since a schema file not read cleanly may use any declaration, every record of the target is published live, and a schema-findings-withheld note names the target root.",
+  "rules": [
+    "schemas.3",
+    "schemas.4"
+  ],
+  "languages": [
+    "proto"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "notes": [
+    {
+      "kind": "schema-findings-withheld",
+      "path": "."
+    },
+    {
+      "kind": "unresolved-import",
+      "path": "a.proto"
+    },
+    {
+      "kind": "schema-unparsed",
+      "path": "c.proto"
+    }
+  ],
+  "facts": [
+    {
+      "symbol": "A",
+      "role": "schema",
+      "absent": true
+    },
+    {
+      "symbol": "C",
+      "role": "schema",
+      "absent": true
+    },
+    {
+      "symbol": "D",
+      "role": "schema",
+      "schema": "proto://p#D",
+      "state": "live"
+    }
+  ],
+  "expect": []
+}

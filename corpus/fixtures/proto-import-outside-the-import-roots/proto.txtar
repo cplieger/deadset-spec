@@ -1,0 +1,23 @@
+-- fixture.json --
+{
+  "symbols": {
+    "Order.tag": { "file": "target/api/shop/v1/order.proto", "line": 8, "ref": "proto://shop.v1#Order.tag" },
+    "Tag": { "file": "target/stray.proto", "line": 5, "ref": "proto://stray#Tag" }
+  }
+}
+-- target/api/shop/v1/order.proto --
+syntax = "proto3";
+
+package shop.v1;
+
+import "stray.proto";
+
+message Order {
+  stray.Tag tag = 1;
+}
+-- target/stray.proto --
+syntax = "proto3";
+
+package stray;
+
+message Tag {}

@@ -48,7 +48,7 @@ var languageRows = []LanguageRow{
 		Markers:            []string{"buf.yaml", "buf.work.yaml"},
 		Extensions:         []string{".proto"},
 		SkippedFiles:       []string{},
-		SkippedDirectories: []string{"node_modules", "vendor", ".*"},
+		SkippedDirectories: []string{"__fixtures__", "fixtures", "node_modules", "testdata", "vendor", ".*"},
 		WorkspaceFiles:     []string{},
 		IdentitySource:     IdentitySource{File: "", Field: ""},
 		TakesTargetKind:    false,

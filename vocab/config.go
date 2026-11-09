@@ -155,6 +155,10 @@ func LanguageRowOf(language Language) (LanguageRow, bool) {
 	return LanguageRow{}, false
 }
 
+// InProcess reports whether the orchestrator reads the language itself, its
+// runner in-process, rather than an analyzer process a provider entry names.
+func (l *LanguageRow) InProcess() bool { return l.Runner == "in-process" }
+
 // Skips reports whether the language's discovery leaves a directory of that
 // name unread.
 func (l *LanguageRow) Skips(dir string) bool { return matchesAny(l.SkippedDirectories, dir) }

@@ -1,0 +1,34 @@
+{
+  "name": "proto-upstream-copy-sorted-before-its-importer",
+  "description": "A copy of an upstream schema kept below a directory that sorts before its importer is read the same way: the import of its upstream path reads the copy, never protoc's own file beside it, so the field typed by it is decided by its bindings and no import fails.",
+  "rules": ["schemas.3", "schemas.7"],
+  "languages": ["proto"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "facts": [
+    {
+      "symbol": "Event",
+      "role": "schema",
+      "schema": "proto://api.v1#Event",
+      "state": "dead",
+      "report": "DS1801",
+      "members": ["proto://api.v1#Event.at"]
+    },
+    {
+      "symbol": "Event.at",
+      "role": "schema",
+      "schema": "proto://api.v1#Event.at",
+      "state": "dead",
+      "report": "DS1802",
+      "uses": ["proto://google.protobuf#Timestamp"]
+    },
+    {
+      "symbol": "Timestamp",
+      "role": "schema",
+      "schema": "proto://google.protobuf#Timestamp",
+      "state": "live",
+      "members": ["proto://google.protobuf#Timestamp.seconds", "proto://google.protobuf#Timestamp.nanos"]
+    }
+  ],
+  "expect": []
+}

@@ -1,0 +1,56 @@
+{
+  "name": "proto-own-file-shadowed-under-the-import-paths",
+  "description": "Under proto.import_paths naming two roots that each hold a file of one import path, the second root's file is shadowed by the first's, as protoc refuses it as an input, though it is the only user of the messages it names: it publishes nothing and carries a schema-unparsed note. Since a schema file not read cleanly may use any declaration, every record of the target is published live, and a schema-findings-withheld note names the target root.",
+  "rules": [
+    "schemas.3",
+    "schemas.4"
+  ],
+  "languages": [
+    "proto"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "import_paths": [
+    "a",
+    "b"
+  ],
+  "notes": [
+    {
+      "kind": "schema-findings-withheld",
+      "path": "."
+    },
+    {
+      "kind": "schema-unparsed",
+      "path": "b/v1/types.proto"
+    }
+  ],
+  "facts": [
+    {
+      "symbol": "Other",
+      "role": "schema",
+      "schema": "proto://av1#Other",
+      "state": "live"
+    },
+    {
+      "symbol": "PingRequest",
+      "role": "schema",
+      "schema": "proto://v1#PingRequest",
+      "state": "live"
+    },
+    {
+      "symbol": "PingResponse",
+      "role": "schema",
+      "schema": "proto://v1#PingResponse",
+      "state": "live",
+      "members": [
+        "proto://v1#PingResponse.number"
+      ]
+    },
+    {
+      "symbol": "Wrap",
+      "role": "schema",
+      "absent": true
+    }
+  ],
+  "expect": []
+}

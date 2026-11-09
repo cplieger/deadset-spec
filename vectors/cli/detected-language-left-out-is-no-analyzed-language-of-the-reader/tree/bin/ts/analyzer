@@ -1,0 +1,13 @@
+{
+  "describe": {
+    "stdout": "describe.json"
+  },
+  "arms": [
+    {
+      "stderr": [
+        "setup failure: no-program: no configuration discovery derived could be built; tsconfig.json: TS18003: No inputs were found in config file tsconfig.json: run from the directory that holds the sources, or name the languages to analyze"
+      ],
+      "exit": 3
+    }
+  ]
+}

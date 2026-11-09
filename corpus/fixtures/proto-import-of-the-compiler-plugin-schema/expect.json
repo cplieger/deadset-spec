@@ -1,0 +1,26 @@
+{
+  "name": "proto-import-of-the-compiler-plugin-schema",
+  "description": "An import of google/protobuf/compiler/plugin.proto reads the file protoc ships in its own include directory, so the declaration it types is decided by its bindings, with no note, and the file's declarations are not published.",
+  "rules": [
+    "schemas.1",
+    "schemas.3"
+  ],
+  "languages": [
+    "proto"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "facts": [
+    {
+      "symbol": "A.r",
+      "role": "schema",
+      "schema": "proto://app#A.r",
+      "state": "dead",
+      "report": "DS1802",
+      "uses": [
+        "proto://google.protobuf.compiler#CodeGeneratorRequest"
+      ]
+    }
+  ],
+  "expect": []
+}

@@ -215,7 +215,7 @@
         "proto": ["message", "enum", "field", "enum-member", "service", "rpc"]
       },
       "mechanism": {
-        "proto": "The file's import path and its package together match an upstream file grammar/analysis/schemas.md lists, or its target-relative path matches a pattern of proto.vendored_paths. A file of another path declaring one of those packages is no copy."
+        "proto": "The file's package and its import path, or the end of its import path after any /, together match an upstream file grammar/analysis/schemas.md lists, or its target-relative path matches a pattern of proto.vendored_paths. A file of another path declaring one of those packages is no copy."
       }
     },
     {

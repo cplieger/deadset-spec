@@ -1,0 +1,37 @@
+{
+  "name": "proto-default-roots-option-names-no-extension",
+  "description": "With no buf.yaml and no proto.import_paths, the import roots are buf's for a directory with no buf.yaml, the target root, besides the include roots of upstream copies: every import resolves, so an option naming an extension no scope resolves is protoc's error and the file publishes nothing, a schema-unparsed note naming it. Since a schema file that could not be read may use any declaration, every record of the target is published live, and a schema-findings-withheld note names the target root.",
+  "rules": [
+    "schemas.3",
+    "schemas.4"
+  ],
+  "languages": [
+    "proto"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "notes": [
+    {
+      "kind": "schema-findings-withheld",
+      "path": "."
+    },
+    {
+      "kind": "schema-unparsed",
+      "path": "b.proto"
+    }
+  ],
+  "facts": [
+    {
+      "symbol": "B",
+      "role": "schema",
+      "absent": true
+    },
+    {
+      "symbol": "C",
+      "role": "schema",
+      "schema": "proto://p#C",
+      "state": "live"
+    }
+  ],
+  "expect": []
+}

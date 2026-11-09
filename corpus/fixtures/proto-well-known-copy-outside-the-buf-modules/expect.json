@@ -1,0 +1,42 @@
+{
+  "name": "proto-well-known-copy-outside-the-buf-modules",
+  "description": "A copy of a google/protobuf file kept at its upstream path outside every buf.yaml module is shadowed by the file of protoc's own include directory that every import of that path reads, whether or not a schema file imports it: it publishes no declaration and a schema-unparsed note names it, while the importer's field is decided by its bindings. Since a schema file not read cleanly, a shadowed one included, may use any declaration, every record of the target is published live, and a schema-findings-withheld note names the target root.",
+  "rules": ["schemas.3", "schemas.4"],
+  "languages": ["proto"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "notes": [
+    {
+      "kind": "schema-findings-withheld",
+      "path": "."
+    },
+    {
+      "kind": "schema-unparsed",
+      "path": "google/protobuf/duration.proto"
+    },
+    {
+      "kind": "schema-unparsed",
+      "path": "google/protobuf/timestamp.proto"
+    }
+  ],
+  "facts": [
+    {
+      "symbol": "Event.at",
+      "role": "schema",
+      "schema": "proto://api.v1#Event.at",
+      "state": "live",
+      "uses": ["proto://google.protobuf#Timestamp"]
+    },
+    {
+      "symbol": "Timestamp",
+      "role": "schema",
+      "absent": true
+    },
+    {
+      "symbol": "Duration",
+      "role": "schema",
+      "absent": true
+    }
+  ],
+  "expect": []
+}

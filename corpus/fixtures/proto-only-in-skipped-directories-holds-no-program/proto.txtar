@@ -1,0 +1,25 @@
+The Protocol Buffers rendering: a buf.yaml module that excludes its only
+schema file, and a schema file below testdata.
+
+-- fixture.json --
+{
+  "symbols": {}
+}
+-- target/buf.yaml --
+version: v2
+modules:
+  - path: proto
+    excludes:
+      - proto/tests
+-- target/proto/tests/case.proto --
+syntax = "proto3";
+
+package cases;
+
+message Case {}
+-- target/testdata/golden.proto --
+syntax = "proto3";
+
+package golden;
+
+message Golden {}

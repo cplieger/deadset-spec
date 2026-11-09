@@ -1,0 +1,33 @@
+{
+  "description": "Protocol Buffers left out because the reader found no program reads no binding facts: a Go analyzer's generated file of a generator row whose bindings no analyzer supports, beside a buf.yaml module that excludes the only schema file, writes no binding-unsupported note, so the merged report is the Go analyzer's alone, as a run with no schema language in scope merges it, and the run ends with exit code 0.",
+  "products": [
+    "deadset"
+  ],
+  "rename": {
+    "go.mod.txt": "go.mod",
+    "main.go.txt": "main.go"
+  },
+  "stubs": [
+    "bin/go/analyzer"
+  ],
+  "report_file": "@OUT@/run/report.json",
+  "argv": [
+    "analyze",
+    "--target=@TARGET@",
+    "--run-dir=@OUT@/run"
+  ],
+  "expect": {
+    "exit": 0,
+    "report": "valid",
+    "finding_paths": [],
+    "stderr_contains": [
+      "deadset-proto: setup failure: no-program: the target ",
+      "deadset: deadset-proto found no program, so the run leaves \"proto\" out of scope\n"
+    ],
+    "files_contain": {
+      "@OUT@/run/report.json": [
+        "\"notes\": []"
+      ]
+    }
+  }
+}

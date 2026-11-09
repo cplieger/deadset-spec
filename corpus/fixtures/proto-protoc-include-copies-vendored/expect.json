@@ -1,0 +1,40 @@
+{
+  "name": "proto-protoc-include-copies-vendored",
+  "description": "Every file of protoc's include tree is a copy of an upstream schema: the language feature and option files of google/protobuf, which declare pb or a package below it, and google/protobuf/compiler/plugin.proto are live under schema-vendored; a file of that directory declaring another package is no copy, and its declarations are published as any others.",
+  "rules": ["schemas.7"],
+  "languages": ["proto"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "facts": [
+    {
+      "symbol": "CodeGeneratorRequest",
+      "role": "schema",
+      "schema": "proto://google.protobuf.compiler#CodeGeneratorRequest",
+      "state": "live",
+      "members": ["proto://google.protobuf.compiler#CodeGeneratorRequest.file_to_generate"]
+    },
+    {
+      "symbol": "CppFileOptions",
+      "role": "schema",
+      "schema": "proto://pb.file#CppFileOptions",
+      "state": "live",
+      "members": ["proto://pb.file#CppFileOptions.namespace"]
+    },
+    {
+      "symbol": "Extra",
+      "role": "schema",
+      "schema": "proto://pbx#Extra",
+      "state": "dead",
+      "report": "DS1801",
+      "members": ["proto://pbx#Extra.name"]
+    },
+    {
+      "symbol": "GoFeatures",
+      "role": "schema",
+      "schema": "proto://pb#GoFeatures",
+      "state": "live",
+      "members": ["proto://pb#GoFeatures.legacy_unmarshal_json_enum"]
+    }
+  ],
+  "expect": []
+}

@@ -61,6 +61,7 @@ const (
 	NoteKindGenerationConfigUnread NoteKind = "generation-config-unread"
 	NoteKindModuleNotLoaded        NoteKind = "module-not-loaded"
 	NoteKindPublishedPackage       NoteKind = "published-package"
+	NoteKindSchemaFindingsWithheld NoteKind = "schema-findings-withheld"
 	NoteKindSchemaUnparsed         NoteKind = "schema-unparsed"
 	NoteKindUnboundSchema          NoteKind = "unbound-schema"
 	NoteKindUnmappedEntry          NoteKind = "unmapped-entry"

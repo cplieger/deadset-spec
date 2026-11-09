@@ -1,0 +1,31 @@
+-- fixture.json --
+{
+  "symbols": {
+    "Date": {
+      "file": "target/proto/x/google/type/date.proto",
+      "line": 5,
+      "ref": "proto://google.type#Date"
+    },
+    "Other": {
+      "file": "target/x/google/type/date.proto",
+      "line": 5,
+      "ref": "proto://google.type#Other"
+    }
+  }
+}
+-- target/proto/x/google/type/date.proto --
+syntax = "proto3";
+
+package google.type;
+
+message Date {
+  int32 year = 1;
+}
+-- target/x/google/type/date.proto --
+syntax = "proto3";
+
+package google.type;
+
+message Other {
+  int32 year = 1;
+}

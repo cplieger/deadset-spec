@@ -1,0 +1,33 @@
+{
+  "name": "proto-test-directories-unread",
+  "description": "A schema file below a testdata, fixtures or __fixtures__ directory is a test input, never a schema of the target: the proto row of languages.json skips those directories, so the reader publishes no record of their declarations, and the target's own schema file is published as any other.",
+  "rules": ["schemas.1"],
+  "languages": ["proto"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "facts": [
+    {
+      "symbol": "Case",
+      "role": "schema",
+      "absent": true
+    },
+    {
+      "symbol": "Golden",
+      "role": "schema",
+      "absent": true
+    },
+    {
+      "symbol": "Order",
+      "role": "schema",
+      "schema": "proto://shop.v1#Order",
+      "state": "dead",
+      "report": "DS1801"
+    },
+    {
+      "symbol": "Sample",
+      "role": "schema",
+      "absent": true
+    }
+  ],
+  "expect": []
+}

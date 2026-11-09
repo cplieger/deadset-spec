@@ -1,0 +1,20 @@
+-- fixture.json --
+{
+  "symbols": {
+    "A.r": {
+      "file": "target/a.proto",
+      "line": 8,
+      "ref": "proto://app#A.r"
+    }
+  }
+}
+-- target/a.proto --
+syntax = "proto3";
+
+package app;
+
+import "google/protobuf/compiler/plugin.proto";
+
+message A {
+  google.protobuf.compiler.CodeGeneratorRequest r = 1;
+}

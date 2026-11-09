@@ -1,0 +1,31 @@
+-- fixture.json --
+{
+  "symbols": {
+    "Event": { "file": "target/api/v1/event.proto", "line": 7, "ref": "proto://api.v1#Event" },
+    "Event.at": { "file": "target/api/v1/event.proto", "line": 8, "ref": "proto://api.v1#Event.at" },
+    "Timestamp": {
+      "file": "target/third_party/google/protobuf/timestamp.proto",
+      "line": 5,
+      "ref": "proto://google.protobuf#Timestamp"
+    }
+  }
+}
+-- target/api/v1/event.proto --
+syntax = "proto3";
+
+package api.v1;
+
+import "google/protobuf/timestamp.proto";
+
+message Event {
+  google.protobuf.Timestamp at = 1;
+}
+-- target/third_party/google/protobuf/timestamp.proto --
+syntax = "proto3";
+
+package google.protobuf;
+
+message Timestamp {
+  int64 seconds = 1;
+  int32 nanos = 2;
+}

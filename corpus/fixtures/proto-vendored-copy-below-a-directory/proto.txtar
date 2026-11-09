@@ -1,0 +1,27 @@
+-- fixture.json --
+{
+  "symbols": {
+    "HttpRule": {
+      "file": "target/third_party/googleapis/google/api/http.proto",
+      "line": 5,
+      "ref": "proto://google.api#HttpRule"
+    },
+    "Local": { "file": "target/third_party/xgoogle/api/local.proto", "line": 5, "ref": "proto://google.api#Local" }
+  }
+}
+-- target/third_party/googleapis/google/api/http.proto --
+syntax = "proto3";
+
+package google.api;
+
+message HttpRule {
+  string get = 2;
+}
+-- target/third_party/xgoogle/api/local.proto --
+syntax = "proto3";
+
+package google.api;
+
+message Local {
+  string name = 1;
+}

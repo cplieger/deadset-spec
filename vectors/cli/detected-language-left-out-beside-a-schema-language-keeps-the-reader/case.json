@@ -1,0 +1,31 @@
+{
+  "description": "A detected language left out because its analyzer found no program, beside a schema language, leaves that schema language in the census, read in process: the run goes on with the reader alone, writes a merged report from deadset-proto, and ends with exit code 0.",
+  "products": [
+    "deadset"
+  ],
+  "rename": {
+    "tsconfig.json.txt": "tsconfig.json"
+  },
+  "stubs": [
+    "bin/ts/analyzer"
+  ],
+  "report_file": "@OUT@/run/report.json",
+  "argv": [
+    "analyze",
+    "--target=@TARGET@",
+    "--run-dir=@OUT@/run"
+  ],
+  "expect": {
+    "exit": 0,
+    "report": "valid",
+    "finding_paths": [],
+    "stderr_contains": [
+      "deadset: deadset-ts found no program, so the run leaves \"ts\" out of scope\n"
+    ],
+    "files_contain": {
+      "@OUT@/run/report.json": [
+        "\"name\": \"deadset-proto\""
+      ]
+    }
+  }
+}
