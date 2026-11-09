@@ -39,8 +39,8 @@
     {
       "symbol": "UncontextualExpression",
       "report": "DS1401",
-      "confidence": "certain",
-      "reachability_class": "certain",
+      "confidence": "probable",
+      "reachability_class": "probable",
       "symbol_kind": "parameter",
       "details": {
         "overlap": [

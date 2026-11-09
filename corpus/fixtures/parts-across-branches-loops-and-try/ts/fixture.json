@@ -1,0 +1,40 @@
+{
+  "symbols": {
+    "BranchesOverwrite": {
+      "file": "target/main.ts",
+      "line": 3
+    },
+    "BranchMayKeep": {
+      "file": "target/main.ts",
+      "line": 14
+    },
+    "LoopInitial": {
+      "file": "target/main.ts",
+      "line": 23
+    },
+    "LoopWrite": {
+      "file": "target/main.ts",
+      "line": 25
+    },
+    "SwitchInitial": {
+      "file": "target/main.ts",
+      "line": 33
+    },
+    "FallThroughWrite": {
+      "file": "target/main.ts",
+      "line": 36
+    },
+    "SwitchBreakWrite": {
+      "file": "target/main.ts",
+      "line": 38
+    },
+    "AfterTryFinally": {
+      "file": "target/main.ts",
+      "line": 53
+    },
+    "AfterCatch": {
+      "file": "target/main.ts",
+      "line": 63
+    }
+  }
+}
