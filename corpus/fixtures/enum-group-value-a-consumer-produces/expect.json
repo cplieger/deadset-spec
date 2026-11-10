@@ -1,0 +1,11 @@
+{
+  "name": "enum-group-value-a-consumer-produces",
+  "description": "A program that imports a library can hold a value of any type the library exports and make one from any integer, so a member whose deletion renumbers a named member of an exported type of an importable package of a library is retained, an unexported member nothing names among them. A loaded consumer that converts a count to one of them is such a program.",
+  "languages": ["go"],
+  "target_kind": "library",
+  "consumers": ["consumer"],
+  "expect": [
+    { "symbol": "priorityMid", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "severityMid", "report": "none", "retained_by": ["enum-group"] }
+  ]
+}

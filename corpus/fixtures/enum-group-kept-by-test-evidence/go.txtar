@@ -1,0 +1,172 @@
+The Go rendering: a library whose exported error kind ends in a sentinel only
+tests name, with a String method and a kind before the sentinel nothing names;
+the same shape for a kind production code logs and prints; a type only a test
+makes from a constant; and a type only a test steps through with ++.
+
+-- fixture.json --
+{
+  "symbols": {
+    "End": {
+      "file": "target/lib.go",
+      "line": 17
+    },
+    "LogEnd": {
+      "file": "target/lib.go",
+      "line": 55
+    },
+    "LogSpare": {
+      "file": "target/lib.go",
+      "line": 54
+    },
+    "Rank.Mid": {
+      "file": "target/lib.go",
+      "line": 85
+    },
+    "Spare": {
+      "file": "target/lib.go",
+      "line": 16
+    },
+    "Tone.Mid": {
+      "file": "target/lib.go",
+      "line": 69
+    },
+    "Tone.Tail": {
+      "file": "target/lib.go",
+      "line": 71
+    }
+  }
+}
+-- target/go.mod --
+module example.com/lib
+
+go 1.27.0
+-- target/lib.go --
+// Package lib is a library whose errors carry an exported kind, and whose tests
+// step through the kinds up to a sentinel.
+package lib
+
+import (
+	"fmt"
+	"log/slog"
+)
+
+// ErrorKind classifies an Error.
+type ErrorKind int
+
+const (
+	KindInvalid ErrorKind = iota + 1
+	KindDenied
+	kindSpare
+	kindEnd
+)
+
+// String names a kind.
+func (k ErrorKind) String() string {
+	switch k {
+	case KindInvalid:
+		return "invalid"
+	case KindDenied:
+		return "denied"
+	}
+	return "unknown"
+}
+
+// Error is the library's error.
+type Error struct {
+	Kind ErrorKind
+	Msg  string
+}
+
+// Error renders the error.
+func (e *Error) Error() string { return e.Kind.String() + ": " + e.Msg }
+
+// Check returns an Error for an empty string.
+func Check(s string) error {
+	if s == "" {
+		return &Error{Kind: KindInvalid, Msg: s}
+	}
+	return nil
+}
+
+// LogKind is a kind the library logs.
+type LogKind int
+
+const (
+	LogInvalid LogKind = iota + 1
+	LogDenied
+	logSpare
+	logEnd
+)
+
+// Report logs a kind and prints it.
+func Report(k LogKind) {
+	slog.Info("report", slog.Any("kind", k))
+	fmt.Println(k == LogInvalid || k == LogDenied)
+}
+
+// tone is compared in production; only a test makes it from a constant.
+type tone int
+
+const (
+	toneA tone = iota
+	toneMid
+	toneZ
+	toneTail
+)
+
+// toned reports whether t is a named tone.
+func toned(t tone) bool { return t == toneA || t == toneZ }
+
+// Toned reports whether the first tone is named.
+func Toned() bool { return toned(toneA) }
+
+// rank is stepped through only by a test.
+type rank int
+
+const (
+	rankA rank = iota
+	rankMid
+	rankZ
+)
+
+// ranked reports whether r is a named rank.
+func ranked(r rank) bool { return r == rankA || r == rankZ }
+
+// Ranked reports whether the last rank is named.
+func Ranked() bool { return ranked(rankZ) }
+-- target/lib_test.go --
+package lib
+
+import "testing"
+
+func TestKinds(t *testing.T) {
+	for k := KindInvalid; k < kindEnd; k++ {
+		if k.String() == "" {
+			t.Fatal(k)
+		}
+	}
+	if ErrorKind(999).String() != "unknown" {
+		t.Fatal("999")
+	}
+	for k := LogInvalid; k < logEnd; k++ {
+		Report(k)
+	}
+}
+
+func TestTone(t *testing.T) {
+	if toned(tone(2)) != true {
+		t.Fatal("tone 2")
+	}
+}
+
+func TestRanks(t *testing.T) {
+	n := 0
+	for r := rankA; r <= rankZ; r++ {
+		if ranked(r) {
+			n++
+		}
+	}
+	if n != 2 {
+		t.Fatal(n)
+	}
+}

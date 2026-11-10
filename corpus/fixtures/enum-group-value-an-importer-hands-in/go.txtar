@@ -1,0 +1,134 @@
+The Go rendering: a library that exports an alias of one unexported kind, a
+slice type and a map type of two more, an exported method of an unexported type
+and an interface method that take two more, and an unexported function whose
+parameter is a sixth kind.
+
+-- fixture.json --
+{
+  "symbols": {
+    "hushMid": {
+      "file": "target/grade.go",
+      "line": 85
+    },
+    "levelMid": {
+      "file": "target/grade.go",
+      "line": 25
+    },
+    "moodMid": {
+      "file": "target/grade.go",
+      "line": 66
+    },
+    "rankMid": {
+      "file": "target/grade.go",
+      "line": 39
+    },
+    "shadeMid": {
+      "file": "target/grade.go",
+      "line": 11
+    },
+    "volumeMid": {
+      "file": "target/grade.go",
+      "line": 50
+    }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/grade.go --
+// Package target grades entries.
+package target
+
+type shade int
+
+// Shade names a shade outside the package.
+type Shade = shade
+
+const (
+	shadeLight shade = iota
+	shadeMid
+	shadeDark
+)
+
+// Dark reports whether a shade is dark.
+func (s shade) Dark() bool { return s == shadeDark }
+
+type level int
+
+// Levels is a list of levels.
+type Levels []level
+
+const (
+	levelLow level = iota
+	levelMid
+	levelHigh
+)
+
+// High reports whether the first level is high.
+func (l Levels) High() bool { return len(l) > 0 && l[0] == levelHigh }
+
+type rank int
+
+// Table ranks entries by name.
+type Table map[string]rank
+
+const (
+	rankLow rank = iota
+	rankMid
+	rankTop
+)
+
+// Top reports whether an entry ranks top.
+func (t Table) Top(k string) bool { return t[k] == rankTop }
+
+type volume int
+
+const (
+	volumeLow volume = iota
+	volumeMid
+	volumeHigh
+)
+
+type mixer struct{}
+
+// New returns a mixer.
+func New() *mixer { return &mixer{} }
+
+// Loud reports whether a volume is loud.
+func (*mixer) Loud(v volume) bool { return v == volumeHigh }
+
+type mood int
+
+const (
+	moodSad mood = iota
+	moodMid
+	moodHappy
+)
+
+// Meter reads a mood.
+type Meter interface{ Read(m mood) bool }
+
+type meter struct{}
+
+// Read reports whether a mood is happy.
+func (meter) Read(m mood) bool { return m == moodHappy }
+
+// Default returns the default meter.
+func Default() Meter { return meter{} }
+
+type hush int
+
+const (
+	hushLow hush = iota
+	hushMid
+	hushHigh
+)
+
+func hushed(h hush) bool { return h == hushHigh }
+
+// Ends reports whether the first and last member of every kind differ.
+func Ends(quiet bool) bool {
+	return !quiet && shadeLight != shadeDark && levelLow != levelHigh && rankLow != rankTop &&
+		volumeLow != volumeHigh && moodSad != moodHappy && hushed(hushLow)
+}

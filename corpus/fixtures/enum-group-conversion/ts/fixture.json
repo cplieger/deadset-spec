@@ -1,7 +1,6 @@
 {
   "symbols": {
     "ModeWrite": { "file": "target/levels.ts", "line": 17 },
-    "TierHigh": { "file": "target/levels.ts", "line": 6 },
     "TierMid": { "file": "target/levels.ts", "line": 5 }
   }
 }

@@ -1,0 +1,328 @@
+The Go rendering: a command executing one template per shape, each parsed from
+a constant string. A template in a package-level variable and in two locals
+names a field nothing writes; another names one the program writes; an
+html/template set is executed by name. Five templates print a value whole:
+the argument by {{.}} and printf, a field by {{.Inner}}, each element by range,
+the value with binds, and a variable. One template invokes a defined template
+on each element. Two actions reach their value through a method result and an
+interface field, one through a template function's result, and one execution's
+argument is a reflect.Value.
+
+-- fixture.json --
+{
+  "symbols": {
+    "T1.page.Body": {
+      "file": "target/main.go",
+      "line": 14
+    },
+    "T10.inner10": {
+      "file": "target/main.go",
+      "line": 46
+    },
+    "T10.inner10.Body": {
+      "file": "target/main.go",
+      "line": 47
+    },
+    "T10.outer10.Inner": {
+      "file": "target/main.go",
+      "line": 52
+    },
+    "T11.priv11.Name": {
+      "file": "target/main.go",
+      "line": 56
+    },
+    "T11.priv11.secret": {
+      "file": "target/main.go",
+      "line": 57
+    },
+    "T12.item12.Name": {
+      "file": "target/main.go",
+      "line": 61
+    },
+    "T12.item12.Note": {
+      "file": "target/main.go",
+      "line": 62
+    },
+    "T13.inner13": {
+      "file": "target/main.go",
+      "line": 67
+    },
+    "T13.inner13.Body": {
+      "file": "target/main.go",
+      "line": 68
+    },
+    "T13.outer13.Inner": {
+      "file": "target/main.go",
+      "line": 71
+    },
+    "T14.item14.Note": {
+      "file": "target/main.go",
+      "line": 74
+    },
+    "T15.inner15": {
+      "file": "target/main.go",
+      "line": 79
+    },
+    "T15.inner15.Body": {
+      "file": "target/main.go",
+      "line": 80
+    },
+    "T15.item15.Note": {
+      "file": "target/main.go",
+      "line": 84
+    },
+    "T15.page15.Inner": {
+      "file": "target/main.go",
+      "line": 88
+    },
+    "T16.item16.Name": {
+      "file": "target/main.go",
+      "line": 93
+    },
+    "T16.item16.Note": {
+      "file": "target/main.go",
+      "line": 94
+    },
+    "T16.stored16.Name": {
+      "file": "target/main.go",
+      "line": 98
+    },
+    "T16.stored16.Note": {
+      "file": "target/main.go",
+      "line": 99
+    },
+    "T18.detail18.Body": {
+      "file": "target/main.go",
+      "line": 111
+    },
+    "T19.detail19.Body": {
+      "file": "target/main.go",
+      "line": 120
+    },
+    "T2.note.Body": {
+      "file": "target/main.go",
+      "line": 28
+    },
+    "T2.post.Body": {
+      "file": "target/main.go",
+      "line": 23
+    },
+    "T20.row20.Body": {
+      "file": "target/main.go",
+      "line": 125
+    },
+    "T3.card.Body": {
+      "file": "target/main.go",
+      "line": 33
+    },
+    "T4.page.Extra": {
+      "file": "target/main.go",
+      "line": 15
+    },
+    "T5.page.Draft": {
+      "file": "target/main.go",
+      "line": 16
+    },
+    "T6.story.Body": {
+      "file": "target/main.go",
+      "line": 38
+    },
+    "T9.whole.Body": {
+      "file": "target/main.go",
+      "line": 43
+    },
+    "T9.whole.Title": {
+      "file": "target/main.go",
+      "line": 42
+    }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target executes templates whose actions name or print fields that
+// nothing writes.
+package main
+
+import (
+	htmpl "html/template"
+	"os"
+	"reflect"
+	"text/template"
+)
+
+type page struct {
+	Title string
+	Body  string
+	Extra string
+	Draft string
+}
+
+var pageT = template.Must(template.New("p").Parse("{{.Title}} {{.Body}}\n"))
+
+type post struct {
+	Title string
+	Body  string
+}
+
+type note struct {
+	Title string
+	Body  string
+}
+
+type card struct {
+	Title string
+	Body  string
+}
+
+type story struct {
+	Title string
+	Body  string
+}
+
+type whole struct {
+	Title string
+	Body  string
+}
+
+type inner10 struct {
+	Body string
+}
+
+type outer10 struct {
+	Title string
+	Inner inner10
+}
+
+type priv11 struct {
+	Name   string
+	secret string
+}
+
+type item12 struct {
+	Name string
+	Note string
+}
+
+type page12 struct{ Items []item12 }
+
+type inner13 struct {
+	Body string
+}
+
+type outer13 struct{ Inner inner13 }
+
+type item14 struct {
+	Note string
+}
+
+type page14 struct{ Items []item14 }
+
+type inner15 struct {
+	Body string
+}
+
+type item15 struct {
+	Note string
+}
+
+type page15 struct {
+	Inner inner15
+	Items []item15
+}
+
+type item16 struct {
+	Name string
+	Note string
+}
+
+type stored16 struct {
+	Name string
+	Note string
+}
+
+type page16 struct {
+	items []item16
+	V     any
+}
+
+// Get returns the page's items.
+func (p page16) Get() []item16 { return p.items }
+
+type detail18 struct {
+	Body string
+}
+
+type page18 struct{ Title string }
+
+// Detail returns the page's detail.
+func (page18) Detail() detail18 { return detail18{} }
+
+type detail19 struct {
+	Body string
+}
+
+type row20 struct {
+	Title string
+	Body  string
+}
+
+func must(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
+func main() {
+	title := os.Args[0]
+	out := os.Stdout
+	must(pageT.Execute(out, page{Title: title, Draft: title}))
+
+	t2 := template.Must(template.New("p").Parse("{{.Title}} {{.Body}}\n"))
+	must(t2.Execute(out, post{Title: title}))
+	t2b := template.Must(template.New("n").Parse("{{.Title}} {{.Body}}\n"))
+	_ = t2b
+	must(t2b.Execute(out, note{Title: title}))
+
+	t3 := template.Must(template.New("c").Parse("{{.Title}} {{.Body}}\n"))
+	must(t3.Execute(out, card{Title: title, Body: title}))
+
+	t6 := htmpl.Must(htmpl.New("s").Parse(`{{define "row"}}{{.Title}} {{.Body}}{{end}}`))
+	must(t6.ExecuteTemplate(out, "row", story{Title: title}))
+
+	t9 := template.Must(template.New("w").Parse("{{.}}\n"))
+	must(t9.Execute(out, whole{Title: title}))
+
+	t10 := template.Must(template.New("o").Parse("{{.Title}} {{.Inner}}\n"))
+	must(t10.Execute(out, outer10{Title: title}))
+
+	t11 := template.Must(template.New("v").Parse("{{printf \"%v\" .}}\n"))
+	must(t11.Execute(out, priv11{Name: title}))
+
+	t12 := template.Must(template.New("r").Parse("{{range .Items}}{{.}};{{end}}\n"))
+	must(t12.Execute(out, page12{Items: []item12{{Name: "/"}}}))
+
+	t13 := template.Must(template.New("i").Parse("{{with .Inner}}{{.}}{{end}}\n"))
+	must(t13.Execute(out, outer13{}))
+
+	t14 := template.Must(template.New("l").Parse(`{{define "row"}}{{.Note}}{{end}}{{range .Items}}{{template "row" .}}{{end}}` + "\n"))
+	must(t14.Execute(out, page14{Items: []item14{{}}}))
+
+	t15 := template.Must(template.New("x").Parse("{{$x := .Inner}}{{$x}} {{range $i, $e := .Items}}{{$i}}{{$e.Note}}{{end}}\n"))
+	must(t15.Execute(out, page15{Items: []item15{{}}}))
+
+	t16 := template.Must(template.New("g").Parse("{{range .Get}}{{.}}{{end}} {{.V}}\n"))
+	must(t16.Execute(out, page16{items: []item16{{Name: title}}, V: stored16{Name: title}}))
+
+	t18 := template.Must(template.New("d").Parse("{{.Title}} {{.Detail.Body}}\n"))
+	must(t18.Execute(out, page18{Title: title}))
+
+	funcs := template.FuncMap{"pick": func() detail19 { return detail19{} }}
+	t19 := template.Must(template.New("f").Funcs(funcs).Parse("{{(pick).Body}}\n"))
+	must(t19.Execute(out, nil))
+
+	t20 := template.Must(template.New("rv").Parse("{{.Title}} {{.Body}}\n"))
+	must(t20.Execute(out, reflect.ValueOf(row20{Title: title})))
+}

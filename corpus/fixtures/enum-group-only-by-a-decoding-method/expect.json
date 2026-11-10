@@ -1,0 +1,34 @@
+{
+  "name": "enum-group-only-by-a-decoding-method",
+  "description": "A method of an enumerated type retains no member by being declared. Deleting the sentinel one past the last kind moves no constant, so it is test-only use where only tests name it, and its directive stays in effect. A kind only a test's stepping loop reaches is test-only use, kept by evidence in test files. The last member of a type whose text methods name the others moves nothing and is reported.",
+  "languages": ["go"],
+  "target_kind": "library",
+  "suppressions_in_effect": 1,
+  "expect": [
+    { "symbol": "kindEnd", "report": "none" },
+    {
+      "symbol": "kindSpare",
+      "report": "DS1102",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "constant",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "modeSpare",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "enum-member",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "formatSpare",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "enum-member",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

@@ -101,7 +101,7 @@ type doc struct {
 	Due   due `yaml:"due,omitempty"`
 }
 
-// line is printed, which reads no field by name.
+// line is printed, and fmt prints its field.
 type line struct {
 	Width int
 }

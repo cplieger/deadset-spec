@@ -1,0 +1,57 @@
+{
+  "name": "enum-group-kept-by-test-evidence",
+  "description": "Deleting a constant that no code names changes nothing the program does where it moves no constant that code names, whatever values of the type arrive and whatever methods the type declares. So a sentinel one past the last kind, named only by tests, is test-only use, and so is a kind before it that production code never names: deleting it moves the sentinel, which only tests name, so test files are what keep it. A member whose deletion keeps every production relation but changes what a test makes or steps through is kept by evidence in test files, and a member after the last named one is reported as unused.",
+  "languages": ["go"],
+  "target_kind": "library",
+  "expect": [
+    {
+      "symbol": "Spare",
+      "report": "DS1102",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "End",
+      "report": "DS1102",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "LogSpare",
+      "report": "DS1102",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "LogEnd",
+      "report": "DS1102",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Tone.Mid",
+      "report": "DS1102",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Tone.Tail",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Rank.Mid",
+      "report": "DS1102",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

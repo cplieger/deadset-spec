@@ -1,0 +1,99 @@
+The Go rendering: a command that walks three values by reflection: through a
+function value of a walk, through a reflect.Value held in a struct field, and
+through a method value of Interface written in another function and handed in.
+A fourth type is handed to reflect.ValueOf only to read its kind.
+
+-- fixture.json --
+{
+  "symbols": {
+    "R10.r10T.String": {
+      "file": "target/walk.go",
+      "line": 13
+    },
+    "R10.r10bT.String": {
+      "file": "target/walk.go",
+      "line": 19
+    },
+    "R10.spare.hint": {
+      "file": "target/walk.go",
+      "line": 33
+    },
+    "R11.r11T.String": {
+      "file": "target/walk.go",
+      "line": 27
+    }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/walk.go --
+// Command target describes values by walking their fields with reflection.
+package main
+
+import (
+	"fmt"
+	"os"
+	"reflect"
+	"strings"
+)
+
+type r10T struct{ n int }
+
+func (t r10T) String() string { return fmt.Sprintf("T#%d", t.n) }
+
+type r10S struct{ F r10T }
+
+type r10bT struct{}
+
+func (r10bT) String() string { return "b" }
+
+type r10bS struct{ F r10bT }
+
+type holder struct{ v reflect.Value }
+
+type r11T struct{}
+
+func (r11T) String() string { return "g" }
+
+type r11S struct{ F r11T }
+
+type spare struct{}
+
+func (spare) hint() string { return "s" }
+
+// walk10 describes each field of the struct v that describes itself.
+func walk10(v reflect.Value) string {
+	var b strings.Builder
+	for i := 0; i < v.NumField(); i++ {
+		if s, ok := v.Field(i).Interface().(fmt.Stringer); ok {
+			b.WriteString(s.String())
+		}
+	}
+	return b.String()
+}
+
+func getter() func() any { return reflect.ValueOf(r11S{}).Field(0).Interface }
+
+func use11(get func() any) string {
+	if s, ok := get().(fmt.Stringer); ok {
+		return s.String()
+	}
+	return ""
+}
+
+// report describes one value per walk whose receiver the analysis cannot follow
+// to what reflect.ValueOf was handed.
+func report() string {
+	visit := walk10
+	out := visit(reflect.ValueOf(r10S{F: r10T{n: 7}}))
+	h := holder{v: reflect.ValueOf(r10bS{})}
+	if s, ok := h.v.Field(0).Interface().(fmt.Stringer); ok {
+		out += s.String()
+	}
+	out += use11(getter())
+	return out + reflect.ValueOf(spare{}).Kind().String()
+}
+
+func main() { os.Stdout.WriteString(report() + "\n") }

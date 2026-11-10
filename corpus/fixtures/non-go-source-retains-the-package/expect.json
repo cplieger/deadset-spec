@@ -1,0 +1,31 @@
+{
+  "name": "non-go-source-retains-the-package",
+  "description": "A package that holds a source file in another language than Go, for any build configuration and whatever its name starts with, or a Go file that imports \"C\", retains every constant, type, struct field, variable, function and method it declares, because assembly, C and object files can name them in forms the analysis does not read: go_asm.h constants as operands and in preprocessor directives, field offsets, symbol references and calls. A function or variable of another package whose name such a file of the target holds is retained as well. The cost is precision: an iota group of such a package retains its unnamed last member too.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "expect": [
+    { "symbol": "Asm.mode", "report": "none", "retained_by": ["linkname-cgo-asm-plugin"] },
+    { "symbol": "Asm.modeOff", "report": "none", "retained_by": ["linkname-cgo-asm-plugin"] },
+    { "symbol": "Asm.modeMid", "report": "none", "retained_by": ["linkname-cgo-asm-plugin"] },
+    { "symbol": "Asm.modeLast", "report": "none", "retained_by": ["linkname-cgo-asm-plugin"] },
+    { "symbol": "Asm.toneMid", "report": "none", "retained_by": ["linkname-cgo-asm-plugin"] },
+    { "symbol": "Asm.toneZ", "report": "none", "retained_by": ["linkname-cgo-asm-plugin"] },
+    { "symbol": "Asm.gearMid", "report": "none", "retained_by": ["linkname-cgo-asm-plugin"] },
+    { "symbol": "Asm.c18Mid", "report": "none", "retained_by": ["linkname-cgo-asm-plugin"] },
+    { "symbol": "Asm.powerMid", "report": "none", "retained_by": ["linkname-cgo-asm-plugin"] },
+    { "symbol": "Asm.cur", "report": "none", "retained_by": ["linkname-cgo-asm-plugin"] },
+    { "symbol": "Asm.fastPath", "report": "none", "retained_by": ["linkname-cgo-asm-plugin"] },
+    { "symbol": "Asm.ctx.a", "report": "none", "retained_by": ["linkname-cgo-asm-plugin"] },
+    { "symbol": "Asm.ctx.b", "report": "none", "retained_by": ["linkname-cgo-asm-plugin"] },
+    { "symbol": "Asm.bump", "report": "none", "retained_by": ["linkname-cgo-asm-plugin"] },
+    { "symbol": "Arch.helper", "report": "none", "retained_by": ["linkname-cgo-asm-plugin"] },
+    { "symbol": "A.probe", "report": "none", "retained_by": ["linkname-cgo-asm-plugin"] },
+    { "symbol": "A.Probe", "report": "none", "retained_by": ["linkname-cgo-asm-plugin"] },
+    { "symbol": "A2.probe2", "report": "none", "retained_by": ["linkname-cgo-asm-plugin"] },
+    { "symbol": "C.lanesMid", "report": "none", "retained_by": ["linkname-cgo-asm-plugin"] },
+    { "symbol": "C.lanesTwo", "report": "none", "retained_by": ["linkname-cgo-asm-plugin"] },
+    { "symbol": "C.wide", "report": "none" },
+    { "symbol": "Syso.levelMid", "report": "none", "retained_by": ["linkname-cgo-asm-plugin"] },
+    { "symbol": "Syso.levelHigh", "report": "none", "retained_by": ["linkname-cgo-asm-plugin"] }
+  ]
+}

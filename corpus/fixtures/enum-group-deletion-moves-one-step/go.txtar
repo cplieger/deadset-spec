@@ -1,0 +1,438 @@
+The Go rendering: an application whose const blocks hold shapes a deletion
+cannot renumber by one step (a shift and a division of iota, a restated list, a
+product of a member), shapes it would break (a division or a shift a lower iota
+makes invalid, a value below an int8's least, two names in one specification, a
+first specification the next one repeats), a boolean and a complex group, and
+controls a deletion moves cleanly.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Alias.Mid": {
+      "file": "target/steps.go",
+      "line": 102
+    },
+    "B": {
+      "file": "target/builds.go",
+      "line": 112
+    },
+    "Blank.Mid": {
+      "file": "target/builds.go",
+      "line": 79
+    },
+    "Flag.Mid": {
+      "file": "target/steps.go",
+      "line": 144
+    },
+    "Flag.Tail": {
+      "file": "target/steps.go",
+      "line": 146
+    },
+    "Floor.M1": {
+      "file": "target/builds.go",
+      "line": 42
+    },
+    "Floor.M2": {
+      "file": "target/builds.go",
+      "line": 43
+    },
+    "Keep.M": {
+      "file": "target/builds.go",
+      "line": 96
+    },
+    "Least.Mid": {
+      "file": "target/builds.go",
+      "line": 25
+    },
+    "Listed.X": {
+      "file": "target/steps.go",
+      "line": 46
+    },
+    "Power.Mid": {
+      "file": "target/steps.go",
+      "line": 8
+    },
+    "Power.Tail": {
+      "file": "target/steps.go",
+      "line": 10
+    },
+    "Ratio.Hidden": {
+      "file": "target/builds.go",
+      "line": 9
+    },
+    "Ratio.Mid": {
+      "file": "target/builds.go",
+      "line": 8
+    },
+    "Share.Mid": {
+      "file": "target/steps.go",
+      "line": 27
+    },
+    "Shift.Hidden": {
+      "file": "target/builds.go",
+      "line": 62
+    },
+    "Shift.Mid": {
+      "file": "target/builds.go",
+      "line": 61
+    },
+    "State.Unknown": {
+      "file": "target/steps.go",
+      "line": 181
+    },
+    "Times.Mid": {
+      "file": "target/steps.go",
+      "line": 123
+    },
+    "Tiny.Mid": {
+      "file": "target/steps.go",
+      "line": 67
+    },
+    "Twin.Mid": {
+      "file": "target/steps.go",
+      "line": 84
+    },
+    "Twin.W": {
+      "file": "target/steps.go",
+      "line": 85
+    },
+    "Wave.Mid": {
+      "file": "target/steps.go",
+      "line": 163
+    },
+    "Wave.Tail": {
+      "file": "target/steps.go",
+      "line": 165
+    }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/builds.go --
+package main
+
+// ratio has a later member that divides by a value a deletion would make zero.
+type ratio int
+
+const (
+	ratioA ratio = iota
+	ratioMid
+	ratioHidden ratio = 1 / (iota - 1)
+)
+
+// divides compares a value with ratioA.
+func divides(n int) bool {
+	v := ratioA
+	if n > 3 {
+		v = ratio(1)
+	}
+	return v == ratioA
+}
+
+// least is an int8 whose last member a deletion would push below the type's least value.
+type least int8
+
+const (
+	leastMid least = iota - 128
+	leastZ least = iota - 129
+)
+
+// lowest compares a zero value with leastZ.
+func lowest(n int) bool {
+	var v least
+	if n > 3 {
+		v = leastZ
+	}
+	return v == leastZ
+}
+
+// floor is an int8 two of whose members a joint deletion would push below its least value.
+type floor int8
+
+const (
+	floorM1 floor = -128
+	floorM2 floor = -128
+	floorZ floor = iota - 129
+)
+
+// joined compares a zero value with floorZ.
+func joined(n int) bool {
+	var v floor
+	if n > 3 {
+		v = floorZ
+	}
+	return v == floorZ
+}
+
+// shift has a later member a deletion would give a negative shift count.
+type shift int
+
+const (
+	shiftA shift = iota
+	shiftMid
+	shiftHidden shift = 1 << (iota - 2)
+)
+
+// shifts compares a value with shiftA.
+func shifts(n int) bool {
+	v := shiftA
+	if n > 3 {
+		v = shift(4)
+	}
+	return v == shiftA
+}
+
+// blank has a blank constant a deletion would make divide by zero.
+type blank int
+
+const (
+	blankA blank = iota
+	blankMid
+	_ = 1 / (iota - 1)
+)
+
+// blanks compares a value with blankA.
+func blanks(n int) bool {
+	v := blankA
+	if n > 3 {
+		v = blank(4)
+	}
+	return v == blankA
+}
+
+// keep has a specification of two names, one of them named.
+type keep int
+
+const (
+	keepA, keepM keep = 1, 2
+	keepB keep = iota
+	keepC
+)
+
+// kept compares a value with keepA, keepB and keepC.
+func kept(n int) bool {
+	v := keepA
+	if n > 3 {
+		v = keepC
+	}
+	return v == keepB || v == keepC
+}
+
+const (
+	a = iota
+	b, c = iota, iota + 5
+	z = c
+)
+-- target/main.go --
+// Command target declares const blocks whose later constants a deletion would
+// move by more than one step, re-list, or break, and prints what it observes.
+package main
+
+import (
+	"fmt"
+	"os"
+)
+
+func main() {
+	n := len(os.Args)
+	fmt.Println(doubled(n), divided(n), relisted(n), narrow(n), paired(n))
+	fmt.Println(aliased(n), multiplied(n), flags(n), waves(n), states(n))
+	fmt.Println(divides(n), lowest(n), joined(n), shifts(n), blanks(n), kept(n))
+	fmt.Println(a, c, z)
+}
+-- target/steps.go --
+package main
+
+// power doubles from member to member.
+type power int
+
+const (
+	powerA power = 2.0 << iota
+	powerMid
+	powerZ
+	powerTail
+)
+
+// doubled compares a variable declared as 8 with powerZ.
+func doubled(n int) bool {
+	var f power = 8
+	if n > 3 {
+		f = powerA
+	}
+	return f == powerZ
+}
+
+// share divides six by the member's position.
+type share int
+
+const (
+	shareA share = 6.0 / (iota + 1)
+	shareMid
+	shareZ
+)
+
+// divided compares a variable declared as 2 with shareZ.
+func divided(n int) bool {
+	var s share = 2
+	if n > 3 {
+		s = shareA
+	}
+	return s == shareZ
+}
+
+// listed restates its expression list part way through.
+type listed int
+
+const (
+	listedA listed = iota
+	listedB
+	listedX listed = iota + 8
+	listedC
+)
+
+// listedTwo is 2, the value listedC takes if listedX goes.
+const listedTwo listed = 2
+
+// relisted compares listedC with listedTwo and the first members.
+func relisted(n int) bool {
+	m := listedC
+	if n > 3 {
+		m = listedB
+	}
+	return m == listedTwo || m == listedA
+}
+
+// tiny is an int8 whose last member sits at the type's least value.
+type tiny int8
+
+const (
+	tinyA tiny = iota
+	tinyMid
+	tinyZ tiny = iota - 130
+)
+
+// narrow compares a value with tinyZ.
+func narrow(n int) bool {
+	v := tinyA
+	if n > 3 {
+		v = tinyZ
+	}
+	return v == tinyZ
+}
+
+// twin declares two members per specification.
+type twin int
+
+const (
+	twinA, twinMid twin = iota, iota + 10
+	twinZ, twinW
+)
+
+// paired compares a value with twinZ.
+func paired(n int) bool {
+	v := twinA
+	if n > 3 {
+		v = twinZ
+	}
+	return v == twinZ
+}
+
+// alias has a constant declared as the plain name of its last member.
+type alias int
+
+const (
+	aliasA alias = iota
+	aliasMid
+	aliasZ
+)
+
+// aliasLast is aliasZ under another name.
+const aliasLast = aliasZ
+
+// aliased compares a value with aliasLast and aliasA.
+func aliased(n int) bool {
+	v := aliasA
+	if n > 3 {
+		v = aliasLast
+	}
+	return v == aliasLast || v == aliasA
+}
+
+// times has a constant declared as twice its last member.
+type times int
+
+const (
+	timesA times = iota
+	timesMid
+	timesZ
+)
+
+// timesDouble is twice timesZ.
+const timesDouble = timesZ * 2
+
+// multiplied compares a value with timesDouble and timesA.
+func multiplied(n int) bool {
+	v := timesA
+	if n > 3 {
+		v = timesDouble
+	}
+	return v == timesDouble || v == timesA
+}
+
+// flag is a boolean enumerated type.
+type flag bool
+
+const (
+	flagOff flag = iota == 0
+	flagMid
+	flagOn
+	flagTail
+)
+
+// flags compares a value with flagOn and flagOff.
+func flags(n int) bool {
+	v := flagOff
+	if n > 3 {
+		v = flagOn
+	}
+	return v == flagOn || v == flagOff
+}
+
+// wave is a complex enumerated type.
+type wave complex128
+
+const (
+	waveA wave = iota * 1i
+	waveMid
+	waveZ
+	waveTail
+)
+
+// waves compares a value with waveZ and waveA.
+func waves(n int) bool {
+	v := waveA
+	if n > 3 {
+		v = waveZ
+	}
+	return v == waveZ || v == waveA
+}
+
+// state has an unnamed first member whose list the next specification repeats.
+type state int
+
+const (
+	stateUnknown state = iota
+	stateIdle
+	stateBusy
+)
+
+// states compares a value with the two named states.
+func states(n int) bool {
+	v := stateIdle
+	if n > 3 {
+		v = stateBusy
+	}
+	return v == stateBusy || v == stateIdle
+}

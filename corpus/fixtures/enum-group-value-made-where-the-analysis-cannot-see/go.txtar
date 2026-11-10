@@ -1,0 +1,612 @@
+The Go rendering: a command declaring one iota group per use the class does not
+follow. A pointer to a struct holding one type reaches encoding/json through a
+function of the program that hands its empty-interface parameter on; one type is
+decoded by a generic helper into a value of its type parameter; one is filled
+through a function-valued parameter; one is a type argument of a generic function
+in a module outside the target; one is asserted out of an interface value; one
+is read through unsafe.Pointer; one is converted from a float; one is held by an
+unexported field of a struct a pointer to which goes to encoding/json.Marshal.
+
+A second file covers more shapes: a pointer to a struct whose unexported embedded
+field is one type, a promoted exported field, a receive-only, a send-only and a
+bidirectional channel handed to a module outside the target, a pointer inside an
+error, a pointer put into a slice of empty interfaces, a struct field, an element
+assigned, a returned value and a sent value of the empty interface, pointer
+conversions both ways, a function result reached by reflection, a type-switch
+case, a write through unsafe.Pointer and a map key decoded by encoding/json.
+Every group ends with a member that ends.go names by comparison, and the member
+before it is the subject.
+
+-- fixture.json --
+{
+  "symbols": {
+    "bchSpare": {
+      "file": "target/more.go",
+      "line": 51
+    },
+    "cellSpare": {
+      "file": "target/more.go",
+      "line": 59
+    },
+    "colSpare": {
+      "file": "target/more.go",
+      "line": 75
+    },
+    "dialSpare": {
+      "file": "target/more.go",
+      "line": 123
+    },
+    "dropSpare": {
+      "file": "target/more.go",
+      "line": 91
+    },
+    "flavorSour": {
+      "file": "target/main.go",
+      "line": 55
+    },
+    "flavorSweet": {
+      "file": "target/main.go",
+      "line": 54
+    },
+    "gaugeHigh": {
+      "file": "target/main.go",
+      "line": 64
+    },
+    "gaugeMid": {
+      "file": "target/main.go",
+      "line": 63
+    },
+    "gradeA": {
+      "file": "target/main.go",
+      "line": 73
+    },
+    "gradeB": {
+      "file": "target/main.go",
+      "line": 72
+    },
+    "grainCoarse": {
+      "file": "target/main.go",
+      "line": 28
+    },
+    "grainMid": {
+      "file": "target/main.go",
+      "line": 27
+    },
+    "gripSpare": {
+      "file": "target/more.go",
+      "line": 107
+    },
+    "hueBlue": {
+      "file": "target/main.go",
+      "line": 19
+    },
+    "hueGreen": {
+      "file": "target/main.go",
+      "line": 18
+    },
+    "knobSpare": {
+      "file": "target/more.go",
+      "line": 27
+    },
+    "mkeySpare": {
+      "file": "target/more.go",
+      "line": 147
+    },
+    "paneSpare": {
+      "file": "target/more.go",
+      "line": 67
+    },
+    "phaseGone": {
+      "file": "target/main.go",
+      "line": 82
+    },
+    "rchSpare": {
+      "file": "target/more.go",
+      "line": 35
+    },
+    "schSpare": {
+      "file": "target/more.go",
+      "line": 43
+    },
+    "slabSpare": {
+      "file": "target/more.go",
+      "line": 83
+    },
+    "statusSpare": {
+      "file": "target/more.go",
+      "line": 115
+    },
+    "stepThree": {
+      "file": "target/main.go",
+      "line": 46
+    },
+    "stepTwo": {
+      "file": "target/main.go",
+      "line": 45
+    },
+    "tagSpare": {
+      "file": "target/more.go",
+      "line": 99
+    },
+    "tierMax": {
+      "file": "target/main.go",
+      "line": 37
+    },
+    "tierPro": {
+      "file": "target/main.go",
+      "line": 36
+    },
+    "tintSpare": {
+      "file": "target/more.go",
+      "line": 19
+    },
+    "vibeSpare": {
+      "file": "target/more.go",
+      "line": 131
+    },
+    "warpSpare": {
+      "file": "target/more.go",
+      "line": 139
+    }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+
+require (
+	example.com/rowsdb v0.0.0
+	example.com/sink v0.0.0
+	example.com/stepper v0.0.0
+)
+
+replace (
+	example.com/rowsdb v0.0.0 => ../rowsdb
+	example.com/sink v0.0.0 => ../sink
+	example.com/stepper v0.0.0 => ../stepper
+)
+-- rowsdb/go.mod --
+module example.com/rowsdb
+
+go 1.27.0
+-- rowsdb/rows.go --
+// Package rowsdb is a module outside the target that scans a row into
+// destinations, as a database/sql Rows does.
+package rowsdb
+
+// Rows is one result set.
+type Rows struct{}
+
+// Scan copies the current row into dest.
+func (r *Rows) Scan(dest ...any) error { return nil }
+-- sink/go.mod --
+module example.com/sink
+
+go 1.27.0
+-- sink/sink.go --
+// Package sink is a module outside the target that takes any value.
+package sink
+
+// Take holds v.
+func Take(v any) { _ = v }
+-- stepper/go.mod --
+module example.com/stepper
+
+go 1.27.0
+-- stepper/stepper.go --
+// Package stepper is a module outside the target whose generic body the analysis
+// does not read.
+package stepper
+
+// Next is the value after e.
+func Next[E ~int](e E) E { return e + 1 }
+-- target/ends.go --
+package main
+
+// ends reports whether every last member sits above zero.
+func ends() bool {
+	return hueEnd > 0 &&
+		grainEnd > 0 &&
+		tierEnd > 0 &&
+		stepEnd > 0 &&
+		flavorEnd > 0 &&
+		gaugeEnd > 0 &&
+		gradeEnd > 0 &&
+		phaseEnd > 0 &&
+		tintEnd > 0 &&
+		knobEnd > 0 &&
+		rchEnd > 0 &&
+		schEnd > 0 &&
+		bchEnd > 0 &&
+		cellEnd > 0 &&
+		paneEnd > 0 &&
+		colEnd > 0 &&
+		slabEnd > 0 &&
+		dropEnd > 0 &&
+		tagEnd > 0 &&
+		gripEnd > 0 &&
+		statusEnd > 0 &&
+		dialEnd > 0 &&
+		vibeEnd > 0 &&
+		warpEnd > 0 &&
+		mkeyEnd > 0
+}
+-- target/main.go --
+// Command target hands values of enumerated types to code the analysis does not
+// read, and takes them back.
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"os"
+	"unsafe"
+
+	"example.com/stepper"
+)
+
+type hue int
+
+const (
+	hueRed hue = iota
+	hueGreen
+	hueBlue
+	hueEnd
+)
+
+type grain int
+
+const (
+	grainFine grain = iota
+	grainMid
+	grainCoarse
+	grainEnd
+)
+
+type tier int
+
+const (
+	tierFree tier = iota
+	tierPro
+	tierMax
+	tierEnd
+)
+
+type step int
+
+const (
+	stepOne step = iota
+	stepTwo
+	stepThree
+	stepEnd
+)
+
+type flavor int
+
+const (
+	flavorPlain flavor = iota
+	flavorSweet
+	flavorSour
+	flavorEnd
+)
+
+type gauge int64
+
+const (
+	gaugeLow gauge = iota
+	gaugeMid
+	gaugeHigh
+	gaugeEnd
+)
+
+type grade int
+
+const (
+	gradeC grade = iota
+	gradeB
+	gradeA
+	gradeEnd
+)
+
+type phase int
+
+const (
+	phaseIdle phase = iota
+	phaseBusy
+	phaseGone
+	phaseEnd
+)
+
+type palette struct {
+	Hue hue `json:"hue"`
+}
+
+type sample struct {
+	Grain grain `json:"grain"`
+}
+
+type account struct {
+	Tier tier
+}
+
+type server struct {
+	Name  string `json:"name"`
+	state phase
+}
+
+func load(data []byte, into any) error { return json.Unmarshal(data, into) }
+
+func decode[T any](data []byte) (T, error) {
+	var v T
+	err := json.Unmarshal(data, &v)
+	return v, err
+}
+
+func apply(fill func(*account) error) account {
+	var a account
+	if err := fill(&a); err != nil {
+		return account{}
+	}
+	return a
+}
+
+func pick(v any) flavor {
+	f, _ := v.(flavor)
+	return f
+}
+
+func main() {
+	var p palette
+	if err := load([]byte(os.Args[1]), &p); err != nil {
+		return
+	}
+	s, err := decode[sample]([]byte(os.Args[2]))
+	if err != nil {
+		return
+	}
+	a := apply(func(*account) error { return nil })
+	n := int64(len(os.Args))
+	g := *(*gauge)(unsafe.Pointer(&n))
+	r := grade(float64(len(os.Args)) / 2)
+	srv := &server{Name: os.Args[3], state: phaseIdle}
+	out, err := json.Marshal(srv)
+	if err != nil {
+		return
+	}
+	fmt.Println(p.Hue == hueRed, s.Grain == grainFine, a.Tier == tierFree, stepper.Next(stepOne) == stepOne)
+	fmt.Println(pick(os.Args[4]) == flavorPlain, g == gaugeLow, r == gradeC, srv.state == phaseBusy, string(out), ends())
+}
+-- target/more.go --
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"os"
+	"reflect"
+	"sync/atomic"
+	"unsafe"
+
+	"example.com/rowsdb"
+	"example.com/sink"
+)
+
+type tint int
+
+const (
+	tintA tint = iota
+	tintSpare
+	tintEnd
+)
+
+type knob int
+
+const (
+	knobA knob = iota
+	knobSpare
+	knobEnd
+)
+
+type rch int
+
+const (
+	rchA rch = iota
+	rchSpare
+	rchEnd
+)
+
+type sch int
+
+const (
+	schA sch = iota
+	schSpare
+	schEnd
+)
+
+type bch int
+
+const (
+	bchA bch = iota
+	bchSpare
+	bchEnd
+)
+
+type cell int
+
+const (
+	cellA cell = iota
+	cellSpare
+	cellEnd
+)
+
+type pane int
+
+const (
+	paneA pane = iota
+	paneSpare
+	paneEnd
+)
+
+type col int
+
+const (
+	colA col = iota
+	colSpare
+	colEnd
+)
+
+type slab int
+
+const (
+	slabA slab = iota
+	slabSpare
+	slabEnd
+)
+
+type drop int
+
+const (
+	dropA drop = iota
+	dropSpare
+	dropEnd
+)
+
+type tag int
+
+const (
+	tagA tag = iota
+	tagSpare
+	tagEnd
+)
+
+type grip int
+
+const (
+	gripA grip = iota
+	gripSpare
+	gripEnd
+)
+
+type status int32
+
+const (
+	statusA status = iota
+	statusSpare
+	statusEnd
+)
+
+type dial int
+
+const (
+	dialA dial = iota
+	dialSpare
+	dialEnd
+)
+
+type vibe int
+
+const (
+	vibeA vibe = iota
+	vibeSpare
+	vibeEnd
+)
+
+type warp int
+
+const (
+	warpA warp = iota
+	warpSpare
+	warpEnd
+)
+
+type mkey int
+
+const (
+	mkeyA mkey = iota
+	mkeySpare
+	mkeyEnd
+)
+
+type tinted struct{ tint }
+
+type knobInner struct{ V knob }
+
+type knobOuter struct{ knobInner }
+
+type field struct {
+	name string
+	dst  any
+}
+
+type tagErr struct{ T tag }
+
+func (e *tagErr) Error() string { return fmt.Sprint(int(e.T)) }
+
+var curDial dial
+
+func recvOnly(c <-chan rch) { sink.Take(c) }
+
+func sendOnly(c chan<- sch) { sink.Take(c) }
+
+func both(c chan bch) { sink.Take(c) }
+
+func boxed(s *slab) any { return s }
+
+func failing(t tag) error { return &tagErr{T: t} }
+
+func init() {
+	data := []byte(os.Getenv("DOC"))
+	var tn tinted
+	var kn knobOuter
+	if json.Unmarshal(data, &tn) != nil || json.Unmarshal(data, &kn) != nil {
+		return
+	}
+	recvOnly(make(chan rch))
+	sendOnly(make(chan sch, 1))
+	both(make(chan bch, 1))
+
+	var cl cell
+	dst := []any{&cl}
+	var pn pane
+	fields := []field{{name: "pane", dst: &pn}}
+	var cv col
+	dest := make([]any, 1)
+	dest[0] = &cv
+	var sb slab
+	var dp drop
+	ch := make(chan any, 1)
+	ch <- &dp
+	if _, err := fmt.Sscan(os.Args[0], dst...); err != nil {
+		return
+	}
+	if _, err := fmt.Sscan(os.Args[0], fields[0].dst, boxed(&sb), <-ch); err != nil {
+		return
+	}
+	if err := (&rowsdb.Rows{}).Scan(dest...); err != nil {
+		return
+	}
+
+	n := 1
+	g := (*grip)(&n)
+	st := statusA
+	atomic.AddInt32((*int32)(&st), 1)
+	get := func() *dial { return &curDial }
+	reflect.ValueOf(get).Call(nil)[0].Elem().SetInt(1)
+
+	var x any = len(os.Args)
+	switch v := x.(type) {
+	case vibe:
+		fmt.Println(v)
+	}
+	var w warp
+	*(*int)(unsafe.Pointer(&w)) = 1
+	m := map[mkey]bool{}
+	if json.Unmarshal(data, &m) != nil {
+		return
+	}
+
+	fmt.Println(tn.tint == tintA, kn.V == knobA, rchA == 0, schA == 0, bchA == 0, cl == cellA, pn == paneA, cv == colA)
+	fmt.Println(sb == slabA, dp == dropA, failing(tagA), *g == gripA, st == statusA, curDial == dialA)
+	fmt.Println(vibeA == 0, w == warpA, m[mkeyA], fields[0].name)
+}

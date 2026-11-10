@@ -1,6 +1,6 @@
 {
   "name": "reach-rules-through-a-function-value",
-  "description": "A call through a variable whose value is a known function reaches what a direct call of that function reaches, for each rule below: a value formatted through a variable holding a formatting function keeps the String method the format verb calls, and a method a string names in a call through a variable holding a function outside the analyzed program is kept. A call through a variable holding a method expression reads its first argument as the receiver and the rest as the method's parameters, so a value formatted through a logger method expression, directly or through a wrapper, keeps its String method, and a method a string names through reflect.Value.MethodByName held that way is kept. A method no string names is reported. A variable that can hold two lookups makes both, whichever is written first, so a field one of them names is kept.",
+  "description": "A call through a variable whose value is a known function reaches what a direct call of that function reaches, for each rule below: a value formatted through a variable holding a formatting function keeps the String method the format verb calls, and a method a string names in a call through a variable holding a function outside the analyzed program is kept. A call through a variable holding a method expression reads its first argument as the receiver and the rest as the method's parameters, so a value formatted through a logger method expression, directly or through a wrapper, keeps its String method, and a method a string names through reflect.Value.MethodByName held that way is kept. A method no string names is reported. A variable that can hold two lookups makes both, whichever is written first, so a field one of them names is kept. A decoder reached through a struct field, a map element, a method value or a parameter takes the destination as any, so a member of the decoded type whose deletion renumbers a named one is retained, as is one passed to a function literal called through a variable, whose callee the analysis does not know; the last member, whose deletion moves no named constant, is reported.",
   "languages": [
     "go"
   ],
@@ -62,6 +62,18 @@
       "retained_by": [
         "reflective-lookup"
       ]
-    }
+    },
+    { "symbol": "fieldLevel.Mid", "report": "none", "retained_by": ["enum-group"] },
+    {
+      "symbol": "fieldLevel.Top",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    { "symbol": "mapLevel.Mid", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "methodLevel.Mid", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "paramLevel.Mid", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "literalLevel.Mid", "report": "none", "retained_by": ["enum-group"] }
   ]
 }

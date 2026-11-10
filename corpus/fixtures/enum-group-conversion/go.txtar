@@ -6,7 +6,6 @@ naming the first member of each and no other.
 {
   "symbols": {
     "ModeWrite": { "file": "target/mode.go", "line": 8 },
-    "TierHigh": { "file": "target/tier.go", "line": 10 },
     "TierMid": { "file": "target/tier.go", "line": 9 }
   }
 }
@@ -15,13 +14,14 @@ module example.com/target
 
 go 1.27.0
 -- target/main.go --
-// Command target converts the argument count to a tier and spells one mode.
+// Command target converts the argument count to a tier, compares it with the first
+// and last tier, and spells one mode.
 package main
 
 import "os"
 
 func main() {
-	if tierOf(len(os.Args)) == tierLow && describe(modeRead) == "" {
+	if tierOf(len(os.Args)) == tierLow && tierOf(0) != tierHigh && describe(modeRead) == "" {
 		panic("the levels returned nothing")
 	}
 }

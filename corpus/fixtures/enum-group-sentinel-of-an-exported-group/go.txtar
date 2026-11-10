@@ -1,0 +1,108 @@
+The Go rendering: a library with an exported enumerated type and an
+unexported one with exported constants, each with a hidden member between two
+exported ones and an unexported sentinel last, which nothing names, and an
+exported type whose first exported member only a test names.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Classify": {
+      "file": "target/marker.go",
+      "line": 13
+    },
+    "LibKind.A": {
+      "file": "target/lib.go",
+      "line": 19
+    },
+    "LibKind.B": {
+      "file": "target/lib.go",
+      "line": 21
+    },
+    "LibKind.Hidden": {
+      "file": "target/lib.go",
+      "line": 20
+    },
+    "LibKind.Tail": {
+      "file": "target/lib.go",
+      "line": 22
+    },
+    "LibMood.Happy": {
+      "file": "target/lib.go",
+      "line": 11
+    },
+    "LibMood.Mid": {
+      "file": "target/lib.go",
+      "line": 10
+    },
+    "LibMood.Sad": {
+      "file": "target/lib.go",
+      "line": 9
+    },
+    "LibMood.Tail": {
+      "file": "target/lib.go",
+      "line": 12
+    },
+    "Marker.Unknown": {
+      "file": "target/marker.go",
+      "line": 7
+    }
+  }
+}
+-- target/go.mod --
+module example.com/lib
+
+go 1.27.0
+-- target/lib.go --
+// Package lib exports two enumerated types whose last members are unexported
+// sentinels.
+package lib
+
+// mood is unexported, with exported constants.
+type mood int
+
+const (
+	MoodSad mood = iota
+	moodMid
+	MoodHappy
+	moodTail
+)
+
+// Kind is an exported enumerated type with unexported members between exported ones.
+type Kind int
+
+const (
+	KindA Kind = iota
+	kindHidden
+	KindB
+	kindTail
+)
+-- target/marker.go --
+package lib
+
+// Marker is the state of a marker file.
+type Marker int
+
+const (
+	MarkerUnknown Marker = iota
+	MarkerFresh
+	MarkerStale
+)
+
+// Classify reads a marker's age in hours.
+func Classify(hours int) Marker {
+	if hours < 24 {
+		return MarkerFresh
+	}
+	return MarkerStale
+}
+-- target/marker_test.go --
+package lib
+
+import "testing"
+
+func TestTheZeroMarkerIsUnknown(t *testing.T) {
+	var m Marker
+	if m != MarkerUnknown {
+		t.Fatal("the zero marker is not unknown")
+	}
+}

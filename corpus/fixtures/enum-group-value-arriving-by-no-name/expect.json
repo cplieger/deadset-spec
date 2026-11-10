@@ -1,0 +1,214 @@
+{
+  "name": "enum-group-value-arriving-by-no-name",
+  "description": "A constant whose deletion moves a constant that code names is retained by the enum-group class unless every value of its type that arises in the program comes from a member's name, a constant or the zero value and is only compared or copied inside the program. A range over a member, a type argument, a range over a function, a conversion to any or between pointer types, reflection and a channel handed to outside code each make a value arise by no name, so the middle member, whose deletion renumbers the last named one, is retained, at the production site where a production file makes the value and at a test file's site where only a test file does. A member after the last named one moves no named constant when deleted, so the program does the same without it whatever values arrive, and it is reported as an unused enum member.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "expect": [
+    { "symbol": "Ranged.Mid", "report": "none", "retained_by": ["enum-group"] },
+    {
+      "symbol": "Ranged.Tail",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    { "symbol": "Stepped.Mid", "report": "none", "retained_by": ["enum-group"] },
+    {
+      "symbol": "Stepped.Tail",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    { "symbol": "Iterated.Mid", "report": "none", "retained_by": ["enum-group"] },
+    {
+      "symbol": "Iterated.Tail",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    { "symbol": "YAMLLevel.Mid", "report": "none", "retained_by": ["enum-group"] },
+    {
+      "symbol": "YAMLLevel.Tail",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    { "symbol": "TOMLLevel.Mid", "report": "none", "retained_by": ["enum-group"] },
+    {
+      "symbol": "TOMLLevel.Tail",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    { "symbol": "Scanned.Mid", "report": "none", "retained_by": ["enum-group"] },
+    {
+      "symbol": "Scanned.Tail",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    { "symbol": "ReadBinary.Mid", "report": "none", "retained_by": ["enum-group"] },
+    {
+      "symbol": "ReadBinary.Tail",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    { "symbol": "Keyed.Mid", "report": "none", "retained_by": ["enum-group"] },
+    {
+      "symbol": "Keyed.Tail",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    { "symbol": "Through.Mid", "report": "none", "retained_by": ["enum-group"] },
+    {
+      "symbol": "Through.Tail",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    { "symbol": "Spread.Mid", "report": "none", "retained_by": ["enum-group"] },
+    {
+      "symbol": "Spread.Tail",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    { "symbol": "Fielded.Mid", "report": "none", "retained_by": ["enum-group"] },
+    {
+      "symbol": "Fielded.Tail",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    { "symbol": "Embedded.Mid", "report": "none", "retained_by": ["enum-group"] },
+    {
+      "symbol": "Embedded.Tail",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    { "symbol": "First.Mid", "report": "none", "retained_by": ["enum-group"] },
+    {
+      "symbol": "First.Tail",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    { "symbol": "Second.Mid", "report": "none", "retained_by": ["enum-group"] },
+    {
+      "symbol": "Second.Tail",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    { "symbol": "ViaUnsafe.Mid", "report": "none", "retained_by": ["enum-group"] },
+    {
+      "symbol": "ViaUnsafe.Tail",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    { "symbol": "ViaPointer.Mid", "report": "none", "retained_by": ["enum-group"] },
+    {
+      "symbol": "ViaPointer.Tail",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    { "symbol": "Counter.Mid", "report": "none", "retained_by": ["enum-group"] },
+    {
+      "symbol": "Counter.Tail",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    { "symbol": "Reflected.Mid", "report": "none", "retained_by": ["enum-group"] },
+    {
+      "symbol": "Reflected.Tail",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    { "symbol": "Boxed.Mid", "report": "none", "retained_by": ["enum-group"] },
+    {
+      "symbol": "Boxed.Tail",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    { "symbol": "Overwritten.Mid", "report": "none", "retained_by": ["enum-group"] },
+    {
+      "symbol": "Overwritten.Tail",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    { "symbol": "Received.Mid", "report": "none", "retained_by": ["enum-group"] },
+    {
+      "symbol": "Received.Tail",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    { "symbol": "Sent.Mid", "report": "none", "retained_by": ["enum-group"] },
+    {
+      "symbol": "Sent.Tail",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    { "symbol": "Both.Mid", "report": "none", "retained_by": ["enum-group"] },
+    {
+      "symbol": "Both.Tail",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    { "symbol": "AnyDecoded.Mid", "report": "none", "retained_by": ["enum-group"] },
+    {
+      "symbol": "AnyDecoded.Tail",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "PtrDecoded.Mid",
+      "report": "DS1102",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "PtrDecoded.Tail",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

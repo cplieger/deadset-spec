@@ -17,6 +17,7 @@ nothing else names, and a constant naming an interface nothing else names.
     "colorOld": { "file": "target/main.go", "line": 19 },
     "colorRed": { "file": "target/main.go", "line": 20 },
     "sizer": { "file": "target/main.go", "line": 23 },
+    "sizer.size": { "file": "target/main.go", "line": 24 },
     "sizerSlots": { "file": "target/main.go", "line": 28 },
     "slotIndex": { "file": "target/main.go", "line": 29 },
     "fixtureA": { "file": "target/main_test.go", "line": 6 },

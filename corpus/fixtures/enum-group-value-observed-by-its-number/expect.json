@@ -1,0 +1,30 @@
+{
+  "name": "enum-group-value-observed-by-its-number",
+  "description": "A value of an enumerated type that code observes by its number, rather than only comparing it with other values of the type, would change behaviour when a deletion renumbers the members after the deleted one. Printing it, indexing an array with it, converting it, using it as an array length or a type argument, handing it through an interface or to reflection, and exposing a variable of the type by linkname each observe or produce it so, and retain a member whose deletion renumbers a named one. A member after the last named one moves nothing when deleted and is reported.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "expect": [
+    { "symbol": "Printed.Mid", "report": "none", "retained_by": ["enum-group"] },
+    {
+      "symbol": "Printed.Tail",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    { "symbol": "Indexed.Mid", "report": "none", "retained_by": ["enum-group"] },
+    {
+      "symbol": "Indexed.Tail",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    { "symbol": "Count.Mid", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "Length.Mid", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "Member.Mid", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "Level.Mid", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "Mode.Mid", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "Linked.Mid", "report": "none", "retained_by": ["enum-group"] }
+  ]
+}

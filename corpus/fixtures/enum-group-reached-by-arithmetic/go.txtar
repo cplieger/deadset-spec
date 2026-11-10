@@ -1,0 +1,135 @@
+The Go rendering: a command that steps through two enumerated types by an
+increment loop up to a named last member (one type with a String method, one
+without), a third and a fourth whose values come from a compound assignment and a
+binary expression and whose later members nothing names, a fifth whose only
+arithmetic is on constants, and a sixth type whose middle member only a test
+steps through.
+
+-- fixture.json --
+{
+  "symbols": {
+    "levelHigh": {
+      "file": "target/main.go",
+      "line": 11
+    },
+    "levelMid": {
+      "file": "target/main.go",
+      "line": 10
+    },
+    "phaseRun": {
+      "file": "target/main.go",
+      "line": 22
+    },
+    "rankMid": {
+      "file": "target/main.go",
+      "line": 54
+    },
+    "shadeDark": {
+      "file": "target/main.go",
+      "line": 39
+    },
+    "shadeMid": {
+      "file": "target/main.go",
+      "line": 38
+    },
+    "spareC": {
+      "file": "target/main.go",
+      "line": 47
+    },
+    "stepThree": {
+      "file": "target/main.go",
+      "line": 31
+    },
+    "stepTwo": {
+      "file": "target/main.go",
+      "line": 30
+    }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target steps through enumerated values by arithmetic.
+package main
+
+import "fmt"
+
+type level int
+
+const (
+	levelLow level = iota
+	levelMid
+	levelHigh
+	levelEnd
+)
+
+// String is the level's label.
+func (l level) String() string { return fmt.Sprintf("level %d", int(l)) }
+
+type phase int
+
+const (
+	phaseStart phase = iota
+	phaseRun
+	phaseStop
+)
+
+type step int
+
+const (
+	stepOne step = iota
+	stepTwo
+	stepThree
+)
+
+type shade int
+
+const (
+	shadeLight shade = iota
+	shadeMid
+	shadeDark
+)
+
+type spare int
+
+const (
+	spareA spare = iota
+	spareB
+	spareC
+)
+
+type rank int
+
+const (
+	rankLow rank = iota
+	rankMid
+	rankTop
+)
+
+func main() {
+	for l := levelLow; l < levelEnd; l++ {
+		fmt.Println(l)
+	}
+	for p := phaseStart; p <= phaseStop; p++ {
+		fmt.Println(int(p))
+	}
+	s := stepOne
+	s += 2
+	var d shade
+	d = d*2 + shadeLight
+	fmt.Println(s == stepOne, d == shadeLight, spareA, spareB+1, rankLow < rankTop)
+}
+-- target/main_test.go --
+package main
+
+import "testing"
+
+func TestEveryRank(t *testing.T) {
+	for r := rankLow; r <= rankTop; r++ {
+		if r < rankLow {
+			t.Fatal("below the lowest rank")
+		}
+	}
+}

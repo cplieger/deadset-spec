@@ -66,6 +66,7 @@ const (
 	NoteKindUnboundSchema          NoteKind = "unbound-schema"
 	NoteKindUnmappedEntry          NoteKind = "unmapped-entry"
 	NoteKindUnreadCommand          NoteKind = "unread-command"
+	NoteKindUnreadEntry            NoteKind = "unread-entry"
 	NoteKindUnresolvedImport       NoteKind = "unresolved-import"
 	NoteKindUnresolvedSpecifier    NoteKind = "unresolved-specifier"
 )

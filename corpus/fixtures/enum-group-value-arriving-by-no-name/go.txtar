@@ -1,0 +1,880 @@
+The Go rendering: an application declaring one iota group per way a value of
+the type arises by no member's name (a range over a member, a generic helper, a
+function iterator, a decoder taking the destination as any, called directly or
+through a variable, a slice or a field of any, a conversion between pointer
+types, reflection, a type switch, a channel handed to outside code), each group
+naming its first and third member and no other. Two variables hold a decoder a
+test file installs. The YAML, TOML and outside modules are local modules the
+target requires and replaces, so the rendering loads with no network access.
+
+-- fixture.json --
+{
+  "symbols": {
+    "AnyDecoded.Mid": {
+      "file": "target/variables.go",
+      "line": 10
+    },
+    "AnyDecoded.Tail": {
+      "file": "target/variables.go",
+      "line": 12
+    },
+    "Both.Mid": {
+      "file": "target/conversions.go",
+      "line": 159
+    },
+    "Both.Tail": {
+      "file": "target/conversions.go",
+      "line": 161
+    },
+    "Boxed.Mid": {
+      "file": "target/conversions.go",
+      "line": 84
+    },
+    "Boxed.Tail": {
+      "file": "target/conversions.go",
+      "line": 86
+    },
+    "Counter.Mid": {
+      "file": "target/conversions.go",
+      "line": 48
+    },
+    "Counter.Tail": {
+      "file": "target/conversions.go",
+      "line": 50
+    },
+    "Embedded.Mid": {
+      "file": "target/decoders.go",
+      "line": 189
+    },
+    "Embedded.Tail": {
+      "file": "target/decoders.go",
+      "line": 191
+    },
+    "Fielded.Mid": {
+      "file": "target/decoders.go",
+      "line": 163
+    },
+    "Fielded.Tail": {
+      "file": "target/decoders.go",
+      "line": 165
+    },
+    "First.Mid": {
+      "file": "target/decoders.go",
+      "line": 214
+    },
+    "First.Tail": {
+      "file": "target/decoders.go",
+      "line": 216
+    },
+    "Iterated.Mid": {
+      "file": "target/ranges.go",
+      "line": 53
+    },
+    "Iterated.Tail": {
+      "file": "target/ranges.go",
+      "line": 55
+    },
+    "Keyed.Mid": {
+      "file": "target/decoders.go",
+      "line": 104
+    },
+    "Keyed.Tail": {
+      "file": "target/decoders.go",
+      "line": 106
+    },
+    "Overwritten.Mid": {
+      "file": "target/conversions.go",
+      "line": 104
+    },
+    "Overwritten.Tail": {
+      "file": "target/conversions.go",
+      "line": 106
+    },
+    "PtrDecoded.Mid": {
+      "file": "target/variables.go",
+      "line": 38
+    },
+    "PtrDecoded.Tail": {
+      "file": "target/variables.go",
+      "line": 40
+    },
+    "Ranged.Mid": {
+      "file": "target/ranges.go",
+      "line": 8
+    },
+    "Ranged.Tail": {
+      "file": "target/ranges.go",
+      "line": 10
+    },
+    "ReadBinary.Mid": {
+      "file": "target/decoders.go",
+      "line": 85
+    },
+    "ReadBinary.Tail": {
+      "file": "target/decoders.go",
+      "line": 87
+    },
+    "Received.Mid": {
+      "file": "target/conversions.go",
+      "line": 121
+    },
+    "Received.Tail": {
+      "file": "target/conversions.go",
+      "line": 123
+    },
+    "Reflected.Mid": {
+      "file": "target/conversions.go",
+      "line": 66
+    },
+    "Reflected.Tail": {
+      "file": "target/conversions.go",
+      "line": 68
+    },
+    "Scanned.Mid": {
+      "file": "target/decoders.go",
+      "line": 66
+    },
+    "Scanned.Tail": {
+      "file": "target/decoders.go",
+      "line": 68
+    },
+    "Second.Mid": {
+      "file": "target/decoders.go",
+      "line": 239
+    },
+    "Second.Tail": {
+      "file": "target/decoders.go",
+      "line": 241
+    },
+    "Sent.Mid": {
+      "file": "target/conversions.go",
+      "line": 141
+    },
+    "Sent.Tail": {
+      "file": "target/conversions.go",
+      "line": 143
+    },
+    "Spread.Mid": {
+      "file": "target/decoders.go",
+      "line": 143
+    },
+    "Spread.Tail": {
+      "file": "target/decoders.go",
+      "line": 145
+    },
+    "Stepped.Mid": {
+      "file": "target/ranges.go",
+      "line": 29
+    },
+    "Stepped.Tail": {
+      "file": "target/ranges.go",
+      "line": 31
+    },
+    "TOMLLevel.Mid": {
+      "file": "target/decoders.go",
+      "line": 42
+    },
+    "TOMLLevel.Tail": {
+      "file": "target/decoders.go",
+      "line": 44
+    },
+    "Through.Mid": {
+      "file": "target/decoders.go",
+      "line": 123
+    },
+    "Through.Tail": {
+      "file": "target/decoders.go",
+      "line": 125
+    },
+    "ViaPointer.Mid": {
+      "file": "target/conversions.go",
+      "line": 32
+    },
+    "ViaPointer.Tail": {
+      "file": "target/conversions.go",
+      "line": 34
+    },
+    "ViaUnsafe.Mid": {
+      "file": "target/conversions.go",
+      "line": 16
+    },
+    "ViaUnsafe.Tail": {
+      "file": "target/conversions.go",
+      "line": 18
+    },
+    "YAMLLevel.Mid": {
+      "file": "target/decoders.go",
+      "line": 18
+    },
+    "YAMLLevel.Tail": {
+      "file": "target/decoders.go",
+      "line": 20
+    }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+
+require (
+	example.com/ext v0.0.0
+	github.com/pelletier/go-toml/v2 v2.0.0
+	gopkg.in/yaml.v3 v3.0.0
+)
+
+replace (
+	example.com/ext => ../ext
+	github.com/pelletier/go-toml/v2 => ../toml
+	gopkg.in/yaml.v3 => ../yaml
+)
+-- ext/ext.go --
+// Package ext is code outside the analyzed program that is handed channels.
+package ext
+
+// TakeRecv drains a receive-only channel.
+func TakeRecv[T any](c <-chan T) {
+	for range c {
+	}
+}
+
+// TakeSend sends the zero value on a send-only channel.
+func TakeSend[T any](c chan<- T) {
+	var zero T
+	c <- zero
+}
+
+// TakeBoth sends the zero value on a channel.
+func TakeBoth[T any](c chan T) {
+	var zero T
+	c <- zero
+}
+-- ext/go.mod --
+module example.com/ext
+
+go 1.27.0
+-- target/conversions.go --
+package main
+
+import (
+	"reflect"
+	"sync/atomic"
+	"unsafe"
+
+	"example.com/ext"
+)
+
+// viaUnsafeKind is reached through an unsafe.Pointer conversion.
+type viaUnsafeKind int
+
+const (
+	viaUnsafeA viaUnsafeKind = iota
+	viaUnsafeMid
+	viaUnsafeZ
+	viaUnsafeTail
+)
+
+// viaUnsafe reads an integer as the enumerated type.
+func viaUnsafe(n int) bool {
+	v := (*viaUnsafeKind)(unsafe.Pointer(&n))
+	return *v == viaUnsafeA || *v == viaUnsafeZ
+}
+
+// viaPointerKind is reached through a conversion between pointer types.
+type viaPointerKind int
+
+const (
+	viaPointerA viaPointerKind = iota
+	viaPointerMid
+	viaPointerZ
+	viaPointerTail
+)
+
+// viaPointer reads an integer as the enumerated type.
+func viaPointer(n int) bool {
+	v := (*viaPointerKind)(&n)
+	return *v == viaPointerA || *v == viaPointerZ
+}
+
+// counter is stepped by an atomic add on its integer representation.
+type counter int32
+
+const (
+	counterA counter = iota
+	counterMid
+	counterZ
+	counterTail
+)
+
+// bump adds one twice and compares the result with the last named member.
+func bump() bool {
+	st := counterA
+	atomic.AddInt32((*int32)(&st), 1)
+	atomic.AddInt32((*int32)(&st), 1)
+	return st == counterZ
+}
+
+// reflected is set through reflection on a function's result.
+type reflected int
+
+const (
+	reflectedA reflected = iota
+	reflectedMid
+	reflectedZ
+	reflectedTail
+)
+
+// viaReflect sets the value a function returns a pointer to.
+func viaReflect() bool {
+	cur := reflectedA
+	get := func() *reflected { return &cur }
+	reflect.ValueOf(get).Call(nil)[0].Elem().SetInt(2)
+	return cur == reflectedZ
+}
+
+// boxed is put into an interface value and switched on by type.
+type boxed int
+
+const (
+	boxedA boxed = iota
+	boxedMid
+	boxedZ
+	boxedTail
+)
+
+// viaBox converts a member to any and recovers it by a type switch.
+func viaBox() bool {
+	var box any = boxedA
+	switch x := box.(type) {
+	case boxed:
+		return x == boxedZ
+	}
+	return false
+}
+
+// overwritten is written through an unsafe.Pointer as an int.
+type overwritten int
+
+const (
+	overwrittenA overwritten = iota
+	overwrittenMid
+	overwrittenZ
+	overwrittenTail
+)
+
+// unsafeWrite stores an integer into a value of the type.
+func unsafeWrite() bool {
+	v := overwrittenA
+	*(*int)(unsafe.Pointer(&v)) = 2
+	return v == overwrittenZ
+}
+
+// received is handed to outside code on a receive-only channel.
+type received int
+
+const (
+	receivedA received = iota
+	receivedMid
+	receivedZ
+	receivedTail
+)
+
+// handRecv hands a receive-only channel to outside code.
+func handRecv() bool {
+	c := make(chan received, 2)
+	c <- receivedA
+	c <- receivedZ
+	close(c)
+	ext.TakeRecv((<-chan received)(c))
+	return len(c) == 0
+}
+
+// sent is handed to outside code on a send-only channel.
+type sent int
+
+const (
+	sentA sent = iota
+	sentMid
+	sentZ
+	sentTail
+)
+
+// handSend hands a send-only channel to outside code.
+func handSend() bool {
+	c := make(chan sent, 1)
+	ext.TakeSend((chan<- sent)(c))
+	v := <-c
+	return v == sentA || v == sentZ
+}
+
+// both is handed to outside code on a bidirectional channel.
+type both int
+
+const (
+	bothA both = iota
+	bothMid
+	bothZ
+	bothTail
+)
+
+// handBoth hands a channel to outside code.
+func handBoth() bool {
+	c := make(chan both, 1)
+	ext.TakeBoth(c)
+	v := <-c
+	return v == bothA || v == bothZ
+}
+-- target/decoders.go --
+package main
+
+import (
+	"bytes"
+	"encoding/binary"
+	"encoding/json"
+	"fmt"
+
+	"github.com/pelletier/go-toml/v2"
+	"gopkg.in/yaml.v3"
+)
+
+// yamlLevel is a field of a document a YAML decoder fills.
+type yamlLevel int
+
+const (
+	yamlLevelA yamlLevel = iota
+	yamlLevelMid
+	yamlLevelZ
+	yamlLevelTail
+)
+
+// yamlConfig is the document the YAML decoder fills.
+type yamlConfig struct {
+	Level yamlLevel
+}
+
+// loadYAML reports whether the decoded level is a named one.
+func loadYAML(data []byte) bool {
+	var cfg yamlConfig
+	if yaml.Unmarshal(data, &cfg) != nil {
+		return false
+	}
+	return cfg.Level == yamlLevelA || cfg.Level == yamlLevelZ
+}
+
+// tomlLevel is a field of a document a TOML decoder fills.
+type tomlLevel int
+
+const (
+	tomlLevelA tomlLevel = iota
+	tomlLevelMid
+	tomlLevelZ
+	tomlLevelTail
+)
+
+// tomlConfig is the document the TOML decoder fills.
+type tomlConfig struct {
+	Level tomlLevel
+}
+
+// loadTOML reports whether the decoded level is a named one.
+func loadTOML(data []byte) bool {
+	var cfg tomlConfig
+	if toml.Unmarshal(data, &cfg) != nil {
+		return false
+	}
+	return cfg.Level == tomlLevelA || cfg.Level == tomlLevelZ
+}
+
+// scanned is filled by fmt.Sscan.
+type scanned int
+
+const (
+	scannedA scanned = iota
+	scannedMid
+	scannedZ
+	scannedTail
+)
+
+// scanOne reports whether the scanned value is a named one.
+func scanOne(s string) bool {
+	var v scanned
+	if _, err := fmt.Sscan(s, &v); err != nil {
+		return false
+	}
+	return v == scannedA || v == scannedZ
+}
+
+// readBinary is filled by binary.Read.
+type readBinary int32
+
+const (
+	readBinaryA readBinary = iota
+	readBinaryMid
+	readBinaryZ
+	readBinaryTail
+)
+
+// readOne reports whether the value read is a named one.
+func readOne(data []byte) bool {
+	var v readBinary
+	if binary.Read(bytes.NewReader(data), binary.LittleEndian, &v) != nil {
+		return false
+	}
+	return v == readBinaryA || v == readBinaryZ
+}
+
+// keyed is the key type of a map a JSON decoder fills.
+type keyed int
+
+const (
+	keyedA keyed = iota
+	keyedMid
+	keyedZ
+	keyedTail
+)
+
+// loadKeys reports whether the decoded map holds both named keys.
+func loadKeys(data []byte) bool {
+	var m map[keyed]bool
+	if json.Unmarshal(data, &m) != nil {
+		return false
+	}
+	return m[keyedA] && m[keyedZ]
+}
+
+// through is filled by a decoder called through a variable.
+type through int
+
+const (
+	throughA through = iota
+	throughMid
+	throughZ
+	throughTail
+)
+
+// loadThrough decodes through a variable holding the decoder.
+func loadThrough(data []byte) bool {
+	decode := json.Unmarshal
+	var v through
+	if decode(data, &v) != nil {
+		return false
+	}
+	return v == throughA || v == throughZ
+}
+
+// spread is filled by fmt.Sscan through a slice of any spread into its arguments.
+type spread int
+
+const (
+	spreadA spread = iota
+	spreadMid
+	spreadZ
+	spreadTail
+)
+
+// scanSpread scans into a pointer stored in a slice of any.
+func scanSpread(s string) bool {
+	var v spread
+	dst := []any{&v}
+	if _, err := fmt.Sscan(s, dst...); err != nil {
+		return false
+	}
+	return v == spreadA || v == spreadZ
+}
+
+// fielded is filled by fmt.Sscan through a field of type any.
+type fielded int
+
+const (
+	fieldedA fielded = iota
+	fieldedMid
+	fieldedZ
+	fieldedTail
+)
+
+// target holds a destination as any.
+type target struct {
+	dst any
+}
+
+// scanFields scans into a pointer a struct field holds as any.
+func scanFields(s string) bool {
+	var v fielded
+	for _, f := range []target{{dst: &v}} {
+		if _, err := fmt.Sscan(s, f.dst); err != nil {
+			return false
+		}
+	}
+	return v == fieldedA || v == fieldedZ
+}
+
+// embedded is reached by a JSON decoder through two embedded fields.
+type embedded int
+
+const (
+	embeddedA embedded = iota
+	embeddedMid
+	embeddedZ
+	embeddedTail
+)
+
+// inner embeds the enumerated type.
+type inner struct{ embedded }
+
+// outer embeds inner.
+type outer struct{ inner }
+
+// loadEmbedded decodes into a value that holds the type two fields down.
+func loadEmbedded(data []byte) bool {
+	var o outer
+	if json.Unmarshal(data, &o) != nil {
+		return false
+	}
+	return o.embedded == embeddedA || o.embedded == embeddedZ
+}
+
+// first is compared before a decoder fills the node that holds it.
+type first int
+
+const (
+	firstA first = iota
+	firstMid
+	firstZ
+	firstTail
+)
+
+// firstNode is a recursive type that holds first.
+type firstNode struct {
+	Next *firstNode
+	M    first
+}
+
+// compareThenLoad compares a field and then decodes into the next node.
+func compareThenLoad(data []byte) bool {
+	n := &firstNode{Next: &firstNode{}}
+	if n.M == firstA {
+		return json.Unmarshal(data, n.Next) == nil && n.Next.M == firstZ
+	}
+	return false
+}
+
+// second is compared after a decoder fills the node that holds it.
+type second int
+
+const (
+	secondA second = iota
+	secondMid
+	secondZ
+	secondTail
+)
+
+// secondNode is a recursive type that holds second.
+type secondNode struct {
+	Next *secondNode
+	M    second
+}
+
+// loadThenCompare decodes into the next node and then compares a field.
+func loadThenCompare(data []byte) bool {
+	n := &secondNode{Next: &secondNode{}}
+	if json.Unmarshal(data, n.Next) != nil {
+		return false
+	}
+	return n.M == secondA && n.Next.M == secondZ
+}
+-- target/main.go --
+// Command target produces values of enumerated types in ways no member's name
+// spells, and prints what it observes of them.
+package main
+
+import (
+	"fmt"
+	"os"
+)
+
+func main() {
+	data := []byte(os.Args[0])
+	fmt.Println(rangeAll(), stepAll(), loadYAML(data), loadTOML(data))
+	fmt.Println(scanOne(os.Args[0]), readOne(data), loadKeys(data), loadThrough(data))
+	fmt.Println(scanSpread(os.Args[0]), scanFields(os.Args[0]), viaUnsafe(len(data)), viaPointer(len(data)))
+	fmt.Println(bump(), viaReflect(), viaBox(), unsafeWrite())
+	fmt.Println(loadEmbedded(data), handRecv(), handSend(), handBoth())
+	fmt.Println(compareThenLoad(data), loadThenCompare(data), iterate())
+	fmt.Println(decodeIntoAny(data), decodeIntoPointer(data))
+}
+-- target/main_test.go --
+package main
+
+import (
+	"encoding/json"
+	"testing"
+)
+
+func init() {
+	decodeAny = json.Unmarshal
+	decodePtr = func(b []byte, p *ptrDecoded) error { return json.Unmarshal(b, p) }
+}
+
+func TestDecoders(t *testing.T) {
+	if decodeIntoAny([]byte("0")) != decodeIntoPointer([]byte("0")) {
+		t.Fatal("the decoders disagree")
+	}
+}
+-- target/ranges.go --
+package main
+
+// ranged is stepped through by a range over its last named member.
+type ranged int
+
+const (
+	rangedA ranged = iota
+	rangedMid
+	rangedZ
+	rangedTail
+)
+
+// rangeAll counts the first member in a range over the last named one.
+func rangeAll() int {
+	n := 0
+	for v := range rangedZ {
+		if v == rangedA {
+			n++
+		}
+	}
+	return n
+}
+
+// stepped is stepped through by a generic helper instantiated with it.
+type stepped int
+
+const (
+	steppedA stepped = iota
+	steppedMid
+	steppedZ
+	steppedTail
+)
+
+// each calls f with every value from from up to end.
+func each[E ~int](from, end E, f func(E)) {
+	for e := from; e < end; e++ {
+		f(e)
+	}
+}
+
+// stepAll counts the values each visits.
+func stepAll() int {
+	n := 0
+	each(steppedA, steppedZ, func(stepped) { n++ })
+	return n
+}
+
+// iterated is produced by a range over a function iterator.
+type iterated int
+
+const (
+	iteratedA iterated = iota
+	iteratedMid
+	iteratedZ
+	iteratedTail
+)
+
+// values yields the first and the last named member.
+func values(yield func(iterated) bool) {
+	if yield(iteratedA) {
+		yield(iteratedZ)
+	}
+}
+
+// iterate counts the last named member among the values yielded.
+func iterate() int {
+	n := 0
+	for v := range values {
+		if v == iteratedZ {
+			n++
+		}
+	}
+	return n
+}
+-- target/variables.go --
+package main
+
+import "errors"
+
+// anyDecoded is decoded through a variable whose type takes the destination as any.
+type anyDecoded int
+
+const (
+	anyDecodedA anyDecoded = iota
+	anyDecodedMid
+	anyDecodedZ
+	anyDecodedTail
+)
+
+// errNoDecoder is what the decoders return before a test installs one.
+var errNoDecoder = errors.New("no decoder")
+
+// decodeAny decodes into any destination; production installs none.
+var decodeAny func([]byte, any) error = parseNone
+
+// parseNone decodes nothing.
+func parseNone([]byte, any) error { return errNoDecoder }
+
+// decodeIntoAny decodes into a value through decodeAny.
+func decodeIntoAny(data []byte) bool {
+	var v anyDecoded
+	if decodeAny(data, &v) != nil {
+		return false
+	}
+	return v == anyDecodedA || v == anyDecodedZ
+}
+
+// ptrDecoded is decoded through a variable whose type takes a pointer to it.
+type ptrDecoded int
+
+const (
+	ptrDecodedA ptrDecoded = iota
+	ptrDecodedMid
+	ptrDecodedZ
+	ptrDecodedTail
+)
+
+// decodePtr decodes into a pointer to the type; production installs none.
+var decodePtr func([]byte, *ptrDecoded) error = parsePtrNone
+
+// parsePtrNone decodes nothing.
+func parsePtrNone([]byte, *ptrDecoded) error { return errNoDecoder }
+
+// decodeIntoPointer decodes into a value through decodePtr.
+func decodeIntoPointer(data []byte) bool {
+	var v ptrDecoded
+	if decodePtr(data, &v) != nil {
+		return false
+	}
+	return v == ptrDecodedA || v == ptrDecodedZ
+}
+-- toml/go.mod --
+module github.com/pelletier/go-toml/v2
+
+go 1.27.0
+-- toml/toml.go --
+// Package toml stands in for go-toml: its decoder takes the destination as any.
+package toml
+
+// Unmarshal decodes data into v.
+func Unmarshal(data []byte, v any) error {
+	_, _ = data, v
+	return nil
+}
+-- yaml/go.mod --
+module gopkg.in/yaml.v3
+
+go 1.27.0
+-- yaml/yaml.go --
+// Package yaml stands in for gopkg.in/yaml.v3: its decoder takes the destination as any.
+package yaml
+
+// Unmarshal decodes in into out.
+func Unmarshal(in []byte, out any) error {
+	_, _ = in, out
+	return nil
+}

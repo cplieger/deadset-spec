@@ -1,0 +1,634 @@
+The Go rendering: an application whose iota groups are compared with constant
+expressions of their types that are not member names: conversions of literals,
+a declaration, max, a keyed literal and a return giving 2, a member of another
+block, a constant of a block of its own, a constant a function body declares, a
+constant whose type is spelled through an alias, a member converted to another
+enumerated type inside a constant expression, the zero value, a member declared from another, and constants whose value differs by
+target (the word size, a file constrained by a legacy build line only, files
+named for an architecture).
+
+-- fixture.json --
+{
+  "symbols": {
+    "Above.Mid": {
+      "file": "target/values.go",
+      "line": 26
+    },
+    "Above.Tail": {
+      "file": "target/values.go",
+      "line": 28
+    },
+    "Aliased.Mid": {
+      "file": "target/crossed.go",
+      "line": 65
+    },
+    "Crossed.Mid": {
+      "file": "target/crossed.go",
+      "line": 8
+    },
+    "Declared.Mid": {
+      "file": "target/values.go",
+      "line": 64
+    },
+    "EqualLast.Mid": {
+      "file": "target/values.go",
+      "line": 8
+    },
+    "Halved.B": {
+      "file": "target/blocks.go",
+      "line": 156
+    },
+    "Halved.C": {
+      "file": "target/blocks.go",
+      "line": 157
+    },
+    "Kind.Mid": {
+      "file": "target/blocks.go",
+      "line": 92
+    },
+    "Kind2.Mid": {
+      "file": "target/blocks.go",
+      "line": 125
+    },
+    "LanesA.Mid": {
+      "file": "target/lanes.go",
+      "line": 10
+    },
+    "LanesB.Mid": {
+      "file": "target/lanes.go",
+      "line": 37
+    },
+    "LanesC.Mid": {
+      "file": "target/lanes.go",
+      "line": 61
+    },
+    "LocalKind.Mid": {
+      "file": "target/crossed.go",
+      "line": 42
+    },
+    "Literal.Mid": {
+      "file": "target/values.go",
+      "line": 100
+    },
+    "Maxed.Mid": {
+      "file": "target/values.go",
+      "line": 82
+    },
+    "Own.Mid": {
+      "file": "target/blocks.go",
+      "line": 50
+    },
+    "Pair.M1": {
+      "file": "target/blocks.go",
+      "line": 31
+    },
+    "Pair.M2": {
+      "file": "target/blocks.go",
+      "line": 32
+    },
+    "Returned.Mid": {
+      "file": "target/values.go",
+      "line": 123
+    },
+    "Shifted.Mid": {
+      "file": "target/blocks.go",
+      "line": 71
+    },
+    "Spelled.Tail": {
+      "file": "target/values.go",
+      "line": 46
+    },
+    "Split.Mid": {
+      "file": "target/blocks.go",
+      "line": 8
+    }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/blocks.go --
+package main
+
+// split has members in two blocks whose values meet.
+type split int
+
+const (
+	splitA split = iota
+	splitMid
+	splitZ
+)
+
+const (
+	splitX split = iota + 1
+	splitY
+)
+
+// otherBlock compares a member of the first block with an equal one of the second.
+func otherBlock(n int) bool {
+	v := splitZ
+	if n > 3 {
+		v = splitA
+	}
+	return v == splitY && v != splitX
+}
+
+// pair has two unnamed members whose joint deletion makes the last equal to a constant.
+type pair int
+
+const (
+	pairA pair = iota
+	pairM1
+	pairM2
+	pairZ
+)
+
+// joint compares a value made from the constant 1 with the last named member.
+func joint(n int) bool {
+	v := pair(1)
+	if n > 3 {
+		v = pairA
+	}
+	return v == pairZ
+}
+
+// own is equal to a constant of its type declared in a block of its own.
+type own int
+
+const (
+	ownA own = iota
+	ownMid
+	ownZ
+)
+
+// ownTwo is 2, the last named member's value.
+const ownTwo own = 2
+
+// ownBlock compares the last named member with ownTwo.
+func ownBlock(n int) bool {
+	v := ownZ
+	if n > 3 {
+		v = ownA
+	}
+	return v == ownTwo
+}
+
+// shifted starts below zero, so its zero value lies between members.
+type shifted int
+
+const (
+	shiftedA shifted = iota - 1
+	shiftedMid
+	shiftedZ
+)
+
+// holder holds a shifted that nothing sets.
+type holder struct {
+	s shifted
+}
+
+// zeroField compares a zero field with the last named member.
+func zeroField() bool {
+	var h holder
+	return h.s == shiftedZ || h.s == shiftedA
+}
+
+// kind has a member declared from another plus one.
+type kind int
+
+const (
+	kindA kind = iota
+	kindB
+	kindMid
+	kindP
+	kindQ kind = kindB + 1
+)
+
+// pickKind returns kindA or kindP.
+func pickKind(n int) kind {
+	if n > 3 {
+		return kindP
+	}
+	return kindA
+}
+
+// relabel tells kindP and kindQ apart.
+func relabel(k kind) string {
+	if k == kindA {
+		return "a"
+	}
+	if k == kindQ {
+		return "q"
+	}
+	if k == kindP {
+		return "p"
+	}
+	return "?"
+}
+
+// kind2 has the same shape, its members told apart by a switch.
+type kind2 int
+
+const (
+	kind2A kind2 = iota
+	kind2B
+	kind2Mid
+	kind2P
+	kind2Q kind2 = kind2B + 1
+)
+
+// pickKind2 returns kind2A or kind2P.
+func pickKind2(n int) kind2 {
+	if n > 3 {
+		return kind2P
+	}
+	return kind2A
+}
+
+// caseLabel switches on kind2P and kind2Q.
+func caseLabel(k kind2) string {
+	switch k {
+	case kind2A:
+		return "a"
+	case kind2P:
+		return "p"
+	case kind2Q:
+		return "q"
+	}
+	return "?"
+}
+
+// halved has a member whose expression adds two halves to iota.
+type halved int
+
+const (
+	halvedA halved = iota
+	halvedB
+	halvedC halved = halved(iota + 0.5 + 0.5)
+)
+
+// halves compares a value with a constant expression equal to halvedC.
+func halves(n int) bool {
+	v := halvedA
+	if n > 3 {
+		v = halved(2) + 1
+	}
+	return v == halvedA
+}
+-- target/crossed.go --
+package main
+
+// crossed is converted to another enumerated type inside a constant expression.
+type crossed int
+
+const (
+	crossedA crossed = iota
+	crossedMid
+	crossedZ
+)
+
+// outer is the type crossedZ is converted to; code names each of its members.
+type outer int
+
+const (
+	outerA outer = iota
+	outerB
+	outerC
+)
+
+// pickOuter returns one member of outer.
+func pickOuter(n int) outer {
+	switch {
+	case n > 4:
+		return outerA
+	case n > 3:
+		return outerB
+	}
+	return outerC
+}
+
+// converted compares a value of outer with outer(crossedZ).
+func converted(n int) bool {
+	return pickOuter(n) == outer(crossedZ)
+}
+
+// localKind is compared with a constant a function body declares.
+type localKind int
+
+const (
+	localA localKind = iota
+	localMid
+	localZ
+)
+
+// pickLocal returns localZ or localA.
+func pickLocal(n int) localKind {
+	if n > 3 {
+		return localA
+	}
+	return localZ
+}
+
+// localConst compares a value of localKind with a function's constant one.
+func localConst(n int) bool {
+	const one localKind = 1
+	return pickLocal(n) == one
+}
+
+// aliased is compared with a constant declared through an alias of it.
+type aliased int
+
+const (
+	aliasedA aliased = iota
+	aliasedMid
+	aliasedZ
+)
+
+// otherName is another name for aliased.
+type otherName = aliased
+
+// aliasedOne is a constant of aliased, its type spelled through the alias.
+const aliasedOne otherName = 1
+
+// pickAliased returns aliasedZ or aliasedA.
+func pickAliased(n int) aliased {
+	if n > 3 {
+		return aliasedA
+	}
+	return aliasedZ
+}
+
+// aliasConst compares a value of aliased with aliasedOne.
+func aliasConst(n int) bool {
+	return pickAliased(n) == aliasedOne
+}
+-- target/lanes.go --
+package main
+
+import "math/bits"
+
+// lanesA is compared with a constant whose value depends on the word size.
+type lanesA int
+
+const (
+	lanesANone lanesA = iota
+	lanesAMid
+	lanesATwo
+)
+
+// wideA is 3 on a 64-bit target and 1 on a 32-bit one.
+const wideA = lanesA(bits.UintSize/16 - 1)
+
+// wordLanes names a lane count.
+func wordLanes(n int) string {
+	l := lanesANone
+	if n > 3 {
+		l = lanesATwo
+	}
+	switch l {
+	case wideA:
+		return "wide"
+	case lanesATwo:
+		return "two"
+	}
+	return "none"
+}
+
+// lanesB is compared with a constant a file constrained by a legacy build line declares.
+type lanesB int
+
+const (
+	lanesBNone lanesB = iota
+	lanesBMid
+	lanesBTwo
+)
+
+// legacyLanes names a lane count.
+func legacyLanes(n int) string {
+	l := lanesBNone
+	if n > 3 {
+		l = lanesBTwo
+	}
+	if l == wideB {
+		return "wide"
+	}
+	if l == lanesBTwo {
+		return "two"
+	}
+	return "none"
+}
+
+// lanesC is compared with a constant files named for an architecture declare.
+type lanesC int
+
+const (
+	lanesCNone lanesC = iota
+	lanesCMid
+	lanesCTwo
+)
+
+// suffixLanes names a lane count.
+func suffixLanes(n int) string {
+	l := lanesCNone
+	if n > 3 {
+		l = lanesCTwo
+	}
+	if l == wideC {
+		return "wide"
+	}
+	if l == lanesCTwo {
+		return "two"
+	}
+	return "none"
+}
+-- target/main.go --
+// Command target compares values of enumerated types with constants that are
+// not member names, and prints what it observes.
+package main
+
+import (
+	"fmt"
+	"os"
+)
+
+func main() {
+	n := len(os.Args)
+	fmt.Println(sameAsLast(n), aboveLast(n), lastByValue(n))
+	fmt.Println(declared(n), maxed(n), keyedLiteral(n), returned(n))
+	fmt.Println(otherBlock(n), joint(n), ownBlock(n), zeroField(), relabel(pickKind(n)), caseLabel(pickKind2(n)))
+	fmt.Println(wordLanes(n), legacyLanes(n), suffixLanes(n))
+	fmt.Println(halves(n))
+	fmt.Println(converted(n), localConst(n), aliasConst(n))
+}
+-- target/values.go --
+package main
+
+// equalLast is converted from the constant 2, which is the last named member's value.
+type equalLast int
+
+const (
+	equalLastA equalLast = iota
+	equalLastMid
+	equalLastZ
+)
+
+// sameAsLast compares a value made from the constant 2 with the last named member.
+func sameAsLast(n int) bool {
+	v := equalLast(2)
+	if n > 3 {
+		v = equalLastA
+	}
+	return v == equalLastZ
+}
+
+// above is converted from a typed constant above every named member.
+type above int
+
+const (
+	aboveA above = iota
+	aboveMid
+	aboveZ
+	aboveTail
+)
+
+// aboveLast compares a value made from int(3) with both named members.
+func aboveLast(n int) bool {
+	v := above(int(3))
+	if n > 3 {
+		v = aboveA
+	}
+	return v == aboveA || v == aboveZ
+}
+
+// spelled is made from the value of its unnamed last member, spelled two ways.
+type spelled int
+
+const (
+	spelledA spelled = iota
+	spelledB
+	spelledTail
+)
+
+// lastByValue makes the unnamed last member's value as spelled(int(2)) and spelled(2).
+func lastByValue(n int) bool {
+	v := spelled(int(2))
+	w := spelled(2)
+	if n > 3 {
+		v, w = spelledA, spelledB
+	}
+	return v == w
+}
+
+// declaredKind is given the value 2 by a variable declaration.
+type declaredKind int
+
+const (
+	declaredA declaredKind = iota
+	declaredMid
+	declaredZ
+)
+
+// declared compares a variable declared as 2 with the last named member.
+func declared(n int) bool {
+	var v declaredKind = 2
+	if n > 3 {
+		v = declaredA
+	}
+	return v == declaredZ
+}
+
+// maxedKind is compared with max of a value and the constant 2.
+type maxedKind int
+
+const (
+	maxedA maxedKind = iota
+	maxedMid
+	maxedZ
+)
+
+// maxed compares max(v, 2) with the last named member.
+func maxed(n int) bool {
+	v := maxedA
+	if n > 3 {
+		v = maxedZ
+	}
+	return max(v, 2) == maxedZ
+}
+
+// literalKind is given the value 2 by a composite literal's field.
+type literalKind int
+
+const (
+	literalA literalKind = iota
+	literalMid
+	literalZ
+)
+
+// config holds a literalKind.
+type config struct {
+	Level literalKind
+}
+
+// keyedLiteral compares a field a literal sets to 2 with the last named member.
+func keyedLiteral(n int) bool {
+	c := config{Level: 2}
+	if n > 3 {
+		c.Level = literalA
+	}
+	return c.Level == literalZ
+}
+
+// returnedKind is the result of a function that returns the constant 2.
+type returnedKind int
+
+const (
+	returnedA returnedKind = iota
+	returnedMid
+	returnedZ
+)
+
+// two returns 2 as a returnedKind, or the first member.
+func two(n int) returnedKind {
+	if n > 3 {
+		return returnedA
+	}
+	return 2
+}
+
+// returned compares two's result with the last named member.
+func returned(n int) bool { return two(n) == returnedZ }
+-- target/wideb_posix.go --
+// +build !windows
+
+package main
+
+// wideB is three lanes.
+const wideB = lanesB(3)
+-- target/wideb_win.go --
+// +build windows
+
+package main
+
+// wideB is two lanes.
+const wideB = lanesB(2)
+-- target/widec_386.go --
+package main
+
+// wideC is the lane count of the architecture.
+const wideC = lanesC(2)
+-- target/widec_amd64.go --
+package main
+
+// wideC is the lane count of the architecture.
+const wideC = lanesC(3)
+-- target/widec_arm.go --
+package main
+
+// wideC is the lane count of the architecture.
+const wideC = lanesC(2)
+-- target/widec_arm64.go --
+package main
+
+// wideC is the lane count of the architecture.
+const wideC = lanesC(3)
