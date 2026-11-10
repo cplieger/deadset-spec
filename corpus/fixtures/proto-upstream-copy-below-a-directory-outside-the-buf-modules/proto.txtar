@@ -1,0 +1,45 @@
+-- fixture.json --
+{
+  "symbols": {
+    "A.h": {
+      "file": "target/proto/api/v1/a.proto",
+      "line": 8,
+      "ref": "proto://api.v1#A.h"
+    },
+    "Http": {
+      "file": "target/proto/google/api/http.proto",
+      "line": 5,
+      "ref": "proto://google.api#Http"
+    }
+  }
+}
+-- target/buf.yaml --
+version: v2
+modules:
+  - path: proto
+-- target/proto/api/v1/a.proto --
+syntax = "proto3";
+
+package api.v1;
+
+import "google/api/http.proto";
+
+message A {
+  google.api.Http h = 1;
+}
+-- target/proto/google/api/http.proto --
+syntax = "proto3";
+
+package google.api;
+
+message Http {
+  string x = 1;
+}
+-- target/third_party/google/api/http.proto --
+syntax = "proto3";
+
+package google.api;
+
+message Http {
+  string x = 1;
+}

@@ -1,0 +1,45 @@
+-- fixture.json --
+{
+  "symbols": {
+    "A": {
+      "file": "target/a.proto",
+      "line": 7,
+      "ref": "proto://p#A"
+    },
+    "B": {
+      "file": "target/b.proto",
+      "line": 8,
+      "ref": "proto://p#B"
+    },
+    "C": {
+      "file": "target/c.proto",
+      "line": 7,
+      "ref": "proto://p#C"
+    }
+  }
+}
+-- target/a.proto --
+syntax = "proto3";
+
+package p;
+
+import "b.proto";
+
+message A {}
+-- target/b.proto --
+syntax = "proto3";
+
+package p;
+
+import "c.proto";
+import "a.proto";
+
+message B {}
+-- target/c.proto --
+syntax = "proto3";
+
+package p;
+
+import "a.proto";
+
+message C {}

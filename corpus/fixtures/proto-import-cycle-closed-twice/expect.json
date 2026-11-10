@@ -1,0 +1,48 @@
+{
+  "name": "proto-import-cycle-closed-twice",
+  "description": "A file reached by two import statements of one cycle while it loads fails with the recursive-import error of the first cycle the compiler finds, and every file of the cycle publishes nothing, a schema-unparsed note naming each. Since a schema file that could not be read may use any declaration, every record of the target is published live, and a schema-findings-withheld note names the target root.",
+  "rules": [
+    "schemas.4"
+  ],
+  "languages": [
+    "proto"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "notes": [
+    {
+      "kind": "schema-findings-withheld",
+      "path": "."
+    },
+    {
+      "kind": "schema-unparsed",
+      "path": "a.proto"
+    },
+    {
+      "kind": "schema-unparsed",
+      "path": "b.proto"
+    },
+    {
+      "kind": "schema-unparsed",
+      "path": "c.proto"
+    }
+  ],
+  "facts": [
+    {
+      "symbol": "A",
+      "role": "schema",
+      "absent": true
+    },
+    {
+      "symbol": "B",
+      "role": "schema",
+      "absent": true
+    },
+    {
+      "symbol": "C",
+      "role": "schema",
+      "absent": true
+    }
+  ],
+  "expect": []
+}

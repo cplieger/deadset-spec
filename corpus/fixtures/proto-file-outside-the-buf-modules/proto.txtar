@@ -1,0 +1,30 @@
+-- fixture.json --
+{
+  "symbols": {
+    "Legacy": { "file": "target/shop/v1/order.proto", "line": 5, "ref": "proto://legacy.v1#Legacy" },
+    "Order": { "file": "target/proto/shop/v1/order.proto", "line": 5, "ref": "proto://shop.v1#Order" },
+    "Tool": { "file": "target/tools/v1/tool.proto", "line": 5, "ref": "proto://tools.v1#Tool" }
+  }
+}
+-- target/buf.yaml --
+version: v2
+modules:
+  - path: proto
+-- target/proto/shop/v1/order.proto --
+syntax = "proto3";
+
+package shop.v1;
+
+message Order {}
+-- target/shop/v1/order.proto --
+syntax = "proto3";
+
+package legacy.v1;
+
+message Legacy {}
+-- target/tools/v1/tool.proto --
+syntax = "proto3";
+
+package tools.v1;
+
+message Tool {}

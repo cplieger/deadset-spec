@@ -1,0 +1,26 @@
+{
+  "name": "proto-vendored-copy-below-a-directory",
+  "description": "A copy of an upstream schema kept below a directory of the target, as a third_party tree the build passes to protoc as an include path, is still a copy: its package and its import path from that directory match the upstream list, so it is live under schema-vendored; a path that matches only from inside a directory name is no copy.",
+  "rules": ["schemas.7"],
+  "languages": ["proto"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "facts": [
+    {
+      "symbol": "HttpRule",
+      "role": "schema",
+      "schema": "proto://google.api#HttpRule",
+      "state": "live",
+      "members": ["proto://google.api#HttpRule.get"]
+    },
+    {
+      "symbol": "Local",
+      "role": "schema",
+      "schema": "proto://google.api#Local",
+      "state": "dead",
+      "report": "DS1801",
+      "members": ["proto://google.api#Local.name"]
+    }
+  ],
+  "expect": []
+}

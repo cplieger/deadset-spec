@@ -1,0 +1,51 @@
+{
+  "name": "proto-default-roots-import-unresolved",
+  "description": "With no buf.yaml and no proto.import_paths, the import roots are buf's for a directory with no buf.yaml, the target root, besides the include roots of upstream copies: an import no root resolves fails its file as protoc fails it, so the file publishes no declaration, the one that needs nothing from the import included, and carries an unresolved-import note, and a file importing it fails too, with a schema-unparsed note. Since a schema file that could not be read may use any declaration, every record of the target is published live, and a schema-findings-withheld note names the target root.",
+  "rules": [
+    "schemas.3",
+    "schemas.4"
+  ],
+  "languages": [
+    "proto"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "notes": [
+    {
+      "kind": "schema-findings-withheld",
+      "path": "."
+    },
+    {
+      "kind": "schema-unparsed",
+      "path": "v1/use.proto"
+    },
+    {
+      "kind": "unresolved-import",
+      "path": "v1/wrap.proto"
+    }
+  ],
+  "facts": [
+    {
+      "symbol": "Wrapper.inner",
+      "role": "schema",
+      "absent": true
+    },
+    {
+      "symbol": "Alone",
+      "role": "schema",
+      "absent": true
+    },
+    {
+      "symbol": "Use",
+      "role": "schema",
+      "absent": true
+    },
+    {
+      "symbol": "Other",
+      "role": "schema",
+      "schema": "proto://v1#Other",
+      "state": "live"
+    }
+  ],
+  "expect": []
+}

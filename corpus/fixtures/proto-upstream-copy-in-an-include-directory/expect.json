@@ -1,0 +1,34 @@
+{
+  "name": "proto-upstream-copy-in-an-include-directory",
+  "description": "With no buf.yaml and no proto.import_paths, the directory a copy of an upstream schema is kept below is an import root ahead of the target root, as the include path the build passes to protoc: the copy takes its upstream import path, an import of that path reads it in place of protoc's own file, and it is live under schema-vendored while the field typed by it is decided by its bindings, with no note.",
+  "rules": ["schemas.3", "schemas.7"],
+  "languages": ["proto"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "facts": [
+    {
+      "symbol": "Event",
+      "role": "schema",
+      "schema": "proto://api.v1#Event",
+      "state": "dead",
+      "report": "DS1801",
+      "members": ["proto://api.v1#Event.at"]
+    },
+    {
+      "symbol": "Event.at",
+      "role": "schema",
+      "schema": "proto://api.v1#Event.at",
+      "state": "dead",
+      "report": "DS1802",
+      "uses": ["proto://google.protobuf#Timestamp"]
+    },
+    {
+      "symbol": "Timestamp",
+      "role": "schema",
+      "schema": "proto://google.protobuf#Timestamp",
+      "state": "live",
+      "members": ["proto://google.protobuf#Timestamp.seconds", "proto://google.protobuf#Timestamp.nanos"]
+    }
+  ],
+  "expect": []
+}

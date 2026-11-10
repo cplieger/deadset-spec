@@ -1,0 +1,43 @@
+{
+  "name": "proto-include-root-directory-holds-a-schema-file",
+  "description": "With no buf.yaml and no proto.import_paths, the import roots are buf's for a directory with no buf.yaml, the target root, besides the include roots of upstream copies: a schema file directly in the include root's directory makes that directory no root, so an import of a file below it by its path from there still resolves under no root, and the importer publishes nothing and carries an unresolved-import note. Since a schema file that could not be read may use any declaration, every record of the target is published live, and a schema-findings-withheld note names the target root.",
+  "rules": [
+    "schemas.3",
+    "schemas.4"
+  ],
+  "languages": [
+    "proto"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "notes": [
+    {
+      "kind": "schema-findings-withheld",
+      "path": "."
+    },
+    {
+      "kind": "unresolved-import",
+      "path": "proto/shop/cart.proto"
+    }
+  ],
+  "facts": [
+    {
+      "symbol": "Cart",
+      "role": "schema",
+      "absent": true
+    },
+    {
+      "symbol": "Item",
+      "role": "schema",
+      "schema": "proto://shop#Item",
+      "state": "live"
+    },
+    {
+      "symbol": "Top",
+      "role": "schema",
+      "schema": "proto://top#Top",
+      "state": "live"
+    }
+  ],
+  "expect": []
+}

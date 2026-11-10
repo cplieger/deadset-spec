@@ -1,0 +1,40 @@
+{
+  "name": "proto-unresolved-import-of-a-file-failing-to-link",
+  "description": "Under proto.import_paths an import no root resolves fails no file, so a file that holds one and also fails over a duplicate field number carries a schema-unparsed note with protoc's error for that number alone, and publishes nothing. Since a schema file that could not be read may use any declaration, every record of the target is published live, and a schema-findings-withheld note names the target root.",
+  "rules": [
+    "schemas.4",
+    "schemas.5"
+  ],
+  "languages": [
+    "proto"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "import_paths": [
+    "."
+  ],
+  "notes": [
+    {
+      "kind": "schema-findings-withheld",
+      "path": "."
+    },
+    {
+      "kind": "schema-unparsed",
+      "path": "a.proto"
+    }
+  ],
+  "facts": [
+    {
+      "symbol": "A",
+      "role": "schema",
+      "absent": true
+    },
+    {
+      "symbol": "Alone",
+      "role": "schema",
+      "schema": "proto://p#Alone",
+      "state": "live"
+    }
+  ],
+  "expect": []
+}

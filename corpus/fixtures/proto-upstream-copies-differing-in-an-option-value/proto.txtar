@@ -1,0 +1,64 @@
+-- fixture.json --
+{
+  "symbols": {
+    "ReqA.name": {
+      "file": "target/svc-a/proto/api/v1/service.proto",
+      "line": 8,
+      "ref": "proto://svc_a.api.v1#Req.name"
+    },
+    "ReqB": {
+      "file": "target/svc-b/proto/api/v1/service.proto",
+      "line": 7,
+      "ref": "proto://svc_b.api.v1#Req"
+    }
+  }
+}
+-- target/svc-a/proto/api/v1/service.proto --
+syntax = "proto3";
+
+package svc_a.api.v1;
+
+import "google/api/field_behavior.proto";
+
+message Req {
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
+}
+-- target/svc-a/proto/google/api/field_behavior.proto --
+syntax = "proto3";
+
+package google.api;
+
+import "google/protobuf/descriptor.proto";
+
+enum FieldBehavior {
+  FIELD_BEHAVIOR_UNSPECIFIED = 0;
+  REQUIRED = 2;
+}
+extend google.protobuf.FieldOptions {
+  repeated FieldBehavior field_behavior = 1052 [packed = false];
+}
+-- target/svc-b/proto/api/v1/service.proto --
+syntax = "proto3";
+
+package svc_b.api.v1;
+
+import "google/api/field_behavior.proto";
+
+message Req {
+  string name = 1 [(google.api.field_behavior) = IDENTIFIER];
+}
+-- target/svc-b/proto/google/api/field_behavior.proto --
+syntax = "proto3";
+
+package google.api;
+
+import "google/protobuf/descriptor.proto";
+
+enum FieldBehavior {
+  FIELD_BEHAVIOR_UNSPECIFIED = 0;
+  REQUIRED = 2;
+  IDENTIFIER = 8;
+}
+extend google.protobuf.FieldOptions {
+  repeated FieldBehavior field_behavior = 1052 [packed = false];
+}

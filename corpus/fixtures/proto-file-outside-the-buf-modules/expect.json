@@ -1,0 +1,38 @@
+{
+  "name": "proto-file-outside-the-buf-modules",
+  "description": "A schema file no buf.yaml module's path holds is read under its path from the target root and no import resolves to it, so it is published as any other; where a module holds a file of that same import path, it is shadowed by that file, as two files of one import path would share one schema_file: it publishes no declaration and a schema-unparsed note names it. Since a schema file not read cleanly, a shadowed one included, may use any declaration, every record of the target is published live, and a schema-findings-withheld note names the target root.",
+  "rules": ["schemas.3", "schemas.4"],
+  "languages": ["proto"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "notes": [
+    {
+      "kind": "schema-findings-withheld",
+      "path": "."
+    },
+    {
+      "kind": "schema-unparsed",
+      "path": "shop/v1/order.proto"
+    }
+  ],
+  "facts": [
+    {
+      "symbol": "Legacy",
+      "role": "schema",
+      "absent": true
+    },
+    {
+      "symbol": "Order",
+      "role": "schema",
+      "schema": "proto://shop.v1#Order",
+      "state": "live"
+    },
+    {
+      "symbol": "Tool",
+      "role": "schema",
+      "schema": "proto://tools.v1#Tool",
+      "state": "live"
+    }
+  ],
+  "expect": []
+}

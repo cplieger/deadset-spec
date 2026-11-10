@@ -1,0 +1,34 @@
+{
+  "name": "proto-buf-workspace-module-roots",
+  "description": "A directory a buf.work.yaml lists that holds a buf.yaml is no import root itself: the module roots that buf.yaml declares stand for it, as buf builds the module, so a v1beta1 module's build roots name each schema file's import path and resolve its imports, and every declaration is published once with no note.",
+  "rules": ["schemas.3"],
+  "languages": ["proto"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "facts": [
+    {
+      "symbol": "Cart",
+      "role": "schema",
+      "schema": "proto://shop#Cart",
+      "state": "dead",
+      "report": "DS1801",
+      "members": ["proto://shop#Cart.item"]
+    },
+    {
+      "symbol": "Cart.item",
+      "role": "schema",
+      "schema": "proto://shop#Cart.item",
+      "state": "dead",
+      "report": "DS1802",
+      "uses": ["proto://shop#Item"]
+    },
+    {
+      "symbol": "Item",
+      "role": "schema",
+      "schema": "proto://shop#Item",
+      "state": "dead",
+      "report": "DS1801"
+    }
+  ],
+  "expect": []
+}

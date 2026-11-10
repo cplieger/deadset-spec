@@ -1,0 +1,36 @@
+{
+  "name": "proto-buf-work-listing-its-own-directory",
+  "description": "A buf.work.yaml that lists no directory but its own is no workspace, as buf reads it, so it names no import root and the target is read with the default roots: an import no root resolves fails its file, which publishes nothing and carries an unresolved-import note. Since a schema file that could not be read may use any declaration, every record of the target is published live, and a schema-findings-withheld note names the target root.",
+  "rules": [
+    "schemas.3",
+    "schemas.4"
+  ],
+  "languages": [
+    "proto"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "notes": [
+    {
+      "kind": "schema-findings-withheld",
+      "path": "."
+    },
+    {
+      "kind": "unresolved-import",
+      "path": "a.proto"
+    }
+  ],
+  "facts": [
+    {
+      "symbol": "A",
+      "role": "schema",
+      "absent": true
+    },
+    {
+      "symbol": "Alone",
+      "role": "schema",
+      "absent": true
+    }
+  ],
+  "expect": []
+}

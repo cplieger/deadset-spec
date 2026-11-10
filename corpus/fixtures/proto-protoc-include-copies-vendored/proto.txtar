@@ -1,0 +1,49 @@
+-- fixture.json --
+{
+  "symbols": {
+    "CodeGeneratorRequest": {
+      "file": "target/google/protobuf/compiler/plugin.proto",
+      "line": 5,
+      "ref": "proto://google.protobuf.compiler#CodeGeneratorRequest"
+    },
+    "CppFileOptions": {
+      "file": "target/google/protobuf/cpp_file_options.proto",
+      "line": 5,
+      "ref": "proto://pb.file#CppFileOptions"
+    },
+    "Extra": { "file": "target/google/protobuf/extra.proto", "line": 5, "ref": "proto://pbx#Extra" },
+    "GoFeatures": { "file": "target/google/protobuf/go_features.proto", "line": 5, "ref": "proto://pb#GoFeatures" }
+  }
+}
+-- target/google/protobuf/compiler/plugin.proto --
+syntax = "proto2";
+
+package google.protobuf.compiler;
+
+message CodeGeneratorRequest {
+  repeated string file_to_generate = 1;
+}
+-- target/google/protobuf/cpp_file_options.proto --
+syntax = "proto3";
+
+package pb.file;
+
+message CppFileOptions {
+  string namespace = 1;
+}
+-- target/google/protobuf/extra.proto --
+syntax = "proto3";
+
+package pbx;
+
+message Extra {
+  string name = 1;
+}
+-- target/google/protobuf/go_features.proto --
+syntax = "proto2";
+
+package pb;
+
+message GoFeatures {
+  optional bool legacy_unmarshal_json_enum = 1;
+}

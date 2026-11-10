@@ -1,0 +1,33 @@
+-- fixture.json --
+{
+  "symbols": {
+    "Case": { "file": "target/web/__fixtures__/case.proto", "line": 5, "ref": "proto://cases#Case" },
+    "Golden": { "file": "target/testdata/golden.proto", "line": 5, "ref": "proto://golden#Golden" },
+    "Order": { "file": "target/shop/v1/order.proto", "line": 5, "ref": "proto://shop.v1#Order" },
+    "Sample": { "file": "target/fixtures/sample.proto", "line": 5, "ref": "proto://sample#Sample" }
+  }
+}
+-- target/fixtures/sample.proto --
+syntax = "proto3";
+
+package sample;
+
+message Sample {}
+-- target/shop/v1/order.proto --
+syntax = "proto3";
+
+package shop.v1;
+
+message Order {}
+-- target/testdata/golden.proto --
+syntax = "proto3";
+
+package golden;
+
+message Golden {}
+-- target/web/__fixtures__/case.proto --
+syntax = "proto3";
+
+package cases;
+
+message Case {}

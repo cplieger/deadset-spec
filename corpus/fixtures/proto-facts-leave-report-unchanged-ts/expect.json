@@ -1,6 +1,7 @@
 {
   "name": "proto-facts-leave-report-unchanged-ts",
-  "description": "Asking for facts leaves the report byte-identical, beside a protoc-gen-es v2 file a row binds and a protoc-gen-es v0.5.0 file of the unsupported row, which is a generated entry naming that row and publishes no record.",
+  "description": "Asking for facts leaves the report byte-identical, beside a protoc-gen-es v2 file a row binds and a protoc-gen-es v0.5.0 file of the unsupported row, which is a generated entry naming that row and publishes no record. It does not cite bindings.20, which every language follows, because no Go output reaches the unsupported row of protoc-gen-go-grpc, so no fixture renders that rule in every language.",
+  "rules": ["bindings.1"],
   "languages": [
     "ts"
   ],

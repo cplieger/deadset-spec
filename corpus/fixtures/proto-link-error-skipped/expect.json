@@ -1,11 +1,15 @@
 {
   "name": "proto-link-error-skipped",
-  "description": "A schema file that parses and fails protoc's link-time validation, here a duplicate field number, publishes no declaration and a schema-unparsed note names it; the other files of the target are read as usual.",
+  "description": "A schema file that parses and fails protoc's link-time validation, here a duplicate field number, publishes no declaration and a schema-unparsed note names it; the other files of the target are read as usual. Since a schema file that could not be read may use any declaration, every record of the target is published live, and a schema-findings-withheld note names the target root.",
   "rules": ["schemas.4"],
   "languages": ["proto"],
   "target_kind": "application",
   "min_confidence": "possible",
   "notes": [
+    {
+      "kind": "schema-findings-withheld",
+      "path": "."
+    },
     {
       "kind": "schema-unparsed",
       "path": "v1/bad.proto"
@@ -16,8 +20,7 @@
       "symbol": "Good",
       "role": "schema",
       "schema": "proto://v1#Good",
-      "state": "dead",
-      "report": "DS1801"
+      "state": "live"
     }
   ],
   "expect": []

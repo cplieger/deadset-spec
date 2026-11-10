@@ -1,0 +1,32 @@
+{
+  "description": "A schema file the reader cannot read, here one whose import is written from a directory the default import roots do not name, as a protoc -I proto build compiles it, may use any declaration: the message it alone names, whose Go binding reads unreferenced, is not promoted, nor is any other schema finding of the target. The run ends with exit code 0, and the merged report carries the file's unresolved-import note and one schema-findings-withheld note on the target root.",
+  "products": [
+    "deadset"
+  ],
+  "rename": {
+    "go.mod.txt": "go.mod",
+    "main.go.txt": "main.go"
+  },
+  "stubs": [
+    "bin/analyzer"
+  ],
+  "report_file": "@OUT@/run/report.json",
+  "argv": [
+    "analyze",
+    "--target=@TARGET@",
+    "--run-dir=@OUT@/run"
+  ],
+  "expect": {
+    "exit": 0,
+    "report": "valid",
+    "finding_paths": [],
+    "finding_symbols": [],
+    "files_contain": {
+      "@OUT@/run/report.json": [
+        "\"kind\": \"schema-findings-withheld\"",
+        "\"kind\": \"unresolved-import\"",
+        "\"path\": \"proto/v1/rpc.proto\""
+      ]
+    }
+  }
+}

@@ -1,0 +1,42 @@
+-- fixture.json --
+{
+  "symbols": {
+    "Draft": { "file": "target/api/draft/v1/draft.proto", "line": 5, "ref": "proto://draft.v1#Draft" },
+    "Order": { "file": "target/proto/shop/v1/order.proto", "line": 5, "ref": "proto://shop.v1#Order" },
+    "Scratch": { "file": "target/proto/shop/scratch/scratch.proto", "line": 5, "ref": "proto://shop.scratch#Scratch" },
+    "User": { "file": "target/api/public/v1/user.proto", "line": 5, "ref": "proto://public.v1#User" }
+  }
+}
+-- target/api/draft/v1/draft.proto --
+syntax = "proto3";
+
+package draft.v1;
+
+message Draft {}
+-- target/api/public/v1/user.proto --
+syntax = "proto3";
+
+package public.v1;
+
+message User {}
+-- target/buf.yaml --
+version: v2
+modules:
+  - path: proto
+    excludes:
+      - proto/shop/scratch
+  - path: api
+    includes:
+      - api/public
+-- target/proto/shop/scratch/scratch.proto --
+syntax = "proto3";
+
+package shop.scratch;
+
+message Scratch {}
+-- target/proto/shop/v1/order.proto --
+syntax = "proto3";
+
+package shop.v1;
+
+message Order {}

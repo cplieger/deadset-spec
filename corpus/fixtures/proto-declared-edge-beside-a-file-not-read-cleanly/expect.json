@@ -1,0 +1,49 @@
+{
+  "name": "proto-declared-edge-beside-a-file-not-read-cleanly",
+  "description": "A declared edge whose proto side names a declaration of a schema file that is not read cleanly, here one whose import no root resolves, is evaluated live, since that file may declare it, so the merge reports no stale edge for it; a side naming a published declaration reads as its record. Since a schema file not read cleanly may use any declaration, every record of the target is published live, and a schema-findings-withheld note names the target root.",
+  "rules": [
+    "schemas.4",
+    "schemas.22"
+  ],
+  "languages": [
+    "proto"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "notes": [
+    {
+      "kind": "schema-findings-withheld",
+      "path": "."
+    },
+    {
+      "kind": "unresolved-import",
+      "path": "a.proto"
+    }
+  ],
+  "edge_evaluations": [
+    {
+      "edge": "only-unclean",
+      "side": "provides",
+      "state": "live"
+    },
+    {
+      "edge": "readable",
+      "side": "provides",
+      "state": "live"
+    }
+  ],
+  "facts": [
+    {
+      "symbol": "A",
+      "role": "schema",
+      "absent": true
+    },
+    {
+      "symbol": "B",
+      "role": "schema",
+      "schema": "proto://p#B",
+      "state": "live"
+    }
+  ],
+  "expect": []
+}

@@ -856,7 +856,7 @@
           "x-delivered": []
         },
         "import_paths": {
-          "description": "The import roots, each a directory relative to the target root, inside it. Empty, the roots are the module roots of the target's buf.yaml files, as buf computes them, and otherwise the target root and then each schema file's own directory. A root that names no directory is the setup failure missing-import-path.",
+          "description": "The import roots, each a directory relative to the target root, inside it. Empty, the roots are the module roots of the target's buf.yaml files and the directories its buf.work.yaml files list, as buf computes them, and otherwise, as buf reads a directory with neither, the target root, after the directory each kept copy of an upstream schema lies below, holding those copies alone; an import none of those roots holds then fails its file. A root that names no directory is the setup failure missing-import-path.",
           "type": "array",
           "uniqueItems": true,
           "items": {

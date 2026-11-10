@@ -1,0 +1,20 @@
+{
+  "description": "A language analysis.languages names is analyzed whatever its reader finds: where the target's only schema file lies below testdata, a directory the proto row skips, the target holds no Protocol Buffers program, so the reader ends with the setup failure no-program, the run ends with exit code 3 and that class line, and no merged report is written.",
+  "products": [
+    "deadset"
+  ],
+  "report_file": "@OUT@/run/report.json",
+  "argv": [
+    "analyze",
+    "--target=@TARGET@",
+    "--run-dir=@OUT@/run"
+  ],
+  "expect": {
+    "exit": 3,
+    "report": "absent",
+    "stderr_contains": [
+      "\nsetup failure: no-program: the target ",
+      " holds no .proto file outside the directories named "
+    ]
+  }
+}

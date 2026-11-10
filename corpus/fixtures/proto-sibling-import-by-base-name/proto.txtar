@@ -1,0 +1,31 @@
+-- fixture.json --
+{
+  "symbols": {
+    "Cart": {
+      "file": "target/shop/cart.proto",
+      "line": 7,
+      "ref": "proto://shop#Cart"
+    },
+    "Item": {
+      "file": "target/shop/item.proto",
+      "line": 5,
+      "ref": "proto://shop#Item"
+    }
+  }
+}
+-- target/shop/cart.proto --
+syntax = "proto3";
+
+package shop;
+
+import "item.proto";
+
+message Cart {
+  Item item = 1;
+}
+-- target/shop/item.proto --
+syntax = "proto3";
+
+package shop;
+
+message Item {}

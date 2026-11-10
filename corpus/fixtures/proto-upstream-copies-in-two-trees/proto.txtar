@@ -1,0 +1,66 @@
+-- fixture.json --
+{
+  "symbols": {
+    "RouteA": {
+      "file": "target/svc-a/proto/api/v1/service.proto",
+      "line": 7,
+      "ref": "proto://svc_a.api.v1#Route"
+    },
+    "RouteA.rule": {
+      "file": "target/svc-a/proto/api/v1/service.proto",
+      "line": 8,
+      "ref": "proto://svc_a.api.v1#Route.rule"
+    },
+    "RouteB": {
+      "file": "target/svc-b/proto/api/v1/service.proto",
+      "line": 7,
+      "ref": "proto://svc_b.api.v1#Route"
+    },
+    "RouteB.rule": {
+      "file": "target/svc-b/proto/api/v1/service.proto",
+      "line": 8,
+      "ref": "proto://svc_b.api.v1#Route.rule"
+    },
+    "HttpRule": {
+      "file": "target/svc-a/proto/google/api/http.proto",
+      "line": 5,
+      "ref": "proto://google.api#HttpRule"
+    }
+  }
+}
+-- target/svc-a/proto/api/v1/service.proto --
+syntax = "proto3";
+
+package svc_a.api.v1;
+
+import "google/api/http.proto";
+
+message Route {
+  google.api.HttpRule rule = 1;
+}
+-- target/svc-a/proto/google/api/http.proto --
+syntax = "proto3";
+
+package google.api;
+
+message HttpRule {
+  string get = 2;
+}
+-- target/svc-b/proto/api/v1/service.proto --
+syntax = "proto3";
+
+package svc_b.api.v1;
+
+import "google/api/http.proto";
+
+message Route {
+  google.api.HttpRule rule = 1;
+}
+-- target/svc-b/proto/google/api/http.proto --
+syntax = "proto3";
+
+package google.api;
+
+message HttpRule {
+  string get = 2;
+}

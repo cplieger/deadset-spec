@@ -1,0 +1,23 @@
+{
+  "description": "A target holding only schema files puts its schema language alone in scope, read in process: the census names proto as detected, no analyzer and nothing left out, and the verb ends with exit code 0.",
+  "products": [
+    "deadset"
+  ],
+  "argv": [
+    "print-languages",
+    "--target=@TARGET@"
+  ],
+  "expect": {
+    "exit": 0,
+    "stdout_json": {
+      "languages": [
+        {
+          "language": "proto",
+          "provenance": "detected"
+        }
+      ],
+      "analyzers": [],
+      "left_out": []
+    }
+  }
+}

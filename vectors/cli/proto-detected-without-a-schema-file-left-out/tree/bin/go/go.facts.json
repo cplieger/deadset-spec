@@ -1,0 +1,11 @@
+{
+  "facts_version": "1.0.0",
+  "analyzer": {
+    "name": "deadset-go",
+    "version": "2.0.0"
+  },
+  "language": "go",
+  "evaluated": true,
+  "generated": [],
+  "bindings": []
+}

@@ -1,0 +1,14 @@
+{
+  "describe": {
+    "stdout": "describe.json"
+  },
+  "arms": [
+    {
+      "writes": {
+        "report": "report.json",
+        "facts": "go.facts.json"
+      },
+      "exit": 0
+    }
+  ]
+}

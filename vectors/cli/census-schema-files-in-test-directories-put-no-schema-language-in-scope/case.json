@@ -1,0 +1,35 @@
+{
+  "description": "A schema file below a testdata, fixtures or __fixtures__ directory is a test input: the proto row of languages.json skips those directories, so a Go module whose only schema files sit there puts Go alone in scope, and the census names go as detected, the default deadset-go entry, and nothing left out.",
+  "products": [
+    "deadset"
+  ],
+  "rename": {
+    "go.mod.txt": "go.mod",
+    "main.go.txt": "main.go",
+    "web/fx/case.proto": "web/__fixtures__/case.proto"
+  },
+  "argv": [
+    "print-languages",
+    "--target=@TARGET@"
+  ],
+  "expect": {
+    "exit": 0,
+    "stdout_json": {
+      "languages": [
+        {
+          "language": "go",
+          "provenance": "detected"
+        }
+      ],
+      "analyzers": [
+        {
+          "name": "deadset-go",
+          "languages": [
+            "go"
+          ]
+        }
+      ],
+      "left_out": []
+    }
+  }
+}

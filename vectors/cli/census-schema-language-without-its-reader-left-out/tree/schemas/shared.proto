@@ -1,7 +1,0 @@
-syntax = "proto3";
-
-package shared.v1;
-
-message Sample {
-  string name = 1;
-}

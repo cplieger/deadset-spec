@@ -1,0 +1,35 @@
+{
+  "name": "proto-buf-module-excludes-unread",
+  "description": "A schema file a version 2 buf.yaml leaves out of every module whose path holds it, below one of the module's excludes or outside its includes, is no schema file of the target, because buf builds none: the reader publishes no record of its declarations, and the files the modules build are published as any others.",
+  "rules": ["schemas.3"],
+  "languages": ["proto"],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "facts": [
+    {
+      "symbol": "Draft",
+      "role": "schema",
+      "absent": true
+    },
+    {
+      "symbol": "Order",
+      "role": "schema",
+      "schema": "proto://shop.v1#Order",
+      "state": "dead",
+      "report": "DS1801"
+    },
+    {
+      "symbol": "Scratch",
+      "role": "schema",
+      "absent": true
+    },
+    {
+      "symbol": "User",
+      "role": "schema",
+      "schema": "proto://public.v1#User",
+      "state": "dead",
+      "report": "DS1801"
+    }
+  ],
+  "expect": []
+}

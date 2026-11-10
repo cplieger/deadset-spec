@@ -1,0 +1,52 @@
+{
+  "name": "proto-default-roots-type-name-unresolved",
+  "description": "With no buf.yaml and no proto.import_paths, a file whose imports all resolve but which names a type no scope resolves fails as protoc fails it with its not-defined error: the file publishes nothing and carries a schema-unparsed note. Since a schema file not read cleanly may use any declaration, every record of the target is published live, and a schema-findings-withheld note names the target root.",
+  "rules": [
+    "schemas.3",
+    "schemas.4"
+  ],
+  "languages": [
+    "proto"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "notes": [
+    {
+      "kind": "schema-findings-withheld",
+      "path": "."
+    },
+    {
+      "kind": "schema-unparsed",
+      "path": "proto/v1/rpc.proto"
+    }
+  ],
+  "facts": [
+    {
+      "symbol": "PingRequest",
+      "role": "schema",
+      "schema": "proto://v1#PingRequest",
+      "state": "live"
+    },
+    {
+      "symbol": "PingResponse",
+      "role": "schema",
+      "schema": "proto://v1#PingResponse",
+      "state": "live",
+      "members": [
+        "proto://v1#PingResponse.number"
+      ]
+    },
+    {
+      "symbol": "PingResponse.number",
+      "role": "schema",
+      "schema": "proto://v1#PingResponse.number",
+      "state": "live"
+    },
+    {
+      "symbol": "PingService",
+      "role": "schema",
+      "absent": true
+    }
+  ],
+  "expect": []
+}

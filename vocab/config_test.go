@@ -43,3 +43,11 @@ func TestGeneratorRowsReturnsACopyOfEachRegistration(t *testing.T) {
 		t.Errorf("GeneratorRows()[%d].Registration[0] = %q after a caller changed its copy, want %q", at, got, want)
 	}
 }
+
+func TestInProcessIsTheInProcessRunner(t *testing.T) {
+	for _, row := range vocab.LanguageRows() {
+		if got, want := row.InProcess(), row.Language == vocab.Proto; got != want {
+			t.Errorf("%s InProcess() = %t, want %t: proto alone is read in process", row.Language, got, want)
+		}
+	}
+}

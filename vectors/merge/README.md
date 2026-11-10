@@ -20,7 +20,7 @@ An input file's name is a two-digit ordinal, a hyphen and the language of the an
 
 Every case carries `expected_exit`. A case carries `expected.json` only where the merge produces a merged report: a report the admission step refuses, and a pending finding that meets no evaluation of its edge's other side, each end the run with the failure code before a merged report exists, and those cases hold `expected_exit` alone.
 
-A case that holds `pending` states a rule no product implements yet, named by the reason: a product reports it pending rather than comparing its outcome. The `binding-` cases need the Protocol Buffers schema reader inside deadset and are pending until the deadset release that carries the reader, which removes their `pending` files.
+A case that holds `pending` states a rule no product implements yet, named by the reason: a product reports it pending rather than comparing its outcome.
 
 ## Running a case
 

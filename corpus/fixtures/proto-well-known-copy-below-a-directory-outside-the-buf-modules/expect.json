@@ -1,0 +1,41 @@
+{
+  "name": "proto-well-known-copy-below-a-directory-outside-the-buf-modules",
+  "description": "A copy of a well-known schema kept below a directory outside every buf module is no schema file the build reads: every import of its upstream path reads the file of protoc's own include directory, so the copy publishes nothing and a schema-unparsed note names it, and the importer's field is decided by its bindings. Since a schema file not read cleanly, a shadowed one included, may use any declaration, every record of the target is published live, and a schema-findings-withheld note names the target root.",
+  "rules": [
+    "schemas.3",
+    "schemas.4",
+    "schemas.7"
+  ],
+  "languages": [
+    "proto"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "notes": [
+    {
+      "kind": "schema-findings-withheld",
+      "path": "."
+    },
+    {
+      "kind": "schema-unparsed",
+      "path": "third_party/google/protobuf/timestamp.proto"
+    }
+  ],
+  "facts": [
+    {
+      "symbol": "A.at",
+      "role": "schema",
+      "schema": "proto://api.v1#A.at",
+      "state": "live",
+      "uses": [
+        "proto://google.protobuf#Timestamp"
+      ]
+    },
+    {
+      "symbol": "Timestamp",
+      "role": "schema",
+      "absent": true
+    }
+  ],
+  "expect": []
+}

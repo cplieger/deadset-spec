@@ -1,0 +1,44 @@
+{
+  "name": "proto-upstream-copy-outside-the-import-paths-of-a-held-path",
+  "description": "Under proto.import_paths, an upstream copy no import root holds whose path from the target root is the import path of a file a root holds is shadowed by that file, since the two would share one schema_file: it publishes nothing, and a schema-unparsed note names it and that file. Since a schema file not read cleanly, a shadowed one included, may use any declaration, every record of the target is published live, and a schema-findings-withheld note names the target root.",
+  "rules": [
+    "schemas.3",
+    "schemas.4",
+    "schemas.7"
+  ],
+  "languages": [
+    "proto"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "import_paths": [
+    "proto"
+  ],
+  "notes": [
+    {
+      "kind": "schema-findings-withheld",
+      "path": "."
+    },
+    {
+      "kind": "schema-unparsed",
+      "path": "x/google/type/date.proto"
+    }
+  ],
+  "facts": [
+    {
+      "symbol": "Date",
+      "role": "schema",
+      "schema": "proto://google.type#Date",
+      "state": "live",
+      "members": [
+        "proto://google.type#Date.year"
+      ]
+    },
+    {
+      "symbol": "Other",
+      "role": "schema",
+      "absent": true
+    }
+  ],
+  "expect": []
+}

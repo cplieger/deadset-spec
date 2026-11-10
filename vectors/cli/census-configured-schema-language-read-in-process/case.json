@@ -1,0 +1,27 @@
+{
+  "description": "A schema language analysis.languages names is analyzed, read in process: in a Go module holding a schema file, analysis.languages naming proto in the repository configuration replaces detection, so the census names proto alone, with the provenance the resolved configuration gives analysis.languages, and no analyzer.",
+  "products": [
+    "deadset"
+  ],
+  "rename": {
+    "go.mod.txt": "go.mod",
+    "main.go.txt": "main.go"
+  },
+  "argv": [
+    "print-languages",
+    "--target=@TARGET@"
+  ],
+  "expect": {
+    "exit": 0,
+    "stdout_json": {
+      "languages": [
+        {
+          "language": "proto",
+          "provenance": "repository: @TARGET@/deadset.json"
+        }
+      ],
+      "analyzers": [],
+      "left_out": []
+    }
+  }
+}

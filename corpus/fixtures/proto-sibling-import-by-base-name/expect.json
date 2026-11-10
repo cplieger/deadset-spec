@@ -1,0 +1,37 @@
+{
+  "name": "proto-sibling-import-by-base-name",
+  "description": "With no buf.yaml and no proto.import_paths, the import roots are buf's for a directory with no buf.yaml, the target root, besides the include roots of upstream copies: a schema file imported by its path from its own directory, which no import root holds under that path, fails its importer, which publishes nothing and carries an unresolved-import note, and the imported file is published under its path from the target root. Since a schema file that could not be read may use any declaration, every record of the target is published live, and a schema-findings-withheld note names the target root.",
+  "rules": [
+    "schemas.3",
+    "schemas.4"
+  ],
+  "languages": [
+    "proto"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "notes": [
+    {
+      "kind": "schema-findings-withheld",
+      "path": "."
+    },
+    {
+      "kind": "unresolved-import",
+      "path": "shop/cart.proto"
+    }
+  ],
+  "facts": [
+    {
+      "symbol": "Cart",
+      "role": "schema",
+      "absent": true
+    },
+    {
+      "symbol": "Item",
+      "role": "schema",
+      "schema": "proto://shop#Item",
+      "state": "live"
+    }
+  ],
+  "expect": []
+}

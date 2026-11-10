@@ -1,0 +1,45 @@
+{
+  "name": "proto-upstream-copy-below-a-directory-outside-the-buf-modules",
+  "description": "A copy of an upstream schema kept below a directory outside every buf module, beside the module's own copy of that upstream path, is no schema file the build reads: every import of the path reads the module's copy, so the outside copy publishes nothing and a schema-unparsed note names it. Since a schema file not read cleanly, a shadowed one included, may use any declaration, every record of the target is published live, and a schema-findings-withheld note names the target root.",
+  "rules": [
+    "schemas.3",
+    "schemas.4",
+    "schemas.7"
+  ],
+  "languages": [
+    "proto"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "notes": [
+    {
+      "kind": "schema-findings-withheld",
+      "path": "."
+    },
+    {
+      "kind": "schema-unparsed",
+      "path": "third_party/google/api/http.proto"
+    }
+  ],
+  "facts": [
+    {
+      "symbol": "A.h",
+      "role": "schema",
+      "schema": "proto://api.v1#A.h",
+      "state": "live",
+      "uses": [
+        "proto://google.api#Http"
+      ]
+    },
+    {
+      "symbol": "Http",
+      "role": "schema",
+      "schema": "proto://google.api#Http",
+      "state": "live",
+      "members": [
+        "proto://google.api#Http.x"
+      ]
+    }
+  ],
+  "expect": []
+}

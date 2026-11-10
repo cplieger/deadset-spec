@@ -1,0 +1,55 @@
+{
+  "name": "proto-upstream-copies-differing-in-two-trees",
+  "description": "With no buf.yaml and no proto.import_paths, the import roots are buf's for a directory with no buf.yaml, the target root, besides the include roots of upstream copies: where two directory trees keep differing copies of one upstream schema, every import of the upstream path reads the first tree's copy, as protoc given both include roots does, so the second tree's copy is shadowed and its importer, which names a message only its own copy declares, fails with protoc's error and publishes nothing, a schema-unparsed note naming each. Since a schema file that could not be read may use any declaration, every record of the target is published live, and a schema-findings-withheld note names the target root.",
+  "rules": [
+    "schemas.3",
+    "schemas.4",
+    "schemas.7"
+  ],
+  "languages": [
+    "proto"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "notes": [
+    {
+      "kind": "schema-findings-withheld",
+      "path": "."
+    },
+    {
+      "kind": "schema-unparsed",
+      "path": "svc-b/proto/api/v1/service.proto"
+    },
+    {
+      "kind": "schema-unparsed",
+      "path": "svc-b/proto/google/api/http.proto"
+    }
+  ],
+  "facts": [
+    {
+      "symbol": "Unuseda",
+      "role": "schema",
+      "schema": "proto://svc_a.api.v1#Unuseda",
+      "state": "live",
+      "members": [
+        "proto://svc_a.api.v1#Unuseda.x"
+      ]
+    },
+    {
+      "symbol": "ReqB.r",
+      "role": "schema",
+      "absent": true
+    },
+    {
+      "symbol": "Unusedb",
+      "role": "schema",
+      "absent": true
+    },
+    {
+      "symbol": "HttpRule",
+      "role": "schema",
+      "absent": true
+    }
+  ],
+  "expect": []
+}
