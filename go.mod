@@ -1,6 +1,6 @@
 module github.com/cplieger/deadset-spec/v8
 
-go 1.27.3
+go 1.27.4
 
 require (
 	github.com/cplieger/go/filesafe v1.0.0
