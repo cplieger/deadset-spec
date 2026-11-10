@@ -1,0 +1,80 @@
+{
+  "name": "enum-group-deletion-moves-one-step",
+  "description": "A constant is reported only where deleting it, alone or with the others reported, leaves a program that builds and denotes the same value at every name it uses. A later constant of the block must then drop by exactly one, which holds for iota plus or minus untyped constants and for the plain name of such a constant, and must stay a valid constant of its type. A member whose deletion would move a later constant any other way, re-list it, push it below its type's least value, make an expression after it divide by zero or shift by a negative count, or break a repeated list of several names, is retained, and so is an unnamed first member whose list the next specification repeats. A member whose deletion moves no constant code names, or moves one only by one step under an alias, is reported, and so is a constant no enumerated type holds whose deletion moves no named constant.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "expect": [
+    { "symbol": "Power.Mid", "report": "none", "retained_by": ["enum-group"] },
+    {
+      "symbol": "Power.Tail",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    { "symbol": "Share.Mid", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "Listed.X", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "Tiny.Mid", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "Twin.Mid", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "Twin.W", "report": "none", "retained_by": ["enum-group"] },
+    {
+      "symbol": "Alias.Mid",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    { "symbol": "Times.Mid", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "Flag.Mid", "report": "none", "retained_by": ["enum-group"] },
+    {
+      "symbol": "Flag.Tail",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    { "symbol": "Wave.Mid", "report": "none", "retained_by": ["enum-group"] },
+    {
+      "symbol": "Wave.Tail",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    { "symbol": "State.Unknown", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "Ratio.Mid", "report": "none", "retained_by": ["enum-group"] },
+    {
+      "symbol": "Ratio.Hidden",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    { "symbol": "Least.Mid", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "Floor.M1", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "Floor.M2", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "Shift.Mid", "report": "none", "retained_by": ["enum-group"] },
+    {
+      "symbol": "Shift.Hidden",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    { "symbol": "Blank.Mid", "report": "none", "retained_by": ["enum-group"] },
+    {
+      "symbol": "Keep.M",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "B",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

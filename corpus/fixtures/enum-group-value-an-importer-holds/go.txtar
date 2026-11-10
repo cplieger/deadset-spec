@@ -1,0 +1,285 @@
+The Go rendering: a library whose exported API carries its enumerated types:
+an interface method's parameter, a method promoted into an exported struct from
+an internal type, a re-exported constant, exported constants of an unexported
+type, an exported type with hidden members, an exported alias, slice and map
+types, a method of an unexported type an exported function returns, and an
+exported alias and a defined type of a pointer. One type is only compared
+inside the library.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Hush.Mid": {
+      "file": "target/lib.go",
+      "line": 118
+    },
+    "Hush.Tail": {
+      "file": "target/lib.go",
+      "line": 120
+    },
+    "Inner.Loud": {
+      "file": "target/internal/impl/impl.go",
+      "line": 16
+    },
+    "Kind.Mid": {
+      "file": "target/internal/kinds/kinds.go",
+      "line": 27
+    },
+    "Level.Mid": {
+      "file": "target/lib.go",
+      "line": 70
+    },
+    "LibKind.Hidden": {
+      "file": "target/lib.go",
+      "line": 44
+    },
+    "LibMood.Mid": {
+      "file": "target/lib.go",
+      "line": 34
+    },
+    "LibVolume.Mid": {
+      "file": "target/lib.go",
+      "line": 100
+    },
+    "Mood.Mid": {
+      "file": "target/internal/kinds/kinds.go",
+      "line": 9
+    },
+    "PDef.Mid": {
+      "file": "target/lib.go",
+      "line": 149
+    },
+    "PLevel.Mid": {
+      "file": "target/lib.go",
+      "line": 134
+    },
+    "Rank.Mid": {
+      "file": "target/lib.go",
+      "line": 85
+    },
+    "Shade.Mid": {
+      "file": "target/lib.go",
+      "line": 54
+    },
+    "Shade.Tail": {
+      "file": "target/lib.go",
+      "line": 56
+    },
+    "Volume.Mid": {
+      "file": "target/internal/kinds/kinds.go",
+      "line": 18
+    }
+  }
+}
+-- target/go.mod --
+module example.com/lib
+
+go 1.27.0
+-- target/internal/impl/impl.go --
+// Package impl implements the library's interfaces.
+package impl
+
+import "example.com/lib/internal/kinds"
+
+// M reads moods.
+type M struct{}
+
+// Read reports whether m is a named mood.
+func (M) Read(m kinds.Mood) bool { return m == kinds.MoodA || m == kinds.MoodZ }
+
+// Inner is embedded in an exported struct.
+type Inner struct{}
+
+// Loud reports whether v is a named volume.
+func (Inner) Loud(v kinds.Volume) bool { return v == kinds.VolumeA || v == kinds.VolumeZ }
+
+// Loud reports whether k is the last kind.
+func Loud(k kinds.Kind) bool { return k == kinds.KindZ }
+-- target/internal/kinds/kinds.go --
+// Package kinds declares enumerated types the library's API carries.
+package kinds
+
+// Mood is a parameter of an exported interface's method.
+type Mood int
+
+const (
+	MoodA Mood = iota
+	MoodMid
+	MoodZ
+)
+
+// Volume is a parameter of a method promoted into an exported struct.
+type Volume int
+
+const (
+	VolumeA Volume = iota
+	VolumeMid
+	VolumeZ
+)
+
+// Kind is re-exported by a constant of the library.
+type Kind int
+
+const (
+	KindA Kind = iota
+	KindMid
+	KindZ
+)
+-- target/lib.go --
+// Package lib is a library whose API lets an importer hold values of its
+// enumerated types.
+package lib
+
+import (
+	"example.com/lib/internal/impl"
+	"example.com/lib/internal/kinds"
+)
+
+// Meter reads a mood.
+type Meter interface {
+	Read(kinds.Mood) bool
+}
+
+// Default returns the library's Meter.
+func Default() Meter { return impl.M{} }
+
+// Mixer promotes Loud from an internal type.
+type Mixer struct {
+	impl.Inner
+}
+
+// KindReexported re-exports a member of an internal type.
+const KindReexported = kinds.KindA
+
+// Loudest reports whether the re-exported kind is the loud one.
+func Loudest() bool { return impl.Loud(KindReexported) }
+
+// mood is unexported, with exported constants.
+type mood int
+
+const (
+	MoodSad mood = iota
+	moodMid
+	MoodHappy
+	moodTail
+)
+
+// Kind is an exported enumerated type with unexported members between exported ones.
+type Kind int
+
+const (
+	KindA Kind = iota
+	kindHidden
+	KindB
+	kindTail
+)
+
+// shade is unexported, reachable through an exported alias.
+type shade int
+
+const (
+	shadeA shade = iota
+	shadeMid
+	shadeZ
+	shadeTail
+)
+
+// Shade is an exported alias of shade.
+type Shade = shade
+
+// Dark reports whether s is the last named shade.
+func Dark(s Shade) bool { return s == shadeZ || s == shadeA }
+
+// level is the element of an exported slice type.
+type level int
+
+const (
+	levelA level = iota
+	levelMid
+	levelZ
+)
+
+// Levels is a slice of levels.
+type Levels []level
+
+// Highest reports whether the last level is levelZ.
+func (l Levels) Highest() bool { return len(l) > 0 && (l[len(l)-1] == levelZ || l[0] == levelA) }
+
+// rank is the value of an exported map type.
+type rank int
+
+const (
+	rankA rank = iota
+	rankMid
+	rankZ
+)
+
+// Table maps names to ranks.
+type Table map[string]rank
+
+// Top reports whether name ranks highest.
+func (t Table) Top(name string) bool { return t[name] == rankZ || t[name] == rankA }
+
+// volume is a parameter of a method of an unexported type an exported function returns.
+type volume int
+
+const (
+	volumeA volume = iota
+	volumeMid
+	volumeZ
+)
+
+// player is returned by New.
+type player struct{}
+
+// Loud reports whether v is a named volume.
+func (player) Loud(v volume) bool { return v == volumeZ || v == volumeA }
+
+// New returns a player.
+func New() player { return player{} }
+
+// hush is only compared inside the library.
+type hush int
+
+const (
+	hushA hush = iota
+	hushMid
+	hushZ
+	hushTail
+)
+
+// quiet reports whether h is hushZ.
+func quiet(h hush) bool { return h == hushZ }
+
+// Quiet reports whether the library is quiet.
+func Quiet() bool { return quiet(hushA) }
+
+// plevel is reachable through an exported alias of its pointer type.
+type plevel int
+
+const (
+	plevelA plevel = iota
+	plevelMid
+	plevelZ
+)
+
+// Ptr is a pointer to a plevel.
+type Ptr = *plevel
+
+// High reports whether p points at plevelZ.
+func High(p Ptr) bool { return *p == plevelZ || *p == plevelA }
+
+// pdef is reachable through an exported defined pointer type.
+type pdef int
+
+const (
+	pdefA pdef = iota
+	pdefMid
+	pdefZ
+)
+
+// PtrDef is a defined pointer to a pdef.
+type PtrDef *pdef
+
+// Set reports whether p points at pdefZ.
+func Set(p PtrDef) bool { return *p == pdefZ || *p == pdefA }

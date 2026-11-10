@@ -1,0 +1,20 @@
+{
+  "name": "iota-constant-deletion-renumbers",
+  "description": "Deleting a constant of an iota block renumbers the constants after it, so a constant whose deletion moves a constant that code names is retained by the enum-group class, whatever its type: untyped, of a predeclared or local type, or of a type the target does not declare. Such a constant has no enumerated type whose values the class follows, so nothing proves the move harmless. A constant whose deletion moves no named constant is reported.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "expect": [
+    { "symbol": "B", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "Y", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "TickMid", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "Q", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "LocalMid", "report": "none", "retained_by": ["enum-group"] },
+    {
+      "symbol": "LocalTail",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

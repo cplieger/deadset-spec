@@ -1,0 +1,60 @@
+The Go rendering: a library whose exported kind has an unexported member
+between two exported ones and an unexported one after the last, and whose
+unexported shade has a member nothing names.
+
+-- fixture.json --
+{
+  "symbols": {
+    "kindHidden": {
+      "file": "target/kind.go",
+      "line": 9
+    },
+    "kindLast": {
+      "file": "target/kind.go",
+      "line": 11
+    },
+    "shadeMid": {
+      "file": "target/kind.go",
+      "line": 29
+    }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/kind.go --
+// Package target classifies entries.
+package target
+
+// Kind classifies one entry.
+type Kind int
+
+const (
+	KindFile Kind = iota
+	kindHidden
+	KindDir
+	kindLast
+)
+
+// String is the kind's label.
+func (k Kind) String() string {
+	switch k {
+	case KindFile:
+		return "file"
+	case KindDir:
+		return "dir"
+	}
+	return "other"
+}
+
+type shade int
+
+const (
+	shadeLight shade = iota
+	shadeMid
+	shadeDark
+)
+
+// Dark reports whether an unlit shade is dark.
+func Dark(light bool) bool { return !light && shadeLight != shadeDark }

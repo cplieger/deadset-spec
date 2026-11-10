@@ -1,0 +1,22 @@
+{
+  "name": "encoding-reflection-template-in-a-library",
+  "description": "A library does not read its templates, since an importer can parse more templates into a set the library exposes or execute one with values the library does not see, so an execution in a library reads of the argument's fields only those the program writes, and an exported field nothing writes and an unexported field are reported as never written.",
+  "languages": ["go"],
+  "target_kind": "library",
+  "expect": [
+    {
+      "symbol": "T8.page.Body",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field"
+    },
+    {
+      "symbol": "T8.page.tag",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field"
+    }
+  ]
+}

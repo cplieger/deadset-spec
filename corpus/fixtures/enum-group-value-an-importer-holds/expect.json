@@ -1,0 +1,46 @@
+{
+  "name": "enum-group-value-an-importer-holds",
+  "description": "In a library an importer can hold a value of any type the exported API carries, through a parameter, a result, a field, an element, a method of a type the API reaches, an alias or a pointer, and code outside the analyzed program may make a value of it by any number. A member whose deletion renumbers a named member of such a type is retained, and an exported constant of an importable package counts as named because an importer can name it. A member after the last named one moves nothing when deleted and is reported, and so is a member of a type no exported declaration holds whose values are only compared.",
+  "languages": ["go"],
+  "target_kind": "library",
+  "expect": [
+    { "symbol": "Mood.Mid", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "Volume.Mid", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "Kind.Mid", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "LibMood.Mid", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "LibKind.Hidden", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "Shade.Mid", "report": "none", "retained_by": ["enum-group"] },
+    {
+      "symbol": "Shade.Tail",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    { "symbol": "Level.Mid", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "Rank.Mid", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "LibVolume.Mid", "report": "none", "retained_by": ["enum-group"] },
+    {
+      "symbol": "Hush.Mid",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Hush.Tail",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    { "symbol": "PLevel.Mid", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "PDef.Mid", "report": "none", "retained_by": ["enum-group"] },
+    {
+      "symbol": "Inner.Loud",
+      "report": "DS1101",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    }
+  ]
+}

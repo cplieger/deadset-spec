@@ -15,7 +15,13 @@ variable holding two lookups, each written first in one of two variables.
     "badge.String": { "file": "target/main.go", "line": 32 },
     "stamp.String": { "file": "target/main.go", "line": 37 },
     "rec.alias": { "file": "target/main.go", "line": 39 },
-    "row.title": { "file": "target/main.go", "line": 41 }
+    "row.title": { "file": "target/main.go", "line": 41 },
+    "fieldLevel.Mid": { "file": "target/levels.go", "line": 16 },
+    "fieldLevel.Top": { "file": "target/levels.go", "line": 18 },
+    "mapLevel.Mid": { "file": "target/levels.go", "line": 26 },
+    "methodLevel.Mid": { "file": "target/levels.go", "line": 35 },
+    "paramLevel.Mid": { "file": "target/levels.go", "line": 44 },
+    "literalLevel.Mid": { "file": "target/levels.go", "line": 53 }
   }
 }
 -- target/go.mod --
@@ -113,3 +119,85 @@ func Handle(name string, handler any) {
 
 // Current is the handler of the route being served.
 func Current() reflect.Value { return reflect.Value{} }
+-- target/levels.go --
+package main
+
+import (
+	"bytes"
+	"encoding/json"
+	"encoding/xml"
+	"fmt"
+	"os"
+)
+
+// fieldLevel is decoded through a decoder a struct field holds.
+type fieldLevel int
+
+const (
+	fieldLow fieldLevel = iota
+	fieldMid
+	fieldHigh
+	fieldTop
+)
+
+// mapLevel is decoded through a decoder a map element holds.
+type mapLevel int
+
+const (
+	mapLow mapLevel = iota
+	mapMid
+	mapHigh
+)
+
+// methodLevel is decoded through a method value of a *json.Decoder.
+type methodLevel int
+
+const (
+	methodLow methodLevel = iota
+	methodMid
+	methodHigh
+)
+
+// paramLevel is decoded through a decoder passed as a parameter.
+type paramLevel int
+
+const (
+	paramLow paramLevel = iota
+	paramMid
+	paramHigh
+)
+
+// literalLevel is passed to a function literal called through a variable.
+type literalLevel int
+
+const (
+	literalLow literalLevel = iota
+	literalMid
+	literalHigh
+)
+
+// decoders holds a decoder in a field.
+type decoders struct {
+	decode func([]byte, any) error
+}
+
+func init() {
+	data := []byte(os.Args[0])
+	var a fieldLevel
+	h := decoders{decode: json.Unmarshal}
+	_ = h.decode(data, &a)
+	var b mapLevel
+	byName := map[string]func([]byte, any) error{"json": json.Unmarshal}
+	_ = byName["json"](data, &b)
+	var c methodLevel
+	dec := json.NewDecoder(bytes.NewReader(data)).Decode
+	_ = dec(&c)
+	var e paramLevel
+	loaded := load(json.Unmarshal, data, &e) == nil || load(xml.Unmarshal, data, &e) == nil
+	same := func(x literalLevel) bool { return x == literalHigh }
+	fmt.Println(a == fieldLow || a == fieldHigh, b == mapLow || b == mapHigh, c == methodLow || c == methodHigh)
+	fmt.Println(loaded, e == paramLow || e == paramHigh, same(literalLow))
+}
+
+// load decodes data into v through decode.
+func load(decode func([]byte, any) error, data []byte, v *paramLevel) error { return decode(data, v) }

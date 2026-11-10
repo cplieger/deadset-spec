@@ -1,0 +1,62 @@
+The Go rendering: a command whose production code names only the first member
+of one iota group, whose test hands a pointer to a variable of the type to the
+test log, and a second type with a member in a block of its own that nothing
+names.
+
+-- fixture.json --
+{
+  "symbols": {
+    "E20.levelHigh": {
+      "file": "target/main.go",
+      "line": 11
+    },
+    "E20.levelMid": {
+      "file": "target/main.go",
+      "line": 10
+    },
+    "E80.codeX": {
+      "file": "target/main.go",
+      "line": 21
+    }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target compares the first member of two enumerated types.
+package main
+
+import "fmt"
+
+type level int
+
+const (
+	levelLow level = iota
+	levelMid
+	levelHigh
+)
+
+type code int
+
+const (
+	codeA code = iota
+	codeB
+)
+
+const codeX code = 7
+
+func main() {
+	l := levelLow
+	fmt.Println(l == levelLow, codeA != codeB)
+}
+-- target/main_test.go --
+package main
+
+import "testing"
+
+func TestLevel(t *testing.T) {
+	l := levelLow
+	t.Log(&l)
+}

@@ -1,0 +1,236 @@
+The Go rendering: an application whose iota groups are printed by fmt, index an
+array of names, are converted to int, stand as an array length, are a type
+argument, pass through an interface method, are a parameter of a method a
+service registered with net/rpc declares, and type a variable a linkname
+directive exposes, each naming its first and third member.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Count.Mid": {
+      "file": "target/main.go",
+      "line": 78
+    },
+    "Indexed.Mid": {
+      "file": "target/main.go",
+      "line": 57
+    },
+    "Indexed.Tail": {
+      "file": "target/main.go",
+      "line": 59
+    },
+    "Length.Mid": {
+      "file": "target/main.go",
+      "line": 96
+    },
+    "Level.Mid": {
+      "file": "target/main.go",
+      "line": 129
+    },
+    "Linked.Mid": {
+      "file": "target/main.go",
+      "line": 175
+    },
+    "Member.Mid": {
+      "file": "target/main.go",
+      "line": 111
+    },
+    "Mode.Mid": {
+      "file": "target/main.go",
+      "line": 157
+    },
+    "Printed.Mid": {
+      "file": "target/main.go",
+      "line": 28
+    },
+    "Printed.Tail": {
+      "file": "target/main.go",
+      "line": 30
+    }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target uses values of enumerated types where their numbers show:
+// printed, indexing an array, converted, as an array length, as a type argument,
+// through an interface and through a linkname variable.
+package main
+
+import (
+	"fmt"
+	"net/rpc"
+	"os"
+	"slices"
+	_ "unsafe"
+)
+
+func main() {
+	n := len(os.Args)
+	fmt.Println(printedOf(n), printedZ)
+	fmt.Println(indexedOf(n).String(), counted(n), sized(), contained(n))
+	var s setter = impl{}
+	fmt.Println(s.Set(pickLevel(n)))
+	fmt.Println(rpc.Register(&service{}) == nil, linkedCur == linkedZ || linkedCur == linkedA)
+}
+
+// printed has a String method and is printed by fmt.
+type printed int
+
+const (
+	printedA printed = iota
+	printedMid
+	printedZ
+	printedTail
+)
+
+// String names the two named members.
+func (v printed) String() string {
+	switch v {
+	case printedA:
+		return "a"
+	case printedZ:
+		return "z"
+	}
+	return "?"
+}
+
+// printedOf returns printedA or printedZ.
+func printedOf(n int) printed {
+	if n > 3 {
+		return printedZ
+	}
+	return printedA
+}
+
+// indexed names its members by indexing an array with the value.
+type indexed int
+
+const (
+	indexedA indexed = iota
+	indexedMid
+	indexedZ
+	indexedTail
+)
+
+// String indexes an array of names with the value.
+func (v indexed) String() string { return [...]string{"a", "m", "z", "t"}[v] }
+
+// indexedOf returns indexedA or indexedZ.
+func indexedOf(n int) indexed {
+	if n > 3 {
+		return indexedZ
+	}
+	return indexedA
+}
+
+// count is converted to int and compared with a number.
+type count int
+
+const (
+	countA count = iota
+	countMid
+	countZ
+)
+
+// counted converts countZ to int.
+func counted(n int) bool {
+	v := countA
+	if n > 3 {
+		v = countZ
+	}
+	return int(v) == 2
+}
+
+// length stands as an array length.
+type length int
+
+const (
+	lengthA length = iota
+	lengthMid
+	lengthZ
+)
+
+// sized declares an array lengthZ long.
+func sized() int {
+	var a [lengthZ]int
+	return len(a) + int(lengthA)
+}
+
+// member is a type argument of slices.Contains.
+type member int
+
+const (
+	memberA member = iota
+	memberMid
+	memberZ
+)
+
+// contained asks slices.Contains for memberZ.
+func contained(n int) bool {
+	s := []member{memberA}
+	if n > 3 {
+		s = append(s, memberZ)
+	}
+	return slices.Contains(s, memberZ)
+}
+
+// level is passed through an interface method.
+type level int
+
+const (
+	levelLow level = iota
+	levelMid
+	levelHigh
+)
+
+// setter takes a level.
+type setter interface {
+	Set(level) bool
+}
+
+// impl implements setter.
+type impl struct{}
+
+// Set reports whether l is the high level.
+func (impl) Set(l level) bool { return l == levelHigh }
+
+// pickLevel returns levelLow or levelHigh.
+func pickLevel(n int) level {
+	if n > 3 {
+		return levelHigh
+	}
+	return levelLow
+}
+
+// mode is a parameter of a method a service registered with net/rpc declares.
+type mode int
+
+const (
+	modeA mode = iota
+	modeMid
+	modeZ
+)
+
+// service is registered with net/rpc.
+type service struct{}
+
+// Apply reports whether m is modeZ or modeA.
+func (*service) Apply(m mode, ok *bool) error {
+	*ok = m == modeZ || m == modeA
+	return nil
+}
+
+// linked is the type of a variable a linkname directive exposes.
+type linked int
+
+const (
+	linkedA linked = iota
+	linkedMid
+	linkedZ
+)
+
+//go:linkname linkedCur
+var linkedCur = linkedA

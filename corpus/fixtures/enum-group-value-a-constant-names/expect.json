@@ -1,0 +1,61 @@
+{
+  "name": "enum-group-value-a-constant-names",
+  "description": "Deleting a member renumbers the members after it, so where code compares values of the type, the class keeps every equality and order between the values code can hold: each named member, each constant expression of the type that is not a member's name (a constant a function body declares and one whose type is spelled through an alias among them), and the zero value. A member converted to another type inside a constant expression of that type is a conversion, which keeps its type's members. A member whose deletion would make a renumbered member equal to such a constant, or no longer equal to it, or would move it past one, is retained, and so is a member compared with a constant whose value may differ on a target the run does not load. A member whose deletion keeps every such relation is reported, and a constant expression is read by its value, whatever its spelling.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "expect": [
+    { "symbol": "EqualLast.Mid", "report": "none", "retained_by": ["enum-group"] },
+    {
+      "symbol": "Above.Mid",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Above.Tail",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Spelled.Tail",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    { "symbol": "Declared.Mid", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "Maxed.Mid", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "Literal.Mid", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "Returned.Mid", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "Split.Mid", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "Pair.M1", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "Pair.M2", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "Own.Mid", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "Shifted.Mid", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "Kind.Mid", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "Kind2.Mid", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "LanesA.Mid", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "LanesB.Mid", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "LanesC.Mid", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "Crossed.Mid", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "LocalKind.Mid", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "Aliased.Mid", "report": "none", "retained_by": ["enum-group"] },
+    {
+      "symbol": "Halved.B",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Halved.C",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

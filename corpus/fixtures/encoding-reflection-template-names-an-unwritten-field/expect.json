@@ -1,0 +1,93 @@
+{
+  "name": "encoding-reflection-template-names-an-unwritten-field",
+  "description": "A template execution reads each field an action of its templates names, whether or not anything writes it, because executing an action that names a field the type lacks fails. An action that prints a value prints it through fmt, so every field the formatting walk reaches is read, exported or not, written or not: the argument printed by {{.}} or by printf, a field printed whole, each element a range binds, the value a with binds, a variable's value and the dot a defined template is invoked with. Dot is typed as the engine binds it. An action whose value has no one static type that is no interface, as for a method or template function result, an interface-typed field or a reflect.Value argument, reads only what an action of a template the analysis does not read reads. A field no action names and nothing writes, or that is written and never read, is reported.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "expect": [
+    { "symbol": "T1.page.Body", "report": "none", "retained_by": ["encoding-reflection"] },
+    { "symbol": "T2.post.Body", "report": "none", "retained_by": ["encoding-reflection"] },
+    { "symbol": "T2.note.Body", "report": "none", "retained_by": ["encoding-reflection"] },
+    { "symbol": "T3.card.Body", "report": "none", "retained_by": ["encoding-reflection"] },
+    {
+      "symbol": "T4.page.Extra",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field"
+    },
+    {
+      "symbol": "T5.page.Draft",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field"
+    },
+    { "symbol": "T6.story.Body", "report": "none", "retained_by": ["encoding-reflection"] },
+    { "symbol": "T9.whole.Title", "report": "none", "retained_by": ["encoding-reflection"] },
+    { "symbol": "T9.whole.Body", "report": "none", "retained_by": ["encoding-reflection"] },
+    { "symbol": "T10.inner10", "report": "none" },
+    { "symbol": "T10.inner10.Body", "report": "none", "retained_by": ["encoding-reflection"] },
+    { "symbol": "T10.outer10.Inner", "report": "none", "retained_by": ["encoding-reflection"] },
+    { "symbol": "T11.priv11.Name", "report": "none", "retained_by": ["encoding-reflection"] },
+    { "symbol": "T11.priv11.secret", "report": "none", "retained_by": ["encoding-reflection"] },
+    { "symbol": "T12.item12.Name", "report": "none", "retained_by": ["encoding-reflection"] },
+    { "symbol": "T12.item12.Note", "report": "none", "retained_by": ["encoding-reflection"] },
+    { "symbol": "T13.inner13", "report": "none" },
+    { "symbol": "T13.inner13.Body", "report": "none", "retained_by": ["encoding-reflection"] },
+    { "symbol": "T13.outer13.Inner", "report": "none", "retained_by": ["encoding-reflection"] },
+    { "symbol": "T14.item14.Note", "report": "none", "retained_by": ["encoding-reflection"] },
+    { "symbol": "T15.inner15", "report": "none" },
+    { "symbol": "T15.inner15.Body", "report": "none", "retained_by": ["encoding-reflection"] },
+    { "symbol": "T15.item15.Note", "report": "none", "retained_by": ["encoding-reflection"] },
+    { "symbol": "T15.page15.Inner", "report": "none", "retained_by": ["encoding-reflection"] },
+    {
+      "symbol": "T16.item16.Name",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field"
+    },
+    {
+      "symbol": "T16.item16.Note",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field"
+    },
+    {
+      "symbol": "T16.stored16.Name",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field"
+    },
+    {
+      "symbol": "T16.stored16.Note",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field"
+    },
+    {
+      "symbol": "T18.detail18.Body",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field"
+    },
+    {
+      "symbol": "T19.detail19.Body",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field"
+    },
+    {
+      "symbol": "T20.row20.Body",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field"
+    }
+  ]
+}

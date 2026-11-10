@@ -1,0 +1,85 @@
+The Go rendering: an application printing the last constant of an untyped
+iota block, of an int block, of a local block and of a time.Duration block, and
+comparing the last named constant of a block of a local type, each block
+holding a middle constant nothing names.
+
+-- fixture.json --
+{
+  "symbols": {
+    "B": {
+      "file": "target/main.go",
+      "line": 13
+    },
+    "LocalMid": {
+      "file": "target/main.go",
+      "line": 40
+    },
+    "LocalTail": {
+      "file": "target/main.go",
+      "line": 42
+    },
+    "Q": {
+      "file": "target/main.go",
+      "line": 33
+    },
+    "TickMid": {
+      "file": "target/main.go",
+      "line": 25
+    },
+    "Y": {
+      "file": "target/main.go",
+      "line": 19
+    }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target prints constants of iota blocks that are not enumerated types
+// of the target: untyped ones, a block of int, a local block, a block of a local
+// type and a block of time.Duration.
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+const (
+	a = iota
+	b
+	c
+)
+
+const (
+	x int = 1 << iota
+	y
+	z
+)
+
+const (
+	tick0 time.Duration = iota * time.Second
+	tickMid
+	tickLast
+)
+
+func main() {
+	fmt.Println(a, c, x, z, tick0, tickLast)
+	const (
+		p = iota
+		q
+		r
+	)
+	fmt.Println(p, r)
+	type local int
+	const (
+		localA local = iota
+		localMid
+		localZ
+		localTail
+	)
+	v := localA
+	fmt.Println(v == localZ)
+}

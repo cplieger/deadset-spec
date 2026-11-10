@@ -1,0 +1,104 @@
+The Go rendering: a library whose error kind has a String method, a sentinel
+one past its last kind that only its tests use under a directive, and a kind
+nothing names, which the test stepping through the kinds up to the sentinel
+reaches; a mode with an UnmarshalText method and a format with a MarshalText
+method, each with a member nothing names.
+
+-- fixture.json --
+{
+  "symbols": {
+    "kindEnd": { "file": "target/kinds/kinds.go", "line": 13 },
+    "kindSpare": { "file": "target/kinds/kinds.go", "line": 10 },
+    "modeSpare": { "file": "target/kinds/mode.go", "line": 11 },
+    "formatSpare": { "file": "target/kinds/format.go", "line": 9 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/kinds/kinds.go --
+// Package kinds classifies failures.
+package kinds
+
+// errorKind classifies one failure.
+type errorKind int
+
+const (
+	KindInvalid errorKind = iota + 1
+	KindDenied
+	kindSpare
+	// kindEnd is one past the last kind, for the tests that range over them.
+	//deadset:ignore DS1102 -- the exhaustive kind tests range up to it
+	kindEnd
+)
+
+var labels = map[errorKind]string{KindInvalid: "invalid", KindDenied: "denied"}
+
+// String is the kind's label.
+func (k errorKind) String() string {
+	if label, ok := labels[k]; ok {
+		return label
+	}
+	return "blocked"
+}
+-- target/kinds/kinds_test.go --
+package kinds
+
+import "testing"
+
+func TestEveryKindHasALabel(t *testing.T) {
+	for k := KindInvalid; k < kindEnd; k++ {
+		if k.String() == "" {
+			t.Errorf("kind %d has no label", int(k))
+		}
+	}
+	if kindEnd.String() != "blocked" {
+		t.Error("the sentinel has a label")
+	}
+}
+-- target/kinds/mode.go --
+package kinds
+
+import "errors"
+
+// mode is how a failure is reported.
+type mode int
+
+const (
+	ModeQuiet mode = iota
+	ModeLoud
+	modeSpare
+)
+
+// UnmarshalText reads a mode from its name.
+func (m *mode) UnmarshalText(text []byte) error {
+	switch string(text) {
+	case "quiet":
+		*m = ModeQuiet
+	case "loud":
+		*m = ModeLoud
+	default:
+		return errors.New("unknown mode")
+	}
+	return nil
+}
+-- target/kinds/format.go --
+package kinds
+
+// format is how a failure is written.
+type format int
+
+const (
+	FormatText format = iota
+	FormatJSON
+	formatSpare
+)
+
+// MarshalText writes the format's name.
+func (f format) MarshalText() ([]byte, error) {
+	if f == FormatJSON {
+		return []byte("json"), nil
+	}
+	return []byte("text"), nil
+}

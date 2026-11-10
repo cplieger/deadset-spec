@@ -1,0 +1,59 @@
+{
+  "name": "format-verb-prints-fields-and-calls-formatters",
+  "description": "A value a formatting call prints has every field the formatting walk reaches read, exported or not, because fmt prints the set of fields itself, and has its Format method retained under every verb and its GoString method retained where a verb v can carry the # flag, whatever its other flags, width or argument index. The walk enters an unexported field for its fields only. A GoString method no v verb with the # flag can reach, and a String method a verb that is no string verb never calls, are reported. An operand whose walk meets a value of an interface type or a reflect.Value is walked as before: the walk stops at an interface-typed field, so its stored value's String method and the field are reported.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "expect": [
+    { "symbol": "P1.money.Format", "report": "none", "retained_by": ["format-verb-contract"] },
+    { "symbol": "P1.tag.GoString", "report": "none", "retained_by": ["format-verb-contract"] },
+    { "symbol": "P1.line.Price", "report": "none", "retained_by": ["format-verb-contract"] },
+    { "symbol": "P1.line.Tag", "report": "none", "retained_by": ["format-verb-contract"] },
+    { "symbol": "P2.inner2.n", "report": "none", "retained_by": ["format-verb-contract"] },
+    { "symbol": "P2.outer2.In", "report": "none", "retained_by": ["format-verb-contract"] },
+    {
+      "symbol": "P3.code3.GoString",
+      "report": "DS1101",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method"
+    },
+    {
+      "symbol": "P4.t4.n",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field"
+    },
+    {
+      "symbol": "P4.t4.String",
+      "report": "DS1101",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method"
+    },
+    {
+      "symbol": "P4.outer4.V",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field"
+    },
+    {
+      "symbol": "P5.label5.String",
+      "report": "DS1101",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method"
+    },
+    { "symbol": "P5.count5.L", "report": "none", "retained_by": ["format-verb-contract"] },
+    { "symbol": "P6.flags6.GoString", "report": "none", "retained_by": ["format-verb-contract"] },
+    {
+      "symbol": "P7.hex7.GoString",
+      "report": "DS1101",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method"
+    },
+    { "symbol": "P8.row8.Note", "report": "none" }
+  ]
+}

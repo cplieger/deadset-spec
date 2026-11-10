@@ -1,0 +1,89 @@
+{
+  "name": "enum-group-only-compared-or-copied",
+  "description": "A member whose deletion renumbers the named members after it is still reported where every value of its type arises from a member's name, a constant or the zero value, and is only compared or copied between places of the program: the deletion maps every value to one less and keeps every comparison, so the program does the same. A method the program declares with a body is such a place, so a String method the program calls retains nothing, and a name written only in a function nothing calls still names the member.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Spread.Mid",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Pointed.Mid",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Plain.Mid",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Described.Mid",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Described.Tail",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Valued.Mid",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Box.Mid",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Piped.Mid",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "Held.Mid",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "UnusedCheck",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting"
+    },
+    { "symbol": "Named", "report": "DS1002", "confidence": "certain" },
+    { "symbol": "Named.A", "report": "DS1002", "confidence": "certain" },
+    { "symbol": "Named.Mid", "report": "DS1002", "confidence": "certain" },
+    { "symbol": "Named.Z", "report": "DS1002", "confidence": "certain" },
+    {
+      "symbol": "Holder",
+      "report": "DS1501",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "details": { "narrower_visibility": "file" }
+    }
+  ]
+}

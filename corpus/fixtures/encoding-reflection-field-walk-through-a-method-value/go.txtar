@@ -1,14 +1,115 @@
 The Go rendering: a command that reads the fields of three configurations by
 reflection through method values of Interface, Field and Elem, and asserts each
-field's value to an interface it calls.
+field's value to an interface it calls. A second file walks one value per shape:
+direct calls, a method expression, a local that holds one of two structs, a
+method value of Interface on one of two fields, a parameter of a function called
+by name, a slice field walked by index, a pointer field, constant and variable
+indexes, a loop over every field, an interface field, a constant field beside a
+sibling the walk never reaches, and a value Interface returns that fmt prints.
 
 -- fixture.json --
 {
   "symbols": {
-    "email.Validate": { "file": "target/main.go", "line": 18 },
-    "chat.Validate": { "file": "target/main.go", "line": 24 },
-    "chat.Mute": { "file": "target/main.go", "line": 27 },
-    "pager.Validate": { "file": "target/main.go", "line": 33 }
+    "R12.r12T.String": {
+      "file": "target/rows.go",
+      "line": 58
+    },
+    "R12.r12T.hint": {
+      "file": "target/rows.go",
+      "line": 60
+    },
+    "R13.r13T.String": {
+      "file": "target/rows.go",
+      "line": 66
+    },
+    "R14.r14T.String": {
+      "file": "target/rows.go",
+      "line": 72
+    },
+    "R15.r15T.String": {
+      "file": "target/rows.go",
+      "line": 78
+    },
+    "R15.r15U.String": {
+      "file": "target/rows.go",
+      "line": 82
+    },
+    "R15.r15U.hint": {
+      "file": "target/rows.go",
+      "line": 84
+    },
+    "R16.r16T.String": {
+      "file": "target/rows.go",
+      "line": 88
+    },
+    "R16.r16U.String": {
+      "file": "target/rows.go",
+      "line": 92
+    },
+    "R16.r16U.hint": {
+      "file": "target/rows.go",
+      "line": 94
+    },
+    "R17.r17T.String": {
+      "file": "target/rows.go",
+      "line": 103
+    },
+    "R18.r18T.String": {
+      "file": "target/rows.go",
+      "line": 109
+    },
+    "R18.r18U.String": {
+      "file": "target/rows.go",
+      "line": 113
+    },
+    "R19.r19T.String": {
+      "file": "target/rows.go",
+      "line": 122
+    },
+    "R4.r4T.String": {
+      "file": "target/rows.go",
+      "line": 14
+    },
+    "R5.r5T.String": {
+      "file": "target/rows.go",
+      "line": 20
+    },
+    "R6.r6T.String": {
+      "file": "target/rows.go",
+      "line": 26
+    },
+    "R6.r6U.String": {
+      "file": "target/rows.go",
+      "line": 30
+    },
+    "R7.r7T.String": {
+      "file": "target/rows.go",
+      "line": 39
+    },
+    "R7.r7U.String": {
+      "file": "target/rows.go",
+      "line": 43
+    },
+    "R8.r8T.String": {
+      "file": "target/rows.go",
+      "line": 52
+    },
+    "chat.Mute": {
+      "file": "target/main.go",
+      "line": 27
+    },
+    "chat.Validate": {
+      "file": "target/main.go",
+      "line": 24
+    },
+    "email.Validate": {
+      "file": "target/main.go",
+      "line": 18
+    },
+    "pager.Validate": {
+      "file": "target/main.go",
+      "line": 33
+    }
   }
 }
 -- target/go.mod --
@@ -58,6 +159,7 @@ type (
 )
 
 func main() {
+	rows()
 	mail := reflect.ValueOf(&mailConfig{Email: &email{}}).Elem()
 	for i := range mail.NumField() {
 		value := mail.Field(i).Interface
@@ -79,5 +181,229 @@ func main() {
 func check(p provider) {
 	if p.Validate() != nil {
 		os.Exit(1)
+	}
+}
+-- target/rows.go --
+package main
+
+import (
+	"fmt"
+	"os"
+	"reflect"
+)
+
+// say writes what a value read by reflection says it is.
+func say(s fmt.Stringer) { os.Stdout.WriteString(s.String() + "\n") }
+
+type r4T struct{}
+
+func (r4T) String() string { return "r4" }
+
+type r4S struct{ A r4T }
+
+type r5T struct{}
+
+func (r5T) String() string { return "r5" }
+
+type r5S struct{ A r5T }
+
+type r6T struct{}
+
+func (r6T) String() string { return "r6t" }
+
+type r6U struct{}
+
+func (r6U) String() string { return "r6u" }
+
+type (
+	r6S struct{ A r6T }
+	r6R struct{ B r6U }
+)
+
+type r7T struct{}
+
+func (r7T) String() string { return "r7t" }
+
+type r7U struct{}
+
+func (r7U) String() string { return "r7u" }
+
+type (
+	r7S struct{ A r7T }
+	r7R struct{ B r7U }
+)
+
+type r8T struct{ n int }
+
+func (t r8T) String() string { return fmt.Sprintf("T#%d", t.n) }
+
+type r8S struct{ F r8T }
+
+type r12T struct{}
+
+func (r12T) String() string { return "r12" }
+
+func (r12T) hint() {}
+
+type r12S struct{ Items []r12T }
+
+type r13T struct{}
+
+func (r13T) String() string { return "r13" }
+
+type r13S struct{ P *r13T }
+
+type r14T struct{}
+
+func (r14T) String() string { return "r14" }
+
+type r14H struct{ Xs []r14T }
+
+type r15T struct{}
+
+func (r15T) String() string { return "r15t" }
+
+type r15U struct{}
+
+func (r15U) String() string { return "r15u" }
+
+func (r15U) hint() {}
+
+type r16T struct{}
+
+func (r16T) String() string { return "r16t" }
+
+type r16U struct{}
+
+func (r16U) String() string { return "r16u" }
+
+func (r16U) hint() {}
+
+type r16S struct {
+	A r16T
+	B r16U
+}
+
+type r17T struct{}
+
+func (r17T) String() string { return "r17" }
+
+type r17S struct{ V any }
+
+type r18T struct{}
+
+func (r18T) String() string { return "r18t" }
+
+type r18U struct{}
+
+func (r18U) String() string { return "r18u" }
+
+type r18S struct {
+	A r18T
+	B r18U
+}
+
+type r19T struct{}
+
+func (r19T) String() string { return "r19" }
+
+type r19S struct{ A r19T }
+
+// rows walks one value per shape of reflective field walk.
+func rows() {
+	v4 := reflect.ValueOf(r4S{})
+	for i := 0; i < v4.NumField(); i++ {
+		get := v4.Field(i)
+		if s, ok := get.Interface().(fmt.Stringer); ok {
+			say(s)
+		}
+	}
+	p4 := reflect.ValueOf(&r4S{})
+	e4 := p4.Elem()
+	for i := 0; i < e4.NumField(); i++ {
+		if s, ok := e4.Field(i).Interface().(fmt.Stringer); ok {
+			say(s)
+		}
+	}
+
+	v5 := reflect.ValueOf(r5S{})
+	for i := 0; i < v5.NumField(); i++ {
+		if s, ok := reflect.Value.Interface(v5.Field(i)).(fmt.Stringer); ok {
+			say(s)
+		}
+	}
+
+	v6 := reflect.ValueOf(r6S{})
+	if len(os.Args) > 1 {
+		v6 = reflect.ValueOf(r6R{})
+	}
+	for i := 0; i < v6.NumField(); i++ {
+		if s, ok := v6.Field(i).Interface().(fmt.Stringer); ok {
+			say(s)
+		}
+	}
+
+	get7 := reflect.ValueOf(r7S{}).Field(0).Interface
+	if len(os.Args) > 2 {
+		get7 = reflect.ValueOf(r7R{}).Field(0).Interface
+	}
+	if s, ok := get7().(fmt.Stringer); ok {
+		say(s)
+	}
+
+	walk8(reflect.ValueOf(r8S{F: r8T{n: 7}}))
+
+	v12 := reflect.ValueOf(r12S{Items: []r12T{{}}})
+	for i := 0; i < v12.NumField(); i++ {
+		f := v12.Field(i)
+		for j := 0; j < f.Len(); j++ {
+			if s, ok := f.Index(j).Interface().(fmt.Stringer); ok {
+				say(s)
+			}
+		}
+	}
+
+	if s, ok := reflect.ValueOf(r13S{P: &r13T{}}).Field(0).Elem().Interface().(fmt.Stringer); ok {
+		say(s)
+	}
+
+	if s, ok := reflect.ValueOf(r14H{Xs: []r14T{{}}}).Field(0).Index(0).Interface().(fmt.Stringer); ok {
+		say(s)
+	}
+
+	if s, ok := reflect.ValueOf([]r15T{{}}).Index(0).Interface().(fmt.Stringer); ok {
+		say(s)
+	}
+	us := reflect.ValueOf([]r15U{{}})
+	for i := 0; i < us.Len(); i++ {
+		if s, ok := us.Index(i).Interface().(fmt.Stringer); ok {
+			say(s)
+		}
+	}
+
+	v16 := reflect.ValueOf(r16S{})
+	for i := range v16.NumField() {
+		if s, ok := v16.Field(i).Interface().(fmt.Stringer); ok {
+			say(s)
+		}
+	}
+
+	if s, ok := reflect.ValueOf(r17S{V: r17T{}}).Field(0).Elem().Interface().(fmt.Stringer); ok {
+		say(s)
+	}
+
+	if s, ok := reflect.ValueOf(r18S{}).Field(0).Interface().(fmt.Stringer); ok {
+		say(s)
+	}
+
+	fmt.Println(reflect.ValueOf(r19S{}).Field(0).Interface())
+}
+
+// walk8 says what each field of the struct v holds.
+func walk8(v reflect.Value) {
+	for i := 0; i < v.NumField(); i++ {
+		if s, ok := v.Field(i).Interface().(fmt.Stringer); ok {
+			say(s)
+		}
 	}
 }

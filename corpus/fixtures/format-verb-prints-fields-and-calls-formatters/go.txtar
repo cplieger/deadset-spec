@@ -1,0 +1,161 @@
+The Go rendering: a command printing a line whose fields have a Format and a
+GoString method under %v and %#v, a struct whose unexported field holds a
+struct, a type with GoString under %v, a struct whose interface field holds a
+value with String, a struct whose field has String under %d, a type with
+GoString under four spellings of the # flag on v and under %#x, and a
+reflect.Value of a struct.
+
+-- fixture.json --
+{
+  "symbols": {
+    "P1.line.Price": {
+      "file": "target/main.go",
+      "line": 22
+    },
+    "P1.line.Tag": {
+      "file": "target/main.go",
+      "line": 23
+    },
+    "P1.money.Format": {
+      "file": "target/main.go",
+      "line": 14
+    },
+    "P1.tag.GoString": {
+      "file": "target/main.go",
+      "line": 19
+    },
+    "P2.inner2.n": {
+      "file": "target/main.go",
+      "line": 27
+    },
+    "P2.outer2.In": {
+      "file": "target/main.go",
+      "line": 31
+    },
+    "P3.code3.GoString": {
+      "file": "target/main.go",
+      "line": 37
+    },
+    "P4.outer4.V": {
+      "file": "target/main.go",
+      "line": 47
+    },
+    "P4.t4.String": {
+      "file": "target/main.go",
+      "line": 44
+    },
+    "P4.t4.n": {
+      "file": "target/main.go",
+      "line": 40
+    },
+    "P5.count5.L": {
+      "file": "target/main.go",
+      "line": 56
+    },
+    "P5.label5.String": {
+      "file": "target/main.go",
+      "line": 53
+    },
+    "P6.flags6.GoString": {
+      "file": "target/main.go",
+      "line": 62
+    },
+    "P7.hex7.GoString": {
+      "file": "target/main.go",
+      "line": 67
+    },
+    "P8.row8.Note": {
+      "file": "target/main.go",
+      "line": 70
+    }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target prints values whose types format themselves and whose fields
+// only fmt reads.
+package main
+
+import (
+	"fmt"
+	"os"
+	"reflect"
+)
+
+type money int
+
+// Format writes the amount with a currency sign.
+func (m money) Format(f fmt.State, verb rune) { fmt.Fprintf(f, "$%d", int(m)) }
+
+type tag string
+
+// GoString writes the tag as Go syntax.
+func (t tag) GoString() string { return "tag(" + string(t) + ")" }
+
+type line struct {
+	Price money
+	Tag   tag
+}
+
+type inner2 struct {
+	n int
+}
+
+type outer2 struct {
+	In inner2
+}
+
+type code3 int
+
+// GoString writes the code as Go syntax.
+func (c code3) GoString() string { return fmt.Sprintf("code3(%d)", int(c)) }
+
+type t4 struct {
+	n int
+}
+
+// String names the value.
+func (t4) String() string { return "T#7" }
+
+type outer4 struct {
+	V any
+}
+
+type label5 int
+
+// String names the label.
+func (l label5) String() string { return fmt.Sprintf("L%d", int(l)) }
+
+type count5 struct {
+	L label5
+}
+
+type flags6 int
+
+// GoString writes the value as Go syntax.
+func (f flags6) GoString() string { return fmt.Sprintf("flags6(%d)", int(f)) }
+
+type hex7 int
+
+// GoString writes the value as Go syntax.
+func (h hex7) GoString() string { return fmt.Sprintf("hex7(%d)", int(h)) }
+
+type row8 struct {
+	Note string
+}
+
+func main() {
+	n := len(os.Args)
+	l := line{Price: money(n), Tag: tag(os.Args[0])}
+	fmt.Printf("%v %#v\n", l, l)
+	fmt.Println(outer2{In: inner2{n: n}})
+	fmt.Printf("%v\n", code3(n))
+	fmt.Println(outer4{V: t4{n: 7}})
+	fmt.Printf("%d\n", count5{L: label5(n)})
+	fmt.Printf("%+#v %#[1]v %#8v % #v\n", flags6(n), flags6(n), flags6(n))
+	fmt.Printf("%#x\n", hex7(n))
+	fmt.Println(reflect.ValueOf(row8{Note: os.Args[0]}))
+}

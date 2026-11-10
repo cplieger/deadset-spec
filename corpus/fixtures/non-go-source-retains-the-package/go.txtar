@@ -1,0 +1,388 @@
+The Go rendering: an application whose packages hold assembly, C and object
+files. Package asm's amd64 assembly reads a constant through go_asm.h as an
+operand and in an #ifdef, a variable, a struct field offset and a constant it
+stores through a pointer, and calls a Go function; one iota group of it is
+named in Go only by its first member. Package arch's helper is called only from
+s390x assembly, which no corpus host builds. Package b's amd64 assembly is only
+an #include of a file whose name starts with an underscore, which loads an
+unexported variable of package a, and its s390x assembly calls a function of
+package a. Package a2, which the command imports for its effects, holds only an
+underscore-named assembly fragment. Package
+cpart imports "C", compiles a C file and exports a hook. Package sysopart holds
+an object file for s390x.
+
+-- fixture.json --
+{
+  "symbols": {
+    "A.Probe": {
+      "file": "target/a/a.go",
+      "line": 7
+    },
+    "A.probe": {
+      "file": "target/a/a.go",
+      "line": 4
+    },
+    "A2.probe2": {
+      "file": "target/a2/a2.go",
+      "line": 4
+    },
+    "Arch.helper": {
+      "file": "target/arch/arch.go",
+      "line": 4
+    },
+    "Asm.bump": {
+      "file": "target/asm/asm.go",
+      "line": 63
+    },
+    "Asm.c18Mid": {
+      "file": "target/asm/asm.go",
+      "line": 33
+    },
+    "Asm.ctx.a": {
+      "file": "target/asm/asm.go",
+      "line": 50
+    },
+    "Asm.ctx.b": {
+      "file": "target/asm/asm.go",
+      "line": 51
+    },
+    "Asm.cur": {
+      "file": "target/asm/asm.go",
+      "line": 45
+    },
+    "Asm.fastPath": {
+      "file": "target/asm/asm.go",
+      "line": 47
+    },
+    "Asm.gearMid": {
+      "file": "target/asm/asm.go",
+      "line": 25
+    },
+    "Asm.mode": {
+      "file": "target/asm/asm.go",
+      "line": 5
+    },
+    "Asm.modeLast": {
+      "file": "target/asm/asm.go",
+      "line": 10
+    },
+    "Asm.modeMid": {
+      "file": "target/asm/asm.go",
+      "line": 9
+    },
+    "Asm.modeOff": {
+      "file": "target/asm/asm.go",
+      "line": 8
+    },
+    "Asm.powerMid": {
+      "file": "target/asm/asm.go",
+      "line": 41
+    },
+    "Asm.toneMid": {
+      "file": "target/asm/asm.go",
+      "line": 17
+    },
+    "Asm.toneZ": {
+      "file": "target/asm/asm.go",
+      "line": 18
+    },
+    "C.lanesMid": {
+      "file": "target/cpart/lanes.go",
+      "line": 8
+    },
+    "C.lanesTwo": {
+      "file": "target/cpart/lanes.go",
+      "line": 9
+    },
+    "C.wide": {
+      "file": "target/cpart/hook.go",
+      "line": 6
+    },
+    "Syso.levelHigh": {
+      "file": "target/sysopart/level.go",
+      "line": 9
+    },
+    "Syso.levelMid": {
+      "file": "target/sysopart/level.go",
+      "line": 8
+    }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/a/a.go --
+// Package a declares symbols that only package b's assembly reaches.
+package a
+
+var probe int64 = 7
+
+// Probe is called only from package b's s390x assembly.
+func Probe() {}
+-- target/a2/_probe.s --
+// An assembly fragment no build lists, named for an #include: MOVQ ·probe2(SB), AX
+-- target/a2/a2.go --
+// Package a2 declares a variable that only a file go list never lists names.
+package a2
+
+var probe2 int64 = 9
+-- target/arch/arch.go --
+// Package arch holds a helper that only another architecture's assembly calls.
+package arch
+
+func helper() int { return 4 }
+
+// Run reports that the package is linked.
+func Run() int { return 1 }
+-- target/arch/entry_s390x.go --
+package arch
+
+func entry()
+-- target/arch/z_s390x.s --
+#include "textflag.h"
+
+// func entry()
+TEXT ·entry(SB), $8-0
+	BL ·helper(SB)
+	RET
+-- target/asm/asm.go --
+// Package asm reads its constants, a variable, a struct field and a function
+// from assembly.
+package asm
+
+type mode int
+
+const (
+	modeOff mode = iota
+	modeMid
+	modeLast
+)
+
+type tone int
+
+const (
+	toneA tone = iota
+	toneMid
+	toneZ
+)
+
+type gear int
+
+const (
+	gearLow gear = iota
+	gearMid
+	gearTop
+)
+
+type c18state int
+
+const (
+	c18A c18state = iota
+	c18Mid
+	c18Z
+)
+
+type power int
+
+const (
+	powerOff power = iota
+	powerMid
+	powerOn
+)
+
+var cur = powerOff
+
+const fastPath = true
+
+type ctx struct {
+	a int64
+	b int64
+}
+
+// Last returns the number of the last mode, which the assembly reads from go_asm.h.
+func Last() int64
+
+// IsOn reports whether the current power is on.
+func IsOn() bool
+
+// Tramp returns what bump returns, called from assembly.
+func Tramp() int64
+
+func bump() int64 { return 3 }
+
+// Fast returns 1 when the assembly took the fast path.
+func Fast() int64
+
+func sum(c *ctx) int64
+
+func fill(s *c18state)
+
+// Set turns the power on or off.
+func Set(on bool) {
+	cur = powerOff
+	if on {
+		cur = powerOn
+	}
+}
+
+// Run sums a context in assembly and fills a state there.
+func Run() int64 {
+	c := ctx{a: 1, b: 2}
+	var s c18state
+	fill(&s)
+	if s == c18A || s == c18Z || gearTop == gearLow {
+		return 0
+	}
+	return sum(&c) + int64(toneA)
+}
+-- target/asm/asm_amd64.s --
+#include "textflag.h"
+#include "go_asm.h"
+
+// func Last() int64
+TEXT ·Last(SB), NOSPLIT, $0-8
+	MOVQ $const_modeLast, AX
+	MOVQ AX, ret+0(FP)
+	RET
+
+// func IsOn() bool
+TEXT ·IsOn(SB), NOSPLIT, $0-1
+	MOVQ ·cur(SB), AX
+	CMPQ AX, $2
+	SETEQ ret+0(FP)
+	RET
+
+// func Tramp() int64
+TEXT ·Tramp(SB), $8-8
+	CALL ·bump(SB)
+	MOVQ 0(SP), AX
+	MOVQ AX, ret+0(FP)
+	RET
+
+// func Fast() int64
+TEXT ·Fast(SB), NOSPLIT, $0-8
+#ifdef const_fastPath
+	MOVQ $1, ret+0(FP)
+#else
+	MOVQ $0, ret+0(FP)
+#endif
+	RET
+
+// func sum(c *ctx) int64
+TEXT ·sum(SB), NOSPLIT, $0-16
+	MOVQ c+0(FP), DI
+	MOVQ ctx_b(DI), AX
+	MOVQ AX, ret+8(FP)
+	RET
+
+// func fill(s *c18state)
+TEXT ·fill(SB), NOSPLIT, $0-8
+	MOVQ s+0(FP), DI
+	MOVQ $const_gearTop, AX
+	MOVQ AX, 0(DI)
+	RET
+-- target/b/_hidden.s --
+#include "textflag.h"
+
+// func Load() int64
+TEXT ·Load(SB), NOSPLIT, $0-8
+	MOVQ example·com∕target∕a·probe(SB), AX
+	MOVQ AX, ret+0(FP)
+	RET
+-- target/b/b.go --
+// Package b loads a variable of package a from assembly.
+package b
+
+import _ "example.com/target/a"
+
+// Load returns package a's probe.
+func Load() int64
+-- target/b/call_amd64.s --
+#include "_hidden.s"
+-- target/b/ref_s390x.go --
+package b
+
+func ref()
+-- target/b/ref_s390x.s --
+#include "textflag.h"
+
+// func ref()
+TEXT ·ref(SB), $8-0
+	BL example·com∕target∕a·Probe(SB)
+	RET
+-- target/cpart/hook.go --
+package cpart
+
+// int twice(int x);
+import "C"
+
+const wide = lanes(2)
+
+// Hook sets the lanes from C.
+//
+//export Hook
+func Hook(n C.int) {
+	cur = lanes(C.twice(n))
+	if cur == wide {
+		cur = lanesNone
+	}
+}
+-- target/cpart/lanes.go --
+// Package cpart exports a hook to C.
+package cpart
+
+type lanes int
+
+const (
+	lanesNone lanes = iota
+	lanesMid
+	lanesTwo
+)
+
+var cur lanes
+
+// First reports whether the current lanes are none.
+func First() bool { return cur == lanesNone }
+-- target/cpart/twice.c --
+int twice(int x) { return 2 * x; }
+-- target/main.go --
+// Command target calls into packages that hold assembly, C and object files.
+package main
+
+import (
+	"fmt"
+	"os"
+
+	_ "example.com/target/a2"
+	"example.com/target/arch"
+	"example.com/target/asm"
+	"example.com/target/b"
+	"example.com/target/cpart"
+	"example.com/target/sysopart"
+)
+
+func main() {
+	asm.Set(len(os.Args) > 1)
+	fmt.Println(asm.Last(), asm.IsOn(), asm.Tramp(), asm.Fast(), asm.Run())
+	fmt.Println(arch.Run(), b.Load(), cpart.First(), sysopart.Low())
+}
+-- target/sysopart/blob_s390x.syso --
+not an object file: the analysis reads only its name
+-- target/sysopart/level.go --
+// Package sysopart links an object file on one architecture.
+package sysopart
+
+type level int
+
+const (
+	levelLow level = iota
+	levelMid
+	levelHigh
+)
+
+// Low reports whether the zero level is low.
+func Low() bool {
+	var l level
+	return l == levelLow
+}

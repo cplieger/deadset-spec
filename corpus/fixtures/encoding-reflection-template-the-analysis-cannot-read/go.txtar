@@ -1,0 +1,57 @@
+The Go rendering: a command executing a template parsed from an environment
+variable, and a constant template whose only action invokes a template that a
+second parse from an environment variable defines.
+
+-- fixture.json --
+{
+  "symbols": {
+    "T17.item17.Note": {
+      "file": "target/main.go",
+      "line": 18
+    },
+    "T7.page7.Body": {
+      "file": "target/main.go",
+      "line": 12
+    },
+    "T7.page7.tag": {
+      "file": "target/main.go",
+      "line": 13
+    }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target executes a template read at run time and a constant template
+// that invokes a template only a run-time set defines.
+package main
+
+import (
+	"os"
+	"text/template"
+)
+
+type page7 struct {
+	Title string
+	Body  string
+	tag   string
+}
+
+type item17 struct {
+	Name string
+	Note string
+}
+
+func main() {
+	t7 := template.Must(template.New("p").Parse(os.Getenv("PAGE")))
+	if err := t7.Execute(os.Stdout, page7{Title: os.Args[0]}); err != nil {
+		panic(err)
+	}
+	t17 := template.Must(template.New("l").Parse(`{{template "x" .}}`))
+	template.Must(t17.New("x").Parse(os.Getenv("ROW")))
+	if err := t17.Execute(os.Stdout, item17{Name: os.Args[0]}); err != nil {
+		panic(err)
+	}
+}

@@ -1,0 +1,272 @@
+The Go rendering: an application whose iota groups are only compared and
+copied: two results spread into two parameters, a pointer, assignments, String
+methods the program calls directly and through a method value, a struct that
+embeds the type compared by value, a channel the program makes, and an exported
+field of an exported type of an application. One group is named only from a
+function nothing calls.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Box.Mid": {
+      "file": "target/main.go",
+      "line": 135
+    },
+    "Described.Mid": {
+      "file": "target/main.go",
+      "line": 81
+    },
+    "Described.Tail": {
+      "file": "target/main.go",
+      "line": 83
+    },
+    "Held.Mid": {
+      "file": "target/main.go",
+      "line": 176
+    },
+    "Holder": {
+      "file": "target/main.go",
+      "line": 181
+    },
+    "Named": {
+      "file": "target/main.go",
+      "line": 186
+    },
+    "Named.A": {
+      "file": "target/main.go",
+      "line": 189
+    },
+    "Named.Mid": {
+      "file": "target/main.go",
+      "line": 190
+    },
+    "Named.Z": {
+      "file": "target/main.go",
+      "line": 191
+    },
+    "Piped.Mid": {
+      "file": "target/main.go",
+      "line": 156
+    },
+    "Plain.Mid": {
+      "file": "target/main.go",
+      "line": 61
+    },
+    "Pointed.Mid": {
+      "file": "target/main.go",
+      "line": 42
+    },
+    "Spread.Mid": {
+      "file": "target/main.go",
+      "line": 22
+    },
+    "UnusedCheck": {
+      "file": "target/main.go",
+      "line": 195
+    },
+    "Valued.Mid": {
+      "file": "target/main.go",
+      "line": 110
+    }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target only compares values of enumerated types and copies them
+// between places of the program, and prints what it observes.
+package main
+
+import (
+	"fmt"
+	"os"
+)
+
+func main() {
+	n := len(os.Args)
+	fmt.Println(take(two(n)), pointed(n), assigned(n), describe(n).String())
+	f := valued(n).String
+	fmt.Println(f(), boxedEqual(n), piped(n), Holder{Level: heldA}.Level == heldZ)
+}
+
+// spreadKind travels as two results spread into two parameters.
+type spreadKind int
+
+const (
+	spreadA spreadKind = iota
+	spreadMid
+	spreadZ
+)
+
+// two returns two members.
+func two(n int) (spreadKind, spreadKind) {
+	if n > 3 {
+		return spreadZ, spreadA
+	}
+	return spreadA, spreadZ
+}
+
+// take compares its two parameters.
+func take(x, y spreadKind) bool { return x == spreadZ || y == spreadZ }
+
+// pointedKind is read through a pointer.
+type pointedKind int
+
+const (
+	pointedA pointedKind = iota
+	pointedMid
+	pointedZ
+)
+
+// pointed compares a value read through a pointer.
+func pointed(n int) bool {
+	v := pointedA
+	p := &v
+	if n > 3 {
+		*p = pointedZ
+	}
+	return *p == pointedZ
+}
+
+// plain is only compared and assigned.
+type plain int
+
+const (
+	plainA plain = iota
+	plainMid
+	plainZ
+)
+
+// assigned compares an assigned value.
+func assigned(n int) bool {
+	var v plain
+	if n > 3 {
+		v = plainZ
+	} else {
+		v = plainA
+	}
+	return v == plainZ
+}
+
+// described has a String method the program calls.
+type described int
+
+const (
+	describedA described = iota
+	describedMid
+	describedZ
+	describedTail
+)
+
+// String switches on the named members.
+func (v described) String() string {
+	switch v {
+	case describedA:
+		return "a"
+	case describedZ:
+		return "z"
+	}
+	return "?"
+}
+
+// describe returns describedA or describedZ.
+func describe(n int) described {
+	if n > 3 {
+		return describedZ
+	}
+	return describedA
+}
+
+// valuedKind has a String method the program calls through a method value.
+type valuedKind int
+
+const (
+	valuedA valuedKind = iota
+	valuedMid
+	valuedZ
+)
+
+// String switches on the named members.
+func (v valuedKind) String() string {
+	if v == valuedZ {
+		return "z"
+	}
+	return "a"
+}
+
+// valued returns valuedA or valuedZ.
+func valued(n int) valuedKind {
+	if n > 3 {
+		return valuedZ
+	}
+	return valuedA
+}
+
+// boxKind is embedded in a struct compared by value.
+type boxKind int
+
+const (
+	boxA boxKind = iota
+	boxMid
+	boxZ
+)
+
+// box embeds boxKind.
+type box struct{ boxKind }
+
+// boxedEqual compares two boxes.
+func boxedEqual(n int) bool {
+	b := box{boxA}
+	if n > 3 {
+		b = box{boxZ}
+	}
+	return b == box{boxZ}
+}
+
+// piped travels through a channel inside the program.
+type pipedKind int
+
+const (
+	pipedA pipedKind = iota
+	pipedMid
+	pipedZ
+)
+
+// piped sends a member and compares what it receives.
+func piped(n int) bool {
+	ch := make(chan pipedKind, 1)
+	if n > 3 {
+		ch <- pipedZ
+	} else {
+		ch <- pipedA
+	}
+	return <-ch == pipedZ
+}
+
+// heldKind is the type of an exported field of an exported type of an application.
+type heldKind int
+
+const (
+	heldA heldKind = iota
+	heldMid
+	heldZ
+)
+
+// Holder holds a heldKind.
+type Holder struct {
+	Level heldKind
+}
+
+// named is named only from a function nothing calls.
+type named int
+
+const (
+	namedA named = iota
+	namedMid
+	namedZ
+)
+
+// unusedCheck names namedMid and is never called.
+func unusedCheck(v named) bool { return v == namedMid || v == namedZ || v == namedA }

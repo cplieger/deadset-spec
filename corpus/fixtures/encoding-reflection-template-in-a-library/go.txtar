@@ -1,0 +1,41 @@
+The Go rendering: a library whose exported function executes a template in a
+package-level variable with a value of an unexported type, writing one field.
+
+-- fixture.json --
+{
+  "symbols": {
+    "T8.page.Body": {
+      "file": "target/page.go",
+      "line": 11
+    },
+    "T8.page.tag": {
+      "file": "target/page.go",
+      "line": 12
+    }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/page.go --
+// Package target renders pages.
+package target
+
+import (
+	"io"
+	"text/template"
+)
+
+type page struct {
+	Title string
+	Body  string
+	tag   string
+}
+
+var pageT = template.Must(template.New("p").Parse("{{.Title}} {{.Body}}\n"))
+
+// Render writes a page with a title.
+func Render(w io.Writer, title string) error {
+	return pageT.Execute(w, page{Title: title})
+}

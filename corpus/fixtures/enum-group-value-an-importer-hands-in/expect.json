@@ -1,0 +1,21 @@
+{
+  "name": "enum-group-value-an-importer-hands-in",
+  "description": "A program that imports a library, which the analysis does not read, can make a value of an enumerated type the library does not export and hand it back: through an exported alias of the type, as an untyped constant in a literal of an exported slice or map type that holds it, and as an argument of an exported method of an unexported type or of an interface method the library implements. Every member of each such type is retained. A kind only an unexported method takes, used only by comparison, has its unnamed member reported.",
+  "languages": ["go"],
+  "target_kind": "library",
+  "expect": [
+    { "symbol": "shadeMid", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "levelMid", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "rankMid", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "volumeMid", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "moodMid", "report": "none", "retained_by": ["enum-group"] },
+    {
+      "symbol": "hushMid",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "enum-member",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

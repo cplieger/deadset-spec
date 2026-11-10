@@ -1,0 +1,59 @@
+{
+  "name": "enum-group-reached-by-arithmetic",
+  "description": "Arithmetic on a value of an enumerated type that is not a constant produces a value no member names, so an increment or decrement, a compound assignment or a binary expression of the type retains every member whose deletion renumbers a member code names, whether or not the type has a String method. A member after the last named one moves no named constant when deleted, so it is reported as an unused enum member even where arithmetic reaches its value, and so is one after it that only arithmetic on constants reaches. Arithmetic in a test file reaches a member from tests alone, so a member only a test steps through is test-only use.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "expect": [
+    { "symbol": "levelMid", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "levelHigh", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "phaseRun", "report": "none", "retained_by": ["enum-group"] },
+    {
+      "symbol": "stepTwo",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "enum-member",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "stepThree",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "enum-member",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "shadeMid",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "enum-member",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "shadeDark",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "enum-member",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "spareC",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "enum-member",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "rankMid",
+      "report": "DS1102",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "constant",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

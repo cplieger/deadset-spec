@@ -76,7 +76,7 @@ export function fetchAll(): void {}
 
 How to fix it: Delete the declaration. The finding's fixability is `deletable`, or `manual` where a rule of the analysis gives it.
 
-The rule: An unexported symbol with no reference in the target. A symbol referenced only from its own declaration site counts as unreferenced. In Go a constant or a type a function body declares, a function literal's body included, that nothing in that body names outside its own specification is reported under this code, under the reference of the enclosing declaration, as `grammar/symbol-ref.md` states for a declaration inside a function body, at the local declaration's own position, with `symbol.kind` `constant` or `type` and the liveness relation `reference-counting`.
+The rule: An unexported symbol with no reference in the target. A symbol referenced only from its own declaration site counts as unreferenced. In Go a constant or a type a function body declares, a function literal's body included, that nothing in that body names outside its own specification is reported under this code, under the reference of the enclosing declaration, as `grammar/symbol-ref.md` states for a declaration inside a function body, at the local declaration's own position, with `symbol.kind` `constant` or `type` and the liveness relation `reference-counting`. A constant the enum-group exemption retains, one whose deletion moves a constant that code names or leaves one that no longer compiles, is never a candidate.
 
 What lowers its confidence:
 
@@ -200,7 +200,7 @@ enum Level {
 
 How to fix it: Delete the member, or give a later member its present value first where the values are positional. The finding's fixability is `deletable`, or `manual` where a rule of the analysis gives it.
 
-The rule: An enumerated member that no symbol names, at the reachability class derived for the member and with no confidence ceiling below it. Every member of a type that carries a string, text or binary conversion method, or that a conversion from an integer or a wire value produces, is retained by the enum-group exemption first, so a member reached only by value is never a candidate.
+The rule: An enumerated member that no symbol names, at the reachability class derived for the member and with no confidence ceiling below it. A member the enum-group exemption retains, one whose deletion the analysis does not prove leaves a program that builds and does the same, is never a candidate. Where values of the member's type may still arrive from a decoder or from outside code, the message says so and that deleting the name changes no behaviour.
 
 What lowers its confidence:
 

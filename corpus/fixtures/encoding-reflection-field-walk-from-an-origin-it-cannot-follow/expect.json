@@ -1,0 +1,12 @@
+{
+  "name": "encoding-reflection-field-walk-from-an-origin-it-cannot-follow",
+  "description": "A reflective field walk whose receiver the analysis cannot follow to the operands handed to reflect.ValueOf, through a function value, a struct field or a method value written in another function, retains every method of every type reachable from every operand the program hands to reflect.ValueOf or reflect.Indirect, exported or not, whatever interface the walk asserts.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "expect": [
+    { "symbol": "R10.r10T.String", "report": "none", "retained_by": ["encoding-reflection"] },
+    { "symbol": "R10.r10bT.String", "report": "none", "retained_by": ["encoding-reflection"] },
+    { "symbol": "R11.r11T.String", "report": "none", "retained_by": ["encoding-reflection"] },
+    { "symbol": "R10.spare.hint", "report": "none", "retained_by": ["encoding-reflection"] }
+  ]
+}

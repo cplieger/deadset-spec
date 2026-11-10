@@ -1,0 +1,32 @@
+{
+  "name": "enum-group-deleting-moves-no-named-constant",
+  "description": "A member whose deletion moves no constant that code names, because no named constant comes after it in its block or because it stands in a block of its own with no iota, is reported as an unused enum member, whatever values of its type a test or a call outside the program can make: deleting it leaves the program building and denoting the same value at every name it uses.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "E20.levelMid",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "enum-member",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "E20.levelHigh",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "enum-member",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "E80.codeX",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "enum-member",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

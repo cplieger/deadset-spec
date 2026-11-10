@@ -1,0 +1,29 @@
+{
+  "name": "encoding-reflection-template-the-analysis-cannot-read",
+  "description": "A template the analysis cannot read, parsed from a string read at run time or invoked by a name only such a template defines, can name any exported field of the execution's argument or print it, but the analysis reads it as an action of a template it does not read: it reads of the argument's fields only those the program writes, so an exported field nothing writes and an unexported field are reported as never written.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "T7.page7.Body",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field"
+    },
+    {
+      "symbol": "T7.page7.tag",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field"
+    },
+    {
+      "symbol": "T17.item17.Note",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field"
+    }
+  ]
+}

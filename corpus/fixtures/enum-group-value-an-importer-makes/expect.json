@@ -1,0 +1,25 @@
+{
+  "name": "enum-group-value-an-importer-makes",
+  "description": "A program that imports a library, which the analysis does not read, can convert any integer to an enumerated type the library exports from an importable package, so a member whose deletion renumbers an exported member is retained. A member after the last exported member renumbers nothing an importer or the library names, so it is reported whatever values importers make. A member of an unexported type no importer can name, used only by comparison, is reported.",
+  "languages": ["go"],
+  "target_kind": "library",
+  "expect": [
+    { "symbol": "kindHidden", "report": "none", "retained_by": ["enum-group"] },
+    {
+      "symbol": "kindLast",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "enum-member",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "shadeMid",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "enum-member",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

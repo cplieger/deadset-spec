@@ -1,0 +1,58 @@
+The Go rendering: a library with two enumerated types, each with an unexported
+member nothing names, and a consumer module that converts a count to one of them.
+
+-- fixture.json --
+{
+  "symbols": {
+    "priorityMid": { "file": "target/levels.go", "line": 9 },
+    "severityMid": { "file": "target/levels.go", "line": 18 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/levels.go --
+// Package target grades work.
+package target
+
+// Priority orders work.
+type Priority int
+
+const (
+	PriorityLow Priority = iota
+	priorityMid
+	PriorityHigh
+)
+
+// Severity grades a failure.
+type Severity int
+
+const (
+	SeverityMinor Severity = iota
+	severityMid
+	SeverityMajor
+)
+-- consumer/go.mod --
+module example.com/consumer
+
+go 1.27.0
+
+require example.com/target v0.0.0
+
+replace example.com/target => ../target
+-- consumer/main.go --
+// Command consumer converts a count to a priority.
+package main
+
+import (
+	"fmt"
+	"os"
+
+	"example.com/target"
+)
+
+func main() {
+	fmt.Println(target.Priority(len(os.Args)) == target.PriorityHigh, target.PriorityLow)
+	fmt.Println(target.SeverityMinor, target.SeverityMajor)
+}
