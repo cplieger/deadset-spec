@@ -1,0 +1,150 @@
+{
+  "name": "stale-suppression-names-each-confidence-beside",
+  "description": "A stale directive's message names each other code its declaration reports with that finding's own confidence and what withholds it, the minimum confidence, the severity dial, a type error, or the inline directive, ignore entry or baseline row that matches it, so the record's own certain is never read as theirs. The finding nothing withholds is reported, and the withheld ones are not.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "library",
+  "severity": {
+    "DS1104": "allow"
+  },
+  "type_error_skips": [
+    "TypeError"
+  ],
+  "suppressions_in_effect": 3,
+  "expect": [
+    {
+      "symbol": "TestOnlyDirective",
+      "report": "DS9003",
+      "confidence": "certain",
+      "details": {
+        "mechanism": "inline"
+      },
+      "beside": [
+        {
+          "code": "DS1102",
+          "confidence": "possible",
+          "withheld": "analysis.min_confidence"
+        }
+      ]
+    },
+    {
+      "symbol": "TestOnly",
+      "report": "none"
+    },
+    {
+      "symbol": "UnreachedDirective",
+      "report": "DS9003",
+      "confidence": "certain",
+      "details": {
+        "mechanism": "inline"
+      },
+      "beside": [
+        {
+          "code": "DS1002",
+          "confidence": "certain"
+        }
+      ]
+    },
+    {
+      "symbol": "Unreached",
+      "report": "DS1002",
+      "confidence": "certain"
+    },
+    {
+      "symbol": "RetiredDirective",
+      "report": "DS9003",
+      "confidence": "certain",
+      "details": {
+        "mechanism": "inline"
+      },
+      "beside": [
+        {
+          "code": "DS1104",
+          "confidence": "certain",
+          "withheld": "severity allow"
+        }
+      ]
+    },
+    {
+      "symbol": "Retired",
+      "report": "none"
+    },
+    {
+      "symbol": "BrokenDirective",
+      "report": "DS9003",
+      "confidence": "certain",
+      "details": {
+        "mechanism": "inline"
+      },
+      "beside": [
+        {
+          "code": "DS1003",
+          "confidence": "certain",
+          "withheld": "a type error"
+        }
+      ]
+    },
+    {
+      "symbol": "BrokenField",
+      "report": "none"
+    },
+    {
+      "symbol": "ClaimedDirective",
+      "report": "DS9003",
+      "confidence": "certain",
+      "details": {
+        "mechanism": "inline"
+      },
+      "beside": [
+        {
+          "code": "DS1002",
+          "confidence": "certain",
+          "withheld": "an inline directive"
+        }
+      ]
+    },
+    {
+      "symbol": "Claimed",
+      "report": "none"
+    },
+    {
+      "symbol": "EnteredDirective",
+      "report": "DS9003",
+      "confidence": "certain",
+      "details": {
+        "mechanism": "inline"
+      },
+      "beside": [
+        {
+          "code": "DS1002",
+          "confidence": "certain",
+          "withheld": "an ignore entry"
+        }
+      ]
+    },
+    {
+      "symbol": "Entered",
+      "report": "none"
+    },
+    {
+      "symbol": "RecordedDirective",
+      "report": "DS9003",
+      "confidence": "certain",
+      "details": {
+        "mechanism": "inline"
+      },
+      "beside": [
+        {
+          "code": "DS1002",
+          "confidence": "certain",
+          "withheld": "a baseline row"
+        }
+      ]
+    },
+    {
+      "symbol": "Recorded",
+      "report": "none"
+    }
+  ]
+}

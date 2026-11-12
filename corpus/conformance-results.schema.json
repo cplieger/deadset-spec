@@ -244,6 +244,33 @@
                           "minimum": 0
                         }
                       }
+                    },
+                    "beside": {
+                      "description": "The entries the stale-suppression record's message named after its codes, shaped as the beside member of an expectation row declares them, in the message's order, present where the row pinned that member; empty where the message names none or does not end as contract/grammar/suppression.md \"Staleness\" writes it.",
+                      "type": "array",
+                      "items": {
+                        "description": "One entry of the message.",
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": ["code", "confidence"],
+                        "properties": {
+                          "code": {
+                            "description": "The code the entry names.",
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "confidence": {
+                            "description": "The confidence the entry names.",
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "withheld": {
+                            "description": "What the entry names as withholding the finding, absent where it names nothing.",
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        }
+                      }
                     }
                   },
                   "if": {

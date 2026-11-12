@@ -1,6 +1,7 @@
 package suppress
 
 import (
+	"cmp"
 	"slices"
 	"strings"
 
@@ -41,30 +42,76 @@ func StaleSites(stale []Record) [][]Record {
 
 // StaleMessage is the message of the stale-suppression finding of the records
 // one site holds, against would, the findings the run would produce were no
-// record there: the codes the site names and, where a declaration it bound
-// would report another code, those codes, so the maintainer corrects the code
-// rather than hunting for it (suppression.md "Staleness").
-func StaleMessage(site []Record, would []Finding) string {
+// record there, which ledger decided: the codes the site names, then [Beside].
+func StaleMessage(site []Record, would []Finding, ledger *Ledger) string {
+	return site[0].Mechanism.Written() + " for " + spellCodes(namedAt(site)) + " matches no current finding" + Beside(site, would, ledger)
+}
+
+// Beside is how the message of the stale-suppression finding of the records one
+// site holds ends: every other code a finding in would about a declaration one
+// of them bound carries, with that finding's confidence and what withholds it,
+// the record ledger says matched it among them, so the maintainer corrects the
+// code rather than hunting for it, and empty where there is none
+// (suppression.md "Staleness").
+func Beside(site []Record, would []Finding, ledger *Ledger) string {
+	named := namedAt(site)
+	var entries []beside
+	for i := range would {
+		found := &would[i]
+		if found.Decl != "" && !slices.Contains(named, found.Code) &&
+			slices.ContainsFunc(site, func(r Record) bool { return r.Bound == found.Decl }) {
+			entries = append(entries, beside{code: found.Code, confidence: found.Confidence, withheld: ledger.withholding(found)})
+		}
+	}
+	if len(entries) == 0 {
+		return ""
+	}
+	slices.SortFunc(entries, compareBeside)
+	entries = slices.Compact(entries)
+	spelled := make([]string, len(entries))
+	for i, e := range entries {
+		spelled[i] = string(e.code) + " at " + string(e.confidence)
+		if e.withheld != "" {
+			spelled[i] += ", withheld by " + string(e.withheld)
+		}
+	}
+	if n := len(spelled); n > 1 {
+		spelled[n-1] = "and " + spelled[n-1]
+	}
+	return ", and its declaration reports " + strings.Join(spelled, "; ")
+}
+
+// beside is one entry [Beside] names.
+type beside struct {
+	code       vocab.Code
+	confidence vocab.Class
+	withheld   Withholding
+}
+
+// withholdings is every withholding a finding can carry, nothing first.
+var withholdings = []Withholding{
+	"", WithheldByTypeError, WithheldBySeverity, WithheldByMinConfidence,
+	WithheldByInline, WithheldByIgnore, WithheldByBaseline,
+}
+
+// compareBeside orders entries by code, then from the most to the least certain,
+// then by withholding.
+func compareBeside(a, b beside) int {
+	return cmp.Or(
+		cmp.Compare(a.code, b.code),
+		cmp.Compare(slices.Index(vocab.Classes(), a.confidence), slices.Index(vocab.Classes(), b.confidence)),
+		cmp.Compare(slices.Index(withholdings, a.withheld), slices.Index(withholdings, b.withheld)),
+	)
+}
+
+// namedAt is every code the records of one site name, in order and each once.
+func namedAt(site []Record) []vocab.Code {
 	named := make([]vocab.Code, 0, len(site))
 	for i := range site {
 		named = append(named, site[i].Code)
 	}
 	slices.Sort(named)
-	named = slices.Compact(named)
-	message := site[0].Mechanism.Written() + " for " + spellCodes(named) + " matches no current finding"
-	var beside []vocab.Code
-	for i := range would {
-		found := &would[i]
-		if found.Decl != "" && !slices.Contains(named, found.Code) &&
-			slices.ContainsFunc(site, func(r Record) bool { return r.Bound == found.Decl }) {
-			beside = append(beside, found.Code)
-		}
-	}
-	if len(beside) > 0 {
-		slices.Sort(beside)
-		message += ", and its declaration reports " + spellCodes(slices.Compact(beside))
-	}
-	return message
+	return slices.Compact(named)
 }
 
 // spellCodes is codes as one message lists them: one on its own, and several
