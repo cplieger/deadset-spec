@@ -7,7 +7,7 @@
     "languages": ["proto"],
     "schema_versions_accepted": ["9.0.0"],
     "conformance": {
-      "corpus_version": "6.2.0",
+      "corpus_version": "6.3.0",
       "result": "pass",
       "digest": "sha256:5f0c3a1e9b7d2c4486a0e1f3b5d7c9e2a4f6b8d0c2e4a6f8b0d2c4e6a8f0b2d4"
     }

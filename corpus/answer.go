@@ -71,6 +71,7 @@ type wireEntry struct {
 type wireStale struct {
 	Code      string       `json:"code"`
 	Mechanism string       `json:"mechanism"`
+	Message   string       `json:"message"`
 	Entry     wireEntry    `json:"entry"`
 	Position  wirePosition `json:"position"`
 }
@@ -83,10 +84,11 @@ type wireEvaluation struct {
 }
 
 // The confidence and subject kind the report schema fixes for a stale-suppression
-// record.
+// record, and what opens the entries its message names after its codes.
 const (
 	recordConfidence = "certain"
 	recordSubject    = "suppression"
+	besideOpening    = ", and its declaration reports "
 )
 
 // configuredEntry is the code and subject reference a finding about the row's
@@ -302,7 +304,38 @@ func answerFromRecord(row *Row, found *wireStale) Answer {
 	if row.Details != nil && row.Details.Mechanism != "" {
 		actual.Details = &Details{Mechanism: found.Mechanism}
 	}
+	if len(row.Beside) > 0 {
+		actual.Beside = besideOf(found.Message)
+	}
 	return actual
+}
+
+// besideOf is every entry a stale-suppression record's message names after its
+// codes, empty where it names none or any entry is not spelled as
+// contract/grammar/suppression.md "Staleness" spells one.
+func besideOf(message string) []Beside {
+	_, tail, found := strings.Cut(message, besideOpening)
+	if !found {
+		return []Beside{}
+	}
+	spelled := strings.Split(tail, "; ")
+	if n := len(spelled); n > 1 {
+		last, joined := strings.CutPrefix(spelled[n-1], "and ")
+		if !joined {
+			return []Beside{}
+		}
+		spelled[n-1] = last
+	}
+	entries := make([]Beside, 0, len(spelled))
+	for _, one := range spelled {
+		code, rest, at := strings.Cut(one, " at ")
+		confidence, withheld, _ := strings.Cut(rest, ", withheld by ")
+		if !at || code == "" || confidence == "" {
+			return []Beside{}
+		}
+		entries = append(entries, Beside{Code: code, Confidence: confidence, Withheld: withheld})
+	}
+	return entries
 }
 
 // differences is every member the row states and the answer does not match, in
@@ -320,6 +353,9 @@ func differences(row *Row, actual *Answer) string {
 		if one.want != "" && one.want != one.got {
 			held = append(held, fmt.Sprintf("%s want %s got %s", one.member, jsonOf(one.want), jsonOf(one.got)))
 		}
+	}
+	if len(row.Beside) > 0 && !slices.Equal(row.Beside, actual.Beside) {
+		held = append(held, fmt.Sprintf("beside want %s got %s", jsonOf(row.Beside), jsonOf(actual.Beside)))
 	}
 	if len(row.Configurations) > 0 && !slices.Equal(row.Configurations, actual.Configurations) {
 		held = append(held, fmt.Sprintf("configurations want %s got %s", jsonOf(row.Configurations), jsonOf(nonNil(actual.Configurations))))

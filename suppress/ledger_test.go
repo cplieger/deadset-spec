@@ -9,11 +9,8 @@ import (
 	"github.com/cplieger/deadset-spec/v8/vocab"
 )
 
-// noDials withholds nothing and allows no code.
-var noDials = Dials{
-	Allows:    func(vocab.Code) bool { return false },
-	Withholds: func(*Finding) bool { return false },
-}
+// noDials allows no code.
+var noDials = Dials{Allows: func(vocab.Code) bool { return false }}
 
 func declaration(code vocab.Code, ref string, line int) Finding {
 	decl := "a.go:" + strconv.Itoa(line) + ":6"
@@ -72,13 +69,14 @@ func TestDecideGivesAPartKindRecordEveryPartOfItsDeclaration(t *testing.T) {
 	}
 }
 
-// A record whose every finding the dials withhold, and a bound record of an
+// A record whose every finding something withholds, and a bound record of an
 // allowed code that claims none, are dormant.
 func TestDecideHoldsADialledRecordDormant(t *testing.T) {
 	t.Parallel()
 
 	found := declaration(vocab.UnusedUnexported, "go://x#f", 3)
-	dials := Dials{Allows: func(vocab.Code) bool { return true }, Withholds: func(*Finding) bool { return true }}
+	found.Withheld = WithheldByMinConfidence
+	dials := Dials{Allows: func(vocab.Code) bool { return true }}
 	records := []Record{
 		record(vocab.UnusedUnexported, "go://x#f", found.Decl, Inline, 2),
 		record(vocab.UnusedExported, "go://x#g", "a.go:9:6", Inline, 8),

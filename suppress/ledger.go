@@ -32,25 +32,45 @@ type Finding struct {
 	// even where two of them render at one position.
 	ID string
 
+	// Confidence is the confidence the finding carries, and Withheld the hold or
+	// the dial that keeps it out of the report, empty where neither does; a record
+	// that matches it is the ledger's to say.
+	Confidence vocab.Class
+	Withheld   Withholding
+
 	// Named is every declaration whose reference the finding carries where that
 	// is not Decl's: an assertion's interface, once per platform alternative the
 	// configurations compiling the assertion name.
 	Named []string
 }
 
+// Withholding is what keeps a finding the run computed out of its report, as a
+// stale record's message names it (suppression.md "Staleness").
+type Withholding string
+
+// The withholdings, in the order a finding two of them withhold is named by the
+// first: a hold, the dials, then the record that matches it.
+const (
+	WithheldByTypeError     Withholding = "a type error"
+	WithheldBySeverity      Withholding = "severity allow"
+	WithheldByMinConfidence Withholding = "analysis.min_confidence"
+	WithheldByInline        Withholding = "an inline directive"
+	WithheldByIgnore        Withholding = "an ignore entry"
+	WithheldByBaseline      Withholding = "a baseline row"
+)
+
+// withheldBy is the withholding a record of mechanism m is.
+var withheldBy = map[Mechanism]Withholding{Inline: WithheldByInline, Ignore: WithheldByIgnore, Baseline: WithheldByBaseline}
+
 // claim is the finding's identity across codes.
 func (f *Finding) claim() string { return string(f.Code) + "\x00" + f.ID }
 
-// Dials are the configuration's two dials as the ledger reads them: each
-// decides whether a run reports a finding rather than whether one exists.
+// Dials is the severity dial as the ledger reads it for a record that claims no
+// finding; what withholds a finding it claims is the finding's Withheld.
 type Dials struct {
 	// Allows reports whether the configuration sets one code's severity to
 	// allow.
 	Allows func(code vocab.Code) bool
-
-	// Withholds reports whether the configuration withholds one finding, by its
-	// severity, its confidence or its component's root.
-	Withholds func(finding *Finding) bool
 }
 
 // Verdict is what a record did.
@@ -66,22 +86,34 @@ const (
 // Ledger is what every record did, in reading order, and which findings the
 // records withhold.
 type Ledger struct {
-	taken    map[string]bool
+	taken    map[string]Mechanism // the mechanism of the record that matched each claimed finding
 	Verdicts []Verdict
 }
 
 // Withheld reports whether a record withholds the finding.
-func (l *Ledger) Withheld(finding *Finding) bool { return l.taken[finding.claim()] }
+func (l *Ledger) Withheld(finding *Finding) bool {
+	_, taken := l.taken[finding.claim()]
+	return taken
+}
+
+// withholding is what keeps the finding out of the report: its own Withheld,
+// else the record that matched it, empty where nothing does.
+func (l *Ledger) withholding(finding *Finding) Withholding {
+	if finding.Withheld != "" {
+		return finding.Withheld
+	}
+	return withheldBy[l.taken[finding.claim()]]
+}
 
 // Decide decides every record, in reading order (inline directives, then the
 // ignore file's entries, then the baseline's rows, each in document order),
 // against would, the findings the run would produce were no record there. A
 // record claims every finding it names that no earlier record claimed, so a
-// later one naming only claimed findings is stale. A record is dormant when the
-// dials withhold every finding it claims, or when it is bound, claims none, and
-// its code's severity is allow.
+// later one naming only claimed findings is stale. A record is dormant when
+// something withholds every finding it claims, or when it is bound, claims none,
+// and its code's severity is allow.
 func Decide(records []Record, would []Finding, dials *Dials) *Ledger {
-	ledger := &Ledger{taken: map[string]bool{}, Verdicts: make([]Verdict, 0, len(records))}
+	ledger := &Ledger{taken: map[string]Mechanism{}, Verdicts: make([]Verdict, 0, len(records))}
 	bound := map[string][]string{}
 	for i := range records {
 		if records[i].Bound != "" {
@@ -102,7 +134,7 @@ func Decide(records []Record, would []Finding, dials *Dials) *Ledger {
 func (l *Ledger) decide(record *Record, bound []string, would []Finding, dials *Dials) Verdict {
 	var claimed []*Finding
 	for j := range would {
-		if found := &would[j]; !l.taken[found.claim()] && pairs(record, bound, found) {
+		if found := &would[j]; !l.Withheld(found) && pairs(record, bound, found) {
 			claimed = append(claimed, found)
 		}
 	}
@@ -114,8 +146,8 @@ func (l *Ledger) decide(record *Record, bound []string, would []Finding, dials *
 	}
 	withheld := true
 	for _, found := range claimed {
-		l.taken[found.claim()] = true
-		withheld = withheld && dials.Withholds(found)
+		l.taken[found.claim()] = record.Mechanism
+		withheld = withheld && found.Withheld != ""
 	}
 	if withheld {
 		return Dormant

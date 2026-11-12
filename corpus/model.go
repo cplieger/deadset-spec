@@ -228,6 +228,15 @@ type Row struct {
 	Fixability        string     `json:"fixability"`
 	Configurations    []string   `json:"configurations"`
 	RetainedBy        []string   `json:"retained_by"`
+	Beside            []Beside   `json:"beside"`
+}
+
+// Beside is one entry a stale-suppression record's message names after its codes
+// (contract/grammar/suppression.md "Staleness").
+type Beside struct {
+	Code       string `json:"code"`
+	Confidence string `json:"confidence"`
+	Withheld   string `json:"withheld,omitempty"`
 }
 
 // Details is the details members a row pins, one field per member the

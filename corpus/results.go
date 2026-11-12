@@ -103,7 +103,7 @@ type FixtureResult struct { //nolint:govet // the members in the results schema'
 }
 
 // ExpectationResult is one expectation's row.
-type ExpectationResult struct {
+type ExpectationResult struct { //nolint:govet // the members in the results schema's order, which Encode writes
 	Symbol      string       `json:"symbol"`
 	Result      string       `json:"result"`
 	Capability  string       `json:"capability,omitempty"`
@@ -114,7 +114,7 @@ type ExpectationResult struct {
 
 // Answer is what the analyzer reported for one expectation, carrying only the
 // members the row names, in the expectation file's vocabulary.
-type Answer struct { //nolint:govet // the members in the results schema's order, which Encode writes
+type Answer struct {
 	Report            string     `json:"report"`
 	SymbolKind        string     `json:"symbol_kind,omitempty"`
 	Confidence        string     `json:"confidence,omitempty"`
@@ -125,6 +125,7 @@ type Answer struct { //nolint:govet // the members in the results schema's order
 	RetainedBy        []string   `json:"retained_by,omitempty"`
 	Details           *Details   `json:"details,omitempty"`
 	Component         *Component `json:"component,omitempty"`
+	Beside            []Beside   `json:"beside,omitempty"`
 }
 
 // Suppression is the second phase's outcome for one row.

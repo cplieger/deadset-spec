@@ -830,6 +830,34 @@
                 "minimum": 0
               }
             }
+          },
+          "beside": {
+            "description": "For a DS9003 row, every entry the record's message names after its codes, as contract/grammar/suppression.md \"Staleness\" writes them: each other code a finding about the declaration the record bound carries, with that finding's confidence and what withholds it, in the message's order. The record's message must end with exactly these entries. Optional, and forbidden on any other row; a row that omits it does not compare the message.",
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "description": "One entry of the message.",
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["code", "confidence"],
+              "properties": {
+                "code": {
+                  "description": "The code of the finding, drawn from the code field of a live row in contract/kinds.json.",
+                  "type": "string",
+                  "pattern": "^DS[0-9]{4}$"
+                },
+                "confidence": {
+                  "description": "The confidence the finding carries.",
+                  "type": "string",
+                  "enum": ["certain", "probable", "possible"]
+                },
+                "withheld": {
+                  "description": "What withholds the finding from the report, as the message writes it after withheld by, absent where nothing does.",
+                  "type": "string",
+                  "enum": ["a type error", "severity allow", "analysis.min_confidence", "an inline directive", "an ignore entry", "a baseline row"]
+                }
+              }
+            }
           }
         },
         "if": {
@@ -999,6 +1027,11 @@
                     "required": ["component"]
                   }
                 ]
+              }
+            },
+            "else": {
+              "not": {
+                "required": ["beside"]
               }
             }
           },

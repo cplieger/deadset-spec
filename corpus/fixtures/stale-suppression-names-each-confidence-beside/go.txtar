@@ -1,0 +1,96 @@
+One library package with seven directives that name a code their declaration does not report: on
+an exported function only a test calls, on two unexported functions nothing calls, one of them
+deprecated, on the unused field of a struct whose other field's type does not resolve, and on
+three unexported functions nothing calls whose finding another record matches: the same
+directive's other code, an ignore entry and a baseline row.
+
+-- fixture.json --
+{
+  "symbols": {
+    "TestOnlyDirective": { "file": "target/app.go", "line": 3 },
+    "TestOnly": { "file": "target/app.go", "line": 4 },
+    "UnreachedDirective": { "file": "target/app.go", "line": 6 },
+    "Unreached": { "file": "target/app.go", "line": 7 },
+    "RetiredDirective": { "file": "target/app.go", "line": 13 },
+    "Retired": { "file": "target/app.go", "line": 14 },
+    "TypeError": { "file": "target/app.go", "line": 23 },
+    "BrokenDirective": { "file": "target/app.go", "line": 24 },
+    "BrokenField": { "file": "target/app.go", "line": 25 },
+    "ClaimedDirective": { "file": "target/app.go", "line": 28 },
+    "Claimed": { "file": "target/app.go", "line": 29 },
+    "EnteredDirective": { "file": "target/app.go", "line": 31 },
+    "Entered": { "file": "target/app.go", "line": 32 },
+    "RecordedDirective": { "file": "target/app.go", "line": 34 },
+    "Recorded": { "file": "target/app.go", "line": 35 }
+  }
+}
+-- target/go.mod --
+module example.com/app
+
+go 1.27.0
+-- target/app.go --
+package app
+
+//deadset:ignore DS1002 -- Named under the wrong code.
+func TestOnly() {}
+
+//deadset:ignore DS1401 -- Named under a part code.
+func unreached() {}
+
+// retired is kept for older callers.
+//
+// Deprecated: nothing calls it.
+//
+//deadset:ignore DS1401 -- Named under a part code.
+func retired() {}
+
+// Use holds a value of the broken type.
+func Use() {
+	var b broken
+	_ = b
+}
+
+type broken struct {
+	x undefinedType
+	//deadset:ignore DS1002 -- Named under the wrong code.
+	y int
+}
+
+//deadset:ignore DS1002,DS1401 -- Kept for a later caller.
+func claimed() {}
+
+//deadset:ignore DS1401 -- Named under a part code.
+func entered() {}
+
+//deadset:ignore DS1401 -- Named under a part code.
+func recorded() {}
+-- target/deadset-ignore.json --
+{
+  "description": "The entry in effect for entered.",
+  "ignore": [
+    {
+      "code": "DS1002",
+      "symbol": "go://example.com/app#entered",
+      "path": "app.go",
+      "reason": "Kept for a later caller."
+    }
+  ]
+}
+-- target/deadset-baseline.json --
+{
+  "description": "The row in effect for recorded.",
+  "baseline": [
+    {
+      "code": "DS1002",
+      "symbol": "go://example.com/app#recorded",
+      "path": "app.go",
+      "reason": "recorded by deadset-go 2.0.0"
+    }
+  ]
+}
+-- target/app_test.go --
+package app
+
+import "testing"
+
+func TestTestOnly(t *testing.T) { TestOnly() }
