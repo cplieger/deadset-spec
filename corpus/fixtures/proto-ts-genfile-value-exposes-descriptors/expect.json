@@ -1,0 +1,42 @@
+{
+  "name": "proto-ts-genfile-value-exposes-descriptors",
+  "description": "Hand code that uses a generated file's GenFile export as a value, here by passing it to createFileRegistry outside any serializer call, gives every consumer of that file the descriptor-exposure cap, whatever its state. A type-only use of another file's GenFile export gives that file's consumers no cap.",
+  "rules": [
+    "bindings.16",
+    "references-ts.34"
+  ],
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "facts": [
+    {
+      "symbol": "Item",
+      "role": "consumer",
+      "schema": "proto://v1#Item",
+      "state": "unreferenced",
+      "cap": "descriptor-exposure"
+    },
+    {
+      "symbol": "Item.number",
+      "role": "consumer",
+      "schema": "proto://v1#Item.number",
+      "state": "unreferenced",
+      "cap": "descriptor-exposure"
+    },
+    {
+      "symbol": "Lone",
+      "role": "consumer",
+      "schema": "proto://v1#Lone",
+      "state": "unreferenced"
+    },
+    {
+      "symbol": "Lone.size",
+      "role": "consumer",
+      "schema": "proto://v1#Lone.size",
+      "state": "unreferenced"
+    }
+  ],
+  "expect": []
+}

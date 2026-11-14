@@ -1,7 +1,7 @@
 import * as letted from "./letted.js";
 import * as spelled from "./spelled.js";
 
-// A let binding the program never reassigns reads only what it names.
+// A let binding given the namespace object holds it whole.
 let alias = letted;
 console.log(alias.shownByLet());
 

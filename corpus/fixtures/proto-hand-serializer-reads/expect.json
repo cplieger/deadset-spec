@@ -2,7 +2,6 @@
   "name": "proto-hand-serializer-reads",
   "description": "A hand call of a serializer that encodes a message reads every field reachable from the message type it encodes through field types, the fields of a nested message included, because the bytes it produces are observable; a message outside that closure that hand code only writes keeps its field unreferenced.",
   "rules": ["bindings.15"],
-  "pending": "bindings.15: deadset-ts does not yet read the closure of a message a hand-written serializer call encodes.",
   "languages": ["go", "ts"],
   "target_kind": "application",
   "min_confidence": "possible",

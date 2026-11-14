@@ -1,0 +1,19 @@
+{
+  "symbols": {
+    "PingService.ping": {
+      "file": "target/src/gen/v1/service.ts",
+      "line": 155,
+      "ref": "ts://@example/target/src/gen/v1/service.ts#PingService.ping"
+    },
+    "PingService.getStatus": {
+      "file": "target/src/gen/v1/service.ts",
+      "line": 156,
+      "ref": "ts://@example/target/src/gen/v1/service.ts#PingService.getStatus"
+    },
+    "ServiceFile": {
+      "file": "target/src/gen/v1/service.ts",
+      "line": 1,
+      "ref": "ts://@example/target/src/gen/v1/service.ts#"
+    }
+  }
+}

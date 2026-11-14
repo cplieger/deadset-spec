@@ -1,0 +1,143 @@
+{
+  "name": "proto-ts-genfile-value-spellings",
+  "description": "Every hand-code value reference the compiler resolves to a generated file's GenFile export uses it, whatever its spelling, and gives every consumer of its file the descriptor-exposure cap: a shorthand property, an import alias of a namespace member, a destructured namespace import, a namespace member read by a template literal index, and a dynamic import whose namespace object is used whole. A re-export is no use by itself, but the entry file's exports are a root, so its exported import alias and its whole-module re-exports with export * and export * as are used by the root's callers, which read every GenFile export they pass on. A type-only export * gives no cap. A namespace member read by name, an index or a destructuring references that export alone, so its file's messages stay unreferenced, while a namespace object used whole and a whole-module re-export the root reads reference every export, so their messages are live.",
+  "rules": [
+    "bindings.14",
+    "bindings.16",
+    "references-ts.4",
+    "references-ts.5",
+    "references-ts.34"
+  ],
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "facts": [
+    {
+      "symbol": "Shorthand",
+      "role": "consumer",
+      "schema": "proto://v1#Shorthand",
+      "state": "unreferenced",
+      "cap": "descriptor-exposure"
+    },
+    {
+      "symbol": "Shorthand.count",
+      "role": "consumer",
+      "schema": "proto://v1#Shorthand.count",
+      "state": "unreferenced",
+      "cap": "descriptor-exposure"
+    },
+    {
+      "symbol": "Aliased",
+      "role": "consumer",
+      "schema": "proto://v1#Aliased",
+      "state": "unreferenced",
+      "cap": "descriptor-exposure"
+    },
+    {
+      "symbol": "Aliased.count",
+      "role": "consumer",
+      "schema": "proto://v1#Aliased.count",
+      "state": "unreferenced",
+      "cap": "descriptor-exposure"
+    },
+    {
+      "symbol": "StarExported",
+      "role": "consumer",
+      "schema": "proto://v1#StarExported",
+      "state": "live",
+      "cap": "descriptor-exposure"
+    },
+    {
+      "symbol": "StarExported.count",
+      "role": "consumer",
+      "schema": "proto://v1#StarExported.count",
+      "state": "unreferenced",
+      "cap": "descriptor-exposure"
+    },
+    {
+      "symbol": "NamespaceExported",
+      "role": "consumer",
+      "schema": "proto://v1#NamespaceExported",
+      "state": "live",
+      "cap": "descriptor-exposure"
+    },
+    {
+      "symbol": "NamespaceExported.count",
+      "role": "consumer",
+      "schema": "proto://v1#NamespaceExported.count",
+      "state": "unreferenced",
+      "cap": "descriptor-exposure"
+    },
+    {
+      "symbol": "Destructured",
+      "role": "consumer",
+      "schema": "proto://v1#Destructured",
+      "state": "unreferenced",
+      "cap": "descriptor-exposure"
+    },
+    {
+      "symbol": "Destructured.count",
+      "role": "consumer",
+      "schema": "proto://v1#Destructured.count",
+      "state": "unreferenced",
+      "cap": "descriptor-exposure"
+    },
+    {
+      "symbol": "TypeOnlyExported",
+      "role": "consumer",
+      "schema": "proto://v1#TypeOnlyExported",
+      "state": "live"
+    },
+    {
+      "symbol": "TypeOnlyExported.count",
+      "role": "consumer",
+      "schema": "proto://v1#TypeOnlyExported.count",
+      "state": "unreferenced"
+    },
+    {
+      "symbol": "Imported",
+      "role": "consumer",
+      "schema": "proto://v1#Imported",
+      "state": "live",
+      "cap": "descriptor-exposure"
+    },
+    {
+      "symbol": "Imported.count",
+      "role": "consumer",
+      "schema": "proto://v1#Imported.count",
+      "state": "unreferenced",
+      "cap": "descriptor-exposure"
+    },
+    {
+      "symbol": "Templated",
+      "role": "consumer",
+      "schema": "proto://v1#Templated",
+      "state": "unreferenced",
+      "cap": "descriptor-exposure"
+    },
+    {
+      "symbol": "Templated.count",
+      "role": "consumer",
+      "schema": "proto://v1#Templated.count",
+      "state": "unreferenced",
+      "cap": "descriptor-exposure"
+    },
+    {
+      "symbol": "Reexported",
+      "role": "consumer",
+      "schema": "proto://v1#Reexported",
+      "state": "unreferenced",
+      "cap": "descriptor-exposure"
+    },
+    {
+      "symbol": "Reexported.count",
+      "role": "consumer",
+      "schema": "proto://v1#Reexported.count",
+      "state": "unreferenced",
+      "cap": "descriptor-exposure"
+    }
+  ],
+  "expect": []
+}

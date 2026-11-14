@@ -1,0 +1,24 @@
+{
+  "symbols": {
+    "Item": {
+      "file": "target/src/gen/v1/a_pb.ts",
+      "line": 18,
+      "ref": "ts://@example/target/src/gen/v1/a_pb.ts#Item"
+    },
+    "Item.number": {
+      "file": "target/src/gen/v1/a_pb.ts",
+      "line": 22,
+      "ref": "ts://@example/target/src/gen/v1/a_pb.ts#Item.number"
+    },
+    "Lone": {
+      "file": "target/src/gen/v1/b_pb.ts",
+      "line": 18,
+      "ref": "ts://@example/target/src/gen/v1/b_pb.ts#Lone"
+    },
+    "Lone.size": {
+      "file": "target/src/gen/v1/b_pb.ts",
+      "line": 22,
+      "ref": "ts://@example/target/src/gen/v1/b_pb.ts#Lone.size"
+    }
+  }
+}

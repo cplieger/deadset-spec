@@ -1,9 +1,9 @@
-// used is the export the awaited namespace is read for.
+// used is the export the binding of the awaited namespace is read for.
 export function used(): number {
   return 1;
 }
 
-// spare is an export the namespace is never read for.
+// spare is an export the binding is never read for.
 export function spare(): number {
   return 2;
 }

@@ -1,6 +1,6 @@
 {
   "name": "dynamic-import-namespace",
-  "description": "A dynamic import's namespace object that escapes, here the import call passed as an argument, references every export of the module it loads. One the program reads a property of references that export alone, and an import whose result nothing uses references none, so the exports never read are reported.",
+  "description": "A dynamic import's namespace object that escapes, here the import call passed as an argument, references every export of the module it loads. A const binding of the awaited object binds the namespace as an `import * as` does, so each read through it is judged where it is read; one the program reads a property of directly references that export alone, and an import whose result nothing uses references none, so the exports never read are reported.",
   "languages": [
     "ts"
   ],
@@ -19,7 +19,19 @@
       "report": "none"
     },
     {
+      "symbol": "shown",
+      "report": "none"
+    },
+    {
       "symbol": "spare",
+      "report": "DS1001",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "unshown",
       "report": "DS1001",
       "confidence": "certain",
       "reachability_class": "certain",

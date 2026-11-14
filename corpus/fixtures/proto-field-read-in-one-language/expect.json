@@ -2,7 +2,6 @@
   "name": "proto-field-read-in-one-language",
   "description": "Each analyzer publishes the reads of its own language: Go hand code reads one field and TypeScript hand code the other, so each analyzer publishes the field it reads live and the other unreferenced, and the merge keeps both because each is read in one language.",
   "rules": ["bindings.14", "bindings.16"],
-  "pending": "bindings.16: deadset-ts publishes no consumer state from its own carrier sweep yet.",
   "languages": ["go", "ts"],
   "target_kind": "application",
   "min_confidence": "possible",
