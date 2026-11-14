@@ -2,7 +2,6 @@
   "name": "proto-field-written-only",
   "description": "A field hand code only writes, through a literal or an assignment, is unreferenced, while the literal keeps the message type's own consumer live.",
   "rules": ["bindings.14"],
-  "pending": "bindings.14: deadset-ts does not yet read a field write as reaching nothing.",
   "languages": ["go", "ts"],
   "target_kind": "application",
   "min_confidence": "possible",

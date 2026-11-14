@@ -1,0 +1,94 @@
+{
+  "symbols": {
+    "Shorthand": {
+      "file": "target/src/gen/v1/c_pb.ts",
+      "line": 18,
+      "ref": "ts://@example/target/src/gen/v1/c_pb.ts#Shorthand"
+    },
+    "Shorthand.count": {
+      "file": "target/src/gen/v1/c_pb.ts",
+      "line": 22,
+      "ref": "ts://@example/target/src/gen/v1/c_pb.ts#Shorthand.count"
+    },
+    "Aliased": {
+      "file": "target/src/gen/v1/d_pb.ts",
+      "line": 18,
+      "ref": "ts://@example/target/src/gen/v1/d_pb.ts#Aliased"
+    },
+    "Aliased.count": {
+      "file": "target/src/gen/v1/d_pb.ts",
+      "line": 22,
+      "ref": "ts://@example/target/src/gen/v1/d_pb.ts#Aliased.count"
+    },
+    "StarExported": {
+      "file": "target/src/gen/v1/e_pb.ts",
+      "line": 18,
+      "ref": "ts://@example/target/src/gen/v1/e_pb.ts#StarExported"
+    },
+    "StarExported.count": {
+      "file": "target/src/gen/v1/e_pb.ts",
+      "line": 22,
+      "ref": "ts://@example/target/src/gen/v1/e_pb.ts#StarExported.count"
+    },
+    "NamespaceExported": {
+      "file": "target/src/gen/v1/f_pb.ts",
+      "line": 18,
+      "ref": "ts://@example/target/src/gen/v1/f_pb.ts#NamespaceExported"
+    },
+    "NamespaceExported.count": {
+      "file": "target/src/gen/v1/f_pb.ts",
+      "line": 22,
+      "ref": "ts://@example/target/src/gen/v1/f_pb.ts#NamespaceExported.count"
+    },
+    "Destructured": {
+      "file": "target/src/gen/v1/g_pb.ts",
+      "line": 18,
+      "ref": "ts://@example/target/src/gen/v1/g_pb.ts#Destructured"
+    },
+    "Destructured.count": {
+      "file": "target/src/gen/v1/g_pb.ts",
+      "line": 22,
+      "ref": "ts://@example/target/src/gen/v1/g_pb.ts#Destructured.count"
+    },
+    "TypeOnlyExported": {
+      "file": "target/src/gen/v1/h_pb.ts",
+      "line": 18,
+      "ref": "ts://@example/target/src/gen/v1/h_pb.ts#TypeOnlyExported"
+    },
+    "TypeOnlyExported.count": {
+      "file": "target/src/gen/v1/h_pb.ts",
+      "line": 22,
+      "ref": "ts://@example/target/src/gen/v1/h_pb.ts#TypeOnlyExported.count"
+    },
+    "Imported": {
+      "file": "target/src/gen/v1/i_pb.ts",
+      "line": 18,
+      "ref": "ts://@example/target/src/gen/v1/i_pb.ts#Imported"
+    },
+    "Imported.count": {
+      "file": "target/src/gen/v1/i_pb.ts",
+      "line": 22,
+      "ref": "ts://@example/target/src/gen/v1/i_pb.ts#Imported.count"
+    },
+    "Templated": {
+      "file": "target/src/gen/v1/j_pb.ts",
+      "line": 18,
+      "ref": "ts://@example/target/src/gen/v1/j_pb.ts#Templated"
+    },
+    "Templated.count": {
+      "file": "target/src/gen/v1/j_pb.ts",
+      "line": 22,
+      "ref": "ts://@example/target/src/gen/v1/j_pb.ts#Templated.count"
+    },
+    "Reexported": {
+      "file": "target/src/gen/v1/k_pb.ts",
+      "line": 18,
+      "ref": "ts://@example/target/src/gen/v1/k_pb.ts#Reexported"
+    },
+    "Reexported.count": {
+      "file": "target/src/gen/v1/k_pb.ts",
+      "line": 22,
+      "ref": "ts://@example/target/src/gen/v1/k_pb.ts#Reexported.count"
+    }
+  }
+}

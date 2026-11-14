@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package v1;
+
+option go_package = "example.com/target/gen/v1;v1";
+
+message Shorthand {
+  int32 count = 1;
+}

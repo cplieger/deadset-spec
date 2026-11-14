@@ -1,7 +1,8 @@
 {
   "name": "proto-protobuf-es-v2-tags",
-  "description": "A protoc-gen-es v2 file binds each declaration through the @generated from tag of its comment: the message type and its Schema constant are consumers of the message, a field property of the field, whose tag carries a bracketed option list after its number, the service constant of the service and its method member of the RPC.",
+  "description": "A protoc-gen-es v2 file binds each declaration through the @generated from tag of its comment: the message type and its Schema constant are consumers of the message, a field property of the field, whose tag carries a bracketed option list after its number, the service constant of the service and its method member of the RPC. Hand code that creates the request and reads the service constant's typeName keeps those consumers live, while the field it never names, the RPC no client calls and the response message only that RPC's method member names stay unreferenced.",
   "rules": [
+    "bindings.16",
     "references-ts.28"
   ],
   "languages": [
@@ -13,27 +14,38 @@
     {
       "symbol": "PingRequest",
       "role": "consumer",
-      "schema": "proto://v1#PingRequest"
+      "schema": "proto://v1#PingRequest",
+      "state": "live"
     },
     {
       "symbol": "PingRequestSchema",
       "role": "consumer",
-      "schema": "proto://v1#PingRequest"
+      "schema": "proto://v1#PingRequest",
+      "state": "live"
+    },
+    {
+      "symbol": "PingResponse",
+      "role": "consumer",
+      "schema": "proto://v1#PingResponse",
+      "state": "unreferenced"
     },
     {
       "symbol": "PingRequest.text",
       "role": "consumer",
-      "schema": "proto://v1#PingRequest.text"
+      "schema": "proto://v1#PingRequest.text",
+      "state": "unreferenced"
     },
     {
       "symbol": "PingService",
       "role": "consumer",
-      "schema": "proto://v1#PingService"
+      "schema": "proto://v1#PingService",
+      "state": "live"
     },
     {
       "symbol": "PingService.ping",
       "role": "consumer",
-      "schema": "proto://v1#PingService.Ping"
+      "schema": "proto://v1#PingService.Ping",
+      "state": "unreferenced"
     }
   ],
   "expect": []

@@ -1,0 +1,39 @@
+{
+  "symbols": {
+    "WithoutEncodeFile": {
+      "file": "target/src/gen/v1/a.ts",
+      "line": 1,
+      "ref": "ts://@example/target/src/gen/v1/a.ts#"
+    },
+    "EncodeOnlyFile": {
+      "file": "target/src/encode/v1/b.ts",
+      "line": 1,
+      "ref": "ts://@example/target/src/encode/v1/b.ts#"
+    },
+    "NoDescriptorFile": {
+      "file": "target/src/bare/v1/c.ts",
+      "line": 1,
+      "ref": "ts://@example/target/src/bare/v1/c.ts#"
+    },
+    "NoteA": {
+      "file": "target/src/gen/v1/a.ts",
+      "line": 12,
+      "ref": "ts://@example/target/src/gen/v1/a.ts#NoteA"
+    },
+    "NoteB": {
+      "file": "target/src/encode/v1/b.ts",
+      "line": 13,
+      "ref": "ts://@example/target/src/encode/v1/b.ts#NoteB"
+    },
+    "NoteB.text": {
+      "file": "target/src/encode/v1/b.ts",
+      "line": 14,
+      "ref": "ts://@example/target/src/encode/v1/b.ts#NoteB.text"
+    },
+    "NoteC": {
+      "file": "target/src/bare/v1/c.ts",
+      "line": 12,
+      "ref": "ts://@example/target/src/bare/v1/c.ts#NoteC"
+    }
+  }
+}

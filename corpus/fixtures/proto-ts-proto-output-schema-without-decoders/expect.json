@@ -1,0 +1,54 @@
+{
+  "name": "proto-ts-proto-output-schema-without-decoders",
+  "description": "ts-proto output written with outputSchema but without what joins a field to its descriptor, a message's references entry under outputEncodeMethods=false, a decode under outputEncodeMethods=encode-only, or the file descriptor under outputSchema=no-file-descriptor, is output of the option set that writes no service path: each file is one fallback of scope all, published live, the run succeeds, and no message is a consumer.",
+  "rules": [
+    "references-ts.31",
+    "references-ts.36"
+  ],
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "facts": [
+    {
+      "symbol": "WithoutEncodeFile",
+      "role": "fallback",
+      "state": "live",
+      "scope": "all"
+    },
+    {
+      "symbol": "EncodeOnlyFile",
+      "role": "fallback",
+      "state": "live",
+      "scope": "all"
+    },
+    {
+      "symbol": "NoDescriptorFile",
+      "role": "fallback",
+      "state": "live",
+      "scope": "all"
+    },
+    {
+      "symbol": "NoteA",
+      "role": "consumer",
+      "absent": true
+    },
+    {
+      "symbol": "NoteB",
+      "role": "consumer",
+      "absent": true
+    },
+    {
+      "symbol": "NoteB.text",
+      "role": "consumer",
+      "absent": true
+    },
+    {
+      "symbol": "NoteC",
+      "role": "consumer",
+      "absent": true
+    }
+  ],
+  "expect": []
+}

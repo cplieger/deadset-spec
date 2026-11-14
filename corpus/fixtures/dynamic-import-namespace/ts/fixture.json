@@ -4,6 +4,8 @@
     "about": { "file": "target/routes.ts", "line": 7 },
     "used": { "file": "target/widgets.ts", "line": 2 },
     "spare": { "file": "target/widgets.ts", "line": 7 },
+    "shown": { "file": "target/gadgets.ts", "line": 2 },
+    "unshown": { "file": "target/gadgets.ts", "line": 7 },
     "dropped": { "file": "target/effects.ts", "line": 2 }
   }
 }

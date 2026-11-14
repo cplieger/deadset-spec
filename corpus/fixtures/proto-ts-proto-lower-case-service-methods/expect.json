@@ -1,0 +1,34 @@
+{
+  "name": "proto-ts-proto-lower-case-service-methods",
+  "description": "A ts-proto file written with lowerCaseServiceMethods spells each service method in camel case, and its interface method still binds the RPC of the proto name its client class passes the transport: the method called through the client class keeps its RPC live, the other RPC is unreferenced, and the file is one fallback of scope types.",
+  "rules": [
+    "bindings.16",
+    "references-ts.31"
+  ],
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "facts": [
+    {
+      "symbol": "PingService.ping",
+      "role": "consumer",
+      "schema": "proto://v1#PingService.Ping",
+      "state": "live"
+    },
+    {
+      "symbol": "PingService.getStatus",
+      "role": "consumer",
+      "schema": "proto://v1#PingService.GetStatus",
+      "state": "unreferenced"
+    },
+    {
+      "symbol": "ServiceFile",
+      "role": "fallback",
+      "state": "live",
+      "scope": "types"
+    }
+  ],
+  "expect": []
+}

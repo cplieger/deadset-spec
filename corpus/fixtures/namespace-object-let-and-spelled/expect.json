@@ -1,6 +1,6 @@
 {
   "name": "namespace-object-let-and-spelled",
-  "description": "A let binding of a namespace object that the program never reassigns references only the export it reads, as a const binding does, and a property name and a statement label spelled as a namespace import's binding are no use of the binding, so neither reads every export of the module.",
+  "description": "A let binding given a namespace object holds it whole, so it references every export of the module whatever it reads, and a property name and a statement label spelled as a namespace import's binding are no use of the binding, so neither reads every export of that module.",
   "languages": [
     "ts"
   ],
@@ -12,11 +12,7 @@
     },
     {
       "symbol": "spareByLet",
-      "report": "DS1001",
-      "confidence": "certain",
-      "reachability_class": "certain",
-      "symbol_kind": "function",
-      "liveness_relation": "reference-counting"
+      "report": "none"
     },
     {
       "symbol": "shownBySpelling",

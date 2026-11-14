@@ -2,7 +2,6 @@
   "name": "proto-ts-equals-reads",
   "description": "A hand call of equals compares every field of its schema's message, so each field of that message is read and published live, while a message no hand code compares, constructs or names keeps its field unreferenced.",
   "rules": ["bindings.15", "references-ts.33"],
-  "pending": "references-ts.33: deadset-ts reads every field of the message an equals call compares.",
   "languages": ["ts"],
   "target_kind": "application",
   "min_confidence": "possible",
