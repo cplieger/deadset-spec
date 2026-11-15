@@ -1,0 +1,17 @@
+{
+  "description": "One row of a language this analyzer does not read and one of this language.",
+  "baseline": [
+    {
+      "code": "DS1301",
+      "symbol": "proto://v1#Ping.number",
+      "path": "ping.proto",
+      "reason": "recorded by deadset 2.0.0"
+    },
+    {
+      "code": "DS1002",
+      "symbol": "ts://@example/target/main.ts#baselined",
+      "path": "main.ts",
+      "reason": "recorded by deadset-ts 1.0.0"
+    }
+  ]
+}

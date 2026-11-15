@@ -41,7 +41,7 @@
           "enum": ["function", "method", "type", "class", "interface", "enum", "namespace", "variable", "constant", "export-alias", "field", "class-member", "type-member", "interface-method", "enum-member", "message", "service", "rpc", "satisfaction-assertion", "type-parameter", "parameter", "receiver", "result", "statement", "case", "store", "file", "import", "dependency", "module-directive", "suppression", "root", "configured-declaration", "edge"]
         },
         "name": {
-          "description": "The display name of the subject, which a text line renders verbatim: a Go method as (*Catalog).ResolveAlias, a TypeScript member as Container.member, a part of a declaration as that part's own name, and a declared cross-language edge as the edge identifier. It holds no carriage return and no line feed, and it holds no colon followed by a space, which is the separator a text line writes after it.",
+          "description": "The display name of the subject, which a text line renders verbatim: a Go method as (*Catalog).ResolveAlias, a TypeScript member as Container.member, a part of a declaration as that part's own name, and a declared cross-language edge as the edge identifier. It holds no carriage return and no line feed, and it holds no colon followed by a space, which is the separator a text line writes after it: where the source text a name is spelled from would put either there, as a TypeScript string or computed key, a case's expression or a result's type can, a line break and the blanks around it are written as one space, and the spaces after a colon are not written, so `{ id: number }` is named `{ id:number }`.",
           "type": "string",
           "pattern": "^[^\\r\\n]+$"
         },

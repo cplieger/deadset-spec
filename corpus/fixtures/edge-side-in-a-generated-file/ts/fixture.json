@@ -1,0 +1,7 @@
+{
+  "symbols": {
+    "encode": { "file": "target/wire.ts", "line": 4 },
+    "decode": { "file": "target/wire.ts", "line": 9 },
+    "checksum": { "file": "target/wire.ts", "line": 14 }
+  }
+}

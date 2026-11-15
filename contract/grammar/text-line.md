@@ -68,7 +68,7 @@ internal/legacy/render_windows.go:1:1: file internal/legacy/render_windows.go: b
 **A stale suppression renders as a finding under `DS9003`.** A suppression record that is stale, as [`suppression.md`](suppression.md) defines it, is a finding of its own, so it takes the same line shape as every other finding. Its position is the suppression's own site: the line of the directive comment for an inline directive, the entry's line in `deadset-ignore.json` for an ignore entry, and the row's line in `deadset-baseline.json` for a baseline row. Its `kind`, `name` and `message` are the fields `report.schema.json` maps to them for a stale-suppression record. Its confidence is `certain` and its code is always `DS9003`, because the kind is fixed on at `deny` and no configuration lowers it. Rendered, for an inline directive one line above the declaration it named:
 
 ```text
-catalog.go:213:1: suppression go://example.com/app#Catalog.ResolveAlias: inline directive for DS1001 matches no current finding [certain] (DS9003)
+catalog.go:213:1: suppression go://example.com/app#Catalog.ResolveAlias: inline directive for DS1001 on go://example.com/app#Catalog.ResolveAlias matches no current finding [certain] (DS9003)
 ```
 
 **A pending finding is not rendered.** A finding that waits on a cross-language edge lives inside an edge evaluation, is neither reported nor suppressed, and appears in no `findings` array, so the text reporter writes no line for it. The run names the count instead: an analyzer holding at least one exits with code 4 and says how many, and the merged report of the orchestrator holds none. A suppressed finding is not rendered either; a matched suppression marks its symbol live before the sweep, so no finding exists to render, and the summary's suppression counts are where that is visible.
@@ -115,7 +115,7 @@ catalog.go:214:6: method (*Catalog).ResolveAlias: exported method (*Catalog).Res
 src/features/tabs/index.ts:1182:11: class-member TabStrip.cachedLayout: private member TabStrip.cachedLayout is written and never read [certain] (DS1301)
 go.mod:12:2: dependency github.com/example/left: required by no package in the build list [certain] (DS1701)
 internal/legacy/render_windows.go:1:1: file internal/legacy/render_windows.go: built under no declared configuration [certain] (DS1601)
-catalog.go:213:1: suppression go://example.com/app#Catalog.ResolveAlias: inline directive for DS1001 matches no current finding [certain] (DS9003)
+catalog.go:213:1: suppression go://example.com/app#Catalog.ResolveAlias: inline directive for DS1001 on go://example.com/app#Catalog.ResolveAlias matches no current finding [certain] (DS9003)
 odd:name.go:3:1: function weird: message with [brackets] and (parens): still one line [possible] (DS1002)
 src/x.ts:9:3: class-member Foo.'my key': private member is written and never read [certain] (DS1301)
 ```

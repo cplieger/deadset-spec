@@ -1,0 +1,31 @@
+{
+  "name": "suppression-rows-of-a-third-scheme",
+  "description": "An analyzer reads an ignore entry or a baseline row whose reference names a scheme of a language it does not analyze for the form every reference shares and binds nothing to it: the row counts in no total and is reported under no code, and the run goes on, because only the analyzer of that scheme's language can check the reference. The entry and the row of the analyzer's own language are in effect, so the findings they name are withheld.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "suppressions_in_effect": 2,
+  "expect": [
+    {
+      "symbol": "ignored",
+      "report": "none"
+    },
+    {
+      "symbol": "baselined",
+      "report": "none"
+    },
+    {
+      "symbol": "ProtoEntry",
+      "report": "none"
+    },
+    {
+      "symbol": "PythonEntry",
+      "report": "none"
+    },
+    {
+      "symbol": "ProtoRow",
+      "report": "none"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "description": "Recorded findings: a run fails only on a finding this document does not hold.",
+  "baseline": [
+    {
+      "code": "DS1301",
+      "symbol": "proto://v1#Ping.spare",
+      "path": "proto/ping.proto",
+      "reason": "recorded by deadset 2.0.0"
+    },
+    {
+      "code": "DS1002",
+      "symbol": "ts://@example/app/src/panel.ts#gone",
+      "path": "src/panel.ts",
+      "reason": "recorded by deadset-ts 3.11.0"
+    },
+    {
+      "code": "DS1001",
+      "symbol": "go://example.com/app#Unused",
+      "path": "catalog.go"
+    }
+  ]
+}

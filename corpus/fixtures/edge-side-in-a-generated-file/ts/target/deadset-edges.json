@@ -1,0 +1,15 @@
+{
+  "description": "Two edges whose used_by sides name functions of the generated file.",
+  "edges": {
+    "wire/encode": {
+      "because": "generated",
+      "provides": "go://example.com/app#Encode",
+      "used_by": "ts://@example/target/wire.ts#encode"
+    },
+    "wire/decode": {
+      "because": "generated",
+      "provides": "go://example.com/app#Decode",
+      "used_by": "ts://@example/target/wire.ts#decode"
+    }
+  }
+}

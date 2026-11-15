@@ -1,0 +1,20 @@
+{
+  "name": "unreferenced-test-file-export-reported-once",
+  "description": "An export of a test file in a library whose manifest exports only its entry has no reference and sits in a file nothing outside can import. It is reported once, under the unreachable-export code, because the unreachable-export kind is derived from the unused-export kind and a finding is reported once, under the most specific code. The entry's export the test calls is reported under no code.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "library",
+  "expect": [
+    {
+      "symbol": "api",
+      "report": "none"
+    },
+    {
+      "symbol": "notCalled",
+      "report": "DS1101",
+      "confidence": "certain",
+      "symbol_kind": "variable"
+    }
+  ]
+}

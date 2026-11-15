@@ -1,0 +1,6 @@
+{
+  "symbols": {
+    "api": { "file": "target/src/index.ts", "line": 2 },
+    "notCalled": { "file": "target/src/index.test.ts", "line": 4 }
+  }
+}
