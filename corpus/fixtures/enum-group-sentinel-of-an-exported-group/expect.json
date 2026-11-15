@@ -1,11 +1,11 @@
 {
   "name": "enum-group-sentinel-of-an-exported-group",
-  "description": "In a library an exported constant counts as named for the constants another deletion moves, because an importer can name it, and code outside the analyzed program may make a value of an exported API's type by any number. Its own deletion is still judged: deleting an exported first member renumbers the exported members after it, which an importer may hold, so the enum-group class retains it, whether nothing names it or only a test does. A hidden member between two exported ones renumbers the later exported one when deleted, so the class retains it too. The unexported sentinel last in each group moves nothing when deleted and is reported. Its deletion shares a dead component with the exported member before it, whose deletion would change the sentinel's value, so the sentinel's finding carries that member's possible confidence while its own class stays certain.",
+  "description": "In a library an exported constant counts as named for the constants another deletion moves, because an importer can name it, and code outside the analyzed program may make a value of an exported API's type by any number. Its own deletion is still judged: an exported first member whose list the next specification repeats is reported, whether nothing names it or only a test does, because deleting it replaces its name with _, which keeps every value an importer may hold, and its finding carries manual fixability. A hidden member between two exported ones renumbers the later exported one when deleted, so the class retains it too. The unexported sentinel last in each group moves nothing when deleted and is reported. Its deletion shares a dead component with the exported member before it, whose deletion would change the sentinel's value, so the sentinel's finding carries that member's possible confidence while its own class stays certain.",
   "languages": ["go"],
   "target_kind": "library",
   "min_confidence": "possible",
   "expect": [
-    { "symbol": "LibMood.Sad", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "LibMood.Sad", "report": "DS1005", "confidence": "possible", "reachability_class": "possible", "liveness_relation": "reference-counting", "fixability": "manual" },
     { "symbol": "LibMood.Mid", "report": "none", "retained_by": ["enum-group"] },
     {
       "symbol": "LibMood.Happy",
@@ -21,7 +21,7 @@
       "reachability_class": "certain",
       "liveness_relation": "reference-counting"
     },
-    { "symbol": "LibKind.A", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "LibKind.A", "report": "DS1005", "confidence": "possible", "reachability_class": "possible", "liveness_relation": "reference-counting", "fixability": "manual" },
     { "symbol": "LibKind.Hidden", "report": "none", "retained_by": ["enum-group"] },
     {
       "symbol": "LibKind.B",
@@ -37,7 +37,7 @@
       "reachability_class": "certain",
       "liveness_relation": "reference-counting"
     },
-    { "symbol": "Marker.Unknown", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "Marker.Unknown", "report": "DS1102", "confidence": "possible", "reachability_class": "possible", "liveness_relation": "reference-counting", "fixability": "manual" },
     {
       "symbol": "Classify",
       "report": "DS1001",

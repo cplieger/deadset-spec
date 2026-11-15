@@ -198,9 +198,9 @@ enum Level {
 }
 ```
 
-How to fix it: Delete the member, or give a later member its present value first where the values are positional. The finding's fixability is `deletable`, or `manual` where a rule of the analysis gives it.
+How to fix it: Delete the member. Where later members' values depend on its position, replace a Go constant's name with `_`, or give the next TypeScript member its present value first. The finding's fixability is `deletable`, or `manual` where a rule of the analysis gives it.
 
-The rule: An enumerated member that no symbol names, at the reachability class derived for the member and with no confidence ceiling below it. A member the enum-group exemption retains, one whose deletion the analysis does not prove leaves a program that builds and does the same, is never a candidate. Where values of the member's type may still arrive from a decoder or from outside code, the message says so and that deleting the name changes no behaviour.
+The rule: An enumerated member that no symbol names, at the reachability class derived for the member and with no confidence ceiling below it. A member the enum-group exemption retains, one whose deletion the analysis does not prove leaves a program that builds and does the same, is never a candidate. A Go member that is the only name of a specification stating its own list, which the next specification repeats, is a candidate, because that class models its deletion as replacing the name with `_`, and the message says to replace the name with `_`. Its finding carries `manual` while a later member that repeats its list is live, as grammar/analysis/fixability.md states. Where values of the member's type may still arrive from a decoder or from outside code, the message says so and that deleting the name changes no behaviour.
 
 What lowers its confidence:
 

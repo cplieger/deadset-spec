@@ -189,7 +189,9 @@ func invoke(ctx context.Context, analyzer Analyzer, dir, interrupt string, args 
 	argv := append(slices.Clone(analyzer.Command[1:]), args...)
 	cmd := exec.CommandContext(ctx, analyzer.Command[0], argv...) //nolint:gosec // the analyzer under test, named by its caller
 	cmd.Dir = dir
-	cmd.Env = append(append(os.Environ(), corpusHost...), analyzer.Env...)
+	// Environ, with Dir set, names dir in PWD: a run reads its directory as the case
+	// spells it, not as the inherited PWD would leave it, resolved past every link.
+	cmd.Env = append(append(cmd.Environ(), corpusHost...), analyzer.Env...)
 	var out, errOut bytes.Buffer
 	cmd.Stdout, cmd.Stderr = &out, &errOut
 	if err := cmd.Start(); err != nil {

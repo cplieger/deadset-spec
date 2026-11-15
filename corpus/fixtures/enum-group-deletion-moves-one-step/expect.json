@@ -1,6 +1,6 @@
 {
   "name": "enum-group-deletion-moves-one-step",
-  "description": "A constant is reported only where deleting it, alone or with the others reported, leaves a program that builds and denotes the same value at every name it uses. A later constant of the block must then drop by exactly one, which holds for iota plus or minus untyped constants and for the plain name of such a constant, and must stay a valid constant of its type. A member whose deletion would move a later constant any other way, re-list it, push it below its type's least value, make an expression after it divide by zero or shift by a negative count, or break a repeated list of several names, is retained, and so is an unnamed first member whose list the next specification repeats. A member whose deletion moves no constant code names, or moves one only by one step under an alias, is reported, and so is a constant no enumerated type holds whose deletion moves no named constant.",
+  "description": "A constant is reported only where deleting it, alone or with the others reported, leaves a program that builds and denotes the same value at every name it uses. A later constant of the block must then drop by exactly one, which holds for iota plus or minus untyped constants and for the plain name of such a constant, and must stay a valid constant of its type. A member whose deletion would move a later constant any other way, push it below its type's least value, make an expression after it divide by zero or shift by a negative count, or break a repeated list of several names, is retained. An unnamed constant that is the only name of a specification stating the list the next specification repeats is reported, at any place in its block, a member or a constant a function body declares, because replacing its name with a blank one moves nothing: its finding is manual while a constant repeating its list is named, and deletable with the members that repeat it where none is. A member whose deletion moves no constant code names, or moves one only by one step under an alias, is reported, and so is a constant no enumerated type holds whose deletion moves no named constant.",
   "languages": ["go"],
   "target_kind": "application",
   "expect": [
@@ -13,7 +13,14 @@
       "liveness_relation": "reference-counting"
     },
     { "symbol": "Share.Mid", "report": "none", "retained_by": ["enum-group"] },
-    { "symbol": "Listed.X", "report": "none", "retained_by": ["enum-group"] },
+    {
+      "symbol": "Listed.X",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting",
+      "fixability": "manual"
+    },
     { "symbol": "Tiny.Mid", "report": "none", "retained_by": ["enum-group"] },
     { "symbol": "Twin.Mid", "report": "none", "retained_by": ["enum-group"] },
     { "symbol": "Twin.W", "report": "none", "retained_by": ["enum-group"] },
@@ -41,7 +48,78 @@
       "reachability_class": "certain",
       "liveness_relation": "reference-counting"
     },
-    { "symbol": "State.Unknown", "report": "none", "retained_by": ["enum-group"] },
+    {
+      "symbol": "State.Unknown",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting",
+      "fixability": "manual"
+    },
+    {
+      "symbol": "Mode.Off",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting",
+      "fixability": "deletable"
+    },
+    {
+      "symbol": "Mode.On",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting",
+      "fixability": "deletable"
+    },
+    {
+      "symbol": "Mode.Auto",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting",
+      "fixability": "deletable"
+    },
+    {
+      "symbol": "Local.First",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting",
+      "fixability": "manual"
+    },
+    {
+      "symbol": "Mid.B",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting",
+      "fixability": "manual"
+    },
+    {
+      "symbol": "Unit.B",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting",
+      "fixability": "manual"
+    },
+    {
+      "symbol": "Pace.B",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting",
+      "fixability": "deletable"
+    },
+    {
+      "symbol": "Pace.C",
+      "report": "DS1005",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "liveness_relation": "reference-counting",
+      "fixability": "deletable"
+    },
     { "symbol": "Ratio.Mid", "report": "none", "retained_by": ["enum-group"] },
     {
       "symbol": "Ratio.Hidden",
