@@ -18,7 +18,7 @@ ts://@example/app/src/features/tabs/index.ts#TabStrip.cachedLayout
 proto://v1#BackupRequest.dry_run
 ```
 
-The reference borrows the shape of a URL so that a reader sees a language, a location and a fragment at a glance. It is not a URL: no part of it is percent-encoded or decoded but a TypeScript package name ([TypeScript](#typescript)), no Unicode normalization is applied, a non-ASCII identifier travels as its UTF-8 bytes, and characters a URL fragment forbids, such as `[`, `<` and `'`, appear as they are. The corpus refuses `go://example.com/fixture#%C3%9Cnused` and accepts `go://example.com/fixture#Ünused` for this reason.
+The reference borrows the shape of a URL so that a reader sees a language, a location and a fragment at a glance. It is not a URL: no part of it is percent-encoded or decoded but a TypeScript package name ([The TypeScript scope](#the-typescript-scope)), no Unicode normalization is applied, a non-ASCII identifier travels as its UTF-8 bytes, and characters a URL fragment forbids, such as `[`, `<` and `'`, appear as they are. The corpus refuses `go://example.com/fixture#%C3%9Cnused` and accepts `go://example.com/fixture#Ünused` for this reason.
 
 Six rules hold in every language.
 
