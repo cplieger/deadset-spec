@@ -35,6 +35,7 @@ const (
 // names at least one of them and every one of them is named by at least one case.
 var configVectorAspects = []string{
 	"array-spanning-lines",
+	"component-extension-of-json-files",
 	"component-extension-without-a-full-stop",
 	"component-extensions-configured",
 	"duplicated-key",

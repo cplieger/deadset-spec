@@ -1,0 +1,144 @@
+{
+  "schema_version": "9.0.0",
+  "contract_version": "8.0.0",
+  "analyzer": {
+    "name": "deadset-ts",
+    "version": "3.12.0",
+    "languages": [
+      "ts"
+    ],
+    "schema_versions_accepted": [
+      "9.0.0"
+    ],
+    "conformance": {
+      "corpus_version": "1.0.0",
+      "result": "pass",
+      "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000001"
+    }
+  },
+  "target": {
+    "kind": "application",
+    "root": ".",
+    "identity": "@example/app"
+  },
+  "configurations": [
+    {
+      "id": "linux-amd64",
+      "os": "linux",
+      "arch": "amd64",
+      "tags": []
+    }
+  ],
+  "configurations_not_built": [],
+  "consumers": {
+    "declared": 0,
+    "loaded": [],
+    "unavailable": []
+  },
+  "findings": [
+    {
+      "code": "DS1003",
+      "kind": "unused-member",
+      "language": "ts",
+      "position": {
+        "path": "src/Card.svelte",
+        "line": 2,
+        "column": 23,
+        "end_line": 2
+      },
+      "symbol": {
+        "ref": "ts://@example/app/src/Card.svelte#Tile.hidden",
+        "kind": "class-member",
+        "name": "Tile.hidden",
+        "exported": false,
+        "size_lines": 1
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "test_only": false,
+      "generated": false,
+      "component": {
+        "id": "deadset-ts/c-1",
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 1
+      },
+      "retained_by": [],
+      "configurations": [
+        "linux-amd64"
+      ],
+      "consumers_loaded": [],
+      "fixability": "deletable",
+      "severity": "deny",
+      "message": "class member Tile.hidden has no reference in the target",
+      "details": {},
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "code": "DS1003",
+      "kind": "unused-member",
+      "language": "ts",
+      "position": {
+        "path": "src/Panel.vue",
+        "line": 3,
+        "column": 23,
+        "end_line": 3
+      },
+      "symbol": {
+        "ref": "ts://@example/app/src/Panel.vue#Row.dead",
+        "kind": "class-member",
+        "name": "Row.dead",
+        "exported": false,
+        "size_lines": 1
+      },
+      "reachability_class": "certain",
+      "confidence": "certain",
+      "test_only": false,
+      "generated": false,
+      "component": {
+        "id": "deadset-ts/c-2",
+        "root": true,
+        "symbol_count": 1,
+        "deletable_lines": 1
+      },
+      "retained_by": [],
+      "configurations": [
+        "linux-amd64"
+      ],
+      "consumers_loaded": [],
+      "fixability": "deletable",
+      "severity": "deny",
+      "message": "class member Row.dead has no reference in the target",
+      "details": {},
+      "liveness_relation": "reference-counting"
+    }
+  ],
+  "edge_evaluations": [],
+  "stale_suppressions": [],
+  "declared_gaps": [],
+  "excluded_by_cgo": [],
+  "test_file_rules": [],
+  "type_error_skips": [],
+  "notes": [],
+  "unanswered_questions": [],
+  "conventions_applied": [],
+  "totals": {
+    "findings": 2,
+    "by_severity": {
+      "allow": 0,
+      "warn": 0,
+      "deny": 2
+    },
+    "deletable_lines": 2,
+    "suppressions_in_effect": 0,
+    "reasons_recorded": 0,
+    "stale_suppressions": 0,
+    "pending": 0,
+    "omitted": 0,
+    "withheld": {
+      "certain": 0,
+      "probable": 0,
+      "possible": 0
+    }
+  }
+}

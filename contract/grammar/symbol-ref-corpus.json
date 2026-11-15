@@ -479,6 +479,37 @@
     "example": "export function App() {"
   },
   {
+    "input": "ts://@example/app/src/Panel.vue#Row.dead",
+    "language": "ts",
+    "form": "class-member",
+    "accepted": true,
+    "reason": "A component file's script block declares in the file itself, so the path keeps the component file's own extension.",
+    "example": "class Row { used = 1; dead = 2; }"
+  },
+  {
+    "input": "ts://@example/app/src/Card.svelte#Tile.hidden",
+    "language": "ts",
+    "form": "class-member",
+    "accepted": true,
+    "reason": "A .svelte component file is scoped by its own extension as a .vue one is.",
+    "example": "class Tile { shown = 1; hidden = 2; }"
+  },
+  {
+    "input": "ts://@example/app/src/Page.astro#",
+    "language": "ts",
+    "form": "module",
+    "accepted": true,
+    "reason": "A component file is a module, whichever extension ts.component_extensions names for it, so the expression checks the extension for its form only.",
+    "example": "---"
+  },
+  {
+    "input": "ts://@example/app/src/data.json#",
+    "language": "ts",
+    "form": "module",
+    "accepted": false,
+    "reason": "A JSON file declares nothing a reference can name, so json is the one extension of letters and digits no path takes."
+  },
+  {
     "input": "ts://@example/app/scripts/build.mjs#bundle",
     "language": "ts",
     "form": "module-level",
@@ -980,6 +1011,43 @@
     "form": "dependency",
     "accepted": false,
     "reason": "A dependency always carries its section selector, and package.json is not a module, so no symbol form applies either."
+  },
+  {
+    "input": "ts://@example/app/package.json#lodash:dev",
+    "language": "ts",
+    "form": "dependency",
+    "accepted": false,
+    "reason": "A dependency carries one of the three section selectors, dependency, dev-dependency or peer-dependency, and a selector is no character of a module-level name."
+  },
+  {
+    "input": "ts://@example/app/package.json#left%7Epad:dependency",
+    "language": "ts",
+    "form": "dependency",
+    "accepted": true,
+    "reason": "A package name npm installed under its older rules holds characters outside the grammar's set, and the package component percent-encodes each with uppercase hexadecimal digits.",
+    "example": "\"dependencies\": { \"left~pad\": \"1.0.0\" }"
+  },
+  {
+    "input": "ts://@example/app/package.json#left~pad:dependency",
+    "language": "ts",
+    "form": "dependency",
+    "accepted": false,
+    "reason": "A character outside ASCII letters, digits, dot, underscore and hyphen is percent-encoded in a package component, so the raw spelling is not canonical."
+  },
+  {
+    "input": "ts://@example/app/package.json#left%7epad:dependency",
+    "language": "ts",
+    "form": "dependency",
+    "accepted": false,
+    "reason": "A percent-encoded byte is written with uppercase hexadecimal digits, the one canonical spelling."
+  },
+  {
+    "input": "ts://@legacy%21/tool/src/main.ts#run",
+    "language": "ts",
+    "form": "module-level",
+    "accepted": true,
+    "reason": "The package component of a scope is percent-encoded too, keeping the at sign and the slash of a scoped name.",
+    "example": "export function run(): void {}"
   },
   {
     "input": "ts://@example/app/src/main.ts#partial(unread)",

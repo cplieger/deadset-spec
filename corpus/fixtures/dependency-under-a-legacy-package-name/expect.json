@@ -1,0 +1,20 @@
+{
+  "name": "dependency-under-a-legacy-package-name",
+  "description": "A package name npm installed under its older rules can hold characters, such as a tilde, that the current rules refuse, and a manifest may declare a dependency under it. The reference percent-encodes the name, so the run reads the manifest and reports the dependency nothing imports.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "LegacyPad",
+      "report": "DS1701",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "dependency",
+      "details": {
+        "dependency_class": "dependency"
+      }
+    }
+  ]
+}

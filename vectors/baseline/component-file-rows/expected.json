@@ -1,0 +1,17 @@
+{
+  "description": "Recorded findings: a run fails only on a finding this document does not hold. Every reason is the analyzer that recorded the row, never an adjudication.",
+  "baseline": [
+    {
+      "code": "DS1003",
+      "symbol": "ts://@example/app/src/Card.svelte#Tile.hidden",
+      "path": "src/Card.svelte",
+      "reason": "recorded by deadset-ts 3.12.0"
+    },
+    {
+      "code": "DS1003",
+      "symbol": "ts://@example/app/src/Panel.vue#Row.dead",
+      "path": "src/Panel.vue",
+      "reason": "recorded by deadset-ts 3.12.0"
+    }
+  ]
+}

@@ -18,7 +18,7 @@ ts://@example/app/src/features/tabs/index.ts#TabStrip.cachedLayout
 proto://v1#BackupRequest.dry_run
 ```
 
-The reference borrows the shape of a URL so that a reader sees a language, a location and a fragment at a glance. It is not a URL: no part of it is percent-encoded or decoded, no Unicode normalization is applied, a non-ASCII identifier travels as its UTF-8 bytes, and characters a URL fragment forbids, such as `[`, `<` and `'`, appear as they are. The corpus refuses `go://example.com/fixture#%C3%9Cnused` and accepts `go://example.com/fixture#Ünused` for this reason.
+The reference borrows the shape of a URL so that a reader sees a language, a location and a fragment at a glance. It is not a URL: no part of it is percent-encoded or decoded but a TypeScript package name ([The TypeScript scope](#the-typescript-scope)), no Unicode normalization is applied, a non-ASCII identifier travels as its UTF-8 bytes, and characters a URL fragment forbids, such as `[`, `<` and `'`, appear as they are. The corpus refuses `go://example.com/fixture#%C3%9Cnused` and accepts `go://example.com/fixture#Ünused` for this reason.
 
 Six rules hold in every language.
 
@@ -111,11 +111,11 @@ ts://@example/app/src/wire.ts#
 ts://@example/app/src/features/tabs/index.ts#TabStrip
 ```
 
-When no manifest at or above the file carries a `name`, the package component is a single dot and the path is relative to the target root: `ts://./src/wire.ts#ServerEvent`. The two cannot collide, because an npm package name never starts with a dot ([validate-npm-package-name](https://github.com/npm/validate-npm-package-name)). An npm name also never contains `#`, `:`, whitespace or `*`, and contains `/` only after a leading `@scope`, which is what lets the package component be split from the path and lets a pattern's wildcard stay unambiguous.
+When no manifest at or above the file carries a `name`, the package component is a single dot and the path is relative to the target root: `ts://./src/wire.ts#ServerEvent`. The two cannot collide, because an npm package name never starts with a dot ([validate-npm-package-name](https://github.com/npm/validate-npm-package-name)). An npm name also never contains `#`, `:`, whitespace or `*`, and contains `/` only after a leading `@scope`, which is what lets the package component be split from the path and lets a pattern's wildcard stay unambiguous. A name npm installed before its current rules, or a manifest key outside them, can hold other characters, such as `~`, `'`, `!`, `(`, `)` and `*` ([validate-npm-package-name](https://github.com/npm/validate-npm-package-name), `validForOldPackages`), so the package component percent-encodes ([RFC 3986, section 2.1](https://www.rfc-editor.org/rfc/rfc3986#section-2.1)) every UTF-8 byte of the name outside ASCII letters, digits, `.`, `_` and `-`, with uppercase hexadecimal digits, keeping the `@` and the `/` of a scoped name `@scope/name`: `left~pad` is `left%7Epad`. That is the one canonical spelling, compared as bytes like the rest of the reference, and a reader that recovers the name decodes it. Every name that is not empty is spelled.
 
 Two packages of one name below the target root that each hold a file at one path spell a declaration of each with one reference. Such a reference names every declaration it spells. An edge side naming it names each of them and is present where one of them is, and an entry of a configuration key that names a declaration names each of them and matches where one of them does. An ignore-file entry and a baseline row carry the path of the file they bind, so each binds the declaration at that path alone.
 
-The path names a source file, never an import specifier, so the extension is always present and is one of `.ts`, `.tsx`, `.mts`, `.cts`, `.d.ts`, `.d.mts`, `.d.cts`, `.js`, `.jsx`, `.mjs` or `.cjs`. The reference names the declaring file rather than a package entry point, because a module-local declaration that is not exported has no entry-point path at all, and `DS1002` reports exactly those. The `package.json` itself is a scope for one form only, the dependency form below.
+The path names a source file, never an import specifier, so the extension is always present: one of `.ts`, `.tsx`, `.mts`, `.cts`, `.d.ts`, `.d.mts`, `.d.cts`, `.js`, `.jsx`, `.mjs` or `.cjs`, or the extension of a component file whose script blocks the analysis reads, one of those `ts.component_extensions` names (`.vue`, `.svelte` and `.astro` by default): `ts://@example/app/src/Panel.vue#Row.dead`. Because the configuration decides which extensions are component files, the expression checks the extension for its form only, a dot followed by letters and digits other than `json`, the form that key's values take: a `.json` file declares nothing a reference can name, and the `package.json` is a scope for the dependency form alone. The reference names the declaring file rather than a package entry point, because a module-local declaration that is not exported has no entry-point path at all, and `DS1002` reports exactly those.
 
 A JavaScript file is scoped and spelled exactly as a TypeScript file, under the `ts` prefix: `ts://@example/app/scripts/build.mjs#bundle`.
 
@@ -178,12 +178,13 @@ A parameter a `DS1401` finding names is the reference of the declaration whose p
 
 The module itself is the empty fragment, `ts://@example/app/src/wire.ts#`. It is the `symbol.parent` of every module-level declaration and the reference of a file-level finding (`DS1601`, `DS1602`).
 
-A manifest dependency is scoped by the manifest, `<package-name>/<path>`, the package name and the path being those the scope rule above gives the manifest as a file: a manifest that carries a `name` is its own nearest named manifest, so its path is `package.json`, and a nested manifest that carries none takes the name of the nearest manifest above it that carries one, or a single dot, and its path from that manifest's directory, or from the target root, as `ts://./static-src/package.json#html-validate:dev-dependency` does. The dependency is spelled by its own package name, and followed by the selector of the section that declares it: `:dependency` for `dependencies`, `:dev-dependency` for `devDependencies`, `:peer-dependency` for `peerDependencies`, the three sections `DS1701` names in `kinds.json`.
+A manifest dependency is scoped by the manifest, `<package-name>/<path>`, the package name and the path being those the scope rule above gives the manifest as a file: a manifest that carries a `name` is its own nearest named manifest, so its path is `package.json`, and a nested manifest that carries none takes the name of the nearest manifest above it that carries one, or a single dot, and its path from that manifest's directory, or from the target root, as `ts://./static-src/package.json#html-validate:dev-dependency` does. The dependency is spelled by its own package name, percent-encoded as the scope's is, and followed by the selector of the section that declares it: `:dependency` for `dependencies`, `:dev-dependency` for `devDependencies`, `:peer-dependency` for `peerDependencies`, the three sections `DS1701` names in `kinds.json`.
 
 ```text
 ts://@example/app/package.json#lodash:dependency
 ts://@example/app/package.json#@types/node:dev-dependency
 ts://./static-src/package.json#html-validate:dev-dependency
+ts://@example/app/package.json#left%7Epad:dependency
 ```
 
 The declared version range is the entry's value, not its identity, and never appears.
@@ -267,8 +268,9 @@ The expressions are written in the intersection of two dialects, RE2 as Go's `re
 | `TS_COMPUTED` | `\[[^\]\r\n\t ]+\]` | a computed key |
 | `TS_HEAD` | `(?:TS_IDENT\|TS_QUOTED)` | a component that may open a fragment |
 | `TS_MEMBER` | `(?:TS_IDENT\|#TS_IDENT\|TS_QUOTED\|TS_COMPUTED)` | a component after a dot |
-| `TS_PACKAGE` | `(?:@[A-Za-z0-9._-]+/)?[A-Za-z0-9._-]+` | an npm package name, or `.` |
-| `TS_FILE` | `(?:[^/#\r\n]+/)*[^/#\r\n]+(?:(?:\.d)?\.[mc]?ts\|\.tsx\|\.[mc]?js\|\.jsx)` | a source path with its extension |
+| `TS_PACKAGE` | `(?:@(?:[A-Za-z0-9._-]\|%[0-9A-F]{2})+/)?(?:[A-Za-z0-9._-]\|%[0-9A-F]{2})+` | an npm package name, percent-encoded, or `.` |
+| `TS_EXT` | `(?:[A-Za-z0-9]{1,3}\|[A-Za-ik-z0-9][A-Za-z0-9]{3}\|j[A-Za-rt-z0-9][A-Za-z0-9]{2}\|js[A-Za-np-z0-9][A-Za-z0-9]\|jso[A-Za-mo-z0-9]\|[A-Za-z0-9]{5,})` | a file extension other than `json` |
+| `TS_FILE` | `(?:[^/#\r\n]+/)*[^/#\r\n]+\.TS_EXT` | a source path with its extension, a script's or a component file's |
 | `PROTO_IDENT` | `[A-Za-z_][A-Za-z0-9_]*` | a Protocol Buffers identifier |
 | `PROTO_PACKAGE` | `(?:\.\|PROTO_IDENT(?:\.PROTO_IDENT)*)` | a package, or `.` |
 | `PROTO_PATH` | `(?:[^/#:\r\n]+/)*[^/#:\r\n]+\.proto` | a schema file's import path |
@@ -330,34 +332,34 @@ go replace
 ^go://[A-Za-z0-9._~-]+(?:/[A-Za-z0-9._~-]+)*#[A-Za-z0-9._~-]+(?:/[A-Za-z0-9._~-]+)*(?:@[A-Za-z0-9.+-]+)?:replace$
 
 ts module
-^ts://(?:@[A-Za-z0-9._-]+/)?[A-Za-z0-9._-]+/(?:[^/#\r\n]+/)*[^/#\r\n]+(?:(?:\.d)?\.[mc]?ts|\.tsx|\.[mc]?js|\.jsx)#$
+^ts://(?:@(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/)?(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/(?:[^/#\r\n]+/)*[^/#\r\n]+\.(?:[A-Za-z0-9]{1,3}|[A-Za-ik-z0-9][A-Za-z0-9]{3}|j[A-Za-rt-z0-9][A-Za-z0-9]{2}|js[A-Za-np-z0-9][A-Za-z0-9]|jso[A-Za-mo-z0-9]|[A-Za-z0-9]{5,})#$
 
 ts module-level, default-export
-^ts://(?:@[A-Za-z0-9._-]+/)?[A-Za-z0-9._-]+/(?:[^/#\r\n]+/)*[^/#\r\n]+(?:(?:\.d)?\.[mc]?ts|\.tsx|\.[mc]?js|\.jsx)#(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*')$
+^ts://(?:@(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/)?(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/(?:[^/#\r\n]+/)*[^/#\r\n]+\.(?:[A-Za-z0-9]{1,3}|[A-Za-ik-z0-9][A-Za-z0-9]{3}|j[A-Za-rt-z0-9][A-Za-z0-9]{2}|js[A-Za-np-z0-9][A-Za-z0-9]|jso[A-Za-mo-z0-9]|[A-Za-z0-9]{5,})#(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*')$
 
 ts alias
-^ts://(?:@[A-Za-z0-9._-]+/)?[A-Za-z0-9._-]+/(?:[^/#\r\n]+/)*[^/#\r\n]+(?:(?:\.d)?\.[mc]?ts|\.tsx|\.[mc]?js|\.jsx)#(?:'(?:[^'\\\r\n]|\\['\\nr])*'\.)?(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*'):alias$
+^ts://(?:@(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/)?(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/(?:[^/#\r\n]+/)*[^/#\r\n]+\.(?:[A-Za-z0-9]{1,3}|[A-Za-ik-z0-9][A-Za-z0-9]{3}|j[A-Za-rt-z0-9][A-Za-z0-9]{2}|js[A-Za-np-z0-9][A-Za-z0-9]|jso[A-Za-mo-z0-9]|[A-Za-z0-9]{5,})#(?:'(?:[^'\\\r\n]|\\['\\nr])*'\.)?(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*'):alias$
 
 ts import
-^ts://(?:@[A-Za-z0-9._-]+/)?[A-Za-z0-9._-]+/(?:[^/#\r\n]+/)*[^/#\r\n]+(?:(?:\.d)?\.[mc]?ts|\.tsx|\.[mc]?js|\.jsx)#(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*'):import$
+^ts://(?:@(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/)?(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/(?:[^/#\r\n]+/)*[^/#\r\n]+\.(?:[A-Za-z0-9]{1,3}|[A-Za-ik-z0-9][A-Za-z0-9]{3}|j[A-Za-rt-z0-9][A-Za-z0-9]{2}|js[A-Za-np-z0-9][A-Za-z0-9]|jso[A-Za-mo-z0-9]|[A-Za-z0-9]{5,})#(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*'):import$
 
 ts class-member, private-member, interface-member, type-member, enum-member, namespace-member, computed-member, literal-member
-^ts://(?:@[A-Za-z0-9._-]+/)?[A-Za-z0-9._-]+/(?:[^/#\r\n]+/)*[^/#\r\n]+(?:(?:\.d)?\.[mc]?ts|\.tsx|\.[mc]?js|\.jsx)#(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*')(?:\.(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|#(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*'|\[[^\]\r\n\t ]+\]))+$
+^ts://(?:@(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/)?(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/(?:[^/#\r\n]+/)*[^/#\r\n]+\.(?:[A-Za-z0-9]{1,3}|[A-Za-ik-z0-9][A-Za-z0-9]{3}|j[A-Za-rt-z0-9][A-Za-z0-9]{2}|js[A-Za-np-z0-9][A-Za-z0-9]|jso[A-Za-mo-z0-9]|[A-Za-z0-9]{5,})#(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*')(?:\.(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|#(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*'|\[[^\]\r\n\t ]+\]))+$
 
 ts static-member
-^ts://(?:@[A-Za-z0-9._-]+/)?[A-Za-z0-9._-]+/(?:[^/#\r\n]+/)*[^/#\r\n]+(?:(?:\.d)?\.[mc]?ts|\.tsx|\.[mc]?js|\.jsx)#(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*')(?:\.(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|#(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*'|\[[^\]\r\n\t ]+\]))+:static$
+^ts://(?:@(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/)?(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/(?:[^/#\r\n]+/)*[^/#\r\n]+\.(?:[A-Za-z0-9]{1,3}|[A-Za-ik-z0-9][A-Za-z0-9]{3}|j[A-Za-rt-z0-9][A-Za-z0-9]{2}|js[A-Za-np-z0-9][A-Za-z0-9]|jso[A-Za-mo-z0-9]|[A-Za-z0-9]{5,})#(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*')(?:\.(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|#(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*'|\[[^\]\r\n\t ]+\]))+:static$
 
 ts case-constituent
-^ts://(?:@[A-Za-z0-9._-]+/)?[A-Za-z0-9._-]+/(?:[^/#\r\n]+/)*[^/#\r\n]+(?:(?:\.d)?\.[mc]?ts|\.tsx|\.[mc]?js|\.jsx)#(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*')(?:\.(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|#(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*'|\[[^\]\r\n\t ]+\]))+\.'(?:[^'\\\r\n]|\\['\\nr])*':case$
+^ts://(?:@(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/)?(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/(?:[^/#\r\n]+/)*[^/#\r\n]+\.(?:[A-Za-z0-9]{1,3}|[A-Za-ik-z0-9][A-Za-z0-9]{3}|j[A-Za-rt-z0-9][A-Za-z0-9]{2}|js[A-Za-np-z0-9][A-Za-z0-9]|jso[A-Za-mo-z0-9]|[A-Za-z0-9]{5,})#(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*')(?:\.(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|#(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*'|\[[^\]\r\n\t ]+\]))+\.'(?:[^'\\\r\n]|\\['\\nr])*':case$
 
 ts type-parameter
-^ts://(?:@[A-Za-z0-9._-]+/)?[A-Za-z0-9._-]+/(?:[^/#\r\n]+/)*[^/#\r\n]+(?:(?:\.d)?\.[mc]?ts|\.tsx|\.[mc]?js|\.jsx)#(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*')(?:\.(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|#(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*'|\[[^\]\r\n\t ]+\]))*(?::static)?<(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*>$
+^ts://(?:@(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/)?(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/(?:[^/#\r\n]+/)*[^/#\r\n]+\.(?:[A-Za-z0-9]{1,3}|[A-Za-ik-z0-9][A-Za-z0-9]{3}|j[A-Za-rt-z0-9][A-Za-z0-9]{2}|js[A-Za-np-z0-9][A-Za-z0-9]|jso[A-Za-mo-z0-9]|[A-Za-z0-9]{5,})#(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*')(?:\.(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|#(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*'|\[[^\]\r\n\t ]+\]))*(?::static)?<(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*>$
 
 ts parameter
-^ts://(?:@[A-Za-z0-9._-]+/)?[A-Za-z0-9._-]+/(?:[^/#\r\n]+/)*[^/#\r\n]+(?:(?:\.d)?\.[mc]?ts|\.tsx|\.[mc]?js|\.jsx)#(?:(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*')(?:\.(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|#(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*'|\[[^\]\r\n\t ]+\]))*(?::static)?)?\((?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*\)$
+^ts://(?:@(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/)?(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/(?:[^/#\r\n]+/)*[^/#\r\n]+\.(?:[A-Za-z0-9]{1,3}|[A-Za-ik-z0-9][A-Za-z0-9]{3}|j[A-Za-rt-z0-9][A-Za-z0-9]{2}|js[A-Za-np-z0-9][A-Za-z0-9]|jso[A-Za-mo-z0-9]|[A-Za-z0-9]{5,})#(?:(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*')(?:\.(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|#(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*'|\[[^\]\r\n\t ]+\]))*(?::static)?)?\((?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*\)$
 
 ts dependency
-^ts://(?:@[A-Za-z0-9._-]+/)?[A-Za-z0-9._-]+/(?:[^/#\r\n]+/)*package\.json#(?:@[A-Za-z0-9._-]+/)?[A-Za-z0-9._-]+:(?:dependency|dev-dependency|peer-dependency)$
+^ts://(?:@(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/)?(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/(?:[^/#\r\n]+/)*package\.json#(?:@(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/)?(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+:(?:dependency|dev-dependency|peer-dependency)$
 
 proto message, enum, field, enum-member, service, rpc
 ^proto://(?:\.|[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*)#[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*$

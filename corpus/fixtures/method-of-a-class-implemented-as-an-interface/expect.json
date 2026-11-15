@@ -1,0 +1,25 @@
+{
+  "name": "method-of-a-class-implemented-as-an-interface",
+  "description": "A class can name another class in its implements clause, which the checker reads as an interface, so a method the implemented class requires is retained where a value of the implementing class reaches a position the implemented class types, as for an interface, and a method it does not require is reported.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Implemented.get",
+      "report": "none",
+      "retained_by": [
+        "interface-satisfaction"
+      ]
+    },
+    {
+      "symbol": "Implemented.spare",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "method",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

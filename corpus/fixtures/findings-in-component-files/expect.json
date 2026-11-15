@@ -1,0 +1,32 @@
+{
+  "name": "findings-in-component-files",
+  "description": "A finding about a declaration in a component file's script block names it by a reference whose path keeps the component file's own extension, .vue or .svelte, which the symbol-reference grammar accepts: the members no block and no markup reaches are reported, and an ignore entry naming each by that reference suppresses its finding.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Row.used",
+      "report": "none"
+    },
+    {
+      "symbol": "Row.dead",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "class-member"
+    },
+    {
+      "symbol": "Tile.shown",
+      "report": "none"
+    },
+    {
+      "symbol": "Tile.hidden",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "class-member"
+    }
+  ]
+}

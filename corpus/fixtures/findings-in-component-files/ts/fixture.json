@@ -1,0 +1,8 @@
+{
+  "symbols": {
+    "Row.used": { "file": "target/src/Panel.vue", "line": 4 },
+    "Row.dead": { "file": "target/src/Panel.vue", "line": 5 },
+    "Tile.shown": { "file": "target/src/Card.svelte", "line": 3 },
+    "Tile.hidden": { "file": "target/src/Card.svelte", "line": 4 }
+  }
+}

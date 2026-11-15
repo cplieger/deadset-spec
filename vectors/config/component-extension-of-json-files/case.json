@@ -1,0 +1,6 @@
+{
+  "name": "component-extension-of-json-files",
+  "description": "A repository configuration naming .json as a component extension. The run is refused, naming the entry by its key and its index, because a JSON file declares nothing a stable symbol reference can name, so a finding in such a file could not be written to a baseline.",
+  "products": ["deadset", "deadset-ts"],
+  "covers": ["component-extension-of-json-files"]
+}

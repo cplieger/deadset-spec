@@ -1,5 +1,5 @@
 {
-  "description": "An ignore entry for DS1602 matches no finding, because DS1602 reports a file and kinds.json's remedies give a file no suppression: the TypeScript analyzer keeps the file's DS1602 and records the entry stale, its message naming the subject from the remedies table and the remedy the finding takes instead.",
+  "description": "An ignore entry for DS1602 matches no finding, because DS1602 reports a file and kinds.json's remedies give a file no suppression: the TypeScript analyzer keeps the file's DS1602 and records the entry stale, its message naming the entry's subject, the subject kind from the remedies table and the remedy the finding takes instead.",
   "products": ["deadset-ts"],
   "argv": ["analyze", "--target=@TARGET@", "--report=@OUT@/report.json"],
   "expect": {
@@ -8,7 +8,7 @@
     "finding_paths": ["src/orphan.ts", "src/orphan.ts"],
     "files_contain": {
       "@OUT@/report.json": [
-        "ignore entry for DS1602 matches no current finding, because DS1602 reports a file, which no suppression can name; fix what the finding names or set the severity of DS1602 instead"
+        "ignore entry for DS1602 on ts://@example/files/src/orphan.ts# matches no current finding, because DS1602 reports a file, which no suppression can name; fix what the finding names or set the severity of DS1602 instead"
       ]
     }
   }

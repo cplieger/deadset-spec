@@ -1,0 +1,23 @@
+{
+  "description": "One entry of this language and two of languages this analyzer does not read.",
+  "ignore": [
+    {
+      "code": "DS1002",
+      "symbol": "ts://@example/target/main.ts#ignored",
+      "path": "main.ts",
+      "reason": "Kept for the next release."
+    },
+    {
+      "code": "DS1301",
+      "symbol": "proto://v1#Ping.spare",
+      "path": "ping.proto",
+      "reason": "The schema reader's adjudication."
+    },
+    {
+      "code": "DS1002",
+      "symbol": "py://app.main#unused",
+      "path": "main.py",
+      "reason": "Another analyzer's adjudication."
+    }
+  ]
+}

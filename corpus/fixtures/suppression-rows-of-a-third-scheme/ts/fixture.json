@@ -1,0 +1,9 @@
+{
+  "symbols": {
+    "ignored": { "file": "target/main.ts", "line": 4 },
+    "baselined": { "file": "target/main.ts", "line": 9 },
+    "ProtoEntry": { "file": "target/deadset-ignore.json", "line": 10 },
+    "PythonEntry": { "file": "target/deadset-ignore.json", "line": 16 },
+    "ProtoRow": { "file": "target/deadset-baseline.json", "line": 4 }
+  }
+}

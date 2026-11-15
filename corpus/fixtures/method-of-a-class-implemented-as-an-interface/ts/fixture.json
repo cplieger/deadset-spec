@@ -1,0 +1,12 @@
+{
+  "symbols": {
+    "Implemented.get": {
+      "file": "target/src/main.ts",
+      "line": 7
+    },
+    "Implemented.spare": {
+      "file": "target/src/main.ts",
+      "line": 10
+    }
+  }
+}

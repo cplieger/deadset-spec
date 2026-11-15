@@ -437,7 +437,7 @@ var configKeys = []ConfigKey{
 		ReadBy:    []Language{TS},
 		Delivered: []Language{TS},
 		Default:   `[".vue",".svelte",".astro"]`,
-		Value:     `{"type":"array","uniqueItems":true,"items":{"type":"string","pattern":"^\\.[A-Za-z0-9]+$"}}`,
+		Value:     `{"type":"array","uniqueItems":true,"items":{"type":"string","pattern":"^\\.(?:[A-Za-z0-9]{1,3}|[A-Za-ik-z0-9][A-Za-z0-9]{3}|j[A-Za-rt-z0-9][A-Za-z0-9]{2}|js[A-Za-np-z0-9][A-Za-z0-9]|jso[A-Za-mo-z0-9]|[A-Za-z0-9]{5,})$"}}`,
 	},
 	{
 		Key:       KeyTSDisabledConventions,

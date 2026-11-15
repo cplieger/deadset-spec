@@ -28,8 +28,10 @@ Two cases whose `existing.json` holds the same bytes, and whose reports come fro
 | `document-rows-left-out` | No row for a finding about a file, a suppression record or a configured root, and a row for the declaration beside them and for each dependency row, a requirement and a replace directive. |
 | `nothing-to-record` | A round whose every finding is about a document row records an empty baseline. |
 | `typescript-parameters` | A TypeScript round with two unused parameters of one function on one line: each finding carries its parameter's own reference, so the round records two rows. |
+| `component-file-rows` | A TypeScript round whose findings sit in a `.svelte` and a `.vue` component file: each is recorded as a row whose reference and path keep the component file's own extension. |
 | `typescript-rows` | A TypeScript round: a row for a private class member, and none for a file or a configured declaration. |
 | `other-scheme-rows-kept` | A Go round over a document holding rows of both schemes: its own old row is replaced, and the TypeScript rows follow its own, in document order, each with exactly the members it held, one without a reason and one without a path. |
+| `third-scheme-rows-kept` | A TypeScript round over a document holding a Protocol Buffers row first, an old TypeScript row and a Go row last: its own old row is replaced, the Go row and the Protocol Buffers row are kept with exactly the members they held, and the rows are ordered by scheme name compared bytewise, Go, then Protocol Buffers, then TypeScript. |
 | `one-document-written-by-go` | A Go round over a document holding the TypeScript rows before the Go rows: the Go rows come first, and the document is the one `one-document-written-by-typescript` writes. |
 | `one-document-written-by-typescript` | The TypeScript round over the same document: the Go rows are kept ahead of its own, so the document is the one the Go round writes. |
 | `line-separator-written-by-go` | A Go round over a document whose TypeScript row holds U+2028 in its path, written as itself there: the written document escapes it, and is the one `line-separator-written-by-typescript` writes. |
