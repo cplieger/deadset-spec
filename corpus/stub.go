@@ -99,7 +99,7 @@ func (b *stubBuild) program(ctx context.Context) (string, error) {
 		b.path = filepath.Join(b.dir, "stub"+executableSuffix)
 		build := exec.CommandContext(ctx, "go", "build", "-trimpath", "-o", b.path, ".") //nolint:gosec // into a directory this run created
 		build.Dir = b.dir
-		build.Env = append(os.Environ(), "GOWORK=off", "GOFLAGS=", "CGO_ENABLED=0", "GOTOOLCHAIN=local")
+		build.Env = append(build.Environ(), "GOWORK=off", "GOFLAGS=", "CGO_ENABLED=0", "GOTOOLCHAIN=local")
 		var out bytes.Buffer
 		build.Stdout, build.Stderr = &out, &out
 		if err := build.Run(); err != nil {

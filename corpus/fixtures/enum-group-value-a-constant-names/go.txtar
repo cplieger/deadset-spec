@@ -22,6 +22,10 @@ named for an architecture).
       "file": "target/crossed.go",
       "line": 65
     },
+    "Crossed.A": {
+      "file": "target/crossed.go",
+      "line": 7
+    },
     "Crossed.Mid": {
       "file": "target/crossed.go",
       "line": 8

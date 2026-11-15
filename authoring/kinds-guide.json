@@ -44,7 +44,7 @@
     {
       "code": "DS1005",
       "why": "A member of an enumerated type that nothing names: the set of values is wider than any use.",
-      "fix": "Delete the member, or give a later member its present value first where the values are positional.",
+      "fix": "Delete the member. Where later members' values depend on its position, replace a Go constant's name with `_`, or give the next TypeScript member its present value first.",
       "example": {
         "language": "ts",
         "before": "enum Level {\n  Debug,\n  Info,\n  Trace, // never named\n}",

@@ -1,9 +1,9 @@
 The Go rendering: an application whose const blocks hold shapes a deletion
 cannot renumber by one step (a shift and a division of iota, a restated list, a
 product of a member), shapes it would break (a division or a shift a lower iota
-makes invalid, a value below an int8's least, two names in one specification, a
-first specification the next one repeats), a boolean and a complex group, and
-controls a deletion moves cleanly.
+makes invalid, a value below an int8's least, two names in one specification), a
+boolean and a complex group, a specification stating a list the next one repeats,
+whose name a deletion replaces with a blank one, and controls a deletion moves cleanly.
 
 -- fixture.json --
 {
@@ -47,6 +47,34 @@ controls a deletion moves cleanly.
     "Listed.X": {
       "file": "target/steps.go",
       "line": 46
+    },
+    "Local.First": {
+      "file": "target/steps.go",
+      "line": 216
+    },
+    "Mid.B": {
+      "file": "target/steps.go",
+      "line": 227
+    },
+    "Mode.Auto": {
+      "file": "target/steps.go",
+      "line": 201
+    },
+    "Mode.Off": {
+      "file": "target/steps.go",
+      "line": 199
+    },
+    "Mode.On": {
+      "file": "target/steps.go",
+      "line": 200
+    },
+    "Pace.B": {
+      "file": "target/steps.go",
+      "line": 255
+    },
+    "Pace.C": {
+      "file": "target/steps.go",
+      "line": 256
     },
     "Power.Mid": {
       "file": "target/steps.go",
@@ -95,6 +123,10 @@ controls a deletion moves cleanly.
     "Twin.W": {
       "file": "target/steps.go",
       "line": 85
+    },
+    "Unit.B": {
+      "file": "target/steps.go",
+      "line": 243
     },
     "Wave.Mid": {
       "file": "target/steps.go",
@@ -241,6 +273,8 @@ func main() {
 	fmt.Println(aliased(n), multiplied(n), flags(n), waves(n), states(n))
 	fmt.Println(divides(n), lowest(n), joined(n), shifts(n), blanks(n), kept(n))
 	fmt.Println(a, c, z)
+	fmt.Println(modes(n), locals())
+	fmt.Println(mids(n), units(), paces(n))
 }
 -- target/steps.go --
 package main
@@ -435,4 +469,77 @@ func states(n int) bool {
 		v = stateBusy
 	}
 	return v == stateBusy || v == stateIdle
+}
+
+// mode is an enumerated type no code names a member of.
+type mode int
+
+const (
+	modeOff mode = iota
+	modeOn
+	modeAuto
+)
+
+// modes compares a converted value with a zero mode.
+func modes(n int) bool {
+	var v mode
+	if n > 3 {
+		v = mode(n)
+	}
+	return v == mode(0)
+}
+
+// locals returns the second constant of a block its body declares.
+func locals() int {
+	const (
+		localFirst = iota
+		localSecond
+	)
+	return localSecond
+}
+
+// mid has a middle member stating its own list, which the next one repeats.
+type mid int
+
+const (
+	midA mid = iota
+	midB mid = iota * 10
+	midC
+)
+
+// mids compares a value with midA and midC.
+func mids(n int) bool {
+	v := midA
+	if n > 3 {
+		v = midC
+	}
+	return v == midC || v == midA
+}
+
+// Untyped constants whose middle one states its own list, which the next repeats.
+const (
+	unitA = iota
+	unitB = iota * 10
+	unitC
+)
+
+// units returns the first and the last of them.
+func units() int { return unitA + unitC }
+
+// pace has a middle member and the tail repeating its list, neither of them named.
+type pace int
+
+const (
+	paceA pace = iota
+	paceB pace = iota * 10
+	paceC
+)
+
+// paces compares a value with paceA.
+func paces(n int) bool {
+	v := paceA
+	if n > 3 {
+		v = pace(n)
+	}
+	return v == paceA
 }

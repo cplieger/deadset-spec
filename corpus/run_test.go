@@ -397,6 +397,75 @@ func TestRunCasesGivesTheRunTheCaseEnvironment(t *testing.T) {
 	}
 }
 
+// TestRunCasesGivesTheRunItsDirectoryAsTheCaseSpellsIt runs a case under a
+// temporary directory reached through a link, as macOS spells TMPDIR, and pins
+// that the run's PWD names its directory as @TARGET@ does: a child given an
+// environment of its own and no PWD inherits the caller's, and resolves its
+// directory to the path with no link.
+func TestRunCasesGivesTheRunItsDirectoryAsTheCaseSpellsIt(t *testing.T) {
+	link := filepath.Join(t.TempDir(), "link")
+	if err := os.Symlink(t.TempDir(), link); err != nil {
+		t.Skipf("Setup: this host makes no link: %v", err)
+	}
+	t.Setenv("TMPDIR", link)
+	vectors := fstest.MapFS{
+		"vectors/cli/spelled/case.json": {Data: []byte(`{"description": "d", "products": ["p"], "argv": ["x"], "env": {"CASE_DIR": "@TARGET@"},
+			"expect": {"exit": 0}}`)},
+		"vectors/cli/spelled/tree/a": {Data: []byte("a\n")},
+	}
+	reading := Analyzer{Command: []string{"/bin/sh", "-c", `[ "$PWD" = "$CASE_DIR" ] || { echo "PWD $PWD" >&2; exit 9; }`, "sh"}}
+	got, err := RunCases(t.Context(), vectors, "p", reading)
+	if err != nil || len(got) != 1 || got[0].Result != Pass {
+		t.Errorf("RunCases(a target below a link) = %+v, %v, want the run's PWD to be @TARGET@", got, err)
+	}
+}
+
+// TestEveryChildOfTheModuleTakesItsEnvironmentFromItsCommand refuses os.Environ()
+// in any Go file of the module: a child built on it with a directory of its own
+// gets no PWD for that directory, so [exec.Cmd.Environ] is the base instead.
+func TestEveryChildOfTheModuleTakesItsEnvironmentFromItsCommand(t *testing.T) {
+	read := 0
+	err := filepath.WalkDir("..", func(p string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if d.IsDir() {
+			if p != ".." && (d.Name() == "testdata" || strings.HasPrefix(d.Name(), ".")) {
+				return filepath.SkipDir
+			}
+			return nil
+		}
+		if filepath.Ext(p) != ".go" {
+			return nil
+		}
+		read++
+		fset := token.NewFileSet()
+		file, err := parser.ParseFile(fset, p, nil, parser.SkipObjectResolution)
+		if err != nil {
+			return err
+		}
+		ast.Inspect(file, func(n ast.Node) bool {
+			call, isCall := n.(*ast.CallExpr)
+			if !isCall {
+				return true
+			}
+			if sel, isSel := call.Fun.(*ast.SelectorExpr); isSel && sel.Sel.Name == "Environ" {
+				if pkg, isIdent := sel.X.(*ast.Ident); isIdent && pkg.Name == "os" {
+					t.Errorf("%s: os.Environ(); build a child's environment on its command's Environ(), which names its directory in PWD", fset.Position(call.Pos()))
+				}
+			}
+			return true
+		})
+		return nil
+	})
+	if err != nil {
+		t.Fatalf("Setup: walk the module: %v", err)
+	}
+	if read < 10 {
+		t.Fatalf("Setup: the walk read %d Go files, want the module's", read)
+	}
+}
+
 func TestRunCasesGivesTheRunTheCorpusHostWhateverTheCallersPlatform(t *testing.T) {
 	t.Setenv("GOOS", "darwin")
 	t.Setenv("GOARCH", "arm64")

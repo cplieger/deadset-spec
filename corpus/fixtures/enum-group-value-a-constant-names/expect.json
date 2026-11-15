@@ -1,6 +1,6 @@
 {
   "name": "enum-group-value-a-constant-names",
-  "description": "Deleting a member renumbers the members after it, so where code compares values of the type, the class keeps every equality and order between the values code can hold: each named member, each constant expression of the type that is not a member's name (a constant a function body declares and one whose type is spelled through an alias among them), and the zero value. A member converted to another type inside a constant expression of that type is a conversion, which keeps its type's members. A member whose deletion would make a renumbered member equal to such a constant, or no longer equal to it, or would move it past one, is retained, and so is a member compared with a constant whose value may differ on a target the run does not load. A member whose deletion keeps every such relation is reported, and a constant expression is read by its value, whatever its spelling.",
+  "description": "Deleting a member renumbers the members after it, so where code compares values of the type, the class keeps every equality and order between the values code can hold: each named member, each constant expression of the type that is not a member's name (a constant a function body declares and one whose type is spelled through an alias among them), and the zero value. A member converted to another type inside a constant expression of that type is a conversion, which keeps its type's members. A member whose deletion would make a renumbered member equal to such a constant, or no longer equal to it, or would move it past one, is retained, and so is a member compared with a constant whose value may differ on a target the run does not load. A member whose deletion keeps every such relation is reported, and a constant expression is read by its value, whatever its spelling. A first member whose list the next specification repeats is reported, since deleting it replaces its name with _, which renumbers nothing.",
   "languages": ["go"],
   "target_kind": "application",
   "expect": [
@@ -40,6 +40,7 @@
     { "symbol": "LanesA.Mid", "report": "none", "retained_by": ["enum-group"] },
     { "symbol": "LanesB.Mid", "report": "none", "retained_by": ["enum-group"] },
     { "symbol": "LanesC.Mid", "report": "none", "retained_by": ["enum-group"] },
+    { "symbol": "Crossed.A", "report": "DS1005", "confidence": "certain", "reachability_class": "certain", "liveness_relation": "reference-counting", "fixability": "manual" },
     { "symbol": "Crossed.Mid", "report": "none", "retained_by": ["enum-group"] },
     { "symbol": "LocalKind.Mid", "report": "none", "retained_by": ["enum-group"] },
     { "symbol": "Aliased.Mid", "report": "none", "retained_by": ["enum-group"] },

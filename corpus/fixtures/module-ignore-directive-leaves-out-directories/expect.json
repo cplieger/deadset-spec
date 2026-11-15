@@ -1,11 +1,12 @@
 {
   "name": "module-ignore-directive-leaves-out-directories",
-  "description": "A directory a module's ignore directive names, a ./ path from the module root or any other path at any depth, holds none of the module's Go: no package of it is the module's, so nothing in it is reported, and neither a package below an underscore directory in it nor a script of a dropped module in a directory that module ignores counts a reference. A package in such a directory that the module imports is compiled by its build all the same, so its references count.",
+  "description": "A directory a module's ignore directive names, a ./ path from the module root or any other path at any depth, holds none of the module's Go: no package of it is the module's, so nothing in it is reported, and a script of a dropped module in a directory that module ignores counts no reference. A package below an underscore directory in it is one a build naming that directory compiles and no load lists, so it is left out, with an unread-entry note, and what it may call is possible. A package in such a directory that the module imports is compiled by its build all the same, so its references count.",
   "languages": ["go"],
   "target_kind": "application",
   "min_confidence": "possible",
   "notes": [
-    { "kind": "module-not-loaded", "path": "scripts" }
+    { "kind": "module-not-loaded", "path": "scripts" },
+    { "kind": "unread-entry", "path": "gen/_examples/demo" }
   ],
   "expect": [
     { "symbol": "All", "report": "none" },
