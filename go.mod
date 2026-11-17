@@ -6,7 +6,7 @@ require (
 	github.com/cplieger/go/filesafe v1.2.0-dev.1
 	github.com/santhosh-tekuri/jsonschema/v6 v6.0.3
 	golang.org/x/mod v0.43.0
-	golang.org/x/tools v0.52.0
+	golang.org/x/tools v0.53.0
 )
 
 require golang.org/x/text v0.44.0 // indirect
