@@ -1,0 +1,52 @@
+{
+  "name": "value-converted-to-unknown-or-any",
+  "description": "A value the program converts to unknown or any has left the analysis, because the type of the position no longer says which members the code holding it reads: what a decoder returns where it is stored in a field whose function type returns unknown, what an async loader resolves to where its function type resolves to any, a value assigned to a variable declared unknown and a value returned from a function whose result is unknown each keep their data members. A decoder stored in a field whose function type returns the decoder's own type converts nothing, and a value passed to an unknown parameter of a callback the program's own function receives is read by that callback's body, which reads nothing, so the members of both that nothing reads are still reported as written and never read.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "NoteId",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    },
+    {
+      "symbol": "TrackTitle",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    },
+    {
+      "symbol": "LabelText",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    },
+    {
+      "symbol": "SignalKind",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member"
+    },
+    {
+      "symbol": "ReplyName",
+      "report": "none",
+      "retained_by": [
+        "serialization-contract"
+      ]
+    },
+    {
+      "symbol": "KeptCount",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member"
+    }
+  ]
+}

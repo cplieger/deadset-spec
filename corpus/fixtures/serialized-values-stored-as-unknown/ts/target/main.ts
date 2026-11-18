@@ -25,7 +25,7 @@ interface Kept {
 }
 
 interface Bag {
-  [key: string]: unknown;
+  [key: string]: Kept;
 }
 
 const saved: Saved = { rules: ["en"], fallback: "en" };
