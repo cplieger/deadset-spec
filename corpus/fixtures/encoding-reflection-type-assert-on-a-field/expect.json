@@ -1,0 +1,9 @@
+{
+  "name": "encoding-reflection-type-assert-on-a-field",
+  "description": "A call reflect.TypeAssert[I](v) asserts I on what v.Interface() returns, exactly as v.Interface().(I) does, so it is judged as that assertion: a generic bind fills a struct by reflection, ranging over its fields with Fields, and reaches a field type's method only through reflect.TypeAssert of an interface on each field's value, which retains the method the interface requires.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "expect": [
+    { "symbol": "seq.Range", "report": "none", "retained_by": ["encoding-reflection"] }
+  ]
+}

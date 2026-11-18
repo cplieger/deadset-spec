@@ -1,0 +1,9 @@
+{
+  "name": "encoding-reflection-interface-assertion-on-a-ranged-field",
+  "description": "The control of encoding-reflection-type-assert-on-a-field: the same generic bind asserts the interface with v.Interface().(I), which retains the method the interface requires on the field type.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "expect": [
+    { "symbol": "seq.Range", "report": "none", "retained_by": ["encoding-reflection"] }
+  ]
+}
