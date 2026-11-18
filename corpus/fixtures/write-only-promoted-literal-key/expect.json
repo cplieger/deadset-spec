@@ -1,0 +1,75 @@
+{
+  "name": "write-only-promoted-literal-key",
+  "description": "A key of a struct literal that names a field promoted through embedded fields writes that field and every embedded field it is promoted through, as the literal keying each embedded field in turn does. So an embedded field production code sets only through promoted keys, and that only a test file reads, is written and read only from test files, the same answer as the explicit nested literal, at any depth of embedding. Each embedded type is named by the declaration that embeds it, so it is not reported.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "inner",
+      "report": "none"
+    },
+    {
+      "symbol": "spelled",
+      "report": "none"
+    },
+    {
+      "symbol": "leaf",
+      "report": "none"
+    },
+    {
+      "symbol": "middle",
+      "report": "none"
+    },
+    {
+      "symbol": "outer.inner",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field"
+    },
+    {
+      "symbol": "inner.x",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field"
+    },
+    {
+      "symbol": "nested.spelled",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field"
+    },
+    {
+      "symbol": "spelled.y",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field"
+    },
+    {
+      "symbol": "top.middle",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field"
+    },
+    {
+      "symbol": "middle.leaf",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field"
+    },
+    {
+      "symbol": "leaf.z",
+      "report": "DS1301",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "field"
+    }
+  ]
+}
