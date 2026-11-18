@@ -1,0 +1,10 @@
+{
+  "symbols": {
+    "NoteId": { "file": "target/main.ts", "line": 2 },
+    "TrackTitle": { "file": "target/main.ts", "line": 6 },
+    "LabelText": { "file": "target/main.ts", "line": 10 },
+    "SignalKind": { "file": "target/main.ts", "line": 14 },
+    "ReplyName": { "file": "target/main.ts", "line": 18 },
+    "KeptCount": { "file": "target/main.ts", "line": 22 }
+  }
+}

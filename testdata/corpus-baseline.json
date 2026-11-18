@@ -607,6 +607,7 @@
     "unused-requirement-noop-replace",
     "unused-result-read-by-a-program",
     "unused-type-parameter-of-a-type-alias",
+    "value-converted-to-unknown-or-any",
     "value-stored-in-an-unknown-property-of-a-dependency-type",
     "values-code-outside-the-target-holds",
     "vitest-4-reads-no-workspace-file",

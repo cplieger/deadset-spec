@@ -5,5 +5,5 @@ interface Client {
 declare function relay(message: unknown): void;
 
 interface Sink {
-  put(message: unknown): void;
+  put<T>(message: T): void;
 }

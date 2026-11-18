@@ -17,7 +17,7 @@ interface Hidden {
 }
 
 class Discard implements Sink {
-  put(message: unknown): void {
+  put<T>(message: T): void {
     void message;
   }
 }
