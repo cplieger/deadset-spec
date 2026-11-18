@@ -1,0 +1,52 @@
+The Go rendering: a generic bind that fills its struct's fields from strings
+and reads a field type's bounds only through reflect.TypeAssert.
+
+-- fixture.json --
+{
+  "symbols": {
+    "seq.Range": { "file": "target/main.go", "line": 16 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target binds its parameters by reflection.
+package main
+
+import (
+	"reflect"
+	"strconv"
+)
+
+// ranged is a field type that publishes its bounds.
+type ranged interface{ Range() (lo, hi int64) }
+
+// seq is a field type bind fills through ranged.
+type seq int64
+
+// Range is called only through reflect.TypeAssert.
+func (seq) Range() (lo, hi int64) { return 1, 9 }
+
+// params is what bind fills.
+type params struct {
+	Seq seq `json:"seq"`
+}
+
+func bind[T any](get func(string) string) T {
+	var out T
+	v := reflect.ValueOf(&out).Elem()
+	for f, fv := range v.Fields() {
+		if rg, ok := reflect.TypeAssert[ranged](fv); ok {
+			lo, _ := rg.Range()
+			n, _ := strconv.ParseInt(get(f.Tag.Get("json")), 10, 64)
+			fv.SetInt(max(n, lo))
+		}
+	}
+	return out
+}
+
+func main() {
+	println(bind[params](func(string) string { return "3" }).Seq)
+}

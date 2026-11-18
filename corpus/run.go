@@ -24,10 +24,11 @@ import (
 	"github.com/cplieger/deadset-spec/v8/vocab"
 )
 
-// corpusHost is the platform every fixture's expectations name as the host's,
-// set for the run as the go command reads its default target, so a Go analyzer
-// derives the same host configuration on every machine (runner.load).
-var corpusHost = []string{"GOOS=linux", "GOARCH=amd64"}
+// HostEnvironment is the platform every fixture's expectations name as the
+// host's, set for a Command run after the caller's environment and before Env
+// as the go command reads its default target, so a Go analyzer derives the same
+// host configuration on every machine (runner.load).
+var HostEnvironment = []string{"GOOS=linux", "GOARCH=amd64"}
 
 // Analyzer is the product a run answers the corpus through. Command is the
 // program and any leading arguments; a verb and its options follow.
@@ -37,6 +38,9 @@ type Analyzer struct {
 	// is: it runs the verb and options args holds, a relative path in them read
 	// from dir, writes the files a process would, and returns what the process
 	// would print and its exit code. An interrupted run sees ctx cancelled.
+	// The runner cannot set an environment per invocation in process: the
+	// product answers under HostEnvironment set in the program's own, and Env
+	// applies to Command alone.
 	InProcess func(ctx context.Context, dir string, args []string) (stdout []byte, stderr string, code int)
 	Language  string
 	Env       []string
@@ -191,7 +195,7 @@ func invoke(ctx context.Context, analyzer Analyzer, dir, interrupt string, args 
 	cmd.Dir = dir
 	// Environ, with Dir set, names dir in PWD: a run reads its directory as the case
 	// spells it, not as the inherited PWD would leave it, resolved past every link.
-	cmd.Env = append(append(cmd.Environ(), corpusHost...), analyzer.Env...)
+	cmd.Env = append(append(cmd.Environ(), HostEnvironment...), analyzer.Env...)
 	var out, errOut bytes.Buffer
 	cmd.Stdout, cmd.Stderr = &out, &errOut
 	if err := cmd.Start(); err != nil {

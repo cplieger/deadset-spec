@@ -1,0 +1,44 @@
+The Go rendering: a command that calls a type's methods by ranging over
+Methods and prints a type's fields by ranging over Fields.
+
+-- fixture.json --
+{
+  "symbols": {
+    "hook.Start": { "file": "target/main.go", "line": 13 },
+    "row.id": { "file": "target/main.go", "line": 17 },
+    "row.name": { "file": "target/main.go", "line": 18 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target runs its hooks and prints its row layout by reflection.
+package main
+
+import (
+	"fmt"
+	"reflect"
+)
+
+// hook's methods run only through reflection.
+type hook struct{}
+
+// Start is called only through Methods.
+func (hook) Start() { fmt.Println("start") }
+
+// row's fields are printed only through Fields.
+type row struct {
+	id   int
+	name string
+}
+
+func main() {
+	for _, method := range reflect.ValueOf(hook{}).Methods() {
+		method.Call(nil)
+	}
+	for field := range reflect.TypeFor[row]().Fields() {
+		fmt.Println(field.Name)
+	}
+}

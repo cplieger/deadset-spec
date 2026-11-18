@@ -1,0 +1,15 @@
+{
+  "name": "provides-side-in-a-generated-file",
+  "description": "A declaration of a generated file that the provides side of a declared cross-language edge names in the analyzer's own language is judged by its references, because the edge stands for a use only the other language decides. The side naming a function the entry calls is live. The side naming a function nothing references is dead, holding the pending finding the function carries, and that finding is not among the report's findings. A declaration of the same file that no edge names stays retained by the generated-file class, so the file reports no finding of its own.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "edge_evaluations": [
+    { "edge": "wire/decode", "side": "provides", "state": "dead", "symbol": "decode", "report": "DS1002" },
+    { "edge": "wire/encode", "side": "provides", "state": "live" }
+  ],
+  "expect": [
+    { "symbol": "encode", "report": "none" },
+    { "symbol": "decode", "report": "none" },
+    { "symbol": "checksum", "report": "none", "retained_by": ["generated-file"] }
+  ]
+}

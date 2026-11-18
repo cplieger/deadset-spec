@@ -1,0 +1,11 @@
+{
+  "name": "encoding-reflection-through-the-reflect-iterators",
+  "description": "The iterators of reflect.Value and reflect.Type reach what the calls they iterate reach: ranging over Methods of a value reflect.ValueOf gives finds its type's exported methods by reflection, as Method does, and ranging over Fields of the type reflect.TypeFor names walks its fields, as Field does, so the method and the fields are retained.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "expect": [
+    { "symbol": "hook.Start", "report": "none", "retained_by": ["encoding-reflection"] },
+    { "symbol": "row.id", "report": "none", "retained_by": ["encoding-reflection"] },
+    { "symbol": "row.name", "report": "none", "retained_by": ["encoding-reflection"] }
+  ]
+}
