@@ -1,0 +1,96 @@
+The Go rendering: a command building one struct through a key naming a field
+promoted through an embedded field, one through the embedded field's own key,
+and one through a key naming a field promoted through two embedded fields. A
+test file of the package reads every field the command only writes.
+
+-- fixture.json --
+{
+  "symbols": {
+    "inner": { "file": "target/main.go", "line": 5 },
+    "inner.x": { "file": "target/main.go", "line": 6 },
+    "outer.inner": { "file": "target/main.go", "line": 12 },
+    "spelled": { "file": "target/main.go", "line": 16 },
+    "spelled.y": { "file": "target/main.go", "line": 17 },
+    "nested.spelled": { "file": "target/main.go", "line": 23 },
+    "leaf": { "file": "target/main.go", "line": 27 },
+    "leaf.z": { "file": "target/main.go", "line": 28 },
+    "middle": { "file": "target/main.go", "line": 32 },
+    "middle.leaf": { "file": "target/main.go", "line": 33 },
+    "top.middle": { "file": "target/main.go", "line": 39 }
+  }
+}
+-- target/go.mod --
+module example.com/target
+
+go 1.27.0
+-- target/main.go --
+// Command target builds three values through keyed struct literals.
+package main
+
+// inner is embedded in outer.
+type inner struct {
+	x int
+}
+
+// outer embeds inner and is built through a promoted key.
+type outer struct {
+	code int
+	inner
+}
+
+// spelled is embedded in nested.
+type spelled struct {
+	y int
+}
+
+// nested embeds spelled and is built through the embedded field's own key.
+type nested struct {
+	code int
+	spelled
+}
+
+// leaf is embedded two levels below top.
+type leaf struct {
+	z int
+}
+
+// middle embeds leaf.
+type middle struct {
+	leaf
+}
+
+// top embeds middle, so leaf.z is promoted through two embedded fields.
+type top struct {
+	code int
+	middle
+}
+
+func promoted(c int) int {
+	o := outer{code: c, x: 1}
+	return o.code
+}
+
+func explicit(c int) int {
+	o := nested{code: c, spelled: spelled{y: 1}}
+	return o.code
+}
+
+func twoDeep(c int) int {
+	o := top{code: c, z: 1}
+	return o.code
+}
+
+func main() {
+	println(promoted(1), explicit(1), twoDeep(1))
+}
+-- target/main_test.go --
+package main
+
+import "testing"
+
+func TestFields(t *testing.T) {
+	o, n, d := outer{code: 1}, nested{code: 1}, top{code: 1}
+	if o.x != 0 || n.y != 0 || d.z != 0 {
+		t.Error("a zero field reads non-zero")
+	}
+}
