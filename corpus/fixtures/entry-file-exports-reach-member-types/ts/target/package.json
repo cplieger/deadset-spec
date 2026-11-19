@@ -1,0 +1,19 @@
+{
+  "name": "@example/target",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "tool": "./bin/tool.mjs"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "dependencies": {
+    "next": "16.999.0"
+  },
+  "scripts": {
+    "build": "next build",
+    "seed": "node scripts/seed.mjs"
+  }
+}

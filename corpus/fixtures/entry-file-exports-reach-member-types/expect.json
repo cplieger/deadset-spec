@@ -1,0 +1,136 @@
+{
+  "name": "entry-file-exports-reach-member-types",
+  "description": "An export of an entry file reaches types as a published declaration does, because the runtime or the framework that loads the file holds the value and calls its members by name: a class an exported array or object literal holds keeps its static and public members used, from a file ts.entry_files names, an applied convention row's entry, a configuration file and the export a document imports, so a variable only those members read is used too. A class no export holds keeps nothing because its method shares a name with a reached one, a private member is never reached, and a file only a package script, a workflow step, the manifest's bin or the src of an HTML script runs hands out no value, while a file an inline module script of an HTML file imports is an entry file, so the class its export holds keeps its members used and an export its own file also uses is no redundant export keyword. A published workspace member's export reaches the class its object literal holds as published API, so its unused static and public method are reported at possible with no consumer information.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "min_confidence": "possible",
+  "entry_files": [
+    "scripts/stryker-ci-reporter.mjs"
+  ],
+  "conventions_applied": [
+    {
+      "name": "next",
+      "package": "next",
+      "version": "16.999.0",
+      "manifest": "package.json"
+    }
+  ],
+  "rules": [
+    "references-ts.43"
+  ],
+  "expect": [
+    {
+      "symbol": "launch",
+      "report": "none"
+    },
+    {
+      "symbol": "CiReporter.inject",
+      "report": "none"
+    },
+    {
+      "symbol": "CiReporter.onMutationTestingPlanReady",
+      "report": "none"
+    },
+    {
+      "symbol": "CiReporter.onMutantTested",
+      "report": "none"
+    },
+    {
+      "symbol": "CiReporter.onMutationTestReportReady",
+      "report": "none"
+    },
+    {
+      "symbol": "Route.segment",
+      "report": "none"
+    },
+    {
+      "symbol": "Route.render",
+      "report": "none"
+    },
+    {
+      "symbol": "Route.draft",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    },
+    {
+      "symbol": "Plugin.id",
+      "report": "none"
+    },
+    {
+      "symbol": "Plugin.apply",
+      "report": "none"
+    },
+    {
+      "symbol": "Lookalike.onMutantTested",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    },
+    {
+      "symbol": "Lookalike.used",
+      "report": "none"
+    },
+    {
+      "symbol": "View.draw",
+      "report": "none"
+    },
+    {
+      "symbol": "Seeder.plant",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    },
+    {
+      "symbol": "Job.run",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    },
+    {
+      "symbol": "Tool.go",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    },
+    {
+      "symbol": "Page.draw",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain"
+    },
+    {
+      "symbol": "Panel.draw",
+      "report": "none"
+    },
+    {
+      "symbol": "helper",
+      "report": "none"
+    },
+    {
+      "symbol": "local",
+      "report": "none"
+    },
+    {
+      "symbol": "Kit.made",
+      "report": "DS1003",
+      "confidence": "possible",
+      "reachability_class": "possible"
+    },
+    {
+      "symbol": "Kit.run",
+      "report": "DS1003",
+      "confidence": "possible",
+      "reachability_class": "possible"
+    },
+    {
+      "symbol": "kit",
+      "report": "DS1001",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "variable"
+    }
+  ]
+}

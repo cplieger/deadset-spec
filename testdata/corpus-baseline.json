@@ -176,6 +176,7 @@
     "encoding-reflection-unwritten-encoded-field",
     "encoding-reflection-xml-name-encoded",
     "entry-file-declaring-nothing",
+    "entry-file-exports-reach-member-types",
     "enum-group-conversion",
     "enum-group-deleting-moves-no-named-constant",
     "enum-group-deletion-moves-one-step",
