@@ -1,0 +1,96 @@
+{
+  "symbols": {
+    "launch": {
+      "file": "target/scripts/stryker-ci-reporter.mjs",
+      "line": 13
+    },
+    "CiReporter.inject": {
+      "file": "target/scripts/stryker-ci-reporter.mjs",
+      "line": 35
+    },
+    "CiReporter.onMutationTestingPlanReady": {
+      "file": "target/scripts/stryker-ci-reporter.mjs",
+      "line": 49
+    },
+    "CiReporter.onMutantTested": {
+      "file": "target/scripts/stryker-ci-reporter.mjs",
+      "line": 78
+    },
+    "CiReporter.onMutationTestReportReady": {
+      "file": "target/scripts/stryker-ci-reporter.mjs",
+      "line": 86
+    },
+    "Route.segment": {
+      "file": "target/app/page.js",
+      "line": 3
+    },
+    "Route.render": {
+      "file": "target/app/page.js",
+      "line": 5
+    },
+    "Plugin.id": {
+      "file": "target/tool.config.mjs",
+      "line": 3
+    },
+    "Plugin.apply": {
+      "file": "target/tool.config.mjs",
+      "line": 5
+    },
+    "Lookalike.onMutantTested": {
+      "file": "target/tool.config.mjs",
+      "line": 12
+    },
+    "Lookalike.used": {
+      "file": "target/tool.config.mjs",
+      "line": 16
+    },
+    "View.draw": {
+      "file": "target/src/widget.mjs",
+      "line": 3
+    },
+    "Seeder.plant": {
+      "file": "target/scripts/seed.mjs",
+      "line": 3
+    },
+    "Kit.made": {
+      "file": "target/packages/kit/src/index.js",
+      "line": 3
+    },
+    "Kit.run": {
+      "file": "target/packages/kit/src/index.js",
+      "line": 5
+    },
+    "kit": {
+      "file": "target/packages/kit/src/index.js",
+      "line": 10
+    },
+    "Route.draft": {
+      "file": "target/app/page.js",
+      "line": 9
+    },
+    "Job.run": {
+      "file": "target/scripts/job.mjs",
+      "line": 3
+    },
+    "Tool.go": {
+      "file": "target/bin/tool.mjs",
+      "line": 4
+    },
+    "Page.draw": {
+      "file": "target/src/page.mjs",
+      "line": 3
+    },
+    "Panel.draw": {
+      "file": "target/src/inline.mjs",
+      "line": 3
+    },
+    "helper": {
+      "file": "target/src/inline.mjs",
+      "line": 10
+    },
+    "local": {
+      "file": "target/src/inline.mjs",
+      "line": 14
+    }
+  }
+}
