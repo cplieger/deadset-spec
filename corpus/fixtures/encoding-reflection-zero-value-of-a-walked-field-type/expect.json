@@ -1,0 +1,10 @@
+{
+  "name": "encoding-reflection-zero-value-of-a-walked-field-type",
+  "description": "A value reflect.Zero, reflect.New or another constructor of reflect builds from a reflect.Type is a value of that type, and the type derives from what reflect.TypeOf or reflect.TypeFor gives, so an interface assertion on it is judged as one on a value of every type that walk reaches: a decoder walks the field types of reflect.TypeOf(v).Elem(), caches each in a member, and asserts an interface on reflect.Zero of a member's type through reflect.TypeAssert. The walk cannot follow the type back through the member, so the assertion retains every method of every type reachable from what the program hands to reflect.TypeOf. A method of a type no reflection reaches is reported.",
+  "languages": ["go"],
+  "target_kind": "application",
+  "expect": [
+    { "symbol": "waitMS.Range", "report": "none", "retained_by": ["encoding-reflection"] },
+    { "symbol": "stray.Range", "report": "DS1101", "confidence": "certain", "reachability_class": "certain", "symbol_kind": "method" }
+  ]
+}

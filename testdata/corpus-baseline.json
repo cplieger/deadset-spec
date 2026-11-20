@@ -179,6 +179,7 @@
     "encoding-reflection-type-assert-on-a-field",
     "encoding-reflection-unwritten-encoded-field",
     "encoding-reflection-xml-name-encoded",
+    "encoding-reflection-zero-value-of-a-walked-field-type",
     "entry-file-declaring-nothing",
     "entry-file-exports-reach-member-types",
     "enum-group-conversion",
