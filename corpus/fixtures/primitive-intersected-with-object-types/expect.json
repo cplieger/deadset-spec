@@ -1,0 +1,42 @@
+{
+  "name": "primitive-intersected-with-object-types",
+  "description": "A value whose type is a primitive intersected with object types is the primitive at runtime, so it carries none of the members the object types declare. A test file's runner-called export that converts a value holding such types to unknown reaches each member of the plain object types the value holds, which is then a test reference, and none of the members of an object type a string, a number or a boolean is intersected with, written inline or named, held through a union, an array, a property and a map. Those members nothing references are reported as unused at certain, the same as where no test reaches them.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "BrandedNamed",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "AliasAlias",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "FlagFlag",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "TagLabel",
+      "report": "DS1102",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}
