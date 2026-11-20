@@ -1,0 +1,8 @@
+{
+  "symbols": {
+    "BrandedNamed": { "file": "target/model.ts", "line": 2 },
+    "AliasAlias": { "file": "target/model.ts", "line": 5 },
+    "FlagFlag": { "file": "target/model.ts", "line": 9 },
+    "TagLabel": { "file": "target/model.ts", "line": 12 }
+  }
+}
