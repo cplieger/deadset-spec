@@ -1,0 +1,8 @@
+{
+  "symbols": {
+    "AliasAlias": { "file": "target/index.ts", "line": 2 },
+    "LabelText": { "file": "target/index.ts", "line": 6 },
+    "AliasOf": { "file": "target/index.ts", "line": 9 },
+    "LabelOf": { "file": "target/index.ts", "line": 13 }
+  }
+}

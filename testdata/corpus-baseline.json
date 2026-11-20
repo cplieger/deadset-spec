@@ -374,6 +374,8 @@
     "plugin-package-exports",
     "positional-member-codes",
     "positional-member-fixability",
+    "primitive-intersected-with-object-types",
+    "primitive-intersected-with-object-types-published",
     "private-member-unread",
     "proto-buf-module-excludes-unread",
     "proto-buf-v1-build-excludes-unread",

@@ -1,0 +1,43 @@
+{
+  "name": "primitive-intersected-with-object-types-published",
+  "description": "A library's published function that returns a string intersected with an object type publishes none of the object type's members, because a value of the type is a string at runtime and an outside program holding it holds no such member, so a member nothing references is reported as unused at certain. A published function that returns a plain object type publishes its members, so the one nothing references is reported at possible, as the published functions are where the run holds no consumer information.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "library",
+  "min_confidence": "possible",
+  "expect": [
+    {
+      "symbol": "AliasAlias",
+      "report": "DS1003",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "type-member",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "LabelText",
+      "report": "DS1003",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "type-member",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "AliasOf",
+      "report": "DS1001",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    },
+    {
+      "symbol": "LabelOf",
+      "report": "DS1001",
+      "confidence": "possible",
+      "reachability_class": "possible",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}
