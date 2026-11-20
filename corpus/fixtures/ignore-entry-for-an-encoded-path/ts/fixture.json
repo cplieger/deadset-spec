@@ -1,0 +1,8 @@
+{
+  "symbols": {
+    "unused": {
+      "file": "target/src/my file.ts",
+      "line": 2
+    }
+  }
+}

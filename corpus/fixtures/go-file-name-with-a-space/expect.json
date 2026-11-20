@@ -1,0 +1,23 @@
+{
+  "name": "go-file-name-with-a-space",
+  "description": "A file operand holding a space is percent-encoded in the reference: a file a custom tag excludes from every configuration of a matrix the fixture declares complete is reported, and its finding's reference spells the base name never%20built.go. The suppression phase writes that reference into an ignore entry, and the entry binds the finding.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "closed_world": [
+    "matrix"
+  ],
+  "expect": [
+    {
+      "symbol": "Handwritten",
+      "report": "DS1601",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "file",
+      "details": {
+        "excluded_by": "handwritten"
+      }
+    }
+  ]
+}

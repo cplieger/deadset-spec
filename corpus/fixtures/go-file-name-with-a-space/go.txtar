@@ -1,0 +1,31 @@
+The Go rendering: one main package under a matrix of one configuration, and a
+file named with a space whose constraint names a tag no configuration sets.
+
+-- fixture.json --
+{
+  "configurations": [
+    "linux-amd64"
+  ],
+  "symbols": {
+    "Handwritten": {
+      "file": "target/never built.go",
+      "line": 1,
+      "ref": "go://example.com/fixture#never%20built.go:file"
+    }
+  }
+}
+-- target/go.mod --
+module example.com/fixture
+
+go 1.27.0
+-- target/main.go --
+package main
+
+func main() {}
+-- target/never built.go --
+//go:build handwritten
+
+package main
+
+// handwritten is compiled under a tag no configuration of the matrix names.
+func handwritten() int { return 4 }

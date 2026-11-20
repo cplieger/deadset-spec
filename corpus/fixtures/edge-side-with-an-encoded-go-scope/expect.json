@@ -1,0 +1,32 @@
+{
+  "name": "edge-side-with-an-encoded-go-scope",
+  "description": "A side of a declared edge names a declaration of a package whose import path holds a plus sign by the encoded reference, and the evaluation carries that reference byte for byte: in the package example.com/fixture/c++ the side naming the function the main package calls is live, and the side naming the function nothing calls is dead, holding the pending finding the function carries, which is not among the report's findings.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "edge_evaluations": [
+    {
+      "edge": "wire/run",
+      "side": "provides",
+      "state": "live"
+    },
+    {
+      "edge": "wire/unused",
+      "side": "provides",
+      "state": "dead",
+      "symbol": "unused",
+      "report": "DS1002"
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "Run",
+      "report": "none"
+    },
+    {
+      "symbol": "unused",
+      "report": "none"
+    }
+  ]
+}

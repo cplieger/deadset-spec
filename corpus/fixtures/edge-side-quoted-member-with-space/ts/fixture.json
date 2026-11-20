@@ -1,0 +1,12 @@
+{
+  "symbols": {
+    "Headers": {
+      "file": "target/src/h.ts",
+      "line": 2
+    },
+    "contentType": {
+      "file": "target/src/h.ts",
+      "line": 4
+    }
+  }
+}

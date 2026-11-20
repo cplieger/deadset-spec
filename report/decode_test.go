@@ -226,7 +226,7 @@ func TestDecodeRefusesWhatEncodingJSONAdmits(t *testing.T) {
 		},
 		"an optional member present with no value": {
 			old: `"parent": "go://example.com/app/internal/store#"`, new: `"parent": ""`,
-			wantPointer: "/findings/0/symbol/parent", wantKeyword: "minLength",
+			wantPointer: "/findings/0/symbol/parent", wantKeyword: "pattern",
 		},
 		"a value of the wrong type": {
 			old: `"test_only": false`, new: `"test_only": "false"`,

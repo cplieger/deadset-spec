@@ -47,7 +47,7 @@
         },
         "parent": {
           "description": "The reference of the container of the subject: the type, class, interface, enum or namespace that declares a member, and the package or module that declares a top-level symbol. Absent where the subject has no container.",
-          "$ref": "#/$defs/symbol_reference"
+          "$ref": "#/$defs/reference"
         },
         "exported": {
           "description": "Whether the subject is visible outside the scope that declares it. Absent where the subject declares no visibility of its own, such as a file, a dependency, a module directive, a suppression, a configured root, a configured declaration or a declared edge.",
@@ -62,6 +62,20 @@
           "description": "A second key for a Go symbol: the path that names the symbol inside its package's type information, in the encoding of golang.org/x/tools/go/types/objectpath, so a consumer that already keys on that encoding joins on it without parsing a reference. Present on a Go symbol that has one, absent otherwise and absent on every TypeScript finding.",
           "type": "string",
           "minLength": 1
+        }
+      },
+      "if": {
+        "properties": {
+          "kind": {
+            "enum": ["root", "configured-declaration"]
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "ref": {
+            "$ref": "#/$defs/reference"
+          }
         }
       }
     },
@@ -225,7 +239,7 @@
             },
             "symbol": {
               "description": "The stable symbol reference the record names. Absent where an inline directive bound to no declaration.",
-              "$ref": "#/$defs/symbol_reference"
+              "$ref": "#/$defs/reference"
             },
             "path": {
               "description": "The path of the file the record names. Absent on the record an unscoped-entry finding reports.",
@@ -271,7 +285,7 @@
               },
               "symbol": {
                 "description": "The stable symbol reference this side of the edge names.",
-                "$ref": "#/$defs/symbol_reference"
+                "$ref": "#/$defs/reference"
               },
               "state": {
                 "description": "What the evaluation of this side reported: live, where the analyzer enumerates the symbol and holds no finding for it; dead, where it holds one; absent, where it enumerates no symbol under the reference.",
@@ -736,8 +750,13 @@
       "type": "string",
       "pattern": "^(?:[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.\\.[^/\\x00-\\x1f\\x7f]+)(?:/(?:[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.[^/.\\x00-\\x1f\\x7f][^/\\x00-\\x1f\\x7f]*|\\.\\.[^/\\x00-\\x1f\\x7f]+))*$"
     },
+    "reference": {
+      "description": "A stable symbol reference in the grammar contract/grammar/symbol-ref.md states for the language, which owns that grammar: go://<import-path>#<fragment> for Go, ts://<package-name>/<source-path>#<fragment> for TypeScript and proto://<package>#<fragment> for Protocol Buffers. A document checks its shape, the one expression REF_SHAPE that symbol-ref.md's section The shape every document checks writes from the grammar's building blocks, and the analyzer of its language checks its form. It is compared as bytes wherever two references meet.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*://(?:[^\\x00-\\x20\\x7F-\\xA0            \u2028\u2029  　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩#%*]|%[0-9A-F]{2})+#(?:(?:[^\\x00-\\x20\\x7F-\\xA0            \u2028\u2029  　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩'\\[\\]*%]|%[0-9A-F]{2})|'(?:[^'\\\\\\x00-\\x08\\x0A-\\x1F\\x7F-\\x9F؜‎‏‪‫‬‭‮⁦⁧⁨⁩\u2028\u2029]|\\\\['\\\\nr]|\\\\u\\{(?:[0-8BCEF]|1[0-9A-F]|7F|[89][0-9A-F]|61C|200[EF]|202[89A-E]|206[6-9]|D[89A-F][0-9A-F]{2})\\})*'|\\[[^\\]\\x00-\\x20\\x7F-\\xA0            \u2028\u2029  　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩]+\\])*$"
+    },
     "symbol_reference": {
-      "description": "A stable symbol reference in the grammar contract/grammar/symbol-ref.md states for the language, which owns that grammar: go://<import-path>#<fragment> for Go, and ts://<package-name>/<source-path>#<fragment> for TypeScript. It is compared as bytes wherever two references meet.",
+      "description": "What a finding's symbol.ref holds: a reference, in the shape #/$defs/reference states, unless symbol.kind is root or configured-declaration, whose ref carries the configuration's spelling, a root pattern or a configured entry, which need not be a reference.",
       "type": "string",
       "minLength": 1
     },
@@ -749,7 +768,7 @@
       "properties": {
         "ref": {
           "description": "The stable symbol reference of the symbol.",
-          "$ref": "#/$defs/symbol_reference"
+          "$ref": "#/$defs/reference"
         },
         "name": {
           "description": "The display name of the symbol, spelled as the name field of a finding's symbol object spells it, so a reader of a component listing or of a related location reads the same name a text line renders.",

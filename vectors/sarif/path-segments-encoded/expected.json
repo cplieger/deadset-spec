@@ -111,7 +111,7 @@
             "text": "exported function has no reference in the target"
           },
           "partialFingerprints": {
-            "deadsetSymbolRef/v1": "dd10c93c5cb9fc19aca1c2b67b9414c9c3d8a3922e5f25e1291d0bf9555d571a",
+            "deadsetSymbolRef/v1": "1dd34c59cfea9e6d4dcb7fbd77f53fbf23da2046a5728d209a7c04fb1e8e29a7",
             "primaryLocationLineHash": "d5a955a7c3c58862:1"
           },
           "properties": {
@@ -137,7 +137,7 @@
               "exported": true,
               "kind": "function",
               "name": "B",
-              "ref": "go://example.com/app/dir:x/sub:y#B",
+              "ref": "go://example.com/app/dir%3Ax/sub%3Ay#B",
               "size_lines": 1
             },
             "test_only": false
@@ -166,7 +166,7 @@
             "text": "field is written and never read (see [write dir:x/sub:y/file name é,(1).go:5:2](1))"
           },
           "partialFingerprints": {
-            "deadsetSymbolRef/v1": "533668104acafdf54934f6e51bbd9355f547691791bf6b7ef92f40aea48861bd",
+            "deadsetSymbolRef/v1": "92568282c98dda07d4b771eabca080a242b56b2df4d9f95b29ef4868addb6c46",
             "primaryLocationLineHash": "b334ba5a2292ae59:1"
           },
           "properties": {
@@ -200,7 +200,7 @@
               "exported": false,
               "kind": "field",
               "name": "t.n",
-              "ref": "go://example.com/app/100%#t.n",
+              "ref": "go://example.com/app/100%25#t.n",
               "size_lines": 1
             },
             "test_only": false

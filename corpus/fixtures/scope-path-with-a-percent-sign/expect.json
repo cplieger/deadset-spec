@@ -1,0 +1,21 @@
+{
+  "name": "scope-path-with-a-percent-sign",
+  "description": "A percent sign in a source path segment is itself percent-encoded, because it opens every encoded byte: the unexported function nothing calls in src/100%.ts is reported, and its finding's reference spells the segment 100%25.ts. The suppression phase writes that reference into an ignore entry, and the entry binds the finding.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "entry_files": [
+    "src/*.ts"
+  ],
+  "expect": [
+    {
+      "symbol": "unused",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

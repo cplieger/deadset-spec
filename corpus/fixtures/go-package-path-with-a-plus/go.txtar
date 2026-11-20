@@ -1,0 +1,37 @@
+The Go rendering: a main package calling a package whose directory is c++,
+which declares a function nothing calls.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Run": {
+      "file": "target/c++/c.go",
+      "line": 4
+    },
+    "unused": {
+      "file": "target/c++/c.go",
+      "line": 7,
+      "ref": "go://example.com/fixture/c%2B%2B#unused"
+    }
+  }
+}
+-- target/go.mod --
+module example.com/fixture
+
+go 1.27.0
+-- target/main.go --
+package main
+
+import cpp "example.com/fixture/c++"
+
+func main() {
+	cpp.Run()
+}
+-- target/c++/c.go --
+package cpp
+
+// Run is called from the main package.
+func Run() {}
+
+// unused is called by nothing.
+func unused() int { return 1 }

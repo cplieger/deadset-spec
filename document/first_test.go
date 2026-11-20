@@ -242,3 +242,20 @@ func TestFirstRefusalExplainsTheOneOfThatRefusedTheValue(t *testing.T) {
 		})
 	}
 }
+
+// A pattern holding a space, a control or a format character past ASCII, as the
+// reference shape does, is stated with each one escaped, so the refusal is one
+// line of visible text.
+func TestAPatternRefusalStatesThePatternAsOneVisibleLine(t *testing.T) {
+	t.Parallel()
+
+	schema, err := CompileBytes("value", []byte(`{"type": "string", "pattern": "^[^\u0085\u00a0\u2028\u3000\ufeff]é+$"}`))
+	if err != nil {
+		t.Fatalf("Setup: CompileBytes = %v", err)
+	}
+	refused := schema.FirstRefusal("a\u2028b")
+	want := `"a\u2028b" does not match ^[^\x{0085}\x{00A0}\x{2028}\x{3000}\x{FEFF}]é+$`
+	if refused == nil || refused.Reason != want {
+		t.Errorf("FirstRefusal(%q) = %+v, want the reason %s", "a\u2028b", refused, want)
+	}
+}

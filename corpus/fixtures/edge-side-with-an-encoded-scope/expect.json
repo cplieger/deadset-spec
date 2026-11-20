@@ -1,0 +1,35 @@
+{
+  "name": "edge-side-with-an-encoded-scope",
+  "description": "A side of a declared edge names a declaration of a file whose path holds a number sign by the encoded reference, and the evaluation carries that reference byte for byte: in src/a#b.ts the side naming the function the file calls is live, and the side naming the function nothing calls is dead, holding the pending finding the function carries, which is not among the report's findings.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "entry_files": [
+    "src/*.ts"
+  ],
+  "edge_evaluations": [
+    {
+      "edge": "wire/dead",
+      "side": "provides",
+      "state": "dead",
+      "symbol": "dead",
+      "report": "DS1002"
+    },
+    {
+      "edge": "wire/live",
+      "side": "provides",
+      "state": "live"
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "live",
+      "report": "none"
+    },
+    {
+      "symbol": "dead",
+      "report": "none"
+    }
+  ]
+}

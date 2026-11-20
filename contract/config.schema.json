@@ -4,7 +4,7 @@
   "description": "The closed key list every deadset product reads. A repository configuration (deadset.json at the target root) and a central configuration (the file the invocation names) are both instances of this schema; a command-line flag outranks the repository configuration, which outranks the central configuration, which outranks the default each key declares here. Each source is optional and neither has to be complete on its own, so no key is required at the root; the resolved configuration is what must name a target kind, and a run whose sources all omit it exits with the usage code. A key this list does not declare fails the decode of every product that reads the section holding it and exits with the usage code, so no product implements a parser or a validator for it. An analyzer checks and resolves only what its own language's analysis reads: the keys contract/settings.json's read_by names its language for and, of a key written per language, its own language's member. Every other key this list declares it accepts unread, checking nothing of its value, and its resolved configuration does not name it; the orchestrator checks the whole document. Every key carries its JSON type, its default where it has one, the product that reads it under x-owner (product: every product, read by the analyzer of each language of kind analyzed; analyzer: the analyzer of each language of kind analyzed; analysis: the analysis of every language contract/languages.json names an analyzer for, a reader the orchestrator runs in process included; orchestrator: the orchestrator; <language>-analyzer: the analyzer of that language, one contract/languages.json lists), and whether it is required through the enclosing object's required array. No key admits arbitrary nesting: every object closes with additionalProperties false. An object marked x-setting is one setting: a higher-ranked source replaces it whole, it carries the default a run uses when no source names it, it carries one provenance entry under its own dotted path, and every member it declares is required and carries no default of its own. A key whose value takes one of several shapes, the branches of its oneOf, is one setting too, whichever shape a source writes: a higher-ranked source replaces its whole value, and it carries one provenance entry under its own dotted path. An object one of those shapes declares is neither a section nor a setting of its own, so its members carry no default and no provenance entry. An object without the mark is a section, whose keys a higher-ranked source replaces one by one and which carries one provenance entry per key; a section of declared keys carries no default, because each of its keys carries its own, and a section keyed by a pattern carries the default a run uses when no source names a key. The one key resolution ignores is provenance, marked x-ignored-by-resolution. A key of type integer takes a number written as an optional minus sign and digits alone, with no fraction and no exponent: 100.0 and 1e2 are refused naming the key with the usage code, although each denotes an integer and JSON Schema's integer type admits both. A value of a type its key does not admit is refused naming the key with the usage code, null included: no key admits null, so a source writing a key as null is refused rather than read as a source that omits the key. A refusal of one entry of an array names the entry rather than the key alone: the key, the entry's index in square brackets counted from zero, and the path within the entry where the entry is an object, so the refusal of the second analyzer's name reads providers.analyzers[1].name. x-delivered on a key names the languages whose analyzers receive it in the document an orchestrator writes for each: an analyzer receives the keys every analyzer or every product reads and the section of its own language, and an orchestrator keeps the keys it alone reads and the reporter settings it applies to the merged report. Every closed list a value or a member name is drawn from another Contract document is written in here from that document: the languages contract/languages.json lists, the classes contract/exemptions.json declares, the severities, reachability classes and target kinds contract/kinds.json lists, and the severity keys, each the code of a live kind of contract/kinds.json whose severity the Contract does not fix or the family key of a range holding a live kind and no kind whose severity the Contract fixes. contract/settings.json lists every key of this schema with what a product reads of it, the vocabulary its entries or member names are drawn from and that vocabulary's values among them. x-max-bytes bounds the input documents a run is given: a configuration document, a scope document, and the ignore file, the baseline and the edges document at the target root; one larger is refused without being read whole. A report an analyzer writes and a package manifest are not among them.",
   "type": "object",
   "additionalProperties": false,
-  "x-max-bytes": 1048576,
+  "x-max-bytes": 16777216,
   "properties": {
     "contract_version": {
       "description": "The Contract version this configuration is written against, as a semantic version. A resolved configuration names the Contract version the product that printed it implements, and a product treats an absent key as its own version, so the key has no literal default.",
@@ -490,7 +490,7 @@
       "x-delivered": ["ts"],
       "properties": {
         "test_files": {
-          "description": "Glob patterns, relative to the target root, naming the files classified as test files. The default is the naming the common TypeScript and JavaScript test runners share: a file whose name carries a .test or a .spec qualifier or the .test-d or .spec-d qualifier of a type test, and every file under a __tests__, a __mocks__ or a test-d directory; a project whose tests are named otherwise sets its own so that a symbol only its tests reach is reported as test-only use. A file no pattern names is still test code when it is test-support code, which grammar/analysis/tests.md defines.",
+          "description": "Glob patterns, relative to the target root, naming the files classified as test files. Each pattern is held to the bound grammar/analysis.md states in analysis.2. The default is the naming the common TypeScript and JavaScript test runners share: a file whose name carries a .test or a .spec qualifier or the .test-d or .spec-d qualifier of a type test, and every file under a __tests__, a __mocks__ or a test-d directory; a project whose tests are named otherwise sets its own so that a symbol only its tests reach is reported as test-only use. A file no pattern names is still test code when it is test-support code, which grammar/analysis/tests.md defines.",
           "type": "array",
           "uniqueItems": true,
           "minItems": 1,
@@ -503,7 +503,7 @@
           "x-delivered": ["ts"]
         },
         "entry_files": {
-          "description": "Glob patterns, relative to the target root, naming files whose exports are roots, beside the entry points the package manifest names and the roots grammar/analysis/roots.md lists. An empty array, the default, adds none. The patterns apply whatever convention row applies or is disabled, so a project whose framework configuration moves a directory to a value the analysis cannot read names the files here.",
+          "description": "Glob patterns, relative to the target root, naming files whose exports are roots, beside the entry points the package manifest names and the roots grammar/analysis/roots.md lists. Each pattern is held to the bound grammar/analysis.md states in analysis.2. An empty array, the default, adds none. The patterns apply whatever convention row applies or is disabled, so a project whose framework configuration moves a directory to a value the analysis cannot read names the files here.",
           "type": "array",
           "uniqueItems": true,
           "items": {
@@ -551,9 +551,14 @@
                 "required": ["symbol"],
                 "properties": {
                   "symbol": {
-                    "description": "The declaration's stable symbol reference in the TypeScript form contract/grammar/symbol-ref.md states, which matches only the declaration whose reference it spells exactly.",
+                    "description": "The declaration's stable symbol reference in the TypeScript form contract/grammar/symbol-ref.md states, which matches only the declaration whose reference it spells exactly. A reference outside the shape every document checks for one is refused.",
                     "type": "string",
-                    "pattern": "^ts://",
+                    "pattern": "^[a-z][a-z0-9]*://(?:[^\\x00-\\x20\\x7F-\\xA0            \u2028\u2029  　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩#%*]|%[0-9A-F]{2})+#(?:(?:[^\\x00-\\x20\\x7F-\\xA0            \u2028\u2029  　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩'\\[\\]*%]|%[0-9A-F]{2})|'(?:[^'\\\\\\x00-\\x08\\x0A-\\x1F\\x7F-\\x9F؜‎‏‪‫‬‭‮⁦⁧⁨⁩\u2028\u2029]|\\\\['\\\\nr]|\\\\u\\{(?:[0-8BCEF]|1[0-9A-F]|7F|[89][0-9A-F]|61C|200[EF]|202[89A-E]|206[6-9]|D[89A-F][0-9A-F]{2})\\})*'|\\[[^\\]\\x00-\\x20\\x7F-\\xA0            \u2028\u2029  　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩]+\\])*$",
+                    "allOf": [
+                      {
+                        "pattern": "^ts://"
+                      }
+                    ],
                     "x-owner": "ts-analyzer"
                   }
                 }
@@ -639,9 +644,14 @@
                       "required": ["symbol"],
                       "properties": {
                         "symbol": {
-                          "description": "The declaration's stable symbol reference in the TypeScript form contract/grammar/symbol-ref.md states, which matches only the declaration whose reference it spells exactly.",
+                          "description": "The declaration's stable symbol reference in the TypeScript form contract/grammar/symbol-ref.md states, which matches only the declaration whose reference it spells exactly. A reference outside the shape every document checks for one is refused.",
                           "type": "string",
-                          "pattern": "^ts://",
+                          "pattern": "^[a-z][a-z0-9]*://(?:[^\\x00-\\x20\\x7F-\\xA0            \u2028\u2029  　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩#%*]|%[0-9A-F]{2})+#(?:(?:[^\\x00-\\x20\\x7F-\\xA0            \u2028\u2029  　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩'\\[\\]*%]|%[0-9A-F]{2})|'(?:[^'\\\\\\x00-\\x08\\x0A-\\x1F\\x7F-\\x9F؜‎‏‪‫‬‭‮⁦⁧⁨⁩\u2028\u2029]|\\\\['\\\\nr]|\\\\u\\{(?:[0-8BCEF]|1[0-9A-F]|7F|[89][0-9A-F]|61C|200[EF]|202[89A-E]|206[6-9]|D[89A-F][0-9A-F]{2})\\})*'|\\[[^\\]\\x00-\\x20\\x7F-\\xA0            \u2028\u2029  　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩]+\\])*$",
+                          "allOf": [
+                            {
+                              "pattern": "^ts://"
+                            }
+                          ],
                           "x-owner": "ts-analyzer"
                         }
                       }
@@ -698,9 +708,14 @@
                       "required": ["symbol"],
                       "properties": {
                         "symbol": {
-                          "description": "The declaration's stable symbol reference in the TypeScript form contract/grammar/symbol-ref.md states, which matches only the declaration whose reference it spells exactly.",
+                          "description": "The declaration's stable symbol reference in the TypeScript form contract/grammar/symbol-ref.md states, which matches only the declaration whose reference it spells exactly. A reference outside the shape every document checks for one is refused.",
                           "type": "string",
-                          "pattern": "^ts://",
+                          "pattern": "^[a-z][a-z0-9]*://(?:[^\\x00-\\x20\\x7F-\\xA0            \u2028\u2029  　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩#%*]|%[0-9A-F]{2})+#(?:(?:[^\\x00-\\x20\\x7F-\\xA0            \u2028\u2029  　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩'\\[\\]*%]|%[0-9A-F]{2})|'(?:[^'\\\\\\x00-\\x08\\x0A-\\x1F\\x7F-\\x9F؜‎‏‪‫‬‭‮⁦⁧⁨⁩\u2028\u2029]|\\\\['\\\\nr]|\\\\u\\{(?:[0-8BCEF]|1[0-9A-F]|7F|[89][0-9A-F]|61C|200[EF]|202[89A-E]|206[6-9]|D[89A-F][0-9A-F]{2})\\})*'|\\[[^\\]\\x00-\\x20\\x7F-\\xA0            \u2028\u2029  　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩]+\\])*$",
+                          "allOf": [
+                            {
+                              "pattern": "^ts://"
+                            }
+                          ],
                           "x-owner": "ts-analyzer"
                         }
                       }
@@ -773,9 +788,14 @@
                 "required": ["symbol"],
                 "properties": {
                   "symbol": {
-                    "description": "The declaration's stable symbol reference in the TypeScript form contract/grammar/symbol-ref.md states, which matches only the declaration whose reference it spells exactly.",
+                    "description": "The declaration's stable symbol reference in the TypeScript form contract/grammar/symbol-ref.md states, which matches only the declaration whose reference it spells exactly. A reference outside the shape every document checks for one is refused.",
                     "type": "string",
-                    "pattern": "^ts://",
+                    "pattern": "^[a-z][a-z0-9]*://(?:[^\\x00-\\x20\\x7F-\\xA0            \u2028\u2029  　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩#%*]|%[0-9A-F]{2})+#(?:(?:[^\\x00-\\x20\\x7F-\\xA0            \u2028\u2029  　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩'\\[\\]*%]|%[0-9A-F]{2})|'(?:[^'\\\\\\x00-\\x08\\x0A-\\x1F\\x7F-\\x9F؜‎‏‪‫‬‭‮⁦⁧⁨⁩\u2028\u2029]|\\\\['\\\\nr]|\\\\u\\{(?:[0-8BCEF]|1[0-9A-F]|7F|[89][0-9A-F]|61C|200[EF]|202[89A-E]|206[6-9]|D[89A-F][0-9A-F]{2})\\})*'|\\[[^\\]\\x00-\\x20\\x7F-\\xA0            \u2028\u2029  　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩]+\\])*$",
+                    "allOf": [
+                      {
+                        "pattern": "^ts://"
+                      }
+                    ],
                     "x-owner": "ts-analyzer"
                   }
                 }

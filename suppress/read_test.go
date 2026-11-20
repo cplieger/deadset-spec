@@ -53,6 +53,12 @@ func TestReadRefusesAMalformedDocument(t *testing.T) {
 		"no code":                    `{"ignore": [{"symbol": "go://x#f"}]}`,
 		"a code outside its form":    `{"ignore": [{"code": "DS12", "symbol": "go://x#f"}]}`,
 		"no scheme":                  `{"ignore": [{"code": "DS1002", "symbol": "x#f"}]}`,
+		"a space outside quotes":     `{"ignore": [{"code": "DS1002", "symbol": "rs://x#a b"}]}`,
+		"a space in a scope":         `{"ignore": [{"code": "DS1002", "symbol": "ts://./my file.ts#f"}]}`,
+		"lowercase escape digits":    `{"ignore": [{"code": "DS1002", "symbol": "ts://./a%2f.ts#f"}]}`,
+		"an unterminated quote":      `{"ignore": [{"code": "DS1002", "symbol": "rs://x#H.'a b"}]}`,
+		"a wildcard":                 `{"ignore": [{"code": "DS1002", "symbol": "go://x#*"}]}`,
+		"no fragment separator":      `{"ignore": [{"code": "DS1002", "symbol": "rs://x"}]}`,
 		"a path climbing out":        `{"ignore": [{"code": "DS1002", "symbol": "go://x#f", "path": "../a.go"}]}`,
 		"content after the object":   `{"ignore": []} []`,
 		"an entry that is no object": `{"ignore": ["DS1002"]}`,
@@ -60,6 +66,26 @@ func TestReadRefusesAMalformedDocument(t *testing.T) {
 	} {
 		if _, err := ReadIgnore([]byte(data)); !errors.Is(err, ErrMalformed) {
 			t.Errorf("ReadIgnore(%s) = %v, want ErrMalformed", name, err)
+		}
+	}
+}
+
+// A record of any scheme is read when it takes the shape every document checks,
+// whitespace inside a quoted component and an escape in a path included.
+func TestReadAcceptsEveryReferenceInShape(t *testing.T) {
+	t.Parallel()
+
+	for _, symbol := range []string{
+		"ts://./src/h.ts#Headers.'content type'",
+		"ts://./src/my%20file.ts#unused",
+		"go://example.com/app/c%2B%2B#Run",
+		"rs://crate/a%23b#T.'x y'",
+		"go://example.com/app#Best[T]",
+	} {
+		data := `{"baseline": [{"code": "DS1002", "symbol": "` + symbol + `", "reason": "kept"}]}`
+		entries, err := ReadBaseline([]byte(data))
+		if err != nil || len(entries) != 1 || entries[0].Symbol != symbol {
+			t.Errorf("ReadBaseline(%s) = %v, %v, want the one row naming it", symbol, entries, err)
 		}
 	}
 }

@@ -38,6 +38,7 @@ var configVectorAspects = []string{
 	"component-extension-of-json-files",
 	"component-extension-without-a-full-stop",
 	"component-extensions-configured",
+	"declaration-reference-outside-the-shape",
 	"duplicated-key",
 	"integer-written-with-a-fraction",
 	"member-written-as-null",

@@ -85,7 +85,7 @@
         "end_line": 3
       },
       "symbol": {
-        "ref": "go://example.com/app/dir:x/sub:y#B",
+        "ref": "go://example.com/app/dir%3Ax/sub%3Ay#B",
         "kind": "function",
         "name": "B",
         "exported": true,
@@ -123,7 +123,7 @@
         "end_line": 4
       },
       "symbol": {
-        "ref": "go://example.com/app/100%#t.n",
+        "ref": "go://example.com/app/100%25#t.n",
         "kind": "field",
         "name": "t.n",
         "exported": false,

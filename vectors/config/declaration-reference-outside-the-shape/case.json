@@ -1,0 +1,6 @@
+{
+  "name": "declaration-reference-outside-the-shape",
+  "description": "A repository configuration naming a serializer by a stable symbol reference whose source path holds a raw space. The run is refused, naming the entry's symbol by its key and its index, because a reference takes the one shape every document checks, path segments percent-encoded, so the spelling could match no declaration.",
+  "products": ["deadset", "deadset-ts"],
+  "covers": ["declaration-reference-outside-the-shape"]
+}

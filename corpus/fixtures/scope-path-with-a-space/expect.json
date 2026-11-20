@@ -1,0 +1,21 @@
+{
+  "name": "scope-path-with-a-space",
+  "description": "A source path segment holding a space is percent-encoded in the reference, because no reference holds whitespace outside a quoted component: the unexported function nothing calls in src/my file.ts is reported, and its finding's reference spells the segment my%20file.ts. The suppression phase writes that reference into an ignore entry beside the decoded path src/my file.ts, and the entry binds the finding.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "entry_files": [
+    "src/*.ts"
+  ],
+  "expect": [
+    {
+      "symbol": "unused",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

@@ -10,6 +10,8 @@ import (
 	"math/big"
 	"slices"
 	"strconv"
+	"strings"
+	"unicode"
 	"unicode/utf8"
 )
 
@@ -137,12 +139,27 @@ func (n *node) checkValue(v any, at string, found *[]Error) {
 	}
 }
 
+// visiblePattern is a pattern as a refusal states it: each rune past ASCII that is
+// a control, a format character or a space written as an RE2 escape, so the
+// message is one line of visible text and still names the same expression.
+func visiblePattern(pattern string) string {
+	var b strings.Builder
+	for _, r := range pattern {
+		if r > unicode.MaxASCII && unicode.In(r, unicode.Cc, unicode.Cf, unicode.Z) {
+			fmt.Fprintf(&b, `\x{%04X}`, r)
+			continue
+		}
+		b.WriteRune(r)
+	}
+	return b.String()
+}
+
 // checkString applies pattern and minLength.
 func (n *node) checkString(v, at string, found *[]Error) {
 	if n.pattern != nil && !n.pattern.MatchString(v) {
 		*found = append(*found, Error{
 			Keyword: "pattern", Pointer: at,
-			Reason: fmt.Sprintf("%q does not match %s", v, n.pattern),
+			Reason: fmt.Sprintf("%q does not match %s", v, visiblePattern(n.pattern.String())),
 		})
 	}
 	if utf8.RuneCountInString(v) < n.minLen {

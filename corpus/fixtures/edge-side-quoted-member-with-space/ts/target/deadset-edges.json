@@ -1,0 +1,10 @@
+{
+  "description": "One edge whose TypeScript side names a quoted member holding a space.",
+  "edges": {
+    "headers/content-type": {
+      "because": "generated",
+      "provides": "ts://@example/target/src/h.ts#Headers.'content type'",
+      "used_by": "go://example.com/app#ContentType"
+    }
+  }
+}

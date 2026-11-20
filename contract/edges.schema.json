@@ -44,18 +44,9 @@
     }
   },
   "$defs": {
-
     "reference": {
-      "description": "One side of an edge: a stable symbol reference naming exactly one symbol, a language tag, ://, a scope, # and a fragment, with no whitespace. A reference admits no wildcard: a * outside a quoted component and a computed key makes it name more than one symbol. A reference in this shape that the language's grammar does not define names no symbol, and its side evaluates absent rather than ending the run.",
-      "type": "string",
-      "allOf": [
-        {
-          "pattern": "^[a-z][a-z0-9]*://[^ \\t\\r\\n#]+#[^ \\t\\r\\n]*$"
-        },
-        {
-          "pattern": "^(?:[^'\\[*]|'(?:[^'\\\\]|\\\\[^\\r\\n])*'|\\[[^\\]]*\\])*(?:'(?:[^'\\\\]|\\\\[^\\r\\n])*\\\\?|\\[[^\\]]*)?$"
-        }
-      ]
+      "description": "One side of an edge: a stable symbol reference naming exactly one symbol, in the shape every document checks (grammar/symbol-ref.md, The shape every document checks): a language tag, ://, a scope, # and a fragment, holding whitespace only inside a quoted component. A reference admits no wildcard: a * outside a quoted component and a computed key makes it name more than one symbol. A reference in this shape that the language's grammar does not define names no symbol, and its side evaluates absent rather than ending the run.",
+      "$ref": "finding.schema.json#/$defs/reference"
     }
   }
 }

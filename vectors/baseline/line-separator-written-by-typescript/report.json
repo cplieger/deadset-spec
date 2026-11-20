@@ -47,7 +47,7 @@
         "end_line": 4
       },
       "symbol": {
-        "ref": "ts://@example/app/src/line separator.ts#Panel.#frame",
+        "ref": "ts://@example/app/src/line%E2%80%A8separator.ts#Panel.#frame",
         "kind": "class-member",
         "name": "Panel.#frame",
         "exported": false,

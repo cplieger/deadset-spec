@@ -1,0 +1,28 @@
+{
+  "name": "edge-side-quoted-member-with-space",
+  "description": "A side of a declared edge may name a member whose name is a quoted component holding a space, because a reference holds whitespace inside a quoted TypeScript component: the edges document naming the method 'content type' of Headers is read, and the side naming it is live because the entry calls the method.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "entry_files": [
+    "src/main.ts"
+  ],
+  "edge_evaluations": [
+    {
+      "edge": "headers/content-type",
+      "side": "provides",
+      "state": "live"
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "Headers",
+      "report": "none"
+    },
+    {
+      "symbol": "contentType",
+      "report": "none"
+    }
+  ]
+}

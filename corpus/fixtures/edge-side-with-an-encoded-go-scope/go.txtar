@@ -1,0 +1,52 @@
+The Go rendering: a main package calling a package whose directory is c++,
+and an edges document whose Go sides name that package's two functions.
+
+-- fixture.json --
+{
+  "symbols": {
+    "Run": {
+      "file": "target/c++/c.go",
+      "line": 4
+    },
+    "unused": {
+      "file": "target/c++/c.go",
+      "line": 7
+    }
+  }
+}
+-- target/go.mod --
+module example.com/fixture
+
+go 1.27.0
+-- target/main.go --
+package main
+
+import cpp "example.com/fixture/c++"
+
+func main() {
+	cpp.Run()
+}
+-- target/c++/c.go --
+package cpp
+
+// Run is called from the main package.
+func Run() {}
+
+// unused is called by nothing.
+func unused() int { return 1 }
+-- target/deadset-edges.json --
+{
+  "description": "Two edges whose Go sides name declarations of a package whose import path holds a plus sign.",
+  "edges": {
+    "wire/run": {
+      "because": "generated",
+      "provides": "go://example.com/fixture/c%2B%2B#Run",
+      "used_by": "ts://@example/web/src/wire.ts#run"
+    },
+    "wire/unused": {
+      "because": "generated",
+      "provides": "go://example.com/fixture/c%2B%2B#unused",
+      "used_by": "ts://@example/web/src/wire.ts#unused"
+    }
+  }
+}

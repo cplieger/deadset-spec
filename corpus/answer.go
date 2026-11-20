@@ -80,6 +80,7 @@ type wireEvaluation struct {
 	Finding *wireFinding `json:"finding"`
 	Edge    string       `json:"edge"`
 	Side    string       `json:"side"`
+	Symbol  string       `json:"symbol"`
 	State   string       `json:"state"`
 }
 
@@ -121,9 +122,16 @@ func codesOf(found []wireFinding) string {
 	return strings.Join(codes, " ")
 }
 
+// pinsRef reports whether the row reports a finding about a declaration of the
+// rendering, whose reference a manifest entry may pin.
+func (r *Row) pinsRef() bool {
+	return r.Report != ReportNone && r.Report != string(vocab.StaleSuppression)
+}
+
 // answerOf is what the analyzer answered for one row and what differs from it,
-// or an empty message.
-func answerOf(expect *Expectation, row *Row, sites map[string]Site, held *analysis) (actual Answer, message string) {
+// or an empty message. A row whose manifest entry carries a ref is answered by
+// a finding carrying that reference as well.
+func answerOf(expect *Expectation, row *Row, sites map[string]Site, manifest *Manifest, held *analysis) (actual Answer, message string) {
 	if code, ref, ok := configuredEntry(expect, row.Symbol); ok {
 		return answerEntry(row, code, ref, sites, held)
 	}
@@ -133,7 +141,11 @@ func answerOf(expect *Expectation, row *Row, sites map[string]Site, held *analys
 	}
 	found := findingsAt(held.report.Findings, site)
 	if row.Report != ReportNone {
-		return answered(row, found, sites, "finding at "+site.String())
+		actual, message = answered(row, found, sites, "finding at "+site.String())
+		if want := manifest.Symbols[row.Symbol].Ref; message == "" && want != "" && found[0].Symbol.Ref != want {
+			message = fmt.Sprintf("want the finding at %s to carry the reference %s, got %s", site, want, found[0].Symbol.Ref)
+		}
+		return actual, message
 	}
 	if len(found) > 0 {
 		return answerFrom(row, &found[0], sites), fmt.Sprintf("want no finding at %s, got %s", site, codesOf(found))
@@ -557,11 +569,12 @@ func writeIgnore(name string, entries []ignoreEntry) ([]byte, error) {
 }
 
 // edgeDifferences is every way the report's edge evaluations differ from the
-// fixture's, in one line, or "".
-func edgeDifferences(expect *Expectation, manifest *Manifest, report *wireReport) string {
+// fixture's, in one line, or "". sides is the reference the rendering's edges
+// document spells for each side, keyed by edge and side.
+func edgeDifferences(expect *Expectation, manifest *Manifest, sides map[string]string, report *wireReport) string {
 	var held []string
 	for _, want := range expect.EdgeEvaluations {
-		if message := evaluationDifference(&want, manifest, report); message != "" {
+		if message := evaluationDifference(&want, manifest, sides, report); message != "" {
 			held = append(held, message)
 		}
 	}
@@ -574,9 +587,10 @@ func edgeDifferences(expect *Expectation, manifest *Manifest, report *wireReport
 }
 
 // evaluationDifference is how the report answers one entry differently: no or
-// several records of its edge and side, another state, or for a dead side a
-// pending finding under another code or at another site.
-func evaluationDifference(want *Evaluation, manifest *Manifest, report *wireReport) string {
+// several records of its edge and side, a symbol other than the bytes the edges
+// document spells for the side, another state, or for a dead side a pending
+// finding under another code or at another site.
+func evaluationDifference(want *Evaluation, manifest *Manifest, sides map[string]string, report *wireReport) string {
 	named := want.Edge + " " + want.Side
 	var records []wireEvaluation
 	for _, one := range report.EdgeEvaluations {
@@ -587,6 +601,8 @@ func evaluationDifference(want *Evaluation, manifest *Manifest, report *wireRepo
 	switch {
 	case len(records) != 1:
 		return fmt.Sprintf("want exactly one evaluation of %s, got %d", named, len(records))
+	case records[0].Symbol != sides[named]:
+		return fmt.Sprintf("%s symbol want %s got %s", named, sides[named], records[0].Symbol)
 	case records[0].State != want.State:
 		return fmt.Sprintf("%s state want %s got %s", named, want.State, records[0].State)
 	case want.State != "dead":

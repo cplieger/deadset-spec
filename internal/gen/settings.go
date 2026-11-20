@@ -263,14 +263,13 @@ type configKey struct {
 }
 
 // configuration writes the published configuration schema, contract/settings.json,
-// the vocab package's configuration data and the configuration vectors'
-// resolved configurations from one walk of the expanded schema, so the four never
-// disagree. The authoring source states no list another document owns: x-enum
-// names a value list, x-per-language one member per selected language,
-// x-delivered is derived from x-owner unless false keeps a key with the
-// orchestrator, and a patternProperties member named {severity-keys} stands for
-// its name pattern. A key's vocabulary is the list its items or its member names
-// draw from.
+// the vocab package's configuration data and the configuration vectors' resolved
+// configurations from one walk of the expanded schema, so the four never disagree.
+// The authoring source states no list another document owns: x-enum names a value
+// list, x-per-language one member per selected language, x-delivered is derived
+// from x-owner unless false keeps a key with the orchestrator, and a
+// patternProperties member named {severity-keys} stands for its name pattern. A
+// key's vocabulary is the list its items or its member names draw from.
 func configuration(fsys fs.FS, out map[string][]byte) error {
 	ctx, err := loadConfigContext(fsys)
 	if err != nil {
@@ -657,10 +656,11 @@ func (c *configContext) keyIdent(key string) string {
 	return b.String()
 }
 
-// goText is a Go string literal for s, raw where s holds no backquote, so a
-// pattern reads as the schema writes it.
+// goText is a Go string literal for s, raw where s holds no backquote and no
+// U+FEFF, which a raw literal cannot hold (the Go spec admits a byte order mark
+// only as a file's first character), so a pattern reads as the schema writes it.
 func goText(s string) string {
-	if strings.Contains(s, "`") {
+	if strings.ContainsAny(s, "`\uFEFF") {
 		return strconv.Quote(s)
 	}
 	return "`" + s + "`"
