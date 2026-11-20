@@ -1,10 +1,13 @@
 package spec_test
 
 import (
+	"encoding/json"
+	"io/fs"
 	"regexp"
 	"strings"
 	"testing"
 
+	"github.com/cplieger/deadset-spec/v8"
 	"github.com/cplieger/deadset-spec/v8/document"
 	"github.com/cplieger/deadset-spec/v8/vocab"
 )
@@ -52,5 +55,36 @@ func TestEveryConfigKeysDefaultIsAnInstanceOfItsValue(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+// documentCap is the one bound config, scope, ignore, baseline and edges
+// documents share.
+const documentCap = 16 << 20
+
+func TestOneDocumentCapOf16MiB(t *testing.T) {
+	var schema struct {
+		MaxBytes int `json:"x-max-bytes"`
+	}
+	var settings struct {
+		MaxBytes int `json:"max_bytes"`
+	}
+	for path, into := range map[string]any{"contract/config.schema.json": &schema, "contract/settings.json": &settings} {
+		data, err := fs.ReadFile(spec.Contract, path)
+		if err != nil {
+			t.Fatalf("Setup: fs.ReadFile(Contract, %q): %v", path, err)
+		}
+		if err := json.Unmarshal(data, into); err != nil {
+			t.Fatalf("Setup: decode %q: %v", path, err)
+		}
+	}
+	for what, got := range map[string]int{
+		"config.schema.json x-max-bytes": schema.MaxBytes,
+		"settings.json max_bytes":        settings.MaxBytes,
+		"vocab.DocumentMaxBytes":         vocab.DocumentMaxBytes,
+	} {
+		if got != documentCap {
+			t.Errorf("%s = %d, want %d (16 MiB)", what, got, documentCap)
+		}
 	}
 }

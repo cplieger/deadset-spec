@@ -1,0 +1,21 @@
+{
+  "name": "edge-other-side-quoted-member-with-space",
+  "description": "An analyzer reads an edges document whose other side names a TypeScript member by a quoted component holding a space, because the shape every document checks admits whitespace inside a quoted component: the document is read rather than refused, and the Go side naming the function the main package calls is live.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "edge_evaluations": [
+    {
+      "edge": "headers/content-type",
+      "side": "provides",
+      "state": "live"
+    }
+  ],
+  "expect": [
+    {
+      "symbol": "contentType",
+      "report": "none"
+    }
+  ]
+}

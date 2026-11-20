@@ -1,0 +1,12 @@
+{
+  "symbols": {
+    "live": {
+      "file": "target/src/a#b.ts",
+      "line": 2
+    },
+    "dead": {
+      "file": "target/src/a#b.ts",
+      "line": 7
+    }
+  }
+}

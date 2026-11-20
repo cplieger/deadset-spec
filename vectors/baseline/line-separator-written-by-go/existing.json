@@ -3,7 +3,7 @@
   "baseline": [
     {
       "code": "DS1003",
-      "symbol": "ts://@example/app/src/line separator.ts#Panel.#frame",
+      "symbol": "ts://@example/app/src/line%E2%80%A8separator.ts#Panel.#frame",
       "path": "src/line separator.ts",
       "reason": "recorded by deadset-ts 3.12.0"
     },

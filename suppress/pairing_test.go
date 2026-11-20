@@ -216,9 +216,9 @@ func pairingWorlds() []world {
 		{name: "one", decls: []*worldDecl{decl("a.go:3:6", "go://x#f", "a.go")}},
 		{name: "two", decls: []*worldDecl{decl("a.go:3:6", "go://x#f", "a.go"), decl("a.go:9:6", "go://x#f", "a.go")}},
 		{name: "other-file", decls: alternatives()},
-		{name: "folded (p6)", decls: []*worldDecl{decl("a_linux.go:6:6", "go://x#f", "ping.proto"), decl("z_windows.go:7:6", "go://x#f", "ping.proto")}},
+		{name: "folded across platform files", decls: []*worldDecl{decl("a_linux.go:6:6", "go://x#f", "ping.proto"), decl("z_windows.go:7:6", "go://x#f", "ping.proto")}},
 		{name: "moved", decls: []*worldDecl{decl("a.go:3:6", "go://x#f", "gen.proto")}},
-		{name: "part moved (adv-grok-r6-1)", decls: []*worldDecl{decl("a.go:3:6", "go://x#f", "a.go")}, at: []string{"gen.go"}, partOnly: true},
+		{name: "part moved to another file", decls: []*worldDecl{decl("a.go:3:6", "go://x#f", "a.go")}, at: []string{"gen.go"}, partOnly: true},
 		{name: "part moved onto an alternative", decls: alternatives(), at: []string{"z.go", ""}, partOnly: true},
 		{name: "parts folded", decls: alternatives(), at: []string{"gen.go", "gen.go"}, partOnly: true},
 	} {

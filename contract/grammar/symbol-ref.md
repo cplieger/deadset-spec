@@ -18,16 +18,32 @@ ts://@example/app/src/features/tabs/index.ts#TabStrip.cachedLayout
 proto://v1#BackupRequest.dry_run
 ```
 
-The reference borrows the shape of a URL so that a reader sees a language, a location and a fragment at a glance. It is not a URL: no part of it is percent-encoded or decoded but a TypeScript package name ([The TypeScript scope](#the-typescript-scope)), no Unicode normalization is applied, a non-ASCII identifier travels as its UTF-8 bytes, and characters a URL fragment forbids, such as `[`, `<` and `'`, appear as they are. The corpus refuses `go://example.com/fixture#%C3%9Cnused` and accepts `go://example.com/fixture#Ünused` for this reason.
+The reference borrows the shape of a URL so that a reader sees a language, a location and a fragment at a glance. It is not a URL: only a path segment is percent-encoded, as [Path segments](#path-segments) states, and a TypeScript package name, as [The TypeScript scope](#the-typescript-scope) states; nothing else is encoded or decoded, no Unicode normalization is applied, a non-ASCII identifier travels as its UTF-8 bytes, and characters a URL fragment forbids, such as `[`, `<` and `'`, appear in a fragment as they are, except inside a file operand, which [Path segments](#path-segments) spells. The corpus refuses `go://example.com/fixture#%C3%9Cnused` and accepts `go://example.com/fixture#Ünused` for this reason.
 
 Six rules hold in every language.
 
 1. **The language prefix is the namespace.** `go` covers Go; `ts` covers TypeScript and JavaScript, because one analyzer covers both and [`languages.json`](../languages.json) names its language `ts`; `proto` covers Protocol Buffers, the schema language of that file's `proto` row. The prefix is lowercase and is followed by `://`. A third language joins by adding a prefix and a section to this page, and nothing else changes: an edge pairs two references and names no language in its own shape.
 2. **The first `#` splits the scope from the fragment.** The scope never contains `#`; the fragment may, in a TypeScript private name.
 3. **An empty fragment names the scope itself**: the Go package, or the TypeScript module. The `#` is still written, so that a scope is never mistaken for a symbol: without it, the scope's last element reads as a symbol of that name.
-4. **No CR and no LF, anywhere.** A reference is a field of a text line, one half of an LF-separated hash input ([`sarif.md`](sarif.md), `deadsetSymbolRef/v1`) and a JSON string, and each of those needs the guarantee. A TypeScript name that contains either is quoted and escaped.
-5. **No whitespace outside a quoted TypeScript component.** Go and Protocol Buffers have no quoted component, so their references contain no whitespace at all.
+4. **No character of [the unsafe set](#the-unsafe-set) but a tab, anywhere.** The set holds CR, LF and every other control character, the bidirectional controls and the line and paragraph separators. A reference is a field of a text line, one half of an LF-separated hash input ([`sarif.md`](sarif.md), `deadsetSymbolRef/v1`) and a JSON string, and each of those needs the guarantee. A TypeScript name that holds one is quoted, a tab stands inside quotes as itself and every other character of the set is escaped, as [Components](#components) states, and a path segment percent-encodes them, as [Path segments](#path-segments) states.
+5. **No whitespace outside a quoted TypeScript component.** Go and Protocol Buffers have no quoted component, so their references contain no whitespace at all. Whitespace is every code point of Unicode's `White_Space` property ([UAX #44](https://www.unicode.org/reports/tr44/#White_Space)) and U+FEFF, which ECMAScript also reads as whitespace: U+0009 to U+000D, U+0020, U+0085, U+00A0, U+1680, U+2000 to U+200A, U+2028, U+2029, U+202F, U+205F, U+3000 and U+FEFF.
 6. **Case is significant** everywhere and compared bytewise: `Catalog` and `catalog` are two symbols, a module path keeps the case its `go.mod` spells, and a selector is lowercase.
+
+### The unsafe set
+
+The unsafe set is the characters a reference never carries raw, because a terminal acts on them or a viewer reorders the text around them ([CVE-2021-42574](https://nvd.nist.gov/vuln/detail/CVE-2021-42574)): the control characters, the characters of Unicode's `Bidi_Control` property ([UAX #9](https://www.unicode.org/reports/tr9/)), and the line and paragraph separators. In a name a language holds as UTF-16 code units, as TypeScript does, half of a surrogate pair standing alone is in the set too, because no UTF-8 document can carry it. Each product generates its test for the set from this table.
+
+| First | Last | Reads |
+| --- | --- | --- |
+| `U+0000` | `U+001F` | the C0 controls, the tab, LF and CR among them |
+| `U+007F` | `U+009F` | DEL and the C1 controls |
+| `U+061C` | `U+061C` | the Arabic letter mark |
+| `U+200E` | `U+200F` | the left-to-right and right-to-left marks |
+| `U+2028` | `U+2029` | the line and paragraph separators |
+| `U+202A` | `U+202E` | the embeddings, the overrides and their pop |
+| `U+2066` | `U+2069` | the isolates and their pop |
+
+A quoted TypeScript component spells each character of the set as an escape, as [Components](#components) states, and a path segment percent-encodes it, as [Path segments](#path-segments) states.
 
 ## What makes it stable
 
@@ -49,7 +65,7 @@ The scope is the import path of the package that declares the symbol: the module
 
 Two test packages exist per directory and they scope differently. A test file whose package clause names the production package (`package app`, in `catalog_test.go`) is a variant of the production package: the analyzer keys its declarations by position so each appears once, and its symbols share the production scope, `go://example.com/app#TestResolve`. A test file whose package clause carries the `_test` suffix (`package httpapi_test`) is a separate package whose path is the directory path with that suffix, `go://example.com/app/httpapi_test#TestSearch`. Neither carries the bracketed test-binary suffix that `go list -test` appends to the import path and `go/packages` keeps in a package's `ID`: the reference uses `PkgPath`, which is `example.com/app` for the variant and `example.com/app/httpapi_test` for the external package. The synthetic `main` package the toolchain builds for a test binary declares nothing of the target and is never a scope.
 
-An import path element is ASCII letters, digits and `-`, `.`, `_`, `~`, and a path neither starts nor ends with `/` ([`module.CheckImportPath`](https://pkg.go.dev/golang.org/x/mod/module#CheckImportPath)). The set contains no `#`, which is what lets the first `#` split the reference. The expressions below check the character set and the slash placement; they do not check the finer rules, such as an element not ending in a dot, because the toolchain already refused any package that breaks them.
+An import path neither starts nor ends with `/`, and each element is spelled as [Path segments](#path-segments) states: ASCII letters, digits and `-`, `.`, `_`, `~` as themselves, and every other byte percent-encoded. A module path holds nothing outside that set, but a package directory may: [`module.CheckImportPath`](https://pkg.go.dev/golang.org/x/mod/module#CheckImportPath) also admits `+`, so the package in directory `c++` is `go://example.com/app/c%2B%2B#`. The set contains no `#`, which is what lets the first `#` split the reference. The expressions below check the character set and the slash placement; they do not check the finer rules, such as an element not ending in a dot, because the toolchain already refused any package that breaks them.
 
 ### Declarations
 
@@ -75,7 +91,7 @@ A Go enumerated member is a package-level constant and takes the package-level f
 
 The package itself is the empty fragment, `go://example.com/app#`. It is the `symbol.parent` of every package-level declaration.
 
-A source file is its base name followed by the `:file` selector, scoped by the import path of the directory that holds it, whatever package clause the file carries: `go://example.com/app/internal/legacy#render_windows.go:file`. The selector exists because a file name is not an identifier chain and must not be read as one: `render_windows.go` without the selector parses as the member `go` of `render_windows`. The file name is not folded into the scope, because an import path element may legally end in `.go`, so `go://…/legacy/render_windows.go#` would be the spelling of a package rather than of a file. A selector is an operand, a colon and a lowercase word, and every subject that is not an identifier chain carries one.
+A source file is its base name followed by the `:file` selector, scoped by the import path of the directory that holds it, whatever package clause the file carries: `go://example.com/app/internal/legacy#render_windows.go:file`. The base name is a file operand, spelled as [Path segments](#path-segments) states, so `never built.go` is `never%20built.go:file`. The selector exists because a file name is not an identifier chain and must not be read as one: `render_windows.go` without the selector parses as the member `go` of `render_windows`. The file name is not folded into the scope, because an import path element may legally end in `.go`, so `go://…/legacy/render_windows.go#` would be the spelling of a package rather than of a file. A selector is an operand, a colon and a lowercase word, and every subject that is not an identifier chain carries one.
 
 A `require` directive is the required module path followed by `:require`, scoped by the module whose `go.mod` carries it, which is the module path itself: `go://example.com/app#github.com/example/left:require`. The required version is the directive's value, not its identity, so it never appears: a bump leaves the reference unchanged. A `replace` directive is the replaced module path, then `@` and the version when the directive names one, then `:replace`: `go://example.com/app#github.com/old/mod@v1.2.3:replace`, or `#github.com/old/mod:replace` for a directive with no version. The version stays on a `replace` because two `replace` lines for one module at two versions are two directives. A nested module inside the target is its own scope. No other directive has a form, because no other directive is a finding subject (`DS1702`'s precondition in `kinds.json`).
 
@@ -104,7 +120,7 @@ ts://<package-name>/<source-path>#<fragment>
 
 ### The TypeScript scope
 
-The scope is the module: the name of the package the file belongs to, then `/`, then the file's path inside that package, with `/` as the separator and the file's own extension. The package name is the `name` field of the nearest `package.json` at or above the file's directory, up to the target root, and the path is relative to that manifest's directory.
+The scope is the module: the name of the package the file belongs to, then `/`, then the file's path inside that package, with `/` as the separator, the file's own extension, and each segment spelled as [Path segments](#path-segments) states, so `src/my file.ts` is `src/my%20file.ts`. The package name is the `name` field of the nearest `package.json` at or above the file's directory, up to the target root, and the path is relative to that manifest's directory.
 
 ```text
 ts://@example/app/src/wire.ts#
@@ -121,12 +137,12 @@ A JavaScript file is scoped and spelled exactly as a TypeScript file, under the 
 
 ### Components
 
-A fragment is a chain of components joined by `.`, read from the module-level declaration inward. A component takes one of four spellings, and the spelling is decided by the name alone, never by what else the module declares, so it cannot change when a sibling is added.
+A fragment is a chain of components joined by `.`, read from the module-level declaration inward. A component takes one of four spellings, and the spelling is decided by the name alone, never by what else the module declares, so it cannot change when a sibling is added. The name is the one the language holds, never the source text: a key's value with its escapes resolved, so `ab`, `\u0061b` and `"a\u0062"` are one component, `ab`.
 
 - **An identifier name** is written bare: `TabStrip`, `default`, `static`, `größe`. The test is the ECMAScript `IdentifierName` production ([ECMA-262](https://tc39.es/ecma262/#prod-IdentifierName)), which admits reserved words, so `default` and `static` are bare.
 - **A private name** keeps its leading `#`: `TabStrip.#frame` for `#frame = 0;`. The sign is part of the name in the language, `this.#frame` is how the source spells a use, and a class may declare `#frame` and `frame` side by side, so dropping the sign would merge two members. This is the one place a `#` appears after the scope separator, and rule 2 above already splits at the first `#`. A private name is only ever a member, so it never opens a fragment.
-- **A string** is written in single quotes when the name is not an identifier name: `Headers.'content-type'`, `Kind.'tab-close'`, `Quirks.'it\'s'`. Inside the quotes a quote is `\'`, a backslash is `\\`, LF is `\n` and CR is `\r`; every other character stands for itself, non-ASCII included. The quotes are single rather than double, so that a reference sits inside a JSON string with no escaping, which is where every document carries one, and so that the reference matches the spelling `text-line.md` fixes for `symbol.name`. A numeric key such as `1.5` is a string in this sense and is spelled `'1.5'`.
-- **A computed key** is the key's source text inside square brackets with every ASCII whitespace character removed: `TabStrip.[Symbol.iterator]` for `*[Symbol.iterator]()`. The text is compared as written, so `[Symbol.iterator]` and `[globalThis.Symbol.iterator]` are two references, which is right, because they are two declarations. A key whose text contains `]` has no spelling.
+- **A string** is written in single quotes when the name is not an identifier name: `Headers.'content-type'`, `Kind.'tab-close'`, `Quirks.'it\'s'`. Inside the quotes a quote is `\'`, a backslash is `\\`, LF is `\n`, CR is `\r` and a tab stands for itself; every other character of [the unsafe set](#the-unsafe-set) is `\u{H}`, ECMAScript's escape of its code point, with uppercase hexadecimal digits and no leading zero: `Theme.'\u{1B}[31mX'`, `Files.'safe\u{202E}.exe'`, and `Keys.'\u{D800}'` for a lone surrogate. That escape is written for the characters of the set and no other, so `\u{41}`, `\u{1b}` and `\u{01B}` spell nothing and a key has one spelling. Every other character stands for itself, non-ASCII included. So every key's value has a spelling, and a reader that recovers the value decodes each escape. The quotes are single rather than double, so that a reference sits inside a JSON string with no escaping, which is where every document carries one, and so that the reference matches the spelling `text-line.md` fixes for `symbol.name`. A string key whose value is `#a` is `'#a'`, never the private name `#a`. A numeric key is a string in this sense, its value's string form ([ECMA-262](https://tc39.es/ecma262/#sec-numeric-types-number-tostring), `Number::toString`): `1.5` and `1.50` are `'1.5'`, and `0x10` and `16` are `'16'`. A bigint key has no spelling, because the compiler binds no member for one (its error TS1539, "A 'bigint' literal cannot be used as a property name").
+- **A computed key** is the key's source text inside square brackets with every whitespace character of rule 5 removed: `TabStrip.[Symbol.iterator]` for `*[Symbol.iterator]()`. The text is compared as written, so `[Symbol.iterator]` and `[globalThis.Symbol.iterator]` are two references, which is right, because they are two declarations. A key whose text contains `]`, or a character of [the unsafe set](#the-unsafe-set) that is not whitespace, has no spelling.
 
 ### Module-level declarations and exports
 
@@ -194,7 +210,7 @@ The declared version range is the entry's value, not its identity, and never app
 - **An overload signature.** A function with three overload signatures is one symbol with one reference. An index over the signatures would shift when a signature is inserted above it, which is the instability this grammar exists to avoid.
 - **A constructor, a call signature, a construct signature and an index signature.** None has a name. The class or interface stands for them.
 - **A declaration inside a function body, a binding element of a destructuring pattern inside a function body, a statement and a store**, for the reasons the Go section gives. The enclosing function or method is the reference. A parameter is the exception, spelled as [Parameters](#parameters) states.
-- **A member of a class expression**, and a member whose computed key contains `]`.
+- **A member of a class expression**, and a member whose key has no spelling, as [Components](#components) states: a computed key holding `]` or a character of the unsafe set, and a bigint key.
 - **An `export =` assignment**, whose export name the compiler spells `export=`.
 - **One meaning of a merged symbol**: the type half of a value-and-type pair, the namespace half of an enum-and-namespace merge. The symbol is the unit of analysis.
 
@@ -228,7 +244,7 @@ proto://.#Ping
 
 ### A schema file
 
-A schema file is its import path followed by the `:file` selector, scoped by the package it declares: `proto://v1#v1/service.proto:file`. The import path is relative to the import root that holds the file, or to the target root where no import root holds it ([`schemas.md`](analysis/schemas.md), `schemas.3`), so a change of `proto.import_paths` or of a `buf.yaml` module root changes the reference.
+A schema file is its import path followed by the `:file` selector, scoped by the package it declares: `proto://v1#v1/service.proto:file`. Each segment of the import path is a file operand segment, spelled as [Path segments](#path-segments) states, so `my protos/a b.proto` is `my%20protos/a%20b.proto:file`. The import path is relative to the import root that holds the file, or to the target root where no import root holds it ([`schemas.md`](analysis/schemas.md), `schemas.3`), so a change of `proto.import_paths` or of a `buf.yaml` module root changes the reference.
 
 ### Deliberately not representable in Protocol Buffers
 
@@ -236,9 +252,25 @@ A schema file is its import path followed by the `:file` selector, scoped by the
 - **A `reserved` range or name, and an option value.** Neither is a declaration.
 - **A oneof**, for the reason above.
 
+## Path segments
+
+A reference carries a path segment in three places: each element of a Go import path, in the scope and in the module path a `require` or `replace` operand names; each segment of a TypeScript source path, in the scope after the package and in the directories of a manifest's scope; and each segment of a file operand, the Go file name before `:file` and each segment of a Protocol Buffers import path before `:file`. Every path segment is spelled by its bytes: a byte of its set below as itself, and every other byte, `%` included, as `%` followed by the byte's value in two uppercase hexadecimal digits ([RFC 3986, section 2.1](https://www.rfc-editor.org/rfc/rfc3986#section-2.1)).
+
+| Segment | Bytes spelled as themselves |
+| --- | --- |
+| Go import-path element | ASCII letters, digits, `.`, `_`, `~` and `-` |
+| TypeScript source-path segment | every byte of a well-formed UTF-8 sequence except those of a character of [the unsafe set](#the-unsafe-set), of the whitespace of rule 5, and of `#`, `%`, `*`, `?` and `/` |
+| File operand segment | the TypeScript set less `'`, `[`, `]`, `\` and `:` |
+
+The sets keep what a reference cannot hold out of it: whitespace and the unsafe set (rules 4 and 5), the `#` that splits the scope from the fragment (rule 2), the `*` and `?` a root pattern reads as wildcards, and, in a file operand, which sits in the fragment, the `'` and `[` that open a quoted component or a computed key, the `:` that opens a selector, and the `\`. The TypeScript package component keeps its own set, as [The TypeScript scope](#the-typescript-scope) states. A byte that is not part of a well-formed UTF-8 sequence, which a file name may hold, is encoded too, so a reference is always well-formed UTF-8 and travels in a JSON document. The separator `/` is never encoded, because a segment never holds it, and a segment is never empty.
+
+That spelling is the one canonical spelling, compared as bytes like the rest of the reference: `c++` is `c%2B%2B`, `my file.ts` is `my%20file.ts`, `a#b.ts` is `a%23b.ts`, `100%.ts` is `100%25.ts`, and `[id].tsx`, `größe.ts` and `v1.2` are spelled as they are. A reader that needs the path or the name a segment spells, to compare an entry's `path` with its `symbol` or to locate the file a reference names, decodes each `%` and its two digits to that byte. Matching never decodes: a reference matches when it is byte-identical to the canonical spelling. An escape whose digits are not uppercase hexadecimal, and a `%` that opens no escape, are outside every expression below, so a document carrying one is refused where its shape is checked. An escape of a byte the set spells as itself, such as `%41` for `A`, and an escape that decodes to a byte no segment holds, such as `%2F`, are well formed and spell no symbol: an edge side naming one is absent, a suppression naming one is a `DS9003`, and a root naming one is a `DS9004`. A reader therefore takes a segment as the spelling of a path segment only when it is not empty, its decoding holds no `/` and is neither `.` nor `..`, which name no file a reference scopes and would lead a reader that locates the file out of its directory, and its decoding, encoded again, gives the same bytes.
+
+[`segment-corpus.json`](segment-corpus.json) is an array of cases. Each case names a `set` (`go-element`, `source-path` or `file-operand`), a `spelled` segment, whether that spelling is `canonical`, the bytes it spells as `raw_hex` (two lowercase hexadecimal digits per byte) for a canonical case, and a `reason`. The cases cover each set's boundary bytes, a byte that opens no well-formed UTF-8 sequence, well-formed sequences of two, three and four bytes, the C1 controls, the bidirectional controls and the whitespace past ASCII, and spellings that are not canonical: an escape of a byte spelled as itself, an escape of the separator, lowercase digits, a `%` with fewer than two digits, a raw character the set encodes, `.`, `..` and the empty segment.
+
 ## Patterns
 
-A configured root may be a pattern (`roots.patterns` in [`config.schema.json`](../config.schema.json)). Each entry is matched against the reference of every symbol the analysis enumerates: `*` matches any run of characters including the solidus, `?` matches exactly one character counted as a Unicode code point, no other character is special, and an entry holding neither wildcard matches only the symbol whose reference it spells exactly. A pattern that matches no symbol is a `DS9004`.
+A configured root may be a pattern (`roots.patterns` in [`config.schema.json`](../config.schema.json)). Each entry is matched against the reference of every symbol the analysis enumerates: `*` matches any run of characters including the solidus, `?` matches exactly one character counted as a Unicode code point, no other character is special, and an entry holding neither wildcard matches only the symbol whose reference it spells exactly. A pattern is matched against the canonical spelling, path segments encoded, so a root naming every declaration of `src/my file.ts` is `ts://./src/my%20file.ts#*`, and a path segment never holds a wildcard. A pattern that matches no symbol is a `DS9004`.
 
 ```text
 go://example.com/app#Catalog.*
@@ -253,27 +285,35 @@ Patterns are accepted for roots only. An ignore entry, a baseline row and an edg
 
 ## The grammar
 
-The expressions are written in the intersection of two dialects, RE2 as Go's `regexp` package implements it ([syntax](https://pkg.go.dev/regexp/syntax)) and ECMAScript `RegExp` with no flags, so one string compiles unchanged in a Go implementation and in a TypeScript one; `text-line.md` follows the same rule. Two consequences shape the identifier classes. Neither dialect offers a Unicode identifier property without a flag, so an identifier character outside ASCII is written `[^\x00-\x7F]`, which accepts every non-ASCII code point; the expressions are therefore form checkers, not identifier validators, and the compiler that already accepted the declaration is the validator of its name. And ECMAScript without the `u` flag matches that class one UTF-16 code unit at a time while RE2 matches one code point, which gives the same answer for any run of non-ASCII characters, astral ones included, because both halves of a surrogate pair are outside ASCII. A pattern of `roots.patterns` is matched by the rule [Patterns](#patterns) states and not by these expressions, and there the unit decides the answer: `?` counts a code point, so an implementation on UTF-16 strings matches with a code-point-aware engine (the ECMAScript `u` flag) and never a unit-wise one.
+The expressions are written in the intersection of two dialects, RE2 as Go's `regexp` package implements it ([syntax](https://pkg.go.dev/regexp/syntax)) and ECMAScript `RegExp` with no flags, so one string compiles unchanged in a Go implementation and in a TypeScript one; `text-line.md` follows the same rule. Two consequences shape the identifier classes. Neither dialect offers a Unicode identifier property without a flag, so an identifier character outside ASCII is written as a class that excludes `\x00-\xA0`, the whitespace past U+00FF and the bidirectional controls, which accepts every code point outside ASCII but the C1 controls, the bidirectional controls and the whitespace of rule 5, none of which an identifier holds; the expressions are therefore form checkers, not identifier validators, and the compiler that already accepted the declaration is the validator of its name. And ECMAScript without the `u` flag matches that class one UTF-16 code unit at a time while RE2 matches one code point, which gives the same answer for any run of non-ASCII characters, astral ones included, because neither half of a surrogate pair is a code point the class excludes. No escape spells a code point past U+00FF in both dialects, so a class that excludes the whitespace past U+00FF (U+1680, U+2000 to U+200A, U+2028, U+2029, U+202F, U+205F, U+3000 and U+FEFF) or the bidirectional controls (U+061C, U+200E, U+200F, U+202A to U+202E and U+2066 to U+2069) holds each of those characters as itself, one by one rather than as a range. A pattern of `roots.patterns` is matched by the rule [Patterns](#patterns) states and not by these expressions, and there the unit decides the answer: `?` counts a code point, so an implementation on UTF-16 strings matches with a code-point-aware engine (the ECMAScript `u` flag) and never a unit-wise one.
 
 ### Building blocks
 
 | Name | Expression | Reads |
 | --- | --- | --- |
-| `GO_IDENT` | `(?:[A-Za-z_]\|[^\x00-\x7F])(?:[A-Za-z0-9_]\|[^\x00-\x7F])*` | a Go identifier |
-| `GO_PATH` | `[A-Za-z0-9._~-]+(?:/[A-Za-z0-9._~-]+)*` | an import path or module path |
+| `PCT` | `%[0-9A-F]{2}` | one percent-encoded byte |
+| `GO_ELEM` | `(?:[A-Za-z0-9._~-]\|PCT)+` | an import path element, percent-encoded |
+| `TS_SEG` | `(?:[^\x00-\x20\x7F-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩/#%*?]\|PCT)+` | a TypeScript source-path segment, percent-encoded |
+| `OP_SEG` | `(?:[^\x00-\x20\x7F-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩/#%*?'\[\]\\:]\|PCT)+` | a file operand segment, percent-encoded |
+| `GO_IDENT` | `(?:[A-Za-z_]\|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])(?:[A-Za-z0-9_]\|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])*` | a Go identifier |
+| `GO_PATH` | `GO_ELEM(?:/GO_ELEM)*` | an import path or module path |
 | `GO_VERSION` | `[A-Za-z0-9.+-]+` | a module version, as `go.mod` spells it |
-| `GO_FILE` | `[^/\\:#\r\n]+\.go` | a Go file's base name |
-| `TS_IDENT` | `(?:[A-Za-z_$]\|[^\x00-\x7F])(?:[A-Za-z0-9_$]\|[^\x00-\x7F])*` | an ECMAScript identifier name |
-| `TS_QUOTED` | `'(?:[^'\\\r\n]\|\\['\\nr])*'` | a single-quoted component |
-| `TS_COMPUTED` | `\[[^\]\r\n\t ]+\]` | a computed key |
+| `GO_FILE` | `OP_SEG\.go` | a Go file's base name |
+| `TS_IDENT` | `(?:[A-Za-z_$]\|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])(?:[A-Za-z0-9_$]\|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])*` | an ECMAScript identifier name |
+| `TS_QUOTED` | `'(?:[^'\\\x00-\x08\x0A-\x1F\x7F-\x9F؜‎‏‪‫‬‭‮⁦⁧⁨⁩  ]\|\\['\\nr]\|\\u\{(?:[0-8BCEF]\|1[0-9A-F]\|7F\|[89][0-9A-F]\|61C\|200[EF]\|202[89A-E]\|206[6-9]\|D[89A-F][0-9A-F]{2})\})*'` | a single-quoted component |
+| `TS_COMPUTED` | `\[[^\]\x00-\x20\x7F-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩]+\]` | a computed key |
 | `TS_HEAD` | `(?:TS_IDENT\|TS_QUOTED)` | a component that may open a fragment |
 | `TS_MEMBER` | `(?:TS_IDENT\|#TS_IDENT\|TS_QUOTED\|TS_COMPUTED)` | a component after a dot |
-| `TS_PACKAGE` | `(?:@(?:[A-Za-z0-9._-]\|%[0-9A-F]{2})+/)?(?:[A-Za-z0-9._-]\|%[0-9A-F]{2})+` | an npm package name, percent-encoded, or `.` |
+| `TS_PACKAGE` | `(?:@(?:[A-Za-z0-9._-]\|PCT)+/)?(?:[A-Za-z0-9._-]\|PCT)+` | an npm package name, percent-encoded, or `.` |
 | `TS_EXT` | `(?:[A-Za-z0-9]{1,3}\|[A-Za-ik-z0-9][A-Za-z0-9]{3}\|j[A-Za-rt-z0-9][A-Za-z0-9]{2}\|js[A-Za-np-z0-9][A-Za-z0-9]\|jso[A-Za-mo-z0-9]\|[A-Za-z0-9]{5,})` | a file extension other than `json` |
-| `TS_FILE` | `(?:[^/#\r\n]+/)*[^/#\r\n]+\.TS_EXT` | a source path with its extension, a script's or a component file's |
+| `TS_FILE` | `(?:TS_SEG/)*TS_SEG\.TS_EXT` | a source path with its extension, a script's or a component file's |
 | `PROTO_IDENT` | `[A-Za-z_][A-Za-z0-9_]*` | a Protocol Buffers identifier |
 | `PROTO_PACKAGE` | `(?:\.\|PROTO_IDENT(?:\.PROTO_IDENT)*)` | a package, or `.` |
-| `PROTO_PATH` | `(?:[^/#:\r\n]+/)*[^/#:\r\n]+\.proto` | a schema file's import path |
+| `PROTO_PATH` | `(?:OP_SEG/)*OP_SEG\.proto` | a schema file's import path |
+| `SCHEME` | `[a-z][a-z0-9]*` | a language prefix |
+| `SHAPE_SCOPE` | `(?:[^\x00-\x20\x7F-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩#%*]\|PCT)+` | a scope in the shape every document checks |
+| `SHAPE_PLAIN` | `(?:[^\x00-\x20\x7F-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩'\[\]*%]\|PCT)` | a fragment character outside a quoted component and a computed key |
+| `SHAPE_FRAGMENT` | `(?:SHAPE_PLAIN\|TS_QUOTED\|TS_COMPUTED)*` | a fragment in the shape every document checks |
 
 ### One expression per form
 
@@ -298,7 +338,7 @@ Each row is anchored, `^` to `$`, and is the whole reference. The corpus names t
 | ts | `case-constituent` | `^ts://TS_PACKAGE/TS_FILE#TS_HEAD(?:\.TS_MEMBER)+\.TS_QUOTED:case$` |
 | ts | `type-parameter` | `^ts://TS_PACKAGE/TS_FILE#TS_HEAD(?:\.TS_MEMBER)*(?::static)?<TS_IDENT>$` |
 | ts | `parameter` | `^ts://TS_PACKAGE/TS_FILE#(?:TS_HEAD(?:\.TS_MEMBER)*(?::static)?)?\(TS_IDENT\)$` |
-| ts | `dependency` | `^ts://TS_PACKAGE/(?:[^/#\r\n]+/)*package\.json#TS_PACKAGE:(?:dependency\|dev-dependency\|peer-dependency)$` |
+| ts | `dependency` | `^ts://TS_PACKAGE/(?:TS_SEG/)*package\.json#TS_PACKAGE:(?:dependency\|dev-dependency\|peer-dependency)$` |
 | proto | `message`, `enum`, `field`, `enum-member`, `service`, `rpc` | `^proto://PROTO_PACKAGE#PROTO_IDENT(?:\.PROTO_IDENT)*$` |
 | proto | `file` | `^proto://PROTO_PACKAGE#PROTO_PATH:file$` |
 
@@ -308,71 +348,85 @@ The same twenty expressions with every block substituted, one per line under its
 
 ```text
 go package
-^go://[A-Za-z0-9._~-]+(?:/[A-Za-z0-9._~-]+)*#$
+^go://(?:[A-Za-z0-9._~-]|%[0-9A-F]{2})+(?:/(?:[A-Za-z0-9._~-]|%[0-9A-F]{2})+)*#$
 
 go package-level
-^go://[A-Za-z0-9._~-]+(?:/[A-Za-z0-9._~-]+)*#(?:[A-Za-z_]|[^\x00-\x7F])(?:[A-Za-z0-9_]|[^\x00-\x7F])*$
+^go://(?:[A-Za-z0-9._~-]|%[0-9A-F]{2})+(?:/(?:[A-Za-z0-9._~-]|%[0-9A-F]{2})+)*#(?:[A-Za-z_]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])(?:[A-Za-z0-9_]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])*$
 
 go method, interface-method, field
-^go://[A-Za-z0-9._~-]+(?:/[A-Za-z0-9._~-]+)*#(?:[A-Za-z_]|[^\x00-\x7F])(?:[A-Za-z0-9_]|[^\x00-\x7F])*(?:\.(?:[A-Za-z_]|[^\x00-\x7F])(?:[A-Za-z0-9_]|[^\x00-\x7F])*)+$
+^go://(?:[A-Za-z0-9._~-]|%[0-9A-F]{2})+(?:/(?:[A-Za-z0-9._~-]|%[0-9A-F]{2})+)*#(?:[A-Za-z_]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])(?:[A-Za-z0-9_]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])*(?:\.(?:[A-Za-z_]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])(?:[A-Za-z0-9_]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])*)+$
 
 go type-parameter
-^go://[A-Za-z0-9._~-]+(?:/[A-Za-z0-9._~-]+)*#(?:[A-Za-z_]|[^\x00-\x7F])(?:[A-Za-z0-9_]|[^\x00-\x7F])*(?:\.(?:[A-Za-z_]|[^\x00-\x7F])(?:[A-Za-z0-9_]|[^\x00-\x7F])*)?\[(?:[A-Za-z_]|[^\x00-\x7F])(?:[A-Za-z0-9_]|[^\x00-\x7F])*\]$
+^go://(?:[A-Za-z0-9._~-]|%[0-9A-F]{2})+(?:/(?:[A-Za-z0-9._~-]|%[0-9A-F]{2})+)*#(?:[A-Za-z_]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])(?:[A-Za-z0-9_]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])*(?:\.(?:[A-Za-z_]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])(?:[A-Za-z0-9_]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])*)?\[(?:[A-Za-z_]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])(?:[A-Za-z0-9_]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])*\]$
 
 go parameter
-^go://[A-Za-z0-9._~-]+(?:/[A-Za-z0-9._~-]+)*#(?:(?:[A-Za-z_]|[^\x00-\x7F])(?:[A-Za-z0-9_]|[^\x00-\x7F])*(?:\.(?:[A-Za-z_]|[^\x00-\x7F])(?:[A-Za-z0-9_]|[^\x00-\x7F])*)?)?\((?:[A-Za-z_]|[^\x00-\x7F])(?:[A-Za-z0-9_]|[^\x00-\x7F])*\)$
+^go://(?:[A-Za-z0-9._~-]|%[0-9A-F]{2})+(?:/(?:[A-Za-z0-9._~-]|%[0-9A-F]{2})+)*#(?:(?:[A-Za-z_]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])(?:[A-Za-z0-9_]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])*(?:\.(?:[A-Za-z_]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])(?:[A-Za-z0-9_]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])*)?)?\((?:[A-Za-z_]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])(?:[A-Za-z0-9_]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])*\)$
 
 go file
-^go://[A-Za-z0-9._~-]+(?:/[A-Za-z0-9._~-]+)*#[^/\\:#\r\n]+\.go:file$
+^go://(?:[A-Za-z0-9._~-]|%[0-9A-F]{2})+(?:/(?:[A-Za-z0-9._~-]|%[0-9A-F]{2})+)*#(?:[^\x00-\x20\x7F-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩/#%*?'\[\]\\:]|%[0-9A-F]{2})+\.go:file$
 
 go require
-^go://[A-Za-z0-9._~-]+(?:/[A-Za-z0-9._~-]+)*#[A-Za-z0-9._~-]+(?:/[A-Za-z0-9._~-]+)*(?:@[A-Za-z0-9.+-]+)?:require$
+^go://(?:[A-Za-z0-9._~-]|%[0-9A-F]{2})+(?:/(?:[A-Za-z0-9._~-]|%[0-9A-F]{2})+)*#(?:[A-Za-z0-9._~-]|%[0-9A-F]{2})+(?:/(?:[A-Za-z0-9._~-]|%[0-9A-F]{2})+)*(?:@[A-Za-z0-9.+-]+)?:require$
 
 go replace
-^go://[A-Za-z0-9._~-]+(?:/[A-Za-z0-9._~-]+)*#[A-Za-z0-9._~-]+(?:/[A-Za-z0-9._~-]+)*(?:@[A-Za-z0-9.+-]+)?:replace$
+^go://(?:[A-Za-z0-9._~-]|%[0-9A-F]{2})+(?:/(?:[A-Za-z0-9._~-]|%[0-9A-F]{2})+)*#(?:[A-Za-z0-9._~-]|%[0-9A-F]{2})+(?:/(?:[A-Za-z0-9._~-]|%[0-9A-F]{2})+)*(?:@[A-Za-z0-9.+-]+)?:replace$
 
 ts module
-^ts://(?:@(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/)?(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/(?:[^/#\r\n]+/)*[^/#\r\n]+\.(?:[A-Za-z0-9]{1,3}|[A-Za-ik-z0-9][A-Za-z0-9]{3}|j[A-Za-rt-z0-9][A-Za-z0-9]{2}|js[A-Za-np-z0-9][A-Za-z0-9]|jso[A-Za-mo-z0-9]|[A-Za-z0-9]{5,})#$
+^ts://(?:@(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/)?(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/(?:(?:[^\x00-\x20\x7F-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩/#%*?]|%[0-9A-F]{2})+/)*(?:[^\x00-\x20\x7F-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩/#%*?]|%[0-9A-F]{2})+\.(?:[A-Za-z0-9]{1,3}|[A-Za-ik-z0-9][A-Za-z0-9]{3}|j[A-Za-rt-z0-9][A-Za-z0-9]{2}|js[A-Za-np-z0-9][A-Za-z0-9]|jso[A-Za-mo-z0-9]|[A-Za-z0-9]{5,})#$
 
 ts module-level, default-export
-^ts://(?:@(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/)?(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/(?:[^/#\r\n]+/)*[^/#\r\n]+\.(?:[A-Za-z0-9]{1,3}|[A-Za-ik-z0-9][A-Za-z0-9]{3}|j[A-Za-rt-z0-9][A-Za-z0-9]{2}|js[A-Za-np-z0-9][A-Za-z0-9]|jso[A-Za-mo-z0-9]|[A-Za-z0-9]{5,})#(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*')$
+^ts://(?:@(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/)?(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/(?:(?:[^\x00-\x20\x7F-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩/#%*?]|%[0-9A-F]{2})+/)*(?:[^\x00-\x20\x7F-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩/#%*?]|%[0-9A-F]{2})+\.(?:[A-Za-z0-9]{1,3}|[A-Za-ik-z0-9][A-Za-z0-9]{3}|j[A-Za-rt-z0-9][A-Za-z0-9]{2}|js[A-Za-np-z0-9][A-Za-z0-9]|jso[A-Za-mo-z0-9]|[A-Za-z0-9]{5,})#(?:(?:[A-Za-z_$]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])(?:[A-Za-z0-9_$]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])*|'(?:[^'\\\x00-\x08\x0A-\x1F\x7F-\x9F؜‎‏‪‫‬‭‮⁦⁧⁨⁩  ]|\\['\\nr]|\\u\{(?:[0-8BCEF]|1[0-9A-F]|7F|[89][0-9A-F]|61C|200[EF]|202[89A-E]|206[6-9]|D[89A-F][0-9A-F]{2})\})*')$
 
 ts alias
-^ts://(?:@(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/)?(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/(?:[^/#\r\n]+/)*[^/#\r\n]+\.(?:[A-Za-z0-9]{1,3}|[A-Za-ik-z0-9][A-Za-z0-9]{3}|j[A-Za-rt-z0-9][A-Za-z0-9]{2}|js[A-Za-np-z0-9][A-Za-z0-9]|jso[A-Za-mo-z0-9]|[A-Za-z0-9]{5,})#(?:'(?:[^'\\\r\n]|\\['\\nr])*'\.)?(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*'):alias$
+^ts://(?:@(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/)?(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/(?:(?:[^\x00-\x20\x7F-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩/#%*?]|%[0-9A-F]{2})+/)*(?:[^\x00-\x20\x7F-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩/#%*?]|%[0-9A-F]{2})+\.(?:[A-Za-z0-9]{1,3}|[A-Za-ik-z0-9][A-Za-z0-9]{3}|j[A-Za-rt-z0-9][A-Za-z0-9]{2}|js[A-Za-np-z0-9][A-Za-z0-9]|jso[A-Za-mo-z0-9]|[A-Za-z0-9]{5,})#(?:'(?:[^'\\\x00-\x08\x0A-\x1F\x7F-\x9F؜‎‏‪‫‬‭‮⁦⁧⁨⁩  ]|\\['\\nr]|\\u\{(?:[0-8BCEF]|1[0-9A-F]|7F|[89][0-9A-F]|61C|200[EF]|202[89A-E]|206[6-9]|D[89A-F][0-9A-F]{2})\})*'\.)?(?:(?:[A-Za-z_$]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])(?:[A-Za-z0-9_$]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])*|'(?:[^'\\\x00-\x08\x0A-\x1F\x7F-\x9F؜‎‏‪‫‬‭‮⁦⁧⁨⁩  ]|\\['\\nr]|\\u\{(?:[0-8BCEF]|1[0-9A-F]|7F|[89][0-9A-F]|61C|200[EF]|202[89A-E]|206[6-9]|D[89A-F][0-9A-F]{2})\})*'):alias$
 
 ts import
-^ts://(?:@(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/)?(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/(?:[^/#\r\n]+/)*[^/#\r\n]+\.(?:[A-Za-z0-9]{1,3}|[A-Za-ik-z0-9][A-Za-z0-9]{3}|j[A-Za-rt-z0-9][A-Za-z0-9]{2}|js[A-Za-np-z0-9][A-Za-z0-9]|jso[A-Za-mo-z0-9]|[A-Za-z0-9]{5,})#(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*'):import$
+^ts://(?:@(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/)?(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/(?:(?:[^\x00-\x20\x7F-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩/#%*?]|%[0-9A-F]{2})+/)*(?:[^\x00-\x20\x7F-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩/#%*?]|%[0-9A-F]{2})+\.(?:[A-Za-z0-9]{1,3}|[A-Za-ik-z0-9][A-Za-z0-9]{3}|j[A-Za-rt-z0-9][A-Za-z0-9]{2}|js[A-Za-np-z0-9][A-Za-z0-9]|jso[A-Za-mo-z0-9]|[A-Za-z0-9]{5,})#(?:(?:[A-Za-z_$]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])(?:[A-Za-z0-9_$]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])*|'(?:[^'\\\x00-\x08\x0A-\x1F\x7F-\x9F؜‎‏‪‫‬‭‮⁦⁧⁨⁩  ]|\\['\\nr]|\\u\{(?:[0-8BCEF]|1[0-9A-F]|7F|[89][0-9A-F]|61C|200[EF]|202[89A-E]|206[6-9]|D[89A-F][0-9A-F]{2})\})*'):import$
 
 ts class-member, private-member, interface-member, type-member, enum-member, namespace-member, computed-member, literal-member
-^ts://(?:@(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/)?(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/(?:[^/#\r\n]+/)*[^/#\r\n]+\.(?:[A-Za-z0-9]{1,3}|[A-Za-ik-z0-9][A-Za-z0-9]{3}|j[A-Za-rt-z0-9][A-Za-z0-9]{2}|js[A-Za-np-z0-9][A-Za-z0-9]|jso[A-Za-mo-z0-9]|[A-Za-z0-9]{5,})#(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*')(?:\.(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|#(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*'|\[[^\]\r\n\t ]+\]))+$
+^ts://(?:@(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/)?(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/(?:(?:[^\x00-\x20\x7F-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩/#%*?]|%[0-9A-F]{2})+/)*(?:[^\x00-\x20\x7F-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩/#%*?]|%[0-9A-F]{2})+\.(?:[A-Za-z0-9]{1,3}|[A-Za-ik-z0-9][A-Za-z0-9]{3}|j[A-Za-rt-z0-9][A-Za-z0-9]{2}|js[A-Za-np-z0-9][A-Za-z0-9]|jso[A-Za-mo-z0-9]|[A-Za-z0-9]{5,})#(?:(?:[A-Za-z_$]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])(?:[A-Za-z0-9_$]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])*|'(?:[^'\\\x00-\x08\x0A-\x1F\x7F-\x9F؜‎‏‪‫‬‭‮⁦⁧⁨⁩  ]|\\['\\nr]|\\u\{(?:[0-8BCEF]|1[0-9A-F]|7F|[89][0-9A-F]|61C|200[EF]|202[89A-E]|206[6-9]|D[89A-F][0-9A-F]{2})\})*')(?:\.(?:(?:[A-Za-z_$]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])(?:[A-Za-z0-9_$]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])*|#(?:[A-Za-z_$]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])(?:[A-Za-z0-9_$]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])*|'(?:[^'\\\x00-\x08\x0A-\x1F\x7F-\x9F؜‎‏‪‫‬‭‮⁦⁧⁨⁩  ]|\\['\\nr]|\\u\{(?:[0-8BCEF]|1[0-9A-F]|7F|[89][0-9A-F]|61C|200[EF]|202[89A-E]|206[6-9]|D[89A-F][0-9A-F]{2})\})*'|\[[^\]\x00-\x20\x7F-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩]+\]))+$
 
 ts static-member
-^ts://(?:@(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/)?(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/(?:[^/#\r\n]+/)*[^/#\r\n]+\.(?:[A-Za-z0-9]{1,3}|[A-Za-ik-z0-9][A-Za-z0-9]{3}|j[A-Za-rt-z0-9][A-Za-z0-9]{2}|js[A-Za-np-z0-9][A-Za-z0-9]|jso[A-Za-mo-z0-9]|[A-Za-z0-9]{5,})#(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*')(?:\.(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|#(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*'|\[[^\]\r\n\t ]+\]))+:static$
+^ts://(?:@(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/)?(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/(?:(?:[^\x00-\x20\x7F-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩/#%*?]|%[0-9A-F]{2})+/)*(?:[^\x00-\x20\x7F-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩/#%*?]|%[0-9A-F]{2})+\.(?:[A-Za-z0-9]{1,3}|[A-Za-ik-z0-9][A-Za-z0-9]{3}|j[A-Za-rt-z0-9][A-Za-z0-9]{2}|js[A-Za-np-z0-9][A-Za-z0-9]|jso[A-Za-mo-z0-9]|[A-Za-z0-9]{5,})#(?:(?:[A-Za-z_$]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])(?:[A-Za-z0-9_$]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])*|'(?:[^'\\\x00-\x08\x0A-\x1F\x7F-\x9F؜‎‏‪‫‬‭‮⁦⁧⁨⁩  ]|\\['\\nr]|\\u\{(?:[0-8BCEF]|1[0-9A-F]|7F|[89][0-9A-F]|61C|200[EF]|202[89A-E]|206[6-9]|D[89A-F][0-9A-F]{2})\})*')(?:\.(?:(?:[A-Za-z_$]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])(?:[A-Za-z0-9_$]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])*|#(?:[A-Za-z_$]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])(?:[A-Za-z0-9_$]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])*|'(?:[^'\\\x00-\x08\x0A-\x1F\x7F-\x9F؜‎‏‪‫‬‭‮⁦⁧⁨⁩  ]|\\['\\nr]|\\u\{(?:[0-8BCEF]|1[0-9A-F]|7F|[89][0-9A-F]|61C|200[EF]|202[89A-E]|206[6-9]|D[89A-F][0-9A-F]{2})\})*'|\[[^\]\x00-\x20\x7F-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩]+\]))+:static$
 
 ts case-constituent
-^ts://(?:@(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/)?(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/(?:[^/#\r\n]+/)*[^/#\r\n]+\.(?:[A-Za-z0-9]{1,3}|[A-Za-ik-z0-9][A-Za-z0-9]{3}|j[A-Za-rt-z0-9][A-Za-z0-9]{2}|js[A-Za-np-z0-9][A-Za-z0-9]|jso[A-Za-mo-z0-9]|[A-Za-z0-9]{5,})#(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*')(?:\.(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|#(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*'|\[[^\]\r\n\t ]+\]))+\.'(?:[^'\\\r\n]|\\['\\nr])*':case$
+^ts://(?:@(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/)?(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/(?:(?:[^\x00-\x20\x7F-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩/#%*?]|%[0-9A-F]{2})+/)*(?:[^\x00-\x20\x7F-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩/#%*?]|%[0-9A-F]{2})+\.(?:[A-Za-z0-9]{1,3}|[A-Za-ik-z0-9][A-Za-z0-9]{3}|j[A-Za-rt-z0-9][A-Za-z0-9]{2}|js[A-Za-np-z0-9][A-Za-z0-9]|jso[A-Za-mo-z0-9]|[A-Za-z0-9]{5,})#(?:(?:[A-Za-z_$]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])(?:[A-Za-z0-9_$]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])*|'(?:[^'\\\x00-\x08\x0A-\x1F\x7F-\x9F؜‎‏‪‫‬‭‮⁦⁧⁨⁩  ]|\\['\\nr]|\\u\{(?:[0-8BCEF]|1[0-9A-F]|7F|[89][0-9A-F]|61C|200[EF]|202[89A-E]|206[6-9]|D[89A-F][0-9A-F]{2})\})*')(?:\.(?:(?:[A-Za-z_$]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])(?:[A-Za-z0-9_$]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])*|#(?:[A-Za-z_$]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])(?:[A-Za-z0-9_$]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])*|'(?:[^'\\\x00-\x08\x0A-\x1F\x7F-\x9F؜‎‏‪‫‬‭‮⁦⁧⁨⁩  ]|\\['\\nr]|\\u\{(?:[0-8BCEF]|1[0-9A-F]|7F|[89][0-9A-F]|61C|200[EF]|202[89A-E]|206[6-9]|D[89A-F][0-9A-F]{2})\})*'|\[[^\]\x00-\x20\x7F-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩]+\]))+\.'(?:[^'\\\x00-\x08\x0A-\x1F\x7F-\x9F؜‎‏‪‫‬‭‮⁦⁧⁨⁩  ]|\\['\\nr]|\\u\{(?:[0-8BCEF]|1[0-9A-F]|7F|[89][0-9A-F]|61C|200[EF]|202[89A-E]|206[6-9]|D[89A-F][0-9A-F]{2})\})*':case$
 
 ts type-parameter
-^ts://(?:@(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/)?(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/(?:[^/#\r\n]+/)*[^/#\r\n]+\.(?:[A-Za-z0-9]{1,3}|[A-Za-ik-z0-9][A-Za-z0-9]{3}|j[A-Za-rt-z0-9][A-Za-z0-9]{2}|js[A-Za-np-z0-9][A-Za-z0-9]|jso[A-Za-mo-z0-9]|[A-Za-z0-9]{5,})#(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*')(?:\.(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|#(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*'|\[[^\]\r\n\t ]+\]))*(?::static)?<(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*>$
+^ts://(?:@(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/)?(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/(?:(?:[^\x00-\x20\x7F-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩/#%*?]|%[0-9A-F]{2})+/)*(?:[^\x00-\x20\x7F-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩/#%*?]|%[0-9A-F]{2})+\.(?:[A-Za-z0-9]{1,3}|[A-Za-ik-z0-9][A-Za-z0-9]{3}|j[A-Za-rt-z0-9][A-Za-z0-9]{2}|js[A-Za-np-z0-9][A-Za-z0-9]|jso[A-Za-mo-z0-9]|[A-Za-z0-9]{5,})#(?:(?:[A-Za-z_$]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])(?:[A-Za-z0-9_$]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])*|'(?:[^'\\\x00-\x08\x0A-\x1F\x7F-\x9F؜‎‏‪‫‬‭‮⁦⁧⁨⁩  ]|\\['\\nr]|\\u\{(?:[0-8BCEF]|1[0-9A-F]|7F|[89][0-9A-F]|61C|200[EF]|202[89A-E]|206[6-9]|D[89A-F][0-9A-F]{2})\})*')(?:\.(?:(?:[A-Za-z_$]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])(?:[A-Za-z0-9_$]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])*|#(?:[A-Za-z_$]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])(?:[A-Za-z0-9_$]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])*|'(?:[^'\\\x00-\x08\x0A-\x1F\x7F-\x9F؜‎‏‪‫‬‭‮⁦⁧⁨⁩  ]|\\['\\nr]|\\u\{(?:[0-8BCEF]|1[0-9A-F]|7F|[89][0-9A-F]|61C|200[EF]|202[89A-E]|206[6-9]|D[89A-F][0-9A-F]{2})\})*'|\[[^\]\x00-\x20\x7F-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩]+\]))*(?::static)?<(?:[A-Za-z_$]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])(?:[A-Za-z0-9_$]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])*>$
 
 ts parameter
-^ts://(?:@(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/)?(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/(?:[^/#\r\n]+/)*[^/#\r\n]+\.(?:[A-Za-z0-9]{1,3}|[A-Za-ik-z0-9][A-Za-z0-9]{3}|j[A-Za-rt-z0-9][A-Za-z0-9]{2}|js[A-Za-np-z0-9][A-Za-z0-9]|jso[A-Za-mo-z0-9]|[A-Za-z0-9]{5,})#(?:(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*')(?:\.(?:(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|#(?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*|'(?:[^'\\\r\n]|\\['\\nr])*'|\[[^\]\r\n\t ]+\]))*(?::static)?)?\((?:[A-Za-z_$]|[^\x00-\x7F])(?:[A-Za-z0-9_$]|[^\x00-\x7F])*\)$
+^ts://(?:@(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/)?(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/(?:(?:[^\x00-\x20\x7F-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩/#%*?]|%[0-9A-F]{2})+/)*(?:[^\x00-\x20\x7F-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩/#%*?]|%[0-9A-F]{2})+\.(?:[A-Za-z0-9]{1,3}|[A-Za-ik-z0-9][A-Za-z0-9]{3}|j[A-Za-rt-z0-9][A-Za-z0-9]{2}|js[A-Za-np-z0-9][A-Za-z0-9]|jso[A-Za-mo-z0-9]|[A-Za-z0-9]{5,})#(?:(?:(?:[A-Za-z_$]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])(?:[A-Za-z0-9_$]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])*|'(?:[^'\\\x00-\x08\x0A-\x1F\x7F-\x9F؜‎‏‪‫‬‭‮⁦⁧⁨⁩  ]|\\['\\nr]|\\u\{(?:[0-8BCEF]|1[0-9A-F]|7F|[89][0-9A-F]|61C|200[EF]|202[89A-E]|206[6-9]|D[89A-F][0-9A-F]{2})\})*')(?:\.(?:(?:[A-Za-z_$]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])(?:[A-Za-z0-9_$]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])*|#(?:[A-Za-z_$]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])(?:[A-Za-z0-9_$]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])*|'(?:[^'\\\x00-\x08\x0A-\x1F\x7F-\x9F؜‎‏‪‫‬‭‮⁦⁧⁨⁩  ]|\\['\\nr]|\\u\{(?:[0-8BCEF]|1[0-9A-F]|7F|[89][0-9A-F]|61C|200[EF]|202[89A-E]|206[6-9]|D[89A-F][0-9A-F]{2})\})*'|\[[^\]\x00-\x20\x7F-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩]+\]))*(?::static)?)?\((?:[A-Za-z_$]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])(?:[A-Za-z0-9_$]|[^\x00-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩])*\)$
 
 ts dependency
-^ts://(?:@(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/)?(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/(?:[^/#\r\n]+/)*package\.json#(?:@(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/)?(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+:(?:dependency|dev-dependency|peer-dependency)$
+^ts://(?:@(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/)?(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/(?:(?:[^\x00-\x20\x7F-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩/#%*?]|%[0-9A-F]{2})+/)*package\.json#(?:@(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+/)?(?:[A-Za-z0-9._-]|%[0-9A-F]{2})+:(?:dependency|dev-dependency|peer-dependency)$
 
 proto message, enum, field, enum-member, service, rpc
 ^proto://(?:\.|[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*)#[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*$
 
 proto file
-^proto://(?:\.|[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*)#(?:[^/#:\r\n]+/)*[^/#:\r\n]+\.proto:file$
+^proto://(?:\.|[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*)#(?:(?:[^\x00-\x20\x7F-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩/#%*?'\[\]\\:]|%[0-9A-F]{2})+/)*(?:[^\x00-\x20\x7F-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩/#%*?'\[\]\\:]|%[0-9A-F]{2})+\.proto:file$
 ```
 
 A reference is valid when it matches one of its language's expressions. A refused string in the corpus matches none of them.
 
+### The shape every document checks
+
+A document carrying a reference checks its shape and not its form: an edge side, an ignore entry, a baseline row, a finding's `symbol.parent`, its `symbol.ref` unless that carries a configuration's spelling ([`finding.schema.json`](../finding.schema.json)), and the `symbol` of a declaration the TypeScript section of a configuration names ([`config.schema.json`](../config.schema.json)), each matches the one expression below, and only the analyzer of the reference's own language checks the form, because a reference in shape that its language does not define is a self-check finding (`DS9003`, `DS9005`) rather than a usage error, and a third language joins without touching any document. The shape is written from the building blocks, so it admits every string every per-form expression admits, and the grammar self-test checks that it does.
+
+| Name | Expression | Reads |
+| --- | --- | --- |
+| `REF_SHAPE` | `^SCHEME://SHAPE_SCOPE#SHAPE_FRAGMENT$` | a language prefix, `://`, a scope, `#` and a fragment |
+
+It reads: a lowercase prefix and `://`; a scope that holds no whitespace, no character of the unsafe set, no `#` and no `*`, every `%` opening an escape with uppercase digits; then `#` and a fragment in which whitespace appears only inside a quoted component, the one character of the unsafe set there being a tab and each other written as an escape, a `*` only inside a quoted component or a computed key, `'`, `[` and `]` only as the quotes and brackets of one, and every `%` outside them opens an escape with uppercase digits. A Go type parameter `[T]` reads as a computed key and a TypeScript private name `#frame` as plain characters. Expanded:
+
+```text
+^[a-z][a-z0-9]*://(?:[^\x00-\x20\x7F-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩#%*]|%[0-9A-F]{2})+#(?:(?:[^\x00-\x20\x7F-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩'\[\]*%]|%[0-9A-F]{2})|'(?:[^'\\\x00-\x08\x0A-\x1F\x7F-\x9F؜‎‏‪‫‬‭‮⁦⁧⁨⁩  ]|\\['\\nr]|\\u\{(?:[0-8BCEF]|1[0-9A-F]|7F|[89][0-9A-F]|61C|200[EF]|202[89A-E]|206[6-9]|D[89A-F][0-9A-F]{2})\})*'|\[[^\]\x00-\x20\x7F-\xA0                　﻿؜‎‏‪‫‬‭‮⁦⁧⁨⁩]+\])*$
+```
+
 ## The corpus
 
-[`symbol-ref-corpus.json`](symbol-ref-corpus.json) is an array of cases. Each case carries the `input` string, its `language`, the `form` it takes or nearly takes, whether it is `accepted`, a `reason`, and for an accepted case an `example` of one or two source lines the reference denotes. Every form above has at least one accepted case, and every rule has a refused near-miss: the display name with its receiver star, a parameter carrying its type, a field written with a slash, a trailing dot, a parenthesized selector, a `#` or a `!` as a member separator, a double-quoted string, a Go bracket on a TypeScript type parameter, an unquoted or double-quoted discriminant before `:case`, a leading dot or a field number in a Protocol Buffers fragment, a schema file with no `:file` selector, a package with a trailing dot, a percent-encoded identifier, a stray CR or LF, and a spelling in which the selector precedes its operand.
+[`symbol-ref-corpus.json`](symbol-ref-corpus.json) is an array of cases. Each case carries the `input` string, its `language`, the `form` it takes or nearly takes, whether it is `accepted`, a `reason`, and for an accepted case an `example` of one or two source lines the reference denotes. Every form above has at least one accepted case, and every rule has a refused near-miss: the display name with its receiver star, a parameter carrying its type, a field written with a slash, a trailing dot, a parenthesized selector, a `#` or a `!` as a member separator, a double-quoted string, a Go bracket on a TypeScript type parameter, an unquoted or double-quoted discriminant before `:case`, a leading dot or a field number in a Protocol Buffers fragment, a schema file with no `:file` selector, a package with a trailing dot, a percent-encoded identifier, a stray CR or LF, a raw character of the unsafe set other than a tab inside a quoted component, an escape with lowercase digits, with a leading zero or of a character outside the set, a spelling in which the selector precedes its operand, and, for every path segment, a raw space, a raw `#`, a raw `%`, lowercase escape digits and a `%` that opens no escape. Every refused case also carries `shape`, whether the expression of [The shape every document checks](#the-shape-every-document-checks) admits it, and every accepted case is admitted by it.
 
 ## What other documents fix
 

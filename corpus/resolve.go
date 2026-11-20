@@ -20,21 +20,25 @@ var (
 	ErrNoLine          = errors.New("manifest entry has no line")
 	ErrSharedPosition  = errors.New("manifest binds two names to one file and line")
 	ErrNoRef           = errors.New("manifest entry a facts entry names has no ref")
-	ErrStrayRef        = errors.New("manifest entry no facts entry names has a ref")
+	ErrStrayRef        = errors.New("manifest entry neither a facts entry nor a row reporting a finding names has a ref")
 )
 
 // Resolve binds every logical name the expectation file uses to its site in the
 // manifest of language's rendering: each row's symbol, type_error_skips name,
 // name_literal and edge evaluation's symbol, and the names of each facts entry
-// that applies to language, which also need the manifest's ref. A configured
+// that applies to language, which also need the manifest's ref. A ref is
+// allowed besides only on the name of a row that reports a finding. A configured
 // root or declaration resolves to no site: its finding sits in the configuration
 // document the runner writes. It fails on a name used twice or bound by neither
 // or both documents, an entry without a file or a line, a manifest name or
 // configured entry no expectation uses, and two names at one position.
 func Resolve(expect *Expectation, language string, manifest *Manifest) (map[string]Site, error) {
-	r := &resolver{expect: expect, language: language, manifest: manifest, sites: map[string]Site{}, used: map[string]bool{}, rows: map[string]bool{}, facts: map[string]bool{}}
+	r := &resolver{expect: expect, language: language, manifest: manifest, sites: map[string]Site{}, used: map[string]bool{}, rows: map[string]bool{}, reported: map[string]bool{}, facts: map[string]bool{}}
 	for i := range expect.Expect {
 		r.rows[expect.Expect[i].Symbol] = true
+		if expect.Expect[i].pinsRef() {
+			r.reported[expect.Expect[i].Symbol] = true
+		}
 	}
 	r.evaluationSymbols()
 	r.skips()
@@ -56,6 +60,7 @@ type resolver struct {
 	sites    map[string]Site
 	used     map[string]bool
 	rows     map[string]bool
+	reported map[string]bool
 	facts    map[string]bool
 	errs     []error
 }
@@ -190,7 +195,8 @@ func (r *resolver) factName(row *FactRow) {
 }
 
 // manifestNames names every manifest name nothing uses, every position two
-// names share, and every ref on a name no facts entry names.
+// names share, and every ref on a name that neither a facts entry nor a row
+// reporting a finding names.
 func (r *resolver) manifestNames() {
 	at := map[Site]string{}
 	for _, name := range slices.Sorted(maps.Keys(r.manifest.Symbols)) {
@@ -198,7 +204,7 @@ func (r *resolver) manifestNames() {
 			r.fail(ErrOrphanSymbol, name)
 		}
 		entry := r.manifest.Symbols[name]
-		if entry.Ref != "" && !r.facts[name] {
+		if entry.Ref != "" && !r.facts[name] && !r.reported[name] {
 			r.fail(ErrStrayRef, name)
 		}
 		if entry.File == "" || entry.Line == nil {

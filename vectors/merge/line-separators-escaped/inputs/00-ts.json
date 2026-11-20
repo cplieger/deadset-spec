@@ -47,9 +47,9 @@
         "end_line": 4
       },
       "symbol": {
-        "ref": "ts://@example/app/src/labels.ts#Labels.'line break para'",
+        "ref": "ts://@example/app/src/labels.ts#Labels.'line\\u{2028}break\\u{2029}para'",
         "kind": "class-member",
-        "name": "Labels.'line break para'",
+        "name": "Labels.'line\\u{2028}break\\u{2029}para'",
         "parent": "ts://@example/app/src/labels.ts#Labels",
         "exported": false,
         "size_lines": 1
@@ -86,7 +86,13 @@
       "matched": 2
     }
   ],
-  "type_error_skips": [],
+  "type_error_skips": [
+    {
+      "path": "web/src/labels.ts",
+      "line": 4,
+      "message": "Type '\"line break para\"' is not assignable to type 'number'."
+    }
+  ],
   "notes": [],
   "unanswered_questions": [],
   "conventions_applied": [],

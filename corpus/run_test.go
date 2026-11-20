@@ -85,33 +85,83 @@ func TestConfiguredDeclarationRefSpellsEachEntryShape(t *testing.T) {
 func TestEdgeDifferencesHoldTheReportToTheEntries(t *testing.T) {
 	manifest := &Manifest{Symbols: map[string]ManifestPosition{"Handler": {File: "target/a.ts", Line: new(4)}}}
 	finding := &wireFinding{Code: "DS1001", Position: at("a.ts", 4)}
+	sides := map[string]string{
+		"wire/one provides":   "ts://./a.ts#Handler",
+		"wire/two used_by":    "ts://./a%20b.ts#Headers.'content type'",
+		"wire/three provides": "ts://./a.ts#Gone",
+	}
 	expect := &Expectation{EdgeEvaluations: []Evaluation{
 		{Edge: "wire/one", Side: "provides", State: "dead", Symbol: "Handler", Report: "DS1001"},
 		{Edge: "wire/two", Side: "used_by", State: "live"},
 	}}
 	agreeing := &wireReport{EdgeEvaluations: []wireEvaluation{
-		{Edge: "wire/one", Side: "provides", State: "dead", Finding: finding},
-		{Edge: "wire/two", Side: "used_by", State: "live"},
+		{Edge: "wire/one", Side: "provides", Symbol: "ts://./a.ts#Handler", State: "dead", Finding: finding},
+		{Edge: "wire/two", Side: "used_by", Symbol: "ts://./a%20b.ts#Headers.'content type'", State: "live"},
 	}}
-	if got := edgeDifferences(expect, manifest, agreeing); got != "" {
+	if got := edgeDifferences(expect, manifest, sides, agreeing); got != "" {
 		t.Errorf("edgeDifferences(agreeing) = %q, want none", got)
 	}
 	expect.EdgeEvaluations[0].Report = "DS1002"
 	expect.EdgeEvaluations = append(expect.EdgeEvaluations, Evaluation{Edge: "wire/three", Side: "provides", State: "absent"})
 	differing := &wireReport{EdgeEvaluations: []wireEvaluation{
-		{Edge: "wire/one", Side: "provides", State: "dead", Finding: finding},
-		{Edge: "wire/two", Side: "used_by", State: "absent"},
-		{Edge: "wire/four", Side: "used_by", State: "live"},
+		{Edge: "wire/one", Side: "provides", Symbol: "ts://./a.ts#Handler", State: "dead", Finding: finding},
+		{Edge: "wire/two", Side: "used_by", Symbol: "ts://./a%20b.ts#Headers.'content type'", State: "absent"},
+		{Edge: "wire/four", Side: "used_by", Symbol: "ts://./a.ts#Four", State: "live"},
 	}}
 	want := "wire/one provides want DS1002 at target/a.ts:4, got DS1001 at target/a.ts:4; " +
 		"wire/two used_by state want live got absent; " +
 		"want exactly one evaluation of wire/three provides, got 0; " +
 		"evaluation of wire/four used_by, which no entry names"
-	if got := edgeDifferences(expect, manifest, differing); got != want {
+	if got := edgeDifferences(expect, manifest, sides, differing); got != want {
 		t.Errorf("edgeDifferences(differing) =\n%q\nwant\n%q", got, want)
 	}
-	if got := edgeDifferences(&Expectation{}, manifest, agreeing); !strings.Contains(got, "which no entry names") {
+	if got := edgeDifferences(&Expectation{}, manifest, sides, agreeing); !strings.Contains(got, "which no entry names") {
 		t.Errorf("edgeDifferences(no entries) = %q, want every record named", got)
+	}
+}
+
+// TestEdgeDifferencesHoldTheSymbolToTheDocumentsBytes pins that a record's
+// symbol is the side's reference as the edges document spells it, byte for
+// byte, so a side read back decoded, re-encoded or normalized fails.
+func TestEdgeDifferencesHoldTheSymbolToTheDocumentsBytes(t *testing.T) {
+	sides := map[string]string{"wire/one provides": "ts://./src/a%23b.ts#X"}
+	expect := &Expectation{EdgeEvaluations: []Evaluation{{Edge: "wire/one", Side: "provides", State: "live"}}}
+	for _, symbol := range []string{"ts://./src/a#b.ts#X", "ts://./src/a%23B.ts#X", "ts://./src/a%2523b.ts#X", ""} {
+		report := &wireReport{EdgeEvaluations: []wireEvaluation{{Edge: "wire/one", Side: "provides", Symbol: symbol, State: "live"}}}
+		want := "wire/one provides symbol want ts://./src/a%23b.ts#X got " + symbol
+		if got := edgeDifferences(expect, &Manifest{}, sides, report); got != want {
+			t.Errorf("edgeDifferences(symbol %q) = %q, want %q", symbol, got, want)
+		}
+	}
+}
+
+// TestAnswerOfHoldsAFindingToTheRefTheManifestPins pins that a row whose
+// manifest entry spells a ref is answered by a finding carrying exactly that
+// reference, and a row whose entry spells none by its position alone.
+func TestAnswerOfHoldsAFindingToTheRefTheManifestPins(t *testing.T) {
+	row := &Row{Symbol: "unused", Report: "DS1002", Confidence: "certain"}
+	sites := map[string]Site{"unused": {File: "target/src/my file.ts", Line: 1}}
+	held := func(ref string) *analysis {
+		return &analysis{report: &wireReport{Findings: []wireFinding{func() wireFinding {
+			found := wireFinding{Code: "DS1002", Confidence: "certain", Position: at("src/my file.ts", 1)}
+			found.Symbol.Ref = ref
+			return found
+		}()}}}
+	}
+	pinned := &Manifest{Symbols: map[string]ManifestPosition{"unused": {File: "target/src/my file.ts", Line: new(1), Ref: "ts://./src/my%20file.ts#unused"}}}
+	unpinned := &Manifest{Symbols: map[string]ManifestPosition{"unused": {File: "target/src/my file.ts", Line: new(1)}}}
+	for _, tc := range []struct {
+		manifest *Manifest
+		ref      string
+		want     string
+	}{
+		{pinned, "ts://./src/my%20file.ts#unused", ""},
+		{pinned, "ts://./src/my file.ts#unused", "want the finding at target/src/my file.ts:1 to carry the reference ts://./src/my%20file.ts#unused, got ts://./src/my file.ts#unused"},
+		{unpinned, "ts://./src/my file.ts#unused", ""},
+	} {
+		if _, got := answerOf(&Expectation{}, row, sites, tc.manifest, held(tc.ref)); got != tc.want {
+			t.Errorf("answerOf(ref %q) message = %q, want %q", tc.ref, got, tc.want)
+		}
 	}
 }
 

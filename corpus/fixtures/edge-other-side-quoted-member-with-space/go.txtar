@@ -1,0 +1,38 @@
+The Go rendering: a main package calling one function, and an edges document
+whose TypeScript side names a quoted member holding a space.
+
+-- fixture.json --
+{
+  "symbols": {
+    "contentType": {
+      "file": "target/main.go",
+      "line": 8
+    }
+  }
+}
+-- target/go.mod --
+module example.com/fixture
+
+go 1.27.0
+-- target/main.go --
+package main
+
+func main() {
+	println(contentType())
+}
+
+// contentType is the provides side of the edge headers/content-type.
+func contentType() string {
+	return "text/plain"
+}
+-- target/deadset-edges.json --
+{
+  "description": "One edge whose TypeScript side names a quoted member holding a space.",
+  "edges": {
+    "headers/content-type": {
+      "because": "generated",
+      "provides": "go://example.com/fixture#contentType",
+      "used_by": "ts://@example/web/src/h.ts#Headers.'content type'"
+    }
+  }
+}

@@ -1,0 +1,4 @@
+{
+  "target": { "kind": "application" },
+  "ts": { "serializers": [{ "symbol": "ts://./src/my file.ts#Ser" }] }
+}

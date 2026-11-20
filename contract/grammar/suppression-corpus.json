@@ -352,11 +352,11 @@
     "reason": "A Next.js catch-all route: brackets and a run of dots inside a segment are characters of it, and the segment is neither . nor .."
   },
   {
-    "input": { "code": "DS1001", "symbol": "ts://@example/app/src/lib/date utils/format.ts#format", "path": "src/lib/date utils/format.ts", "reason": "Kept for the v3 API promise." },
+    "input": { "code": "DS1001", "symbol": "ts://@example/app/src/lib/date%20utils/format.ts#format", "path": "src/lib/date utils/format.ts", "reason": "Kept for the v3 API promise." },
     "kind": "ignore-entry",
     "accepted": true,
     "rule": "path-form",
-    "reason": "A space is a character of a segment and is written as it is."
+    "reason": "A space is a character of a path segment: the path writes it as it is, and the symbol percent-encodes it, as symbol-ref.md Path segments states, so the two agree once the symbol's path is decoded."
   },
   {
     "input": { "code": "DS1001", "symbol": "go://example.com/app/internal/catalog#Resolve", "path": "internal/catalog/r\u00e9sum\u00e9.go", "reason": "Kept for the v3 API promise." },

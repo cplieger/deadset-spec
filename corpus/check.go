@@ -11,6 +11,7 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/cplieger/deadset-spec/v8/suppress"
 	"github.com/cplieger/deadset-spec/v8/vocab"
 )
 
@@ -230,7 +231,8 @@ func checkRendering(expect *Expectation, rendering *Rendering) error {
 	if err != nil {
 		return fmt.Errorf("rendering %q: %w", language, err)
 	}
-	errs := checkConfigurations(expect, language, manifest.Configurations)
+	errs := checkManifestRefs(language, manifest)
+	errs = append(errs, checkConfigurations(expect, language, manifest.Configurations)...)
 	errs = append(errs, checkConfigurationsNotBuilt(expect, language, manifest.Configurations, manifest.ConfigurationsNotBuilt)...)
 	errs = append(errs, checkEdgeEvaluations(expect, language, files)...)
 	errs = append(errs, checkInstalledPackages(language, files)...)
@@ -246,6 +248,20 @@ func checkRendering(expect *Expectation, rendering *Rendering) error {
 	}
 	errs = append(errs, checkDirectories(expect, language, files)...)
 	return errors.Join(errs...)
+}
+
+// checkManifestRefs holds every ref a manifest spells to a reference of the
+// rendering's own language that takes a form contract/grammar/symbol-ref.md
+// fixes, so a ref the runner compares a report with is one an analyzer can write.
+func checkManifestRefs(language string, manifest *Manifest) []error {
+	var errs []error
+	for _, name := range slices.Sorted(maps.Keys(manifest.Symbols)) {
+		ref := manifest.Symbols[name].Ref
+		if ref != "" && (!strings.HasPrefix(ref, language+"://") || !suppress.ValidReference(ref)) {
+			errs = append(errs, fmt.Errorf("rendering %q symbol %q spells the ref %q, want a %s reference in a form of the grammar", language, name, ref, language))
+		}
+	}
+	return errs
 }
 
 // checkDirectories holds the rendering to a directory for the target and every
@@ -413,6 +429,21 @@ type edgesDocument struct {
 	Description string `json:"description"`
 }
 
+// edgeSides is the reference an edges document spells for each side of each
+// edge, keyed by the edge's identifier, a space and the side.
+func edgeSides(data []byte) (map[string]string, error) {
+	var edges edgesDocument
+	if err := DecodeStrict(data, &edges); err != nil {
+		return nil, err
+	}
+	sides := map[string]string{}
+	for id, edge := range edges.Edges {
+		sides[id+" provides"] = edge.Provides
+		sides[id+" used_by"] = edge.UsedBy
+	}
+	return sides, nil
+}
+
 // checkEdgeEvaluations holds edge_evaluations to the edges document of the
 // rendering: both or neither, only in a one-language fixture, every entry naming
 // a declared side once, and every side the rendering's language spells named.
@@ -428,17 +459,15 @@ func checkEdgeEvaluations(expect *Expectation, language string, files map[string
 	case len(expect.Languages) != 1:
 		return []error{fmt.Errorf("edge_evaluations named by a fixture listing %v, want one language", expect.Languages)}
 	}
-	var edges edgesDocument
-	if err := DecodeStrict(data, &edges); err != nil {
+	spelled, err := edgeSides(data)
+	if err != nil {
 		return []error{fmt.Errorf("rendering %q %s: %w", language, edgesDocumentPath, err)}
 	}
 	prefix := language + "://"
 	sides := map[string]bool{}
-	for id, edge := range edges.Edges {
-		for side, ref := range map[string]string{"provides": edge.Provides, "used_by": edge.UsedBy} {
-			if strings.HasPrefix(ref, prefix) {
-				sides[id+" "+side] = true
-			}
+	for key, ref := range spelled {
+		if strings.HasPrefix(ref, prefix) {
+			sides[key] = true
 		}
 	}
 	var errs []error

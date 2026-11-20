@@ -47,11 +47,11 @@ var (
 const (
 	codeWant   = "DS followed by four digits"
 	pathWant   = "a path relative to the target root, with the solidus as separator"
-	symbolWant = "a stable symbol reference, <scheme>://<reference>"
+	symbolWant = "a stable symbol reference in the shape symbol-ref.md's The shape every document checks states"
 )
 
 // forms are the code and path patterns of contract/finding.schema.json, which
-// an entry's code and path take, and the scheme a reference opens with.
+// an entry's code and path take.
 var forms = sync.OnceValues(func() (*entryForms, error) {
 	data, err := spec.Contract.ReadFile("contract/finding.schema.json")
 	if err != nil {
@@ -85,8 +85,10 @@ var forms = sync.OnceValues(func() (*entryForms, error) {
 
 type entryForms struct{ code, path *regexp.Regexp }
 
-// scheme is the opening of a stable symbol reference: a scheme name and ://.
-var scheme = regexp.MustCompile(`^[a-z][a-z0-9]*://[^\r\n]+$`)
+// shapeOf is the shape every document checks a reference against, which
+// finding.schema.json#/$defs/reference carries too; a record of another scheme
+// is checked for nothing more, because only its own analyzer reads its form.
+var shapeOf = regexp.MustCompile(referenceShape)
 
 // ofScheme reports whether symbol opens with the scheme, "go://" for one.
 func ofScheme(symbol, own string) bool { return strings.HasPrefix(symbol, own) }
@@ -188,7 +190,7 @@ func (s *shape) entry(raw json.RawMessage, at Site) (Entry, error) {
 		return Entry{}, s.refuse(nil, "an entry naming no symbol", s.entryWant, at)
 	case !held.code.MatchString(*wire.Code):
 		return Entry{}, s.refuse(nil, strconv.Quote(*wire.Code), codeWant, at)
-	case !scheme.MatchString(*wire.Symbol):
+	case !shapeOf.MatchString(*wire.Symbol):
 		return Entry{}, s.refuse(nil, strconv.Quote(*wire.Symbol), symbolWant, at)
 	case value(wire.Path) != "" && !held.path.MatchString(*wire.Path):
 		return Entry{}, s.refuse(nil, strconv.Quote(*wire.Path), pathWant, at)

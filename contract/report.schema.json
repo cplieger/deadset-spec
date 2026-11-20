@@ -507,7 +507,7 @@
           },
           "symbol": {
             "description": "The stable symbol reference the edge names on this side, in the grammar grammar/symbol-ref.md states, which is the single owner of that form.",
-            "type": "string"
+            "$ref": "finding.schema.json#/$defs/reference"
           },
           "state": {
             "description": "This side's verdict: live when the product enumerates the symbol and holds no finding for it, dead when it enumerates the symbol and holds a finding only a live paired symbol could cancel, absent when it does not enumerate the symbol at all. A side no product evaluated has no record here and is not absent, because nothing looked.",
@@ -572,7 +572,7 @@
               },
               "symbol": {
                 "description": "The stable symbol reference the suppression named, in the grammar grammar/symbol-ref.md states. Present on an ignore entry and a baseline row, which name one; absent on an inline directive, which is scoped by its position instead.",
-                "type": "string"
+                "$ref": "finding.schema.json#/$defs/reference"
               },
               "path": {
                 "description": "The path of the file the suppression scopes to, relative to the target root, in the path form: segments joined by /, none of them empty, . or .., so never absolute, with no leading ./ and no trailing /; no control character, U+0000 to U+001F or U+007F; every other character, a space, a backslash, which is no separator, a +, a $, a bracket, a parenthesis or one outside ASCII, written as it is.",
@@ -612,7 +612,7 @@
           },
           "symbol": {
             "description": "The stable symbol reference the record is about, which a text line renders as its name: the declaration the suppression bound to, or the file form of the document that holds the suppression when it bound to no declaration.",
-            "type": "string"
+            "$ref": "finding.schema.json#/$defs/reference"
           },
           "message": {
             "description": "Why the suppression is stale, in one sentence a text line renders verbatim: the mechanism and the code it named, and where the symbol reports a different code, that code, so the maintainer corrects the code rather than hunting for it.",

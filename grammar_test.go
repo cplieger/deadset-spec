@@ -328,6 +328,7 @@ type symbolRefCase struct {
 	Accepted bool   `json:"accepted"`
 	Reason   string `json:"reason"`
 	Example  string `json:"example"`
+	Shape    *bool  `json:"shape"`
 }
 
 func loadSymbolRefCorpus(t *testing.T) []symbolRefCase {
@@ -1112,6 +1113,7 @@ func publishedExpressions(t *testing.T) map[string]string {
 	for key, expr := range symbolRefExpandedForms(t, symbolRef) {
 		out["symbol-ref form "+key.String()] = expr
 	}
+	out["symbol-ref shape"] = referenceShape(t)
 	inline := compileInlineExpressions(t)
 	out["suppression candidate"] = inline.candidate.String()
 	out["suppression well-formed"] = inline.wellFormed.String()

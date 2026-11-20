@@ -1,0 +1,9 @@
+{
+  "symbols": {
+    "unused": {
+      "file": "target/src/100%.ts",
+      "line": 2,
+      "ref": "ts://@example/target/src/100%25.ts#unused"
+    }
+  }
+}

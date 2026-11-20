@@ -41,13 +41,17 @@ const (
 
 // reportFindingRefPaths are the references a report makes into the finding
 // schema, as paths into the schema tree: the members a component's listing holds,
-// the edge an edge evaluation names and the pending finding it carries, and the
-// reported findings.
+// the edge an edge evaluation names, the symbol it evaluates and the pending
+// finding it carries, the reported findings, and the reference a stale
+// suppression's entry names and the one the record is about.
 var reportFindingRefPaths = []string{
 	"/" + reportMemberItemsPath + "/$ref",
 	"/properties/edge_evaluations/items/properties/edge/$ref",
 	"/properties/edge_evaluations/items/properties/finding/$ref",
+	"/properties/edge_evaluations/items/properties/symbol/$ref",
 	"/properties/findings/items/$ref",
+	"/" + reportStaleItemPath + "/properties/entry/properties/symbol/$ref",
+	"/" + reportStaleItemPath + "/properties/symbol/$ref",
 }
 
 func loadReportSchema(t *testing.T) map[string]any {

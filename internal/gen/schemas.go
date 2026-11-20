@@ -23,11 +23,16 @@ const (
 
 // expandedConfig is the configuration schema's source with every key declared
 // inline, because each product walks it by key path, from a source that states a
-// repeated sub-schema once under $defs.
+// repeated sub-schema once under $defs. A value schema another document defines,
+// such as the stable symbol reference, is copied in through x-inline, because
+// each key's value schema compiles on its own.
 func expandedConfig(fsys fs.FS) (*value, error) {
 	src, err := readValue(fsys, configSource)
 	if err != nil {
 		return nil, err
+	}
+	if err = inlineDefinitions(fsys, src); err != nil {
+		return nil, fmt.Errorf("%s: %w", configSource, err)
 	}
 	defs := src.get("$defs")
 	if defs == nil {

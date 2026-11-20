@@ -188,6 +188,7 @@
     "language": "go",
     "form": "package-level",
     "accepted": false,
+    "shape": false,
     "reason": "No language prefix. Every reference starts with its language and the three characters ://, so that a Go symbol and a TypeScript symbol of one name stay distinct."
   },
   {
@@ -195,6 +196,7 @@
     "language": "go",
     "form": "package-level",
     "accepted": false,
+    "shape": false,
     "reason": "The language prefix is lowercase and compared bytewise."
   },
   {
@@ -202,6 +204,7 @@
     "language": "go",
     "form": "package-level",
     "accepted": false,
+    "shape": false,
     "reason": "Whitespace never appears in a Go reference."
   },
   {
@@ -209,6 +212,7 @@
     "language": "go",
     "form": "package-level",
     "accepted": false,
+    "shape": true,
     "reason": "A Go identifier does not start with a digit."
   },
   {
@@ -216,6 +220,7 @@
     "language": "go",
     "form": "package-level",
     "accepted": false,
+    "shape": true,
     "reason": "Percent-encoding is refused: a reference is compared as bytes and never decoded, so the non-ASCII identifier is carried as UTF-8."
   },
   {
@@ -223,6 +228,7 @@
     "language": "go",
     "form": "package",
     "accepted": false,
+    "shape": false,
     "reason": "No fragment separator. The package itself is spelled with a trailing #, so that a scope is never mistaken for a symbol."
   },
   {
@@ -230,6 +236,7 @@
     "language": "go",
     "form": "package",
     "accepted": false,
+    "shape": true,
     "reason": "An import path neither starts nor ends with a slash."
   },
   {
@@ -237,6 +244,7 @@
     "language": "go",
     "form": "package-level",
     "accepted": false,
+    "shape": false,
     "reason": "A dot-qualified shape has no fragment separator, and a path such as gopkg.in/yaml.v3.Node would split ambiguously."
   },
   {
@@ -244,6 +252,7 @@
     "language": "go",
     "form": "method",
     "accepted": false,
+    "shape": false,
     "reason": "The display name with its receiver star is symbol.name, never the reference; a type has at most one method of a name whatever the receiver kind, so the star carries nothing."
   },
   {
@@ -275,6 +284,7 @@
     "language": "go",
     "form": "parameter",
     "accepted": false,
+    "shape": false,
     "reason": "A parameter carries no type in its spelling; only its name is."
   },
   {
@@ -282,6 +292,7 @@
     "language": "go",
     "form": "parameter",
     "accepted": false,
+    "shape": true,
     "reason": "Empty parentheses name no parameter."
   },
   {
@@ -289,6 +300,7 @@
     "language": "go",
     "form": "parameter",
     "accepted": false,
+    "shape": true,
     "reason": "The type parameters of a function do not appear in a parameter's reference; the function's own reference stands before the parentheses."
   },
   {
@@ -296,6 +308,7 @@
     "language": "go",
     "form": "parameter",
     "accepted": false,
+    "shape": true,
     "reason": "A parameter follows a function or a method, so no chain deeper than a type and its method carries one."
   },
   {
@@ -303,6 +316,7 @@
     "language": "go",
     "form": "parameter",
     "accepted": false,
+    "shape": true,
     "reason": "A parameter ends the reference; no component follows it."
   },
   {
@@ -310,6 +324,7 @@
     "language": "go",
     "form": "method",
     "accepted": false,
+    "shape": true,
     "reason": "A trailing dot leaves the chain incomplete."
   },
   {
@@ -317,6 +332,7 @@
     "language": "go",
     "form": "method",
     "accepted": false,
+    "shape": true,
     "reason": "Members are joined by a dot. A second # is not a member separator, because # is the scope separator here."
   },
   {
@@ -324,6 +340,7 @@
     "language": "go",
     "form": "method",
     "accepted": false,
+    "shape": true,
     "reason": "A declaration carries no selector; the Go selectors are file, require and replace, and each names a non-code subject."
   },
   {
@@ -331,6 +348,7 @@
     "language": "go",
     "form": "method",
     "accepted": false,
+    "shape": false,
     "reason": "A reference never contains LF, so that it can be a line's field, a hash input separated by LF and a JSON string alike."
   },
   {
@@ -338,6 +356,7 @@
     "language": "go",
     "form": "method",
     "accepted": false,
+    "shape": false,
     "reason": "A reference never contains CR."
   },
   {
@@ -345,6 +364,7 @@
     "language": "go",
     "form": "method",
     "accepted": false,
+    "shape": true,
     "reason": "Type arguments never appear on a container; the method of a generic type is spelled List.Push."
   },
   {
@@ -352,6 +372,7 @@
     "language": "go",
     "form": "interface-method",
     "accepted": false,
+    "shape": true,
     "reason": "A signature never appears; an interface method is named, not typed."
   },
   {
@@ -359,6 +380,7 @@
     "language": "go",
     "form": "field",
     "accepted": false,
+    "shape": true,
     "reason": "The only member separator is a dot."
   },
   {
@@ -366,6 +388,7 @@
     "language": "go",
     "form": "field",
     "accepted": false,
+    "shape": false,
     "reason": "Whitespace never appears in a Go reference, not even after the member separator."
   },
   {
@@ -373,6 +396,7 @@
     "language": "go",
     "form": "field",
     "accepted": false,
+    "shape": true,
     "reason": "A slash belongs to the import path, before the #; a field is reached from its struct with a dot."
   },
   {
@@ -380,6 +404,7 @@
     "language": "go",
     "form": "type-parameter",
     "accepted": false,
+    "shape": false,
     "reason": "The constraint is not part of the reference; only the type parameter's name is."
   },
   {
@@ -387,6 +412,7 @@
     "language": "go",
     "form": "type-parameter",
     "accepted": false,
+    "shape": false,
     "reason": "Empty brackets name no type parameter."
   },
   {
@@ -394,6 +420,7 @@
     "language": "go",
     "form": "type-parameter",
     "accepted": false,
+    "shape": true,
     "reason": "Type arguments never appear on a container; a method's type parameter follows List.Map and the receiver type's parameter has no reference."
   },
   {
@@ -401,6 +428,7 @@
     "language": "go",
     "form": "type-parameter",
     "accepted": false,
+    "shape": true,
     "reason": "A type parameter follows a function or a method, so no chain deeper than a type and its method carries one."
   },
   {
@@ -408,6 +436,7 @@
     "language": "go",
     "form": "file",
     "accepted": false,
+    "shape": true,
     "reason": "A selector follows its operand, after a colon, as in render_windows.go:file."
   },
   {
@@ -415,6 +444,7 @@
     "language": "go",
     "form": "file",
     "accepted": false,
+    "shape": true,
     "reason": "Selectors are lowercase and compared bytewise."
   },
   {
@@ -422,6 +452,7 @@
     "language": "go",
     "form": "require",
     "accepted": false,
+    "shape": false,
     "reason": "A require directive is spelled by its module path alone; the required version is the directive's value, not its identity, and whitespace never appears."
   },
   {
@@ -429,6 +460,7 @@
     "language": "go",
     "form": "require",
     "accepted": false,
+    "shape": false,
     "reason": "The go.mod keyword order is not the reference: the selector follows the module path after a colon."
   },
   {
@@ -436,7 +468,112 @@
     "language": "go",
     "form": "replace",
     "accepted": false,
+    "shape": true,
     "reason": "exclude is not a selector: an exclude directive is never a finding subject, so it has no reference."
+  },
+  {
+    "input": "go://example.com/app/c%2B%2B#Run",
+    "language": "go",
+    "form": "package-level",
+    "accepted": true,
+    "reason": "A package directory may hold a byte outside the import-path element set, here the plus signs of c++; each is percent-encoded with uppercase digits.",
+    "example": "func Run() {}"
+  },
+  {
+    "input": "go://example.com/app#never%20built.go:file",
+    "language": "go",
+    "form": "file",
+    "accepted": true,
+    "reason": "A file name is a file operand: its space is percent-encoded, since a reference holds no whitespace.",
+    "example": "//go:build ignore"
+  },
+  {
+    "input": "go://example.com/app#100%25_x.go:file",
+    "language": "go",
+    "form": "file",
+    "accepted": true,
+    "reason": "A percent sign in a file name is itself percent-encoded, so every % in a reference opens an escape.",
+    "example": "//go:build ignore"
+  },
+  {
+    "input": "go://example.com/app#a%23b%3Ac.go:file",
+    "language": "go",
+    "form": "file",
+    "accepted": true,
+    "reason": "A file operand percent-encodes the # and the : that a file name may hold and the fragment may not carry raw.",
+    "example": "//go:build ignore"
+  },
+  {
+    "input": "go://example.com/app/c++#Run",
+    "language": "go",
+    "form": "package-level",
+    "accepted": false,
+    "shape": true,
+    "reason": "A + in an import-path element is percent-encoded, %2B."
+  },
+  {
+    "input": "go://example.com/a b#X",
+    "language": "go",
+    "form": "package-level",
+    "accepted": false,
+    "shape": false,
+    "reason": "A space in an import-path element is percent-encoded; a reference holds no whitespace."
+  },
+  {
+    "input": "go://example.com/a%2g#X",
+    "language": "go",
+    "form": "package-level",
+    "accepted": false,
+    "shape": false,
+    "reason": "A % opens an escape of two uppercase hexadecimal digits."
+  },
+  {
+    "input": "go://example.com/a%2fb#X",
+    "language": "go",
+    "form": "package-level",
+    "accepted": false,
+    "shape": false,
+    "reason": "Escape digits are uppercase hexadecimal; %2f is not the canonical spelling and matches no form."
+  },
+  {
+    "input": "go://example.com/app#never built.go:file",
+    "language": "go",
+    "form": "file",
+    "accepted": false,
+    "shape": false,
+    "reason": "A space in a file operand is percent-encoded, %20."
+  },
+  {
+    "input": "go://example.com/app#100%_x.go:file",
+    "language": "go",
+    "form": "file",
+    "accepted": false,
+    "shape": false,
+    "reason": "A raw % in a file operand opens no escape; it is spelled %25."
+  },
+  {
+    "input": "go://example.com/app#a%4.go:file",
+    "language": "go",
+    "form": "file",
+    "accepted": false,
+    "shape": false,
+    "reason": "A % followed by fewer than two hexadecimal digits opens no escape."
+  },
+  {
+    "input": "go://example.com/app#a:b.go:file",
+    "language": "go",
+    "form": "file",
+    "accepted": false,
+    "shape": true,
+    "reason": "A colon in a file operand is percent-encoded, %3A, since a raw colon opens a selector."
+  },
+  {
+    "input": "go://example.com/app#a[1].go:file",
+    "language": "go",
+    "form": "file",
+    "accepted": false,
+    "shape": true,
+    "reason": "A square bracket in a file operand is percent-encoded, since a raw bracket opens a computed key."
   },
   {
     "input": "ts://@example/app/src/wire.ts#",
@@ -507,6 +644,7 @@
     "language": "ts",
     "form": "module",
     "accepted": false,
+    "shape": true,
     "reason": "A JSON file declares nothing a reference can name, so json is the one extension of letters and digits no path takes."
   },
   {
@@ -586,6 +724,7 @@
     "language": "ts",
     "form": "alias",
     "accepted": false,
+    "shape": true,
     "reason": "A block's component before an alias is always quoted, so an unquoted module name never comes before an alias, though the module declaration itself is spelled unquoted."
   },
   {
@@ -593,6 +732,7 @@
     "language": "ts",
     "form": "alias",
     "accepted": false,
+    "shape": true,
     "reason": "Only a declare module block, whose name is a string, holds an export specifier, so an identifier never comes before an alias."
   },
   {
@@ -666,6 +806,54 @@
     "accepted": true,
     "reason": "A non-ASCII identifier is carried as UTF-8 and is not quoted, because it is an identifier.",
     "example": "größe: string;"
+  },
+  {
+    "input": "ts://@example/app/src/wire.ts#Prices.'a€b'",
+    "language": "ts",
+    "form": "interface-member",
+    "accepted": true,
+    "reason": "A name of characters a reference may hold that is not an ECMAScript IdentifierName, here one holding a currency sign, is quoted, because the test is the IdentifierName production.",
+    "example": "'a€b': number;"
+  },
+  {
+    "input": "ts://@example/app/src/wire.ts#Prices.'a​b'",
+    "language": "ts",
+    "form": "interface-member",
+    "accepted": true,
+    "reason": "A name holding a format character IdentifierName does not admit, here U+200B, is quoted, so the character stands inside quotes.",
+    "example": "'a​b': number;"
+  },
+  {
+    "input": "ts://@example/app/src/wire.ts#Prices.'#a'",
+    "language": "ts",
+    "form": "interface-member",
+    "accepted": true,
+    "reason": "A string key whose value starts with a number sign is not an IdentifierName and is quoted, so it never spells the private name #a, which only a class member can be.",
+    "example": "'#a': number;"
+  },
+  {
+    "input": "ts://@example/app/src/wire.ts#Prices.ab",
+    "language": "ts",
+    "form": "interface-member",
+    "accepted": true,
+    "reason": "A key is spelled by its value with escapes resolved, so a string key written \"a\\u0062\" is the identifier name ab, bare.",
+    "example": "\"a\\u0062\": number;"
+  },
+  {
+    "input": "ts://@example/app/src/wire.ts#Prices.'16'",
+    "language": "ts",
+    "form": "interface-member",
+    "accepted": true,
+    "reason": "A numeric key is spelled by its value's string form, so 0x10 is the property 16, quoted.",
+    "example": "0x10: number;"
+  },
+  {
+    "input": "ts://@example/app/src/wire.ts#Prices.'t\tb'",
+    "language": "ts",
+    "form": "interface-member",
+    "accepted": true,
+    "reason": "A tab is the one control character a quoted component holds as itself.",
+    "example": "\"t\\tb\": number;"
   },
   {
     "input": "ts://@example/app/src/layout.ts#Layout.gap",
@@ -792,6 +980,7 @@
     "language": "ts",
     "form": "module",
     "accepted": false,
+    "shape": false,
     "reason": "No fragment separator. The module itself is spelled with a trailing #, so that a scope is never mistaken for a symbol."
   },
   {
@@ -799,6 +988,7 @@
     "language": "ts",
     "form": "module",
     "accepted": false,
+    "shape": false,
     "reason": "The language prefix is lowercase and compared bytewise."
   },
   {
@@ -806,6 +996,7 @@
     "language": "ts",
     "form": "module-level",
     "accepted": false,
+    "shape": true,
     "reason": "The path names a source file with its real extension, never an import specifier with the extension dropped."
   },
   {
@@ -813,6 +1004,7 @@
     "language": "ts",
     "form": "module-level",
     "accepted": false,
+    "shape": true,
     "reason": "A package name alone is not a scope: a module-level declaration lives in one file, and the file is part of the reference."
   },
   {
@@ -820,6 +1012,7 @@
     "language": "ts",
     "form": "module-level",
     "accepted": false,
+    "shape": true,
     "reason": "The package component is never empty; a package with no manifest name is spelled with a single dot."
   },
   {
@@ -827,6 +1020,7 @@
     "language": "ts",
     "form": "module-level",
     "accepted": false,
+    "shape": true,
     "reason": "The package name and the path are joined by a slash, never by any other character."
   },
   {
@@ -834,13 +1028,47 @@
     "language": "ts",
     "form": "module-level",
     "accepted": false,
+    "shape": false,
     "reason": "Whitespace never appears outside a quoted component."
+  },
+  {
+    "input": "ts://@example/app/src/wire.ts#Prices.'a\u0000b'",
+    "language": "ts",
+    "form": "interface-member",
+    "accepted": false,
+    "shape": false,
+    "reason": "A raw NUL never stands inside a quoted component: a character of the unsafe set other than a tab is written as an escape, here \\u{0}."
+  },
+  {
+    "input": "ts://@example/app/src/wire.ts#Prices.'\u001b[31mX'",
+    "language": "ts",
+    "form": "interface-member",
+    "accepted": false,
+    "shape": false,
+    "reason": "A quoted component never holds a raw ESC, which would carry a terminal escape sequence from an analyzed file into a text line; the key is spelled with the escape \\u{1B}."
+  },
+  {
+    "input": "ts://@example/app/src/wire.ts#Prices.'a\u009bb'",
+    "language": "ts",
+    "form": "interface-member",
+    "accepted": false,
+    "shape": false,
+    "reason": "A quoted component never holds a raw C1 control, here U+009B, the single-character form of a terminal's control sequence introducer; the key is spelled with \\u{9B}."
+  },
+  {
+    "input": "ts://@example/app/src/wire.ts#Prices.'v\u000bb'",
+    "language": "ts",
+    "form": "interface-member",
+    "accepted": false,
+    "shape": false,
+    "reason": "A raw vertical tab is a control character other than a tab, so a quoted component never holds it: a terminal moves its cursor down a line for one. The key is spelled with \\u{B}."
   },
   {
     "input": "ts://@example/app/src/wire.ts#ServerEvent\n",
     "language": "ts",
     "form": "module-level",
     "accepted": false,
+    "shape": false,
     "reason": "A reference never contains LF."
   },
   {
@@ -848,6 +1076,7 @@
     "language": "ts",
     "form": "module-level",
     "accepted": false,
+    "shape": true,
     "reason": "A private name exists only inside a class, so it never opens a fragment."
   },
   {
@@ -855,6 +1084,7 @@
     "language": "ts",
     "form": "alias",
     "accepted": false,
+    "shape": true,
     "reason": "export is not a selector; an export specifier's symbol carries the alias selector."
   },
   {
@@ -870,6 +1100,7 @@
     "language": "ts",
     "form": "import",
     "accepted": false,
+    "shape": true,
     "reason": "A binding is a name of its file and no member, so no component comes before the import selector."
   },
   {
@@ -877,6 +1108,7 @@
     "language": "ts",
     "form": "class-member",
     "accepted": false,
+    "shape": true,
     "reason": "Members are joined by a dot. A # is not a member separator, because it is the scope separator here and a private name's own sign."
   },
   {
@@ -884,6 +1116,7 @@
     "language": "ts",
     "form": "class-member",
     "accepted": false,
+    "shape": true,
     "reason": "A parenthesized selector is not a form of this grammar; an instance member is bare and only a static member carries a selector."
   },
   {
@@ -891,6 +1124,7 @@
     "language": "ts",
     "form": "class-member",
     "accepted": false,
+    "shape": true,
     "reason": "instance is not a selector: an instance member is the unmarked case."
   },
   {
@@ -898,6 +1132,7 @@
     "language": "ts",
     "form": "class-member",
     "accepted": false,
+    "shape": true,
     "reason": "The only member separator is a dot."
   },
   {
@@ -905,6 +1140,7 @@
     "language": "ts",
     "form": "static-member",
     "accepted": false,
+    "shape": true,
     "reason": "Selectors are lowercase and compared bytewise."
   },
   {
@@ -912,6 +1148,7 @@
     "language": "ts",
     "form": "static-member",
     "accepted": false,
+    "shape": true,
     "reason": "A selector applies to the last component and ends the chain; nothing follows it but a type parameter."
   },
   {
@@ -919,6 +1156,7 @@
     "language": "ts",
     "form": "interface-member",
     "accepted": false,
+    "shape": true,
     "reason": "A quoted component uses single quotes, so that the reference sits inside a JSON string without escaping."
   },
   {
@@ -926,6 +1164,7 @@
     "language": "ts",
     "form": "interface-member",
     "accepted": false,
+    "shape": true,
     "reason": "A name that is not an identifier is quoted; a bare hyphen is not an identifier character."
   },
   {
@@ -933,6 +1172,7 @@
     "language": "ts",
     "form": "enum-member",
     "accepted": false,
+    "shape": true,
     "reason": "A trailing dot leaves the chain incomplete."
   },
   {
@@ -940,6 +1180,7 @@
     "language": "ts",
     "form": "enum-member",
     "accepted": false,
+    "shape": true,
     "reason": "A slash belongs to the scope, before the #; an enum member is reached from its enum with a dot."
   },
   {
@@ -947,6 +1188,7 @@
     "language": "ts",
     "form": "enum-member",
     "accepted": false,
+    "shape": true,
     "reason": "Square brackets spell a computed key, and a computed key is a member reached with a dot; an enum member is a plain name."
   },
   {
@@ -954,6 +1196,7 @@
     "language": "ts",
     "form": "type-parameter",
     "accepted": false,
+    "shape": true,
     "reason": "A TypeScript type parameter is spelled in angle brackets; square brackets are Go's spelling."
   },
   {
@@ -961,6 +1204,7 @@
     "language": "ts",
     "form": "type-parameter",
     "accepted": false,
+    "shape": false,
     "reason": "The constraint is not part of the reference; only the type parameter's name is."
   },
   {
@@ -968,6 +1212,7 @@
     "language": "ts",
     "form": "type-parameter",
     "accepted": false,
+    "shape": true,
     "reason": "Type arguments never appear on a container, and a type parameter of a type declaration is not a subject; only a function or method type parameter is."
   },
   {
@@ -975,6 +1220,7 @@
     "language": "ts",
     "form": "type-parameter",
     "accepted": false,
+    "shape": true,
     "reason": "A component is never empty, whatever the depth of the chain."
   },
   {
@@ -982,6 +1228,7 @@
     "language": "ts",
     "form": "type-parameter",
     "accepted": false,
+    "shape": true,
     "reason": "The type parameter follows the last component of the chain with no separator between them."
   },
   {
@@ -989,6 +1236,7 @@
     "language": "ts",
     "form": "dependency",
     "accepted": false,
+    "shape": true,
     "reason": "A dependency is scoped by the manifest that declares it, so the scope ends in package.json."
   },
   {
@@ -996,6 +1244,7 @@
     "language": "ts",
     "form": "dependency",
     "accepted": false,
+    "shape": true,
     "reason": "A dependency is scoped by a manifest, whose file name is package.json."
   },
   {
@@ -1003,6 +1252,7 @@
     "language": "ts",
     "form": "dependency",
     "accepted": false,
+    "shape": true,
     "reason": "The selectors are dependency, dev-dependency and peer-dependency, not the manifest's own key names."
   },
   {
@@ -1010,6 +1260,7 @@
     "language": "ts",
     "form": "dependency",
     "accepted": false,
+    "shape": true,
     "reason": "A dependency always carries its section selector, and package.json is not a module, so no symbol form applies either."
   },
   {
@@ -1017,6 +1268,7 @@
     "language": "ts",
     "form": "dependency",
     "accepted": false,
+    "shape": true,
     "reason": "A dependency carries one of the three section selectors, dependency, dev-dependency or peer-dependency, and a selector is no character of a module-level name."
   },
   {
@@ -1032,6 +1284,7 @@
     "language": "ts",
     "form": "dependency",
     "accepted": false,
+    "shape": true,
     "reason": "A character outside ASCII letters, digits, dot, underscore and hyphen is percent-encoded in a package component, so the raw spelling is not canonical."
   },
   {
@@ -1039,6 +1292,7 @@
     "language": "ts",
     "form": "dependency",
     "accepted": false,
+    "shape": false,
     "reason": "A percent-encoded byte is written with uppercase hexadecimal digits, the one canonical spelling."
   },
   {
@@ -1078,6 +1332,7 @@
     "language": "ts",
     "form": "parameter",
     "accepted": false,
+    "shape": false,
     "reason": "A parameter carries no type in its spelling; only its name is."
   },
   {
@@ -1085,6 +1340,7 @@
     "language": "ts",
     "form": "parameter",
     "accepted": false,
+    "shape": true,
     "reason": "Empty parentheses name no parameter."
   },
   {
@@ -1092,6 +1348,7 @@
     "language": "ts",
     "form": "parameter",
     "accepted": false,
+    "shape": true,
     "reason": "A parameter ends the reference; no component follows it."
   },
   {
@@ -1123,6 +1380,7 @@
     "language": "ts",
     "form": "case-constituent",
     "accepted": false,
+    "shape": true,
     "reason": "The discriminant literal is always quoted before :case; a bare one is no spelling."
   },
   {
@@ -1130,6 +1388,7 @@
     "language": "ts",
     "form": "case-constituent",
     "accepted": false,
+    "shape": true,
     "reason": "A quoted component takes single quotes, never double."
   },
   {
@@ -1137,7 +1396,144 @@
     "language": "ts",
     "form": "case-constituent",
     "accepted": false,
+    "shape": true,
     "reason": "A constituent follows the property whose union it belongs to; it never opens a fragment."
+  },
+  {
+    "input": "ts://./src/my%20file.ts#unused",
+    "language": "ts",
+    "form": "module-level",
+    "accepted": true,
+    "reason": "A space in a source-path segment is percent-encoded with uppercase digits.",
+    "example": "export const unused = 1;"
+  },
+  {
+    "input": "ts://./src/a%23b.ts#unused",
+    "language": "ts",
+    "form": "module-level",
+    "accepted": true,
+    "reason": "A # in a source-path segment is percent-encoded, so the first # still splits the scope from the fragment.",
+    "example": "export const unused = 1;"
+  },
+  {
+    "input": "ts://./src/100%25.ts#unused",
+    "language": "ts",
+    "form": "module-level",
+    "accepted": true,
+    "reason": "A % in a source-path segment is itself percent-encoded.",
+    "example": "export const unused = 1;"
+  },
+  {
+    "input": "ts://./app/[id].tsx#default",
+    "language": "ts",
+    "form": "default-export",
+    "accepted": true,
+    "reason": "Square brackets in a source-path segment are spelled as they are; only a file operand encodes them.",
+    "example": "export default function Page() {}"
+  },
+  {
+    "input": "ts://./src/größe.ts#X",
+    "language": "ts",
+    "form": "module-level",
+    "accepted": true,
+    "reason": "A non-ASCII path byte is spelled as itself; only the package component encodes it.",
+    "example": "export const X = 1;"
+  },
+  {
+    "input": "ts://./src/h.ts#Headers.'content type'",
+    "language": "ts",
+    "form": "literal-member",
+    "accepted": true,
+    "reason": "A space is allowed inside a quoted component, the one place a reference holds whitespace.",
+    "example": "export const Headers = { 'content type': 'text/plain' };"
+  },
+  {
+    "input": "ts://./my%20tools/package.json#lodash:dependency",
+    "language": "ts",
+    "form": "dependency",
+    "accepted": true,
+    "reason": "A manifest's directories are source-path segments and percent-encode a space.",
+    "example": "\"dependencies\": { \"lodash\": \"^4.17.21\" }"
+  },
+  {
+    "input": "ts://./src/my file.ts#unused",
+    "language": "ts",
+    "form": "module-level",
+    "accepted": false,
+    "shape": false,
+    "reason": "A space in a source-path segment is percent-encoded, %20."
+  },
+  {
+    "input": "ts://./src/a#b.ts#unused",
+    "language": "ts",
+    "form": "module-level",
+    "accepted": false,
+    "shape": true,
+    "reason": "A raw # in a path ends the scope at the wrong place; it is spelled %23."
+  },
+  {
+    "input": "ts://./src/100%.ts#unused",
+    "language": "ts",
+    "form": "module-level",
+    "accepted": false,
+    "shape": false,
+    "reason": "A raw % in a path opens no escape; it is spelled %25."
+  },
+  {
+    "input": "ts://./src/a%c3%a9.ts#unused",
+    "language": "ts",
+    "form": "module-level",
+    "accepted": false,
+    "shape": false,
+    "reason": "Escape digits are uppercase hexadecimal, and a non-ASCII path byte is spelled as itself."
+  },
+  {
+    "input": "ts://./src/a*.ts#unused",
+    "language": "ts",
+    "form": "module-level",
+    "accepted": false,
+    "shape": false,
+    "reason": "A * in a source-path segment is percent-encoded, so a path never holds a pattern's wildcard."
+  },
+  {
+    "input": "ts://./src/a?.ts#unused",
+    "language": "ts",
+    "form": "module-level",
+    "accepted": false,
+    "shape": true,
+    "reason": "A ? in a source-path segment is percent-encoded, so a path never holds a pattern's wildcard."
+  },
+  {
+    "input": "ts://./src/h.ts#Headers.'content type",
+    "language": "ts",
+    "form": "literal-member",
+    "accepted": false,
+    "shape": false,
+    "reason": "A quoted component is closed by its quote."
+  },
+  {
+    "input": "ts://./src/h.ts#Headers.content type",
+    "language": "ts",
+    "form": "literal-member",
+    "accepted": false,
+    "shape": false,
+    "reason": "Whitespace appears only inside a quoted component."
+  },
+  {
+    "input": "ts://./src/a.ts#X*",
+    "language": "ts",
+    "form": "module-level",
+    "accepted": false,
+    "shape": false,
+    "reason": "A reference admits no wildcard outside a quoted component and a computed key."
+  },
+  {
+    "input": "ts://./src/a.ts#X]",
+    "language": "ts",
+    "form": "module-level",
+    "accepted": false,
+    "shape": false,
+    "reason": "A ] appears only as the close of a computed key."
   },
   {
     "input": "proto://v1#BackupRequest",
@@ -1232,6 +1628,7 @@
     "language": "proto",
     "form": "message",
     "accepted": false,
+    "shape": true,
     "reason": "The fragment never starts with a dot; a leading dot is protoc's fully-qualified spelling, not a reference."
   },
   {
@@ -1239,6 +1636,7 @@
     "language": "proto",
     "form": "field",
     "accepted": false,
+    "shape": true,
     "reason": "A field is named, never numbered."
   },
   {
@@ -1246,6 +1644,7 @@
     "language": "proto",
     "form": "field",
     "accepted": false,
+    "shape": true,
     "reason": "A slash is no member separator."
   },
   {
@@ -1253,6 +1652,7 @@
     "language": "proto",
     "form": "file",
     "accepted": false,
+    "shape": true,
     "reason": "A schema file carries the :file selector."
   },
   {
@@ -1260,6 +1660,7 @@
     "language": "proto",
     "form": "message",
     "accepted": false,
+    "shape": true,
     "reason": "A package never ends with a dot."
   },
   {
@@ -1267,6 +1668,255 @@
     "language": "proto",
     "form": "rpc",
     "accepted": false,
+    "shape": true,
     "reason": "A Protocol Buffers identifier holds letters, digits and underscores only."
-  }
+  },
+  {
+    "input": "proto://v1#my%20protos/a%20b.proto:file",
+    "language": "proto",
+    "form": "file",
+    "accepted": true,
+    "reason": "Each segment of a schema file's import path is a file operand segment and percent-encodes a space.",
+    "example": "syntax = \"proto3\";"
+  },
+  {
+    "input": "proto://v1#my protos/a b.proto:file",
+    "language": "proto",
+    "form": "file",
+    "accepted": false,
+    "shape": false,
+    "reason": "A space in an import-path segment is percent-encoded, %20."
+  },
+  {
+    "input": "ts://./src/a%C2%85b.ts#unused",
+    "language": "ts",
+    "form": "module-level",
+    "accepted": true,
+    "reason": "A C1 control in a source-path segment is percent-encoded, since a reference holds no control character.",
+    "example": "export const unused = 1;"
+  },
+  {
+    "input": "ts://./src/a%C2%A0b%E2%80%A8.ts#unused",
+    "language": "ts",
+    "form": "module-level",
+    "accepted": true,
+    "reason": "A no-break space and a line separator in a source-path segment are whitespace and are percent-encoded.",
+    "example": "export const unused = 1;"
+  },
+  {
+    "input": "go://example.com/app#a%C2%A0b.go:file",
+    "language": "go",
+    "form": "file",
+    "accepted": true,
+    "reason": "A no-break space in a file name is whitespace and is percent-encoded, since a Go reference holds no whitespace.",
+    "example": "//go:build ignore"
+  },
+  {
+    "input": "ts://./src/ab.ts#unused",
+    "language": "ts",
+    "form": "module-level",
+    "accepted": false,
+    "shape": false,
+    "reason": "A raw C1 control, NEL, in a source-path segment is refused."
+  },
+  {
+    "input": "ts://./src/a b.ts#unused",
+    "language": "ts",
+    "form": "module-level",
+    "accepted": false,
+    "shape": false,
+    "reason": "A raw no-break space in a source-path segment is whitespace and is refused."
+  },
+  {
+    "input": "ts://./src/a b.ts#unused",
+    "language": "ts",
+    "form": "module-level",
+    "accepted": false,
+    "shape": false,
+    "reason": "A raw line separator in a source-path segment is whitespace and is refused."
+  },
+  {
+    "input": "go://example.com/app#a b.go:file",
+    "language": "go",
+    "form": "file",
+    "accepted": false,
+    "shape": false,
+    "reason": "A raw no-break space in a file name is whitespace, which a Go reference never holds."
+  },
+  {
+    "input": "proto://v1#a　b.proto:file",
+    "language": "proto",
+    "form": "file",
+    "accepted": false,
+    "shape": false,
+    "reason": "A raw ideographic space in a schema file's import path is whitespace and is refused."
+  },
+  {
+    "input": "go://example.com/app#Résum é",
+    "language": "go",
+    "form": "package-level",
+    "accepted": false,
+    "shape": false,
+    "reason": "A no-break space is no identifier character, so it is refused in a fragment."
+  },
+  {
+    "input": "ts://@example/app/src/features/tabs/index.ts#TabStrip.[Symbol.\u000biterator]",
+    "language": "ts",
+    "form": "computed-member",
+    "accepted": false,
+    "shape": false,
+    "reason": "A computed key holds no whitespace, a vertical tab included: the writer removes it."
+  },
+  {
+    "input": "ts://@example/app/src/features/tabs/index.ts#TabStrip.[a\u0000b]",
+    "language": "ts",
+    "form": "computed-member",
+    "accepted": false,
+    "shape": false,
+    "reason": "A computed key holds no control character."
+  },
+  {
+    "input": "ts://@example/app/src/features/tabs/index.ts#TabStrip.[a　b]",
+    "language": "ts",
+    "form": "computed-member",
+    "accepted": false,
+    "shape": false,
+    "reason": "A computed key holds no whitespace past ASCII either."
+  },
+  {
+    "input": "ts://@example/app/src/headers.ts#Headers.'content type'",
+    "language": "ts",
+    "form": "class-member",
+    "accepted": true,
+    "reason": "Whitespace past ASCII inside a quoted component stands for itself, as every whitespace character does there.",
+    "example": "'content type' = 1;"
+  },
+  {
+    "input": "ts://./src/a.ts#a b",
+    "language": "ts",
+    "form": "module-level",
+    "accepted": false,
+    "shape": false,
+    "reason": "A no-break space is no identifier character, so outside quotes it is refused."
+  },
+    {
+      "input": "ts://@example/app/src/wire.ts#Prices.'\\u{1B}[31mX'",
+      "language": "ts",
+      "form": "interface-member",
+      "accepted": true,
+      "reason": "A key holding ESC is spelled with the escape \\u{1B}, so a text line carries no terminal escape sequence and the member keeps a reference.",
+      "example": "\"\\u001b[31mX\": number;"
+    },
+    {
+      "input": "ts://@example/app/src/wire.ts#Prices.'a\\u{0}b'",
+      "language": "ts",
+      "form": "interface-member",
+      "accepted": true,
+      "reason": "A NUL is spelled \\u{0}: uppercase hexadecimal digits with no leading zero.",
+      "example": "\"a\\u0000b\": number;"
+    },
+    {
+      "input": "ts://@example/app/src/wire.ts#Prices.'safe\\u{202E}.exe'",
+      "language": "ts",
+      "form": "interface-member",
+      "accepted": true,
+      "reason": "A Bidi_Control character, here the right-to-left override, is spelled as an escape, so no viewer reorders the text around it.",
+      "example": "\"safe\\u202E.exe\": number;"
+    },
+    {
+      "input": "ts://@example/app/src/wire.ts#Prices.'x\\u{2028}y'",
+      "language": "ts",
+      "form": "interface-member",
+      "accepted": true,
+      "reason": "The line separator is spelled as an escape, so a consumer that splits lines on it reads one finding per line.",
+      "example": "\"x\\u2028y\": number;"
+    },
+    {
+      "input": "ts://@example/app/src/wire.ts#Prices.'\\u{D800}'",
+      "language": "ts",
+      "form": "interface-member",
+      "accepted": true,
+      "reason": "A lone surrogate, which no UTF-8 document carries, is spelled as an escape of its code unit.",
+      "example": "\"\\uD800\": number;"
+    },
+    {
+      "input": "ts://@example/app/src/wire.ts#Prices.'a\\u{9B}b\\u{7F}'",
+      "language": "ts",
+      "form": "interface-member",
+      "accepted": true,
+      "reason": "DEL and a C1 control are spelled as escapes.",
+      "example": "\"a\\u009bb\\u007f\": number;"
+    },
+    {
+      "input": "ts://@example/app/src/wire.ts#Prices.'\\u{61C}\\u{200F}\\u{2069}'",
+      "language": "ts",
+      "form": "interface-member",
+      "accepted": true,
+      "reason": "The Arabic letter mark, the right-to-left mark and the pop of an isolate are Bidi_Control characters, each spelled as an escape.",
+      "example": "\"\\u061c\\u200f\\u2069\": number;"
+    },
+    {
+      "input": "ts://@example/app/src/wire.ts#Prices.'safe\u202e.exe'",
+      "language": "ts",
+      "form": "interface-member",
+      "accepted": false,
+      "shape": false,
+      "reason": "A raw right-to-left override never stands inside a quoted component: it is written \\u{202E}."
+    },
+    {
+      "input": "ts://@example/app/src/wire.ts#Prices.'x\u2028y'",
+      "language": "ts",
+      "form": "interface-member",
+      "accepted": false,
+      "shape": false,
+      "reason": "A raw line separator never stands inside a quoted component: it is written \\u{2028}."
+    },
+    {
+      "input": "ts://@example/app/src/wire.ts#Prices.'\\u{1b}[31mX'",
+      "language": "ts",
+      "form": "interface-member",
+      "accepted": false,
+      "shape": false,
+      "reason": "An escape is written with uppercase hexadecimal digits, so \\u{1b} spells nothing."
+    },
+    {
+      "input": "ts://@example/app/src/wire.ts#Prices.'\\u{01B}[31mX'",
+      "language": "ts",
+      "form": "interface-member",
+      "accepted": false,
+      "shape": false,
+      "reason": "An escape is written with no leading zero, so \\u{01B} spells nothing."
+    },
+    {
+      "input": "ts://@example/app/src/wire.ts#Prices.'\\u{41}'",
+      "language": "ts",
+      "form": "interface-member",
+      "accepted": false,
+      "shape": false,
+      "reason": "The escape is written for a character of the unsafe set only, so \\u{41} spells nothing: the key A is spelled bare."
+    },
+    {
+      "input": "ts://@example/app/src/wire.ts#Prices.'\\u{9}'",
+      "language": "ts",
+      "form": "interface-member",
+      "accepted": false,
+      "shape": false,
+      "reason": "A tab stands inside quotes as itself and is never written as an escape."
+    },
+    {
+      "input": "ts://@example/app/src/wire.ts#Prices.'\\u{A}'",
+      "language": "ts",
+      "form": "interface-member",
+      "accepted": false,
+      "shape": false,
+      "reason": "LF is written \\n inside quotes and never \\u{A}."
+    },
+    {
+      "input": "ts://@example/app/src/wire.ts#Prices.'\\u{D}'",
+      "language": "ts",
+      "form": "interface-member",
+      "accepted": false,
+      "shape": false,
+      "reason": "CR is written \\r inside quotes and never \\u{D}."
+    }
 ]

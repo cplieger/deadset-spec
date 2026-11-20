@@ -302,7 +302,7 @@ func (r *runner) answer(ctx context.Context, fixture *Fixture) (FixtureResult, e
 	rows := slices.SortedFunc(slices.Values(expect.Expect), func(a, b Row) int { return strings.Compare(a.Symbol, b.Symbol) })
 	held := make([]ExpectationResult, len(rows))
 	for i := range rows {
-		actual, message := answerOf(expect, &rows[i], sites, first)
+		actual, message := answerOf(expect, &rows[i], sites, &rendering.Manifest, first)
 		held[i] = ExpectationResult{Symbol: rows[i].Symbol, Result: Fail, Actual: actual, Message: message}
 	}
 	written, err := r.suppressionPhase(ctx, at, expect, sites, first, rows, held)
@@ -350,14 +350,22 @@ func (at *scratch) prepare(expect *Expectation, rendering *Rendering, language s
 // fixtureResult is the fixture's row from its decided expectations and the
 // fixture-level members its first report answers.
 func (r *runner) fixtureResult(fixture *Fixture, sites map[string]Site, first *analysis, held []ExpectationResult) FixtureResult {
-	expect, manifest, gaps := &fixture.Expect, &fixture.Renderings[r.analyzer.Language].Manifest, r.options.Gaps
+	rendering := fixture.Renderings[r.analyzer.Language]
+	expect, manifest, gaps := &fixture.Expect, &rendering.Manifest, r.options.Gaps
 	unexpected := unexpectedOf(first.report, expect, sites)
 	rowsDeclined := slices.ContainsFunc(slices.Concat(conventionNames(expect), expect.DisabledConventions), func(name string) bool {
 		return coversFixture(gaps, fixture.Name, name)
 	})
 	var messages []string
+	sides := map[string]string{}
+	if data, held := rendering.Files[edgesDocumentPath]; held {
+		var err error
+		if sides, err = edgeSides(data); err != nil {
+			messages = append(messages, fmt.Sprintf("the rendering's %s: %v", edgesDocumentPath, err))
+		}
+	}
 	for _, message := range []string{
-		edgeDifferences(expect, manifest, first.report),
+		edgeDifferences(expect, manifest, sides, first.report),
 		factsDifferences(expect, manifest, r.analyzer.Language, first.facts),
 		notBuiltDifference(manifest, first.report),
 		skipDifferences(expect, manifest, first.report, coversFixture(gaps, fixture.Name, typeErrorCap)),

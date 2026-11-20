@@ -1,0 +1,11 @@
+{
+  "description": "One entry whose reference encodes the space its path holds.",
+  "ignore": [
+    {
+      "code": "DS1002",
+      "symbol": "ts://@example/target/src/my%20file.ts#unused",
+      "path": "src/my file.ts",
+      "reason": "Kept for the next release."
+    }
+  ]
+}

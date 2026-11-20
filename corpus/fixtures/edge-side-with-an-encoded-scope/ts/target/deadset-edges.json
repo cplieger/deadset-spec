@@ -1,0 +1,15 @@
+{
+  "description": "Two edges whose TypeScript sides name declarations of a file whose path holds a number sign.",
+  "edges": {
+    "wire/live": {
+      "because": "generated",
+      "provides": "ts://@example/target/src/a%23b.ts#live",
+      "used_by": "go://example.com/app#Live"
+    },
+    "wire/dead": {
+      "because": "generated",
+      "provides": "ts://@example/target/src/a%23b.ts#dead",
+      "used_by": "go://example.com/app#Dead"
+    }
+  }
+}

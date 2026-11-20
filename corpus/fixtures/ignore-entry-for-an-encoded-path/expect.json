@@ -1,0 +1,18 @@
+{
+  "name": "ignore-entry-for-an-encoded-path",
+  "description": "An ignore entry for a declaration in a file whose path holds a space names the encoded reference and the decoded path, and the two agree once the reference's path segments are decoded: the entry for the unexported function nothing calls in src/my file.ts is in effect, so the function is not reported and the entry is not stale.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "entry_files": [
+    "src/*.ts"
+  ],
+  "suppressions_in_effect": 1,
+  "expect": [
+    {
+      "symbol": "unused",
+      "report": "none"
+    }
+  ]
+}

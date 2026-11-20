@@ -1,0 +1,21 @@
+{
+  "name": "scope-path-with-a-number-sign",
+  "description": "A source path segment holding a number sign is percent-encoded in the reference, because the first number sign of a reference ends its scope: the unexported function nothing calls in src/a#b.ts is reported, and its finding's reference spells the segment a%23b.ts, never a#b.ts, which would read as the scope ./src/a and a fragment. The suppression phase writes that reference into an ignore entry, and the entry binds the finding.",
+  "languages": [
+    "ts"
+  ],
+  "target_kind": "application",
+  "entry_files": [
+    "src/*.ts"
+  ],
+  "expect": [
+    {
+      "symbol": "unused",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}

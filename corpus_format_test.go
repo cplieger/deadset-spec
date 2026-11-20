@@ -829,7 +829,7 @@ func TestExpectSchemaConfiguredDeclarationsBindALogicalNameToAKeyAndAnEntry(t *t
 // one of them spells one language's own file names or symbol names, which no
 // field of a language-neutral expectation does, so such a member has no form on
 // an expectation row.
-var findingDetailsRefs = []string{"#/$defs/position", "#/$defs/positioned_symbol", "#/$defs/symbol_reference"}
+var findingDetailsRefs = []string{"#/$defs/position", "#/$defs/positioned_symbol", "#/$defs/reference", "#/$defs/symbol_reference"}
 
 // logicalPositionDetails are the details members whose value is one position that a
 // row spells as a logical name of the rendering's manifest, which every rendering

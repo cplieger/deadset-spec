@@ -271,7 +271,7 @@
         },
         "symbol": {
           "description": "The declaration the record is about, in the document language's scheme: the schema declaration for schema, the generated declaration for consumer, the hand-written method for implementer, the generated file's own reference for fallback.",
-          "$ref": "finding.schema.json#/$defs/symbol_reference"
+          "$ref": "finding.schema.json#/$defs/reference"
         },
         "schema_file": {
           "$ref": "#/$defs/schema_file"
@@ -298,7 +298,7 @@
           "minItems": 1,
           "uniqueItems": true,
           "items": {
-            "$ref": "finding.schema.json#/$defs/symbol_reference"
+            "$ref": "finding.schema.json#/$defs/reference"
           }
         },
         "cap": {

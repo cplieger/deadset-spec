@@ -314,13 +314,22 @@ func TestResolveExpectationsRefuses(t *testing.T) {
 			wantSymbol: "Ping",
 		},
 		{
-			name:   "a_ref_no_facts_entry_names",
-			expect: Expectation{Expect: []Row{{Symbol: "DeadExport", Report: "DS1001"}}},
+			name:   "a_ref_no_facts_entry_names_on_a_row_reporting_none",
+			expect: Expectation{Expect: []Row{{Symbol: "DeadExport", Report: "none"}}},
 			manifest: Manifest{Symbols: map[string]ManifestPosition{
 				"DeadExport": {File: "target/dead.go", Line: line(5), Ref: "go://example.com/fixture#DeadExport"},
 			}},
 			wantErr:    ErrStrayRef,
 			wantSymbol: "DeadExport",
+		},
+		{
+			name:   "a_ref_on_a_stale_suppression_row",
+			expect: Expectation{Expect: []Row{{Symbol: "Entry", Report: "DS9003"}}},
+			manifest: Manifest{Symbols: map[string]ManifestPosition{
+				"Entry": {File: "target/deadset-ignore.json", Line: line(4), Ref: "go://example.com/fixture#DeadExport"},
+			}},
+			wantErr:    ErrStrayRef,
+			wantSymbol: "Entry",
 		},
 	}
 	for _, tc := range cases {
@@ -1056,5 +1065,44 @@ func TestPinnableDetailsFollowsTheKindsAndTheLanguageList(t *testing.T) {
 				t.Errorf("PinnableDetails(%s, %v) = %v, want %v", tc.code, tc.languages, got, tc.want)
 			}
 		})
+	}
+}
+
+// TestResolveTakesARefOnARowReportingAFinding pins that a manifest entry may
+// spell the reference of a subject a row reports, which the runner then holds
+// the finding to.
+func TestResolveTakesARefOnARowReportingAFinding(t *testing.T) {
+	expect := Expectation{Expect: []Row{{Symbol: "unused", Report: "DS1002", Confidence: "certain"}}}
+	manifest := Manifest{Symbols: map[string]ManifestPosition{
+		"unused": {File: "target/c++/c.go", Line: new(5), Ref: "go://example.com/fixture/c%2B%2B#unused"},
+	}}
+	if _, err := Resolve(&expect, "go", &manifest); err != nil {
+		t.Fatalf("Resolve() error = %v, want none", err)
+	}
+}
+
+// TestCheckManifestRefsTakesOnlyTheRenderingsOwnForms pins that a manifest ref
+// is a reference of the rendering's language in a form of the grammar, its
+// path segments spelled canonically.
+func TestCheckManifestRefsTakesOnlyTheRenderingsOwnForms(t *testing.T) {
+	for _, tc := range []struct {
+		language, ref string
+		valid         bool
+	}{
+		{"go", "go://example.com/fixture/c%2B%2B#unused", true},
+		{"go", "go://example.com/fixture#never%20built.go:file", true},
+		{"ts", "ts://@example/target/src/a%23b.ts#helper", true},
+		{"ts", "ts://@example/target/src/h.ts#Headers.'content type'", true},
+		{"go", "go://example.com/fixture/c++#unused", false},
+		{"go", "go://example.com/fixture#never built.go:file", false},
+		{"ts", "ts://@example/target/src/my file.ts#helper", false},
+		{"ts", "ts://@example/target/src/100%.ts#helper", false},
+		{"ts", "ts://@example/target/src/a%2fb.ts#helper", false},
+		{"go", "ts://@example/target/src/a.ts#helper", false},
+	} {
+		manifest := &Manifest{Symbols: map[string]ManifestPosition{"S": {File: "target/a", Line: new(1), Ref: tc.ref}}}
+		if got := len(checkManifestRefs(tc.language, manifest)) == 0; got != tc.valid {
+			t.Errorf("checkManifestRefs(%s, %q) valid = %t, want %t", tc.language, tc.ref, got, tc.valid)
+		}
 	}
 }

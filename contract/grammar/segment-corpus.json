@@ -1,0 +1,447 @@
+[
+  {
+    "set": "go-element",
+    "spelled": "app",
+    "canonical": true,
+    "raw_hex": "617070",
+    "reason": "Letters are spelled as themselves."
+  },
+  {
+    "set": "go-element",
+    "spelled": "v1.2_x~y-z",
+    "canonical": true,
+    "raw_hex": "76312e325f787e792d7a",
+    "reason": "Digits, ., _, ~ and - are spelled as themselves."
+  },
+  {
+    "set": "go-element",
+    "spelled": "c%2B%2B",
+    "canonical": true,
+    "raw_hex": "632b2b",
+    "reason": "A + is outside the set and is percent-encoded, as a package directory may hold it."
+  },
+  {
+    "set": "go-element",
+    "spelled": "a%20b",
+    "canonical": true,
+    "raw_hex": "612062",
+    "reason": "A space is percent-encoded."
+  },
+  {
+    "set": "go-element",
+    "spelled": "100%25",
+    "canonical": true,
+    "raw_hex": "31303025",
+    "reason": "A % is itself percent-encoded."
+  },
+  {
+    "set": "go-element",
+    "spelled": "a%23b",
+    "canonical": true,
+    "raw_hex": "612362",
+    "reason": "A # is percent-encoded."
+  },
+  {
+    "set": "go-element",
+    "spelled": "gr%C3%B6%C3%9Fe",
+    "canonical": true,
+    "raw_hex": "6772c3b6c39f65",
+    "reason": "A non-ASCII byte is outside the Go set and is percent-encoded byte by byte, with uppercase digits."
+  },
+  {
+    "set": "go-element",
+    "spelled": "%FF",
+    "canonical": true,
+    "raw_hex": "ff",
+    "reason": "A byte that opens no well-formed UTF-8 sequence is percent-encoded."
+  },
+  {
+    "set": "source-path",
+    "spelled": "%00",
+    "canonical": true,
+    "raw_hex": "00",
+    "reason": "The lowest control byte is percent-encoded."
+  },
+  {
+    "set": "source-path",
+    "spelled": "%1F",
+    "canonical": true,
+    "raw_hex": "1f",
+    "reason": "A control byte is percent-encoded."
+  },
+  {
+    "set": "source-path",
+    "spelled": "%20",
+    "canonical": true,
+    "raw_hex": "20",
+    "reason": "A space is percent-encoded."
+  },
+  {
+    "set": "source-path",
+    "spelled": "%7F",
+    "canonical": true,
+    "raw_hex": "7f",
+    "reason": "DEL is percent-encoded."
+  },
+  {
+    "set": "source-path",
+    "spelled": "!",
+    "canonical": true,
+    "raw_hex": "21",
+    "reason": "The first byte past the space is spelled as itself."
+  },
+  {
+    "set": "source-path",
+    "spelled": "my%20file.ts",
+    "canonical": true,
+    "raw_hex": "6d792066696c652e7473",
+    "reason": "A space inside a file name is percent-encoded and the rest is spelled as itself."
+  },
+  {
+    "set": "source-path",
+    "spelled": "a%23b.ts",
+    "canonical": true,
+    "raw_hex": "6123622e7473",
+    "reason": "A # is percent-encoded, so the first # still splits the scope from the fragment."
+  },
+  {
+    "set": "source-path",
+    "spelled": "100%25.ts",
+    "canonical": true,
+    "raw_hex": "313030252e7473",
+    "reason": "A % is itself percent-encoded."
+  },
+  {
+    "set": "source-path",
+    "spelled": "a%2A.ts",
+    "canonical": true,
+    "raw_hex": "612a2e7473",
+    "reason": "A * is percent-encoded, so a path never holds a pattern's wildcard."
+  },
+  {
+    "set": "source-path",
+    "spelled": "a%3F.ts",
+    "canonical": true,
+    "raw_hex": "613f2e7473",
+    "reason": "A ? is percent-encoded, so a path never holds a pattern's wildcard."
+  },
+  {
+    "set": "source-path",
+    "spelled": "[id]'s\\:~+.tsx",
+    "canonical": true,
+    "raw_hex": "5b69645d27735c3a7e2b2e747378",
+    "reason": "Quote, brackets, backslash, colon, ~ and + are spelled as themselves in a source path."
+  },
+  {
+    "set": "source-path",
+    "spelled": "é€😀",
+    "canonical": true,
+    "raw_hex": "c3a9e282acf09f9880",
+    "reason": "Well-formed two-, three- and four-byte UTF-8 sequences are spelled as themselves."
+  },
+  {
+    "set": "source-path",
+    "spelled": "%80",
+    "canonical": true,
+    "raw_hex": "80",
+    "reason": "A lone continuation byte is percent-encoded."
+  },
+  {
+    "set": "source-path",
+    "spelled": "%FF",
+    "canonical": true,
+    "raw_hex": "ff",
+    "reason": "A byte that is never part of UTF-8 is percent-encoded."
+  },
+  {
+    "set": "source-path",
+    "spelled": "%E2%82",
+    "canonical": true,
+    "raw_hex": "e282",
+    "reason": "A truncated three-byte sequence is percent-encoded byte by byte."
+  },
+  {
+    "set": "source-path",
+    "spelled": "%C0%AF",
+    "canonical": true,
+    "raw_hex": "c0af",
+    "reason": "An overlong encoding is not well formed and is percent-encoded byte by byte."
+  },
+  {
+    "set": "source-path",
+    "spelled": "%ED%A0%80",
+    "canonical": true,
+    "raw_hex": "eda080",
+    "reason": "The bytes of a lone UTF-16 surrogate are not well-formed UTF-8 and are percent-encoded byte by byte."
+  },
+  {
+    "set": "file-operand",
+    "spelled": "it%27s%20%5B1%5D%5Ca%3Ab.go",
+    "canonical": true,
+    "raw_hex": "69742773205b315d5c613a622e676f",
+    "reason": "A file operand percent-encodes the quote, the brackets, the backslash and the colon, which sit in the fragment, and the space."
+  },
+  {
+    "set": "file-operand",
+    "spelled": "a%23b%25c%2Ad%3Fe",
+    "canonical": true,
+    "raw_hex": "61236225632a643f65",
+    "reason": "A file operand percent-encodes #, %, * and ? as a source path does."
+  },
+  {
+    "set": "file-operand",
+    "spelled": "größe!~+.proto",
+    "canonical": true,
+    "raw_hex": "6772c3b6c39f65217e2b2e70726f746f",
+    "reason": "Non-ASCII, !, ~ and + are spelled as themselves in a file operand."
+  },
+  {
+    "set": "source-path",
+    "spelled": "a%C2%85b",
+    "canonical": true,
+    "raw_hex": "61c28562",
+    "reason": "NEL, U+0085, is a C1 control and whitespace, and is percent-encoded byte by byte."
+  },
+  {
+    "set": "source-path",
+    "spelled": "%C2%80%C2%9F",
+    "canonical": true,
+    "raw_hex": "c280c29f",
+    "reason": "The first and last C1 controls, U+0080 and U+009F, are percent-encoded."
+  },
+  {
+    "set": "source-path",
+    "spelled": "a%C2%A0b",
+    "canonical": true,
+    "raw_hex": "61c2a062",
+    "reason": "A no-break space, U+00A0, is whitespace and is percent-encoded."
+  },
+  {
+    "set": "source-path",
+    "spelled": "¡",
+    "canonical": true,
+    "raw_hex": "c2a1",
+    "reason": "U+00A1, the first code point past the no-break space, is spelled as itself."
+  },
+  {
+    "set": "source-path",
+    "spelled": "%E1%9A%80%E2%80%80%E2%80%8A",
+    "canonical": true,
+    "raw_hex": "e19a80e28080e2808a",
+    "reason": "The Ogham space mark and the first and last of the spaces U+2000 to U+200A are percent-encoded."
+  },
+  {
+    "set": "source-path",
+    "spelled": "​‧‰",
+    "canonical": true,
+    "raw_hex": "e2808be280a7e280b0",
+    "reason": "U+200B, U+2027 and U+2030, beside the whitespace, are no whitespace and are spelled as themselves."
+  },
+  {
+    "set": "source-path",
+    "spelled": "a%E2%80%A8b%E2%80%A9c",
+    "canonical": true,
+    "raw_hex": "61e280a862e280a963",
+    "reason": "The line and paragraph separators are whitespace and are percent-encoded."
+  },
+  {
+    "set": "source-path",
+    "spelled": "%E2%80%AF%E2%81%9F%E3%80%80%EF%BB%BF",
+    "canonical": true,
+    "raw_hex": "e280afe2819fe38080efbbbf",
+    "reason": "U+202F, U+205F, the ideographic space and U+FEFF are whitespace and are percent-encoded."
+  },
+  {
+    "set": "file-operand",
+    "spelled": "a%C2%A0b%E2%80%A8.go",
+    "canonical": true,
+    "raw_hex": "61c2a062e280a82e676f",
+    "reason": "A file operand percent-encodes the whitespace past ASCII as a source path does."
+  },
+  {
+    "set": "source-path",
+    "spelled": "...",
+    "canonical": true,
+    "raw_hex": "2e2e2e",
+    "reason": "Three dots are a file name, spelled as themselves."
+  },
+  {
+    "set": "go-element",
+    "spelled": "..x",
+    "canonical": true,
+    "raw_hex": "2e2e78",
+    "reason": "Dots before another byte are spelled as themselves."
+  },
+  {
+    "set": "go-element",
+    "spelled": "%41",
+    "canonical": false,
+    "reason": "An escape of a byte the set spells as itself is not canonical."
+  },
+  {
+    "set": "go-element",
+    "spelled": "c++",
+    "canonical": false,
+    "reason": "A raw byte outside the set is not a spelling."
+  },
+  {
+    "set": "go-element",
+    "spelled": "gr%C3%B6%C3%9Fe%2b",
+    "canonical": false,
+    "reason": "Escape digits are uppercase hexadecimal."
+  },
+  {
+    "set": "source-path",
+    "spelled": "a%2Fb",
+    "canonical": false,
+    "reason": "An escape of the separator decodes to a byte no segment holds."
+  },
+  {
+    "set": "source-path",
+    "spelled": "a%2fb",
+    "canonical": false,
+    "reason": "Escape digits are uppercase hexadecimal."
+  },
+  {
+    "set": "source-path",
+    "spelled": "100%",
+    "canonical": false,
+    "reason": "A % that opens no escape is not a spelling."
+  },
+  {
+    "set": "source-path",
+    "spelled": "a%4",
+    "canonical": false,
+    "reason": "A % followed by one digit opens no escape."
+  },
+  {
+    "set": "source-path",
+    "spelled": "a%G1",
+    "canonical": false,
+    "reason": "A % followed by a letter past F opens no escape."
+  },
+  {
+    "set": "source-path",
+    "spelled": "gr%C3%B6%C3%9Fe.ts",
+    "canonical": false,
+    "reason": "A well-formed non-ASCII sequence is spelled as itself in a source path, not escaped."
+  },
+  {
+    "set": "source-path",
+    "spelled": "my file.ts",
+    "canonical": false,
+    "reason": "A raw space is not a spelling."
+  },
+  {
+    "set": "source-path",
+    "spelled": "",
+    "canonical": false,
+    "reason": "A segment is never empty."
+  },
+  {
+    "set": "file-operand",
+    "spelled": "%7E",
+    "canonical": false,
+    "reason": "An escape of a byte the set spells as itself is not canonical."
+  },
+  {
+    "set": "file-operand",
+    "spelled": "it's.go",
+    "canonical": false,
+    "reason": "A raw quote is not a spelling of a file operand."
+  },
+  {
+    "set": "file-operand",
+    "spelled": "a:b.go",
+    "canonical": false,
+    "reason": "A raw colon is not a spelling of a file operand."
+  },
+  {
+    "set": "source-path",
+    "spelled": "ab",
+    "canonical": false,
+    "reason": "A raw C1 control is not a spelling."
+  },
+  {
+    "set": "source-path",
+    "spelled": "a b",
+    "canonical": false,
+    "reason": "A raw no-break space is not a spelling."
+  },
+  {
+    "set": "source-path",
+    "spelled": "a b",
+    "canonical": false,
+    "reason": "A raw line separator is not a spelling."
+  },
+  {
+    "set": "file-operand",
+    "spelled": "a　b.go",
+    "canonical": false,
+    "reason": "A raw ideographic space is not a spelling of a file operand."
+  },
+  {
+    "set": "source-path",
+    "spelled": ".",
+    "canonical": false,
+    "reason": "A segment that decodes to . names no file a reference scopes."
+  },
+  {
+    "set": "source-path",
+    "spelled": "..",
+    "canonical": false,
+    "reason": "A segment that decodes to .. names no file a reference scopes and leads a reader out of its directory."
+  },
+  {
+    "set": "go-element",
+    "spelled": "..",
+    "canonical": false,
+    "reason": "A segment that decodes to .. is not an import path element."
+  },
+  {
+    "set": "file-operand",
+    "spelled": ".",
+    "canonical": false,
+    "reason": "A segment that decodes to . is not a file operand segment."
+  },
+    {
+      "set": "source-path",
+      "spelled": "safe%E2%80%AE.exe",
+      "canonical": true,
+      "raw_hex": "73616665e280ae2e657865",
+      "reason": "A Bidi_Control character, here the right-to-left override, is in the unsafe set and is percent-encoded byte by byte."
+    },
+    {
+      "set": "source-path",
+      "spelled": "a%D8%9Cb",
+      "canonical": true,
+      "raw_hex": "61d89c62",
+      "reason": "The Arabic letter mark, U+061C, is a Bidi_Control character and is percent-encoded."
+    },
+    {
+      "set": "file-operand",
+      "spelled": "a%E2%81%A6b.go",
+      "canonical": true,
+      "raw_hex": "61e281a6622e676f",
+      "reason": "The left-to-right isolate, U+2066, is percent-encoded in a file operand too."
+    },
+    {
+      "set": "source-path",
+      "spelled": "a\u202eb",
+      "canonical": false,
+      "reason": "A raw Bidi_Control character is not a spelling."
+    },
+    {
+      "set": "source-path",
+      "spelled": "a\u2069b",
+      "canonical": false,
+      "reason": "A raw pop of an isolate is not a spelling."
+    },
+    {
+      "set": "source-path",
+      "spelled": "a‍b",
+      "canonical": true,
+      "raw_hex": "61e2808d62",
+      "reason": "The zero-width joiner, U+200D, is no Bidi_Control character and stands as itself."
+    }
+]

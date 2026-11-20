@@ -47,7 +47,7 @@
             "minimum": 1
           },
           "ref": {
-            "description": "The stable symbol reference this rendering spells for the subject, as contract/grammar/symbol-ref.md states it: present exactly for a subject a facts entry of the expectation file names, because a binding record names its subject by reference and not by position.",
+            "description": "The stable symbol reference this rendering spells for the subject, as contract/grammar/symbol-ref.md states it: present for a subject a facts entry of the expectation file names, because a binding record names its subject by reference and not by position, and allowed besides only for a subject a row reports a finding about other than a stale suppression, whose finding must then carry it as its symbol.ref. It is a reference of the rendering's own language in a form of the grammar, its path segments spelled canonically.",
             "type": "string",
             "minLength": 1
           }

@@ -1,0 +1,22 @@
+{
+  "name": "go-package-path-with-a-plus",
+  "description": "An import path element holding a byte outside letters, digits, dot, underscore, tilde and hyphen is percent-encoded in the reference: the unexported function nothing calls in the package example.com/fixture/c++ is reported, and its finding's reference spells the element c%2B%2B. The suppression phase writes that reference into an ignore entry, and the entry binds the finding.",
+  "languages": [
+    "go"
+  ],
+  "target_kind": "application",
+  "expect": [
+    {
+      "symbol": "Run",
+      "report": "none"
+    },
+    {
+      "symbol": "unused",
+      "report": "DS1002",
+      "confidence": "certain",
+      "reachability_class": "certain",
+      "symbol_kind": "function",
+      "liveness_relation": "reference-counting"
+    }
+  ]
+}
